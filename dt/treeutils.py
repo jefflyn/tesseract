@@ -1,5 +1,19 @@
 from PIL import Image,ImageDraw
 
+def printtree(tree,indent=''):
+   # Is this a leaf node?
+   if tree.results!=None:
+      print str(tree.results)
+   else:
+      # Print the criteria
+      print str(tree.col)+':'+str(tree.value)+'? '
+
+      # Print the branches
+      print indent+'T->',
+      printtree(tree.tb,indent+'  ')
+      print indent+'F->',
+      printtree(tree.fb,indent+'  ')
+
 def getwidth(tree):
   if tree.tb==None and tree.fb==None: return 1
   return getwidth(tree.tb)+getwidth(tree.fb)

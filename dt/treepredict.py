@@ -125,16 +125,18 @@ def buildtree(rows,scoref=entropy):
   else:
     return decisionnode(results=uniquecounts(rows))
 
-def printtree(tree,indent=''):
-   # Is this a leaf node?
-   if tree.results!=None:
-      print str(tree.results)
-   else:
-      # Print the criteria
-      print str(tree.col)+':'+str(tree.value)+'? '
+#predict new observation
+def classify(observation,tree):
+  if tree.results!=None:
+    return tree.results
+  else:
+    v=observation[tree.col]
+    branch=None
+    if isinstance(v,int) or isinstance(v,float):
+      if v>=tree.value: branch=tree.tb
+      else: branch=tree.fb
+    else:
+      if v==tree.value: branch=tree.tb
+      else: branch=tree.fb
+    return classify(observation,branch)
 
-      # Print the branches
-      print indent+'T->',
-      printtree(tree.tb,indent+'  ')
-      print indent+'F->',
-      printtree(tree.fb,indent+'  ')
