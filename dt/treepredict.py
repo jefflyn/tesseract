@@ -35,6 +35,7 @@ def divideset(rows,column,value):
     set2=[row for row in rows if not split_function(row)]
     return (set1,set2)
 
+#汇总用户订购类型
 def uniquecounts(rows):
     results={}
     for row in rows:
@@ -120,8 +121,7 @@ def buildtree(rows,scoref=entropy):
   if best_gain>0:
     trueBranch=buildtree(best_sets[0])
     falseBranch=buildtree(best_sets[1])
-    return decisionnode(col=best_criteria[0],value=best_criteria[1],
-                        tb=trueBranch,fb=falseBranch)
+    return decisionnode(col=best_criteria[0],value=best_criteria[1],tb=trueBranch,fb=falseBranch)
   else:
     return decisionnode(results=uniquecounts(rows))
 
