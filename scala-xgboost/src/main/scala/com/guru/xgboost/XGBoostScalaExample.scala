@@ -1,7 +1,7 @@
 import ml.dmlc.xgboost4j.scala.DMatrix
 import ml.dmlc.xgboost4j.scala.XGBoost
 
-object XGBoostScalaExample{
+object XGBoostScalaExample {
   def main(args: Array[String]) {
     // read trainining data, available at xgboost/demo/data
     val trainData =
@@ -18,6 +18,8 @@ object XGBoostScalaExample{
     // run prediction
     val predTrain = model.predict(trainData)
     // save model to the file.
-    model.saveModel("./local/path/to/model")
+    model.saveModel("model")
+    
+    println(predTrain);
   }
 }
