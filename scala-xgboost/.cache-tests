@@ -1,0 +1,74 @@
+format version: 5
+output mode:
+1 items
+0 -> multiple
+output directories:
+4 items
+E:\machine-learning\scala-xgboost\src\test\java -> E:\machine-learning\scala-xgboost\target\scala-2.11\test-classes
+E:\machine-learning\scala-xgboost\src\test\resources -> E:\machine-learning\scala-xgboost\target\scala-2.11\test-classes
+E:\machine-learning\scala-xgboost\src\test\scala -> E:\machine-learning\scala-xgboost\target\scala-2.11\test-classes
+E:\machine-learning\scala-xgboost\src\test\scala-2.11 -> E:\machine-learning\scala-xgboost\target\scala-2.11\test-classes
+compile options:
+8 items
+0 -> -javabootclasspath
+1 -> D:\Program Files\Java\jdk1.7.0_80\jre\lib\resources.jar;D:\Program Files\Java\jdk1.7.0_80\jre\lib\rt.jar;D:\Program Files\Java\jdk1.7.0_80\jre\lib\jsse.jar;D:\Program Files\Java\jdk1.7.0_80\jre\lib\jce.jar;D:\Program Files\Java\jdk1.7.0_80\jre\lib\charsets.jar;D:\Program Files\Java\jdk1.7.0_80\jre\lib\jfr.jar;D:\Program Files\Java\jdk1.7.0_80\jre\lib\ext\access-bridge-64.jar;D:\Program Files\Java\jdk1.7.0_80\jre\lib\ext\dnsns.jar;D:\Program Files\Java\jdk1.7.0_80\jre\lib\ext\jaccess.jar;D:\Program Files\Java\jdk1.7.0_80\jre\lib\ext\localedata.jar;D:\Program Files\Java\jdk1.7.0_80\jre\lib\ext\sunec.jar;D:\Program Files\Java\jdk1.7.0_80\jre\lib\ext\sunjce_provider.jar;D:\Program Files\Java\jdk1.7.0_80\jre\lib\ext\sunmscapi.jar;D:\Program Files\Java\jdk1.7.0_80\jre\lib\ext\zipfs.jar
+2 -> -javaextdirs
+3 ->  
+4 -> -bootclasspath
+5 -> D:\eclipse\plugins\org.scala-lang.scala-library_2.11.8.v20160304-115712-1706a37eb8.jar
+6 -> -encoding
+7 -> UTF-8
+javac options:
+0 items
+compiler version:
+1 items
+0 -> 2.11.8
+compile order:
+1 items
+0 -> Mixed
+name hashing:
+1 items
+0 -> false
+products:
+0 items
+binary dependencies:
+0 items
+direct source dependencies:
+0 items
+direct external dependencies:
+0 items
+public inherited source dependencies:
+0 items
+public inherited external dependencies:
+0 items
+member reference internal dependencies:
+0 items
+member reference external dependencies:
+0 items
+inheritance internal dependencies:
+0 items
+inheritance external dependencies:
+0 items
+class names:
+0 items
+used names:
+0 items
+product stamps:
+0 items
+source stamps:
+0 items
+binary stamps:
+0 items
+class names:
+0 items
+internal apis:
+0 items
+external apis:
+0 items
+source infos:
+0 items
+compilations:
+3 items
+0 -> rO0ABXNyABV4c2J0aS5hcGkuQ29tcGlsYXRpb27t+uDDauigQgIAAkoACXN0YXJ0VGltZVsAB291dHB1dHN0ABpbTHhzYnRpL2FwaS9PdXRwdXRTZXR0aW5nO3hwAAABXBT5KG11cgAaW0x4c2J0aS5hcGkuT3V0cHV0U2V0dGluZzt/asLzp4elQgIAAHhwAAAABHNyABd4c2J0aS5hcGkuT3V0cHV0U2V0dGluZ3rZmkd0+x17AgACTAAPb3V0cHV0RGlyZWN0b3J5dAASTGphdmEvbGFuZy9TdHJpbmc7TAAPc291cmNlRGlyZWN0b3J5cQB+AAZ4cHQAQEU6XG1hY2hpbmUtbGVhcm5pbmdcc2NhbGEteGdib29zdFx0YXJnZXRcc2NhbGEtMi4xMVx0ZXN0LWNsYXNzZXN0ADVFOlxtYWNoaW5lLWxlYXJuaW5nXHNjYWxhLXhnYm9vc3Rcc3JjXHRlc3Rcc2NhbGEtMi4xMXNxAH4ABXQAQEU6XG1hY2hpbmUtbGVhcm5pbmdcc2NhbGEteGdib29zdFx0YXJnZXRcc2NhbGEtMi4xMVx0ZXN0LWNsYXNzZXN0ADBFOlxtYWNoaW5lLWxlYXJuaW5nXHNjYWxhLXhnYm9vc3Rcc3JjXHRlc3Rcc2NhbGFzcQB+AAV0AEBFOlxtYWNoaW5lLWxlYXJuaW5nXHNjYWxhLXhnYm9vc3RcdGFyZ2V0XHNjYWxhLTIuMTFcdGVzdC1jbGFzc2VzdAAvRTpcbWFjaGluZS1sZWFybmluZ1xzY2FsYS14Z2Jvb3N0XHNyY1x0ZXN0XGphdmFzcQB+AAV0AEBFOlxtYWNoaW5lLWxlYXJuaW5nXHNjYWxhLXhnYm9vc3RcdGFyZ2V0XHNjYWxhLTIuMTFcdGVzdC1jbGFzc2VzdAA0RTpcbWFjaGluZS1sZWFybmluZ1xzY2FsYS14Z2Jvb3N0XHNyY1x0ZXN0XHJlc291cmNlcw==
+1 -> rO0ABXNyABV4c2J0aS5hcGkuQ29tcGlsYXRpb27t+uDDauigQgIAAkoACXN0YXJ0VGltZVsAB291dHB1dHN0ABpbTHhzYnRpL2FwaS9PdXRwdXRTZXR0aW5nO3hwAAABXBVagQd1cgAaW0x4c2J0aS5hcGkuT3V0cHV0U2V0dGluZzt/asLzp4elQgIAAHhwAAAABHNyABd4c2J0aS5hcGkuT3V0cHV0U2V0dGluZ3rZmkd0+x17AgACTAAPb3V0cHV0RGlyZWN0b3J5dAASTGphdmEvbGFuZy9TdHJpbmc7TAAPc291cmNlRGlyZWN0b3J5cQB+AAZ4cHQAQEU6XG1hY2hpbmUtbGVhcm5pbmdcc2NhbGEteGdib29zdFx0YXJnZXRcc2NhbGEtMi4xMVx0ZXN0LWNsYXNzZXN0ADVFOlxtYWNoaW5lLWxlYXJuaW5nXHNjYWxhLXhnYm9vc3Rcc3JjXHRlc3Rcc2NhbGEtMi4xMXNxAH4ABXQAQEU6XG1hY2hpbmUtbGVhcm5pbmdcc2NhbGEteGdib29zdFx0YXJnZXRcc2NhbGEtMi4xMVx0ZXN0LWNsYXNzZXN0ADBFOlxtYWNoaW5lLWxlYXJuaW5nXHNjYWxhLXhnYm9vc3Rcc3JjXHRlc3Rcc2NhbGFzcQB+AAV0AEBFOlxtYWNoaW5lLWxlYXJuaW5nXHNjYWxhLXhnYm9vc3RcdGFyZ2V0XHNjYWxhLTIuMTFcdGVzdC1jbGFzc2VzdAAvRTpcbWFjaGluZS1sZWFybmluZ1xzY2FsYS14Z2Jvb3N0XHNyY1x0ZXN0XGphdmFzcQB+AAV0AEBFOlxtYWNoaW5lLWxlYXJuaW5nXHNjYWxhLXhnYm9vc3RcdGFyZ2V0XHNjYWxhLTIuMTFcdGVzdC1jbGFzc2VzdAA0RTpcbWFjaGluZS1sZWFybmluZ1xzY2FsYS14Z2Jvb3N0XHNyY1x0ZXN0XHJlc291cmNlcw==
+2 -> rO0ABXNyABV4c2J0aS5hcGkuQ29tcGlsYXRpb27t+uDDauigQgIAAkoACXN0YXJ0VGltZVsAB291dHB1dHN0ABpbTHhzYnRpL2FwaS9PdXRwdXRTZXR0aW5nO3hwAAABXBVar+11cgAaW0x4c2J0aS5hcGkuT3V0cHV0U2V0dGluZzt/asLzp4elQgIAAHhwAAAABHNyABd4c2J0aS5hcGkuT3V0cHV0U2V0dGluZ3rZmkd0+x17AgACTAAPb3V0cHV0RGlyZWN0b3J5dAASTGphdmEvbGFuZy9TdHJpbmc7TAAPc291cmNlRGlyZWN0b3J5cQB+AAZ4cHQAQEU6XG1hY2hpbmUtbGVhcm5pbmdcc2NhbGEteGdib29zdFx0YXJnZXRcc2NhbGEtMi4xMVx0ZXN0LWNsYXNzZXN0ADVFOlxtYWNoaW5lLWxlYXJuaW5nXHNjYWxhLXhnYm9vc3Rcc3JjXHRlc3Rcc2NhbGEtMi4xMXNxAH4ABXQAQEU6XG1hY2hpbmUtbGVhcm5pbmdcc2NhbGEteGdib29zdFx0YXJnZXRcc2NhbGEtMi4xMVx0ZXN0LWNsYXNzZXN0ADBFOlxtYWNoaW5lLWxlYXJuaW5nXHNjYWxhLXhnYm9vc3Rcc3JjXHRlc3Rcc2NhbGFzcQB+AAV0AEBFOlxtYWNoaW5lLWxlYXJuaW5nXHNjYWxhLXhnYm9vc3RcdGFyZ2V0XHNjYWxhLTIuMTFcdGVzdC1jbGFzc2VzdAAvRTpcbWFjaGluZS1sZWFybmluZ1xzY2FsYS14Z2Jvb3N0XHNyY1x0ZXN0XGphdmFzcQB+AAV0AEBFOlxtYWNoaW5lLWxlYXJuaW5nXHNjYWxhLXhnYm9vc3RcdGFyZ2V0XHNjYWxhLTIuMTFcdGVzdC1jbGFzc2VzdAA0RTpcbWFjaGluZS1sZWFybmluZ1xzY2FsYS14Z2Jvb3N0XHNyY1x0ZXN0XHJlc291cmNlcw==

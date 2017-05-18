@@ -26,7 +26,7 @@ object HelloScala {
    * 使用Java的实现来缩短开发时间，例如说操作数据源（DB、NoSQL（Cassandra、HBase）等）的JDBC，再例如关于线程Thread的操作，Scala往往也会直接使用Java中的Thread；
    * 13，按照当今OS的原理，程序的main入口方法都是运行在主线程中的，OS的运行分为Kernel Space和User Space
    * ，应用程序是运行在User Space中，应用程序Scala所在的进程一般都是透过OS Fork出来，被Fork出来的应用程序进程默认会有主线程
-   * 而我们的main方法就是默认在主线程中的；
+   而我们的main方法就是默认在主线程中的；
    */
   def main(args: Array[String]) {
     println("Hello Scala!!!") //在Console上打印出"Hello Scala!!!"这个字符串并且换行
