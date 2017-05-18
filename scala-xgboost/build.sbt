@@ -10,11 +10,14 @@ scalaVersion := "2.11.8"
 EclipseKeys.createSrc := EclipseCreateSrc.Default + EclipseCreateSrc.Resource
 
 libraryDependencies ++= Seq(
+  "junit" % "junit" % "4.12",
+  "org.scalatest" %% "scalatest" % "3.0.0",
   "org.json4s" %% "json4s-native" % "3.2.10",
   "org.json4s" %% "json4s-jackson" % "3.2.10",
   "org.apache.spark" %% "spark-core" % "2.1.0",
   "org.apache.spark" %% "spark-mllib" % "2.1.0",
-  "ml.dmlc" %% "xgboost4j-spark" % "0.7"
+  "com.typesafe.akka" %% "akka-actor" % "2.3.11",
+  "com.typesafe.akka" %% "akka-testkit" % "2.3.11"
 )
 
 resolvers ++= Seq(
