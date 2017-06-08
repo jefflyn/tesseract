@@ -8,6 +8,7 @@ import org.apache.spark.{ SparkConf, SparkContext }
 
 object GBDTRegression {
   val conf = new SparkConf() //创建环境变量
+<<<<<<< HEAD
     .setMaster("local[1]") //设置本地化处理
     .setAppName("GBDTRegression") //设定名称
   val sc = new SparkContext(conf) //创建环境变量实例
@@ -32,6 +33,20 @@ object GBDTRegression {
       val label = parts(data_length - 1)
       println("label: " + label)
       println(parts.slice(0, data_length).mkString(","))
+=======
+    .setMaster("local[*]") //设置本地化处理
+    .setAppName("GBDTRegression") //设定名称
+  val sc = new SparkContext(conf) //创建环境变量实例
+  def main(args: Array[String]) {
+    val data = sc.textFile("src/main/resources/data/sku_data.csv") //获取数据集路径
+    
+    val parsedData = data.map { line => //开始对数据集处理
+      val parts = line.split("\t") //根据tab进行分列
+      val data_length = parts.length //文件列数
+      println("data_length: " + data_length)
+      val label = parts(data_length - 2)
+       println("label: " + label)
+>>>>>>> adb446352e4378ba78790ead339385dcbefba9d3
       val features = parts.slice(0, data_length - 1).map(_.toDouble)
       LabeledPoint(label.toDouble, Vectors.dense(features))
     }.randomSplit(Array(0.7, 0.3)) //分成训练集、测试集
@@ -41,7 +56,10 @@ object GBDTRegression {
     boostingStrategy.numIterations = Integer.parseInt("20") // Note: Use more iterations in practice.
     boostingStrategy.treeStrategy.maxDepth = Integer.parseInt("10")
     boostingStrategy.treeStrategy.categoricalFeaturesInfo = Map[Int, Int]()
+<<<<<<< HEAD
     
+=======
+>>>>>>> adb446352e4378ba78790ead339385dcbefba9d3
     val model = GradientBoostedTrees.train(trainingData, boostingStrategy)
 
     val predict_result = testData.map { p =>
