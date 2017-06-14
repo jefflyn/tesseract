@@ -1,0 +1,35 @@
+symbol,name,area
+sh000001,上证指数,China
+UKX,富时100指数,United Kingdom
+DAX,德国DAX指数,Germany
+INDEXCF,俄罗斯MICEX指数,Russia
+CAC,法国CAC40指数,France
+SMI,瑞士市场指数,Swaziland
+FTSEMIB,富时意大利MIB指数,Italy
+MADX,西班牙MA马德里指数,Spain
+OMX,OMX斯德哥尔摩30指数,Sweden
+SPX,标准普尔500指数,United States of America
+HEX,OMX赫尔辛基指数,Finland
+OSEAX,挪威OSE全股指数,Norway
+ISEQ,爱尔兰综合指数,Ireland
+AEX,荷兰AEX指数,Netherlands
+ICEXI,OMX冰岛全股指数,Iceland
+NKY,日经225指数,Japan
+KOSPI,韩国KOSPI指数,South Korea
+FBMKLCI,吉隆坡综合股价指数,Malaysia
+SET,S泰国股票交易指数,Thailand
+JCI,印尼雅加达综合指数,Indonesia
+PCOMP,菲律宾综合股价指数,Philippines
+KSE100,巴基斯坦卡拉奇100指数,Pakistan
+SENSEX,印度孟买30指数,India
+VNINDEX,越南胡志明市股票指数,Vietnam
+CSEALL,斯里兰卡科伦坡指数,Sri Lanka
+SASEIDX,沙特阿拉伯TADAWUL股票综合指数,Saudi Arabia
+SPTSX,S&P/TSX综合指数,Canada
+MEXBOL,墨西哥BOLSA指数,Mexico
+IBOV,巴西BOVESPA股票指数,Brazil
+MERVAL,阿根廷MERVAL指数,Argentina
+AS51,澳大利亚标准普尔200指数,Australia
+NZSE50FG,新西兰50指数,Papua New Guinea
+CASE,埃及CASE 30指数,Venezuela
+JALSH,FTSE/JSE 南非综合指数,South Africa
