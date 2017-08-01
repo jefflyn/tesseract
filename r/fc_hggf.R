@@ -1,5 +1,5 @@
 library(quantmod)
-setSymbolLookup(HGGF=list(name='600126.ss',src='yahoo'))
+setSymbolLookup(HGGF=list(name='600570.ss',src='yahoo'))
 getSymbols("HGGF")
 #View(HGGF)
 #head(HGGF)
@@ -51,11 +51,12 @@ data.frame(p=1:10,aicList)
 
 #predict and validation
 p=which.min(aicList)
+p=1
 print(p)
 n=nrow(subdata)
 preddf=NULL
 subdata=data.frame(subdata)
-for(i in 1:1){
+for(i in 1:30){
   predData=as.vector(subdata[(n+i-1):(n+i-p),])
   a=t(predData)
   b=a[,1]
@@ -74,15 +75,19 @@ rownames(preddf)=NULL
 subdata.test=HGGF[(N-30+1):N,1:4]
 summary(as.vector(abs(preddf-subdata.test)*100/subdata.test))
 
+print(preddf[,4])
+print(subdata.test[,4])
+
 #plot
 par(mfrow=c(2,2))
-plot(preddf[,1],type='1',ylab='Open')
+plot(preddf[,1],type='l',ylab='Open')
 lines(subdata.test[,1],lty=2,col='red')
-plot(preddf[,2],type='1',ylab='High')
+
+plot(preddf[,2],type='l',ylab='High')
 lines(subdata.test[,2],lty=2,col='red')
-plot(preddf[,3],type='1',ylab='Low')
+plot(preddf[,3],type='l',ylab='Low')
 lines(subdata.test[,3],lty=2,col='red')
-plot(preddf[,4],type='1',ylab='Close')
+plot(preddf[,4],type='l',ylab='Close')
 lines(subdata.test[,4],lty=2,col='red')
 par(mfrow=c(1,1))
 
