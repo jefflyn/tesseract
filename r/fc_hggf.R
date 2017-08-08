@@ -3,16 +3,16 @@ setSymbolLookup(HGGF=list(name='600570.ss',src='yahoo'))
 getSymbols("HGGF")
 #View(HGGF)
 #head(HGGF)
-chartSeries(HGGF)
+#chartSeries(HGGF)
 
 ORIG=data.frame(HGGF)
 N0=nrow(ORIG)
-print(N0)
+#print(N0)
 HGGF=na.omit(ORIG)
 N=nrow(HGGF)
 print(N)
 subdata=HGGF[1:(N-30),1:4]
-print(subdata)
+#print(subdata)
 #由于后面需要对误差进行累加，此处对所有指标，按均值和标准差进行标准化处理
 subdata=scale(subdata)
 center.back=attr(subdata,"scaled:center")
@@ -27,7 +27,7 @@ scale.back=attr(subdata,"scaled:scale")
 
 #Vector Autoregression 
 rowCol=dim(subdata)
-print(rowCol[2])
+#print(rowCol[2])
 aicList=NULL
 lmList=list()
 for(p in 1:10){
@@ -41,7 +41,7 @@ for(p in 1:10){
   Y=baseData[,1:rowCol[2]]
   #print(Y)
   coefMatrix=solve(t(X)%*%X)%*%t(X)%*%Y
-  print(coefMatrix)
+  #print(coefMatrix)
   aic=log(det(cov(Y-X%*%coefMatrix)))+2*(nrow(coefMatrix)-1)^2*p/nrow(baseData)
   #print(aic)
   aicList=c(aicList,aic)
