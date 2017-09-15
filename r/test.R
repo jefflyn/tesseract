@@ -1,5 +1,5 @@
 library(quantmod)
-setSymbolLookup(TARGET=list(name="600126.SS",src="yahoo"))
+setSymbolLookup(TARGET=list(name="603113.SS",src="yahoo"))
 getSymbols("TARGET")
 
 TARGET=data.frame(TARGET)
