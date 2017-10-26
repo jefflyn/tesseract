@@ -21,7 +21,6 @@ print(blackdate)
 
 simdf = pd.read_csv("./sim.txt", sep=' ')
 
-
 # In[57]:
 
 codes = list(simdf['code'])
@@ -44,11 +43,11 @@ for index,row in df.iterrows() :
     cost_diff = price - cost
     profit = (cost_diff) * share
     profit_percent = cost_diff / cost * 100.0
+	  
     datastr = str("%.3f%%"%change_percent) + ',' + str("%.3f"%cost_diff) + ',' + str("%.3f"%profit) + ',' + str("%.3f"%profit_percent)
     data_list.append([astr for astr in datastr.split(',')])
     df_append = pd.DataFrame(data_list, columns=['change_percent','cost_diff','profit','profit_percent'])
     
-
 
 # In[59]:
 
@@ -60,11 +59,4 @@ print(df[['code','name','price','change_percent','bid','ask','pre_close','open',
 
 
 # In[ ]:
-
-
-
-
-# In[ ]:
-
-
 
