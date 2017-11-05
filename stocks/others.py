@@ -9,7 +9,8 @@ pd.set_option('display.max_rows',50)
 pd.set_option('display.max_columns',80)
 pd.set_option('display.width',600)
 
-hddf = pd.read_csv("./others.txt", sep=' ')
+hddf = pd.read_csv("others.txt", sep=' ')
+print(hddf)
 codes = list(hddf['code'])
 
 def re_exe(inc = 3) :
