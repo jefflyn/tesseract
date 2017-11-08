@@ -9,7 +9,7 @@ pd.set_option('display.max_rows',50)
 pd.set_option('display.max_columns',80)
 pd.set_option('display.width',600)
 
-hddf = pd.read_csv("./hd.txt", sep=' ')
+hddf = pd.read_csv("./monitor_gap.txt", sep=' ')
 codes = list(hddf['code'])
 
 def re_exe(inc = 3) :
@@ -55,7 +55,9 @@ def re_exe(inc = 3) :
 	    elif esc_diff < 0 :
 	      warn_sign = '!!!'
 	    
-	    datastr = warn_sign + ',' + str("%.3f"%change) + ',' + str("[%.3f"%cost_diff) + ',' + str("%.3f"%profit) + ',' + str("%.3f%%]"%profit_perc) + ',' + str("[%.3f"%bottom) + ',' + str("%.3f"%escape) + ',' + str("%.3f%%]"%btm_space) + ',' + str("%.3f%%"%esc_space)
+	    datastr = warn_sign + ',' + str("%.3f"%change) + ',' + str("[%.3f"%cost_diff) + ',' + str("%.3f"%profit) + ',' \
+				  + str("%.3f%%]"%profit_perc) + ',' + str("[%.3f]"%bottom) + ',' + str("%.3f"%escape) + ',' \
+				  + str("%.3f"%btm_space) + ',' + str("%.3f%%"%esc_space)
 	    data_list.append([astr for astr in datastr.split(',')])
 	
 	    df_append = pd.DataFrame(data_list, columns=['warn','change','cost_diff','profit_amt','profit_perc','btm_diff','esc_diff','btm_space','esc_space'])
@@ -63,11 +65,11 @@ def re_exe(inc = 3) :
 	  
 	  df = df.join(df_append)
 	  
-	  df['change'] = df['change'].astype('float32')
-	  df = df.sort_values('change', axis=0, ascending=True, inplace=False, kind='quicksort', na_position='last')
+	  df['btm_space'] = df['btm_space'].astype('float32')
+	  df = df.sort_values('btm_space', axis=0, ascending=True, inplace=False, kind='quicksort', na_position='last')
 	  ##df.rename(columns={'name':'stock_name'}, inplace = True)
 	  ##print(df[['code','name','price','change','bid','ask','pre_close','open','low','high','time','cost_diff','profit','profit_percent']])
-	  print(df[['warn','code','name','price','change','bid','ask','low','high','btm_diff','btm_space','esc_diff','esc_space','cost_diff','profit_amt','profit_perc']])
+	  print(df[['warn','code','name','price','change','btm_diff','btm_space','esc_diff','esc_space','cost_diff','profit_amt','profit_perc']])
 	  
 	  time.sleep(inc)
     
