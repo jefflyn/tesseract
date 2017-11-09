@@ -38,22 +38,20 @@ def re_exe(inc=3):
             esc_space = esc_diff / escape * 100.0
 
             warn_sign = ''
-            if profit > 0:
-                warn_sign = '$$$'
-            elif btm_diff <= 0:
+            if btm_diff <= 0:
                 warn_sign = '***'
             elif esc_diff < 0:
                 warn_sign = '!!!'
 
             datastr = warn_sign + ',' + str("%.3f" % change) + ',' + str("[%.3f]" % bottom) + ',' + str("%.3f" % escape) + ',' \
-                      + str("%.3f" % btm_space) + ',' + str("%.3f%%" % esc_space)
+                      + str("%.3f%%]" % btm_space) + ',' + str("%.3f" % btm_space) + ',' + str("%.3f%%" % esc_space)
             data_list.append([astr for astr in datastr.split(',')])
 
-            df_append = pd.DataFrame(data_list, columns=['warn', 'change', 'btm_diff', 'esc_diff', 'btm_space', 'esc_space'])
+            df_append = pd.DataFrame(data_list, columns=['warn', 'change', 'btm_diff', 'esc_diff', 'btm_space', 'btm_perc', 'esc_space'])
 
         df = df.join(df_append)
-        df['btm_space'] = df['btm_space'].astype('float32')
-        df = df.sort_values('btm_space', axis=0, ascending=True, inplace=False, kind='quicksort', na_position='last')
+        df['btm_perc'] = df['btm_perc'].astype('float32')
+        df = df.sort_values('btm_perc', axis=0, ascending=True, inplace=False, kind='quicksort', na_position='last')
         
         print(df[['warn', 'code', 'name', 'price', 'change', 'btm_diff', 'btm_space', 'esc_diff', 'esc_space']])
 
