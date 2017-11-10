@@ -11,6 +11,7 @@ public class Cost {
 		if(args.length < 5){
 			System.out.println("Invalid args! Correct format: [cost,share,price,share,isSh(0|1)]");
 		}else{
+			try{
 			double cost = Double.valueOf(args[0]);
 			int share = Integer.valueOf(args[1]);
 			double price = Double.valueOf(args[2]);
@@ -27,9 +28,16 @@ public class Cost {
 			
 			double totalAmt = cost * share + price * buyShare + dealFee + actFee;
 			double newCost = totalAmt / (share + buyShare);
-			System.out.println("(" + cost + "*" + share + "+" + price + "*" + buyShare + "+" + dealFee + "+" + actFee +")/(" + share + "+" + buyShare + ")=" + newCost);
-			System.out.println("total amount: " + totalAmt);
-			System.out.println("tax: " + (totalAmt * 0.0001));
+			if(args.length > 5 && "y".equals(args[5])){
+				System.out.println("(" + cost + "*" + share + "+" + price + "*" + buyShare + "+" + dealFee + "+" + actFee +")/(" + share + "+" + buyShare + ")=" + newCost);
+			}
+			System.out.println("Final cost: " + newCost);
+			System.out.println("Total amount: " + totalAmt);
+			System.out.println("Total tax: " + (totalAmt * 0.0001));
+			}catch(Exception e){
+				System.err.println("Invalid args! Correct format: [cost,share,price,share,isSh(0|1)]");
+				System.exit(1);
+			}
 		}
 	}
 }

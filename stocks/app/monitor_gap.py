@@ -20,6 +20,7 @@ def re_exe(inc=3):
             # print(code)
             pre_close = float(row['pre_close'])
             price = float(row['price'])
+            low = float(row['low'])
 
             price_diff = price - pre_close
             change = price_diff / pre_close * 100
@@ -40,7 +41,8 @@ def re_exe(inc=3):
             warn_sign = ''
             if btm_diff <= 0:
                 warn_sign = '***'
-            elif esc_diff < 0:
+            
+            if esc_diff < 0 or (escape >= low):
                 warn_sign = '!!!'
 
             datastr = warn_sign + ',' + str("%.3f" % change) + ',' + str("[%.3f]" % bottom) + ',' + str("%.3f" % escape) + ',' \
@@ -51,9 +53,9 @@ def re_exe(inc=3):
 
         df = df.join(df_append)
         df['btm_perc'] = df['btm_perc'].astype('float32')
-        df = df.sort_values('btm_perc', axis=0, ascending=True, inplace=False, kind='quicksort', na_position='last')
+        df = df.sort_values('btm_perc', axis=0, ascending=False, inplace=False, kind='quicksort', na_position='last')
         
-        print(df[['warn', 'code', 'name', 'price', 'change', 'btm_diff', 'btm_space', 'esc_diff', 'esc_space']])
+        print(df[['warn', 'code', 'name', 'change', 'price', 'low', 'btm_diff', 'btm_space', 'esc_diff', 'esc_space']])
 
         time.sleep(inc)
 
