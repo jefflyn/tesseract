@@ -19,7 +19,7 @@ public class Cost {
 			int isSh = Integer.valueOf(args[4]);
 			int actFee = 0;
 			if(isSh == 1)
-				actFee = (buyShare > 1000) ? (buyShare / 1000 + 1) : 1;
+				actFee = (buyShare > 1000) ? (buyShare % 1000 == 0 ? buyShare / 1000 : buyShare / 1000 + 1) : 1;
 			double feeRate = 0.00025;
 			double dealAmt = price * buyShare;
 			double dealFee = dealAmt * feeRate;
