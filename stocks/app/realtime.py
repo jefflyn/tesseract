@@ -3,6 +3,7 @@
 import sys
 from sys import argv
 import tushare as ts
+from tushare.stock import cons as ct
 import pandas as pd
 import time
 
@@ -13,6 +14,7 @@ file = argv[1]
 include_files = {
         'pa': './data/pa.txt',
         'cf': './data/cf.txt',
+        'idx': './data/idx.txt',
         'other': './data/other.txt'
         }
 keys = list(include_files.keys())
@@ -27,15 +29,24 @@ pd.set_option('display.max_columns',80)
 pd.set_option('display.width',600)
 
 hddf = pd.read_csv(filePath, sep=' ')
+if file != 'idx' :
+  hddf['code'] = hddf['code'].astype('str').str.zfill(6)
 codes = list(hddf['code'])
+
+INDEX_LIST_NEW = dict(zip(list(x[2:] for x in ct.INDEX_LIST.values()), ct.INDEX_LIST.keys()))
+
+print(codes)
 
 def re_exe(inc = 3) :
 	while True: 
 	  df = ts.get_realtime_quotes(codes)
 	  data_list = []
 	  for index,row in df.iterrows() :
-	    code = row['code'] if row['code'] not in ['000001'] else 'sh'
-	    #print(code)
+	    code = row['code']
+	    
+	    code = INDEX_LIST_NEW[code] if code in INDEX_LIST_NEW.keys() else code
+	    
+	    print(code)
 	    pre_close = float(row['pre_close'])
 	    price = float(row['price'])
 	
@@ -72,16 +83,23 @@ def re_exe(inc = 3) :
 	    elif esc_diff < 0 :
 	      warn_sign = '!!!'
 	    
-	    datastr = warn_sign + ',' + str("%.3f"%change) + ',' + str("[%.3f%%]"%change) + ',' + str("[%.3f"%cost_diff) + ',' + str("%.3f"%profit) + ',' + str("%.3f"%profit_perc) + ',' + str("%.3f%%]"%profit_perc) + ',' + str("[%.3f"%bottom) + ',' + str("%.3f"%escape) + ',' + str("%.3f%%]"%btm_space) + ',' + str("%.3f%%"%esc_space)
-	    data_list.append([astr for astr in datastr.split(',')])
-	
-	    df_append = pd.DataFrame(data_list, columns=['warn','change1','change','cost_diff','profit_amt','profit_p','profit_perc','btm_diff','esc_diff','btm_space','esc_space'])
-	  
+	    #datastr = warn_sign + ',' + str("%.3f"%change) + ',' + str("[%.3f%%]"%change) + ',' + str("[%.3f"%cost_diff) + ',' + str("%.3f"%profit) + ',' + str("%.3f"%profit_perc) + ',' + str("%.3f%%]"%profit_perc) + ',' + str("[%.3f"%bottom) + ',' + str("%.3f"%escape) + ',' + str("%.3f%%]"%btm_space) + ',' + str("%.3f%%"%esc_space)
+	    #data_list.append([astr for astr in datastr.split(',')])
+	    #df_append = pd.DataFrame(data_list, columns=['warn','change1','change','cost_diff','profit_amt','profit_p','profit_perc','btm_diff','esc_diff','btm_space','esc_space'])
+	    
+	    data_list = []
+	    date_list
+	    
+	    df_append = pd.DataFrame(data_list, columns=['warn','change','cost_diff','profit_amt','profit_perc','btm_diff','esc_diff','btm_space','esc_space'])
 	  
 	  df = df.join(df_append)
 	  
+	  df['change1'] = df['change1'].astype('float32')
 	  df['profit_p'] = df['profit_p'].astype('float32')
-	  df = df.sort_values('profit_p', axis=0, ascending=True, inplace=False, kind='quicksort', na_position='last')
+	  if len(argv) > 2 and argv[2] is not None:
+	    df = df.sort_values('profit_p', axis=0, ascending=True, inplace=False, kind='quicksort', na_position='last')
+	  else:
+	    df = df.sort_values('change1', axis=0, ascending=True, inplace=False, kind='quicksort', na_position='last')
 	  ##df.rename(columns={'name':'stock_name'}, inplace = True)
 	  ##print(df[['code','name','price','change','bid','ask','pre_close','open','low','high','time','cost_diff','profit','profit_percent']])
 	  print(df[['warn','code','name','price','change','bid','ask','low','high','btm_diff','btm_space','esc_diff','esc_space','cost_diff','profit_amt','profit_perc']])
