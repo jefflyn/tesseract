@@ -46,7 +46,6 @@ def re_exe(inc = 3) :
 	    
 	    code = INDEX_LIST_NEW[code] if code in INDEX_LIST_NEW.keys() else code
 	    
-	    print(code)
 	    pre_close = float(row['pre_close'])
 	    price = float(row['price'])
 	
@@ -87,21 +86,35 @@ def re_exe(inc = 3) :
 	    #data_list.append([astr for astr in datastr.split(',')])
 	    #df_append = pd.DataFrame(data_list, columns=['warn','change1','change','cost_diff','profit_amt','profit_p','profit_perc','btm_diff','esc_diff','btm_space','esc_space'])
 	    
-	    data_list = []
-	    date_list
+	    curt_data = []
+	    curt_data.append(warn_sign)
+	    curt_data.append(change)
+	    curt_data.append(cost_diff)
+	    curt_data.append(profit)
+	    curt_data.append(profit_perc)
+	    curt_data.append(btm_diff)
+	    curt_data.append(esc_diff)
+	    curt_data.append(btm_space)
+	    curt_data.append(esc_space)
+	    
+	    data_list.append(curt_data)
 	    
 	    df_append = pd.DataFrame(data_list, columns=['warn','change','cost_diff','profit_amt','profit_perc','btm_diff','esc_diff','btm_space','esc_space'])
 	  
 	  df = df.join(df_append)
 	  
-	  df['change1'] = df['change1'].astype('float32')
-	  df['profit_p'] = df['profit_p'].astype('float32')
+	  df['change'] = df['change'].astype('float32')
+	  df['profit_perc'] = df['profit_perc'].astype('float32')
 	  if len(argv) > 2 and argv[2] is not None:
-	    df = df.sort_values('profit_p', axis=0, ascending=True, inplace=False, kind='quicksort', na_position='last')
+	    df = df.sort_values('profit_perc', axis=0, ascending=True, inplace=False, kind='quicksort', na_position='last')
 	  else:
-	    df = df.sort_values('change1', axis=0, ascending=True, inplace=False, kind='quicksort', na_position='last')
+	    df = df.sort_values('change', axis=0, ascending=True, inplace=False, kind='quicksort', na_position='last')
 	  ##df.rename(columns={'name':'stock_name'}, inplace = True)
 	  ##print(df[['code','name','price','change','bid','ask','pre_close','open','low','high','time','cost_diff','profit','profit_percent']])
+	  
+	  #format data
+	  
+	  
 	  print(df[['warn','code','name','price','change','bid','ask','low','high','btm_diff','btm_space','esc_diff','esc_space','cost_diff','profit_amt','profit_perc']])
 	  
 	  time.sleep(inc)
