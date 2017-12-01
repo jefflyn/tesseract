@@ -35,8 +35,6 @@ codes = list(hddf['code'])
 
 INDEX_LIST_NEW = dict(zip(list(x[2:] for x in ct.INDEX_LIST.values()), ct.INDEX_LIST.keys()))
 
-print(codes)
-
 def re_exe(inc = 3) :
 	while True: 
 	  df = ts.get_realtime_quotes(codes)
