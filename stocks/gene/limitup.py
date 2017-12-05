@@ -27,6 +27,3 @@ def get_limit_up(codes = None, start = None, end = None, up = True):
     endtime = datetime.datetime.now()
     print((endtime - starttime).seconds)
     return result
-
-codes = ['600126','600127']
-print(get_limit_up(codes, up = False))

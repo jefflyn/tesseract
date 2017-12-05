@@ -1,6 +1,8 @@
-import tushare as ts
 import numpy as np
 import pandas as pd
+
+import tushare as ts
+
 # 基本面数据
 # code,代码
 # name,名称
@@ -26,7 +28,7 @@ import pandas as pd
 # npr,净利润率(%)
 # holders,股东人数
 basics = ts.get_stock_basics()
-basics['code'] = basics['code'].astype('str').str.zfill(6)
-
-basics.to_csv("./data/basics.csv")
+basics['code'] = basics.index
+# basics['code'] = basics['code'].astype('str').str.zfill(6)
+basics.to_csv("../data/basics.csv")
 
