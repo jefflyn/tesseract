@@ -8,27 +8,30 @@ import tushare as ts
 
 def get_wave(codes=None, start=None, end=None, beginlow=True, duration=0, pchange=0):
     starttime = datetime.datetime.now()
+    print("get wave start at %s" % starttime)
     code_list = []
     if isinstance(codes, str):
         code_list.append(codes)
     else: code_list = codes
 
-    period_list = []
+    perioddf_list = []
     for code in code_list:
+        print(">>> processing %s ..." % code)
         hist_data = ts.get_k_data(code, start)
         if hist_data is None or len(hist_data) == 0:
             continue
         left_data = wavefrom(code, hist_data, beginlow, 'left', duration, pchange)
         right_data = wavefrom(code, hist_data, beginlow, 'right', duration, pchange)
         period_df = pd.DataFrame(left_data + right_data,columns=['code', 'begin', 'end', 'status', 'begin_price', 'end_price', 'days', 'p_change'])
-        period_list.append(period_df)
+        perioddf_list.append(period_df)
+        print(">>> processing %s done!" % code)
 
-    result = pd.concat(period_list)
+    result = pd.concat(perioddf_list, ignore_index=True)
     result = result.sort_values(by=['code','begin'], axis=0, ascending=True, inplace=False, kind='quicksort', na_position='last')
     # print(result)
 
     endtime = datetime.datetime.now()
-    print((endtime - starttime).seconds)
+    print("get wave finish at %s, total time: %ds" % (endtime, (endtime - starttime).seconds))
     return result
 
 def wavefrom(code, df, beginlow, direction='left', duration=0, pchange=0):
@@ -86,7 +89,7 @@ def wavefrom(code, df, beginlow, direction='left', duration=0, pchange=0):
         list.append(beginprice)
         list.append(endprice)
         list.append((datetime.datetime.strptime(enddate, '%Y-%m-%d') - datetime.datetime.strptime(begindate, '%Y-%m-%d')).days)
-        list.append(diff_precent)
+        list.append(round(diff_precent, 3))
         period_data.append(list)
 
         if direction == 'left':
@@ -102,4 +105,4 @@ def wavefrom(code, df, beginlow, direction='left', duration=0, pchange=0):
         ismax = not ismax
     return period_data
 
-# get_wave(['600570','600126'], start='2016-01-01', duration=0, pchange=0.0)
+get_wave(['600570','600126'], start='2016-01-01', duration=0, pchange=0.0)

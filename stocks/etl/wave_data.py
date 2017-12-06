@@ -18,6 +18,7 @@ codes = basics['code'].values
 wavedata = period.get_wave(codes, start='2016-01-04')
 wavedata.to_csv("../data/wavedata.csv")
 
+#save to db
 db_con = pymysql.connect(
     user = 'linjingu',
     password = 'linjingu',
@@ -28,5 +29,4 @@ db_con = pymysql.connect(
     cursorclass = pymysql.cursors.DictCursor
 )
 engine = create_engine("mysql+pymysql://linjingu:linjingu@localhost:3306/stocks?charset=utf8")
-
 wavedata.to_sql(name = 'wave_data',con = engine,if_exists = 'replace',index = False,index_label = False)
