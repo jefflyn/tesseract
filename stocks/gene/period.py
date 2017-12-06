@@ -42,8 +42,8 @@ def wavefrom(code, df, beginlow, direction='left', duration=0, pchange=0):
     # for get_k_data use
     firstdate = df.head(1).at[df.head(1).index.get_values()[0],'date']
     lastdate = df.tail(1).at[df.tail(1).index.get_values()[0], 'date']
-    # firstdate = datetime.datetime.utcfromtimestamp((df.head(1).index.get_values()[0]).astype('O') / 1e9).strftime("%Y-%m-%d")
-    # lastdate = datetime.datetime.utcfromtimestamp((df.tail(1).index.get_values()[0]).astype('O') / 1e9).strftime("%Y-%m-%d")
+    # firstdate = datetime.datetime.utcfromtimestamp((df.tail(1).index.get_values()[0]).astype('O') / 1e9).strftime("%Y-%m-%d")
+    # lastdate = datetime.datetime.utcfromtimestamp((df.head(1).index.get_values()[0]).astype('O') / 1e9).strftime("%Y-%m-%d")
 
     # start from the lowest price, find the wave from both sides
     pivot_low = df.min()['low']
