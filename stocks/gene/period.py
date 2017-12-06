@@ -17,7 +17,8 @@ def get_wave(codes=None, start=None, end=None, beginlow=True, duration=0, pchang
     perioddf_list = []
     for code in code_list:
         print(">>> processing %s ..." % code)
-        hist_data = ts.get_k_data(code, start)
+        hist_data = ts.get_k_data(code, start) #one day delay issue
+        # hist_data = ts.get_h_data(code, start)  # network issue
         if hist_data is None or len(hist_data) == 0:
             continue
         left_data = wavefrom(code, hist_data, beginlow, 'left', duration, pchange)
@@ -28,6 +29,8 @@ def get_wave(codes=None, start=None, end=None, beginlow=True, duration=0, pchang
 
     result = pd.concat(perioddf_list, ignore_index=True)
     result = result.sort_values(by=['code','begin'], axis=0, ascending=True, inplace=False, kind='quicksort', na_position='last')
+
+    # pd.set_option('display.width', 600)
     # print(result)
 
     endtime = datetime.datetime.now()
@@ -36,9 +39,11 @@ def get_wave(codes=None, start=None, end=None, beginlow=True, duration=0, pchang
 
 def wavefrom(code, df, beginlow, direction='left', duration=0, pchange=0):
     period_data = []
-
+    # for get_k_data use
     firstdate = df.head(1).at[df.head(1).index.get_values()[0],'date']
     lastdate = df.tail(1).at[df.tail(1).index.get_values()[0], 'date']
+    # firstdate = datetime.datetime.utcfromtimestamp((df.head(1).index.get_values()[0]).astype('O') / 1e9).strftime("%Y-%m-%d")
+    # lastdate = datetime.datetime.utcfromtimestamp((df.tail(1).index.get_values()[0]).astype('O') / 1e9).strftime("%Y-%m-%d")
 
     # start from the lowest price, find the wave from both sides
     pivot_low = df.min()['low']
@@ -46,6 +51,7 @@ def wavefrom(code, df, beginlow, direction='left', duration=0, pchange=0):
     # print(pivot_rec)
     pivot_index = pivot_rec.index.get_values()[0]
     pivot_date = pivot_rec.at[pivot_index, 'date']
+    # pivot_date = datetime.datetime.utcfromtimestamp((pivot_rec.tail(1).index.get_values()[0]).astype('O') / 1e9).strftime("%Y-%m-%d")
     pivot_close = pivot_rec.at[pivot_index, 'close']
 
     ismax = beginlow
@@ -105,4 +111,4 @@ def wavefrom(code, df, beginlow, direction='left', duration=0, pchange=0):
         ismax = not ismax
     return period_data
 
-get_wave(['600570','600126'], start='2016-01-01', duration=0, pchange=0.0)
+# get_wave(['600570','600126'], start='2016-01-01', duration=0, pchange=0.0)

@@ -1,12 +1,21 @@
-import tushare as ts
+from datetime import date
+import datetime
+
 import numpy as np
 import pandas as pd
 
-hist = ts.get_hist_data('600126')
-print(hist.head(3))
+import tushare as ts
 
-h = ts.get_h_data('600126')
-print(h.head(3))
+pd.set_option('display.width', 600)
 
-k = ts.get_k_data('600126')
-print(k.head(3))
+# hist = ts.get_hist_data('002415',start='2017-05-15')
+# print(hist.tail(10))
+
+h = ts.get_h_data('002415',start='2017-05-15')
+dateindex = (h.tail(1).index.get_values()[0])
+dateindex = datetime.datetime.utcfromtimestamp(dateindex.astype('O')/1e9)
+print(dateindex.strftime("%Y-%m-%d"))
+print(h.tail(10))
+
+# k = ts.get_k_data('002415',start='2017-05-15')
+# print(k.head(10))
