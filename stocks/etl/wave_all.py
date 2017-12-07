@@ -4,14 +4,11 @@ import pandas as pd
 import pymysql
 from sqlalchemy import create_engine
 
-from stocks.etl import utils
+from stocks.data import _datautils
 from stocks.gene import limitup
 from stocks.gene import period
 
-basics = pd.read_csv("../data/basics.csv", encoding='gbk')
-basics['code'] = basics['code'].astype('str').str.zfill(6)
-
-basics = utils.basic_filter(basics, before=20170901)
+basics = _datautils.basic_filter(_datautils.basics, before=20170901)
 
 codes = basics['code'].values
 

@@ -4,7 +4,6 @@ import pandas as pd
 import pymysql
 from sqlalchemy import create_engine
 
-from stocks.etl import utils
 from stocks.gene import limitup
 from stocks.gene import period
 
