@@ -98,7 +98,7 @@ def wavefrom(code, df, beginlow, direction='left', duration=0, pchange=0):
         list.append(status)
         list.append(beginprice)
         list.append(endprice)
-        list.append((datetime.datetime.strptime(enddate, '%Y-%m-%d') - datetime.datetime.strptime(begindate, '%Y-%m-%d')).days + 1)
+        list.append((datetime.datetime.strptime(enddate, '%Y-%m-%d') - datetime.datetime.strptime(begindate, '%Y-%m-%d')).days)
         list.append(round(diff_precent, 3))
         period_data.append(list)
 
