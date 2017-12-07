@@ -77,13 +77,15 @@ def wavefrom(code, df, beginlow, direction='left', duration=0, pchange=0):
         rec = data[data.high == price] if ismax else data[data.low == price]
         idx = rec.index.get_values()[0]
         date = rec.at[idx, 'date']
+        close = rec.at[idx, 'close']
 
         if direction == 'left':
             beginprice = price
             begindate = date
             status = 'down' if ismax else 'up'
         if direction == 'right':
-            endprice = price
+            #if the latest one, get the close price, calculate the actual rises
+            endprice = close if date == lastdate else price
             enddate = date
             status = 'up' if ismax else 'down'
 
