@@ -83,14 +83,14 @@ def re_exe(inc = 3) :
             curt_data.append(cost_diff)
             curt_data.append(profit)
             curt_data.append(profit_perc)
-            curt_data.append(btm_diff)
+            curt_data.append('['+str(bottom)+']')
             curt_data.append(esc_diff)
             curt_data.append(btm_space)
             curt_data.append(esc_space)
             curt_data.append(price * share)
             data_list.append(curt_data)
 
-        df_append = pd.DataFrame(data_list, columns=['warn','change','cost_diff','profit_amt','profit_perc','btm_diff','esc_diff','btm_space','esc_space','total_amt'])
+        df_append = pd.DataFrame(data_list, columns=['warn','change','cost_diff','profit_amt','profit_perc','bottom','esc_diff','btm_space','esc_space','total_amt'])
         df = df.join(df_append)
 
         # df['change'] = df['change'].astype('float32')
@@ -108,7 +108,7 @@ def re_exe(inc = 3) :
         df['btm_space'] = df['btm_space'].apply(lambda x: str(round(x, 3)) + '%')
         df['esc_space'] = df['esc_space'].apply(lambda x: str(round(x, 3)) + '%')
 
-        print(df[['warn','code','name','price','change','bid','ask','low','high','btm_diff','btm_space','esc_diff','esc_space','cost_diff','profit_amt','profit_perc','total_amt']])
+        print(df[['warn','code','name','price','change','bid','ask','low','high','bottom','btm_space','esc_diff','esc_space','cost_diff','profit_amt','profit_perc','total_amt']])
 
         time.sleep(inc)
 
