@@ -71,8 +71,6 @@ def re_exe(inc = 3) :
             if profit > 0 :
               warn_sign = '$$$'
             elif btm_diff <= 0 :
-              warn_sign = '***'
-            elif esc_diff < 0 :
               warn_sign = '!!!'
 
             #datastr = warn_sign + ',' + str("%.3f"%change) + ',' + str("[%.3f%%]"%change) + ',' + str("[%.3f"%cost_diff) + ',' + str("%.3f"%profit) + ',' + str("%.3f"%profit_perc) + ',' + str("%.3f%%]"%profit_perc) + ',' + str("[%.3f"%bottom) + ',' + str("%.3f"%escape) + ',' + str("%.3f%%]"%btm_space) + ',' + str("%.3f%%"%esc_space)
