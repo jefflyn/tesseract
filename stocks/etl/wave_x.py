@@ -4,15 +4,15 @@ import pandas as pd
 import pymysql
 from sqlalchemy import create_engine
 
-from stocks.etl import utils
 from stocks.gene import limitup
 from stocks.gene import period
+from stocks.data import _datautils
 
-filePath = "../app/data/cf.txt"
-mystk = pd.read_csv(filePath, sep=' ')
+concepts = _datautils.concepts
+concepts = concepts[concepts['c_name'] == '次新股']
 
-mystk['code'] = mystk['code'].astype('str').str.zfill(6)
-codes = list(mystk['code'])
+concepts['code'] = concepts['code'].astype('str').str.zfill(6)
+codes = list(concepts['code'])
 mywavedata = period.get_wave(codes, start='2016-01-04')
 #save to db
 db_con = pymysql.connect(
@@ -25,4 +25,4 @@ db_con = pymysql.connect(
     cursorclass = pymysql.cursors.DictCursor
 )
 engine = create_engine("mysql+pymysql://linjingu:linjingu@localhost:3306/stocks?charset=utf8")
-mywavedata.to_sql(name = 'wave_data_cf',con = engine,if_exists = 'replace',index = False,index_label = False)
+mywavedata.to_sql(name = 'wave_data_x',con = engine,if_exists = 'replace',index = False,index_label = False)
