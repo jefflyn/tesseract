@@ -8,8 +8,8 @@ from stocks.gene import limitup
 from stocks.gene import period
 from stocks.data import _datautils
 
-concepts = _datautils.concepts
-concepts = concepts[concepts['c_name'] == '次新股']
+concepts = _datautils.get_concept_subnew()
+concepts = _datautils.filter_cyb(concepts)
 
 concepts['code'] = concepts['code'].astype('str').str.zfill(6)
 codes = list(concepts['code'])

@@ -25,7 +25,7 @@ if file not in keys:
 filePath = include_files[file]
 hddf = pd.read_csv(filePath, sep=' ')
 if file != 'idx' :
-  hddf['code'] = hddf['code'].astype('str').str.zfill(6)
+    hddf['code'] = hddf['code'].astype('str').str.zfill(6)
 codes = list(hddf['code'])
 
 INDEX_LIST_NEW = dict(zip(list(x[2:] for x in ct.INDEX_LIST.values()), ct.INDEX_LIST.keys()))

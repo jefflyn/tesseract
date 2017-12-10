@@ -8,7 +8,7 @@ from stocks.data import _datautils
 from stocks.gene import limitup
 from stocks.gene import period
 
-basics = _datautils.basic_filter(_datautils.basics, before=20170901)
+basics = _datautils.filter_basic(_datautils.get_basics(), before=20170901)
 
 codes = basics['code'].values
 
