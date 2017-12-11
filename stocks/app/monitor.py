@@ -9,5 +9,6 @@ pd.set_option('display.width', 600)
 pd.set_option('precision', 3)
 
 df = _datautils.get_subnew()
-# codes = list(df['code'])
-# falco.monitor(codes)
+df = _datautils.filter_cyb(df)
+codes = list(df['code'])
+falco.monitor(codes)

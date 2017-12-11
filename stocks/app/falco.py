@@ -28,8 +28,8 @@ def monitor(codes, inc=3):
             price_diff = price - pre_close
             change = price_diff / pre_close * 100
 
-            index = list(hddf['code']).index(code)
-            bottom = hddf.ix[index, 'bottom']
+            index = list(_datautils.get_buttom()['code']).index(code)
+            bottom = _datautils.get_buttom().ix[index, 'bottom']
             ##calculate the bottom, the smaller the possibility of bounce is bigger.
             ##if negative, that means the bottom is broken, pay much attention if get out or wait for the escape line
             btm_diff = price - bottom
@@ -42,7 +42,7 @@ def monitor(codes, inc=3):
             curt_data = []
             curt_data.append(warn_sign)
             curt_data.append(change)
-            curt_data.append(bottom)
+            curt_data.append("[" + str(bottom) + "]")
             curt_data.append(btm_space)
             curt_data.append(industry)
             curt_data.append(area)

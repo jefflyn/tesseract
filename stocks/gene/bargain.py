@@ -13,8 +13,8 @@ def get_bottom(df = None, change = 20):
     groupdf = df.groupby("code")
     dfresult = []
     for name, group in groupdf:
-        print(name)
-        print(group)
+        # print(name)
+        # print(group)
         size = group.iloc[:,0].size
         startfromlast = 1
         lastestrec = group.tail(startfromlast)
@@ -43,7 +43,4 @@ def get_bottom(df = None, change = 20):
     endtime = datetime.datetime.now()
     print("total time: %ds" % (endtime - starttime).seconds)
     return result
-import stocks.data._datautils as dt
-df = dt.get_wavepa()
-print(df)
-print(get_bottom(df))
+

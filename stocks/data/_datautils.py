@@ -30,6 +30,11 @@ def get_wavepa():
     data['code'] = data['code'].astype('str').str.zfill(6)
     return data
 
+def get_buttom():
+    data = pd.read_csv("../data/bottom.csv", encoding="gbk")
+    data['code'] = data['code'].astype('str').str.zfill(6)
+    return data
+
 #save to db
 def to_db(data, tbname=None):
     db_con = pymysql.connect(
