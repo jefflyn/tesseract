@@ -4,30 +4,31 @@ import pandas as pd
 import pymysql
 from sqlalchemy import create_engine
 
-def get_concept_subnew():
-    concept_subnew = pd.read_csv("../data/concepts/subnew.csv", encoding='gbk')
-    concept_subnew['code'] = concept_subnew['code'].astype('str').str.zfill(6)
-    return concept_subnew
 
-get_concept_subnew()
-
-def get_concepts():
-    concepts = pd.read_csv("../data/concepts.csv", encoding='gbk')
-    concepts['code'] = concepts['code'].astype('str').str.zfill(6)
-    return concepts
+def get_data(filepath=None, encoding='gbk'):
+    data = pd.read_csv(filepath, encoding=encoding)
+    data['code'] = data['code'].astype('str').str.zfill(6)
+    return data
 
 def get_basics():
-    basics = pd.read_csv("../data/basics.csv", encoding='gbk')
-    basics['code'] = basics['code'].astype('str').str.zfill(6)
-    return basics
+    data = pd.read_csv("../data/basics.csv", encoding="gbk")
+    data['code'] = data['code'].astype('str').str.zfill(6)
+    return data
 
-def filter_cyb(datadf):
-    datadf = datadf[datadf['code'].str.get(0) != '3']
-    return datadf
+def get_subnew():
+    data = pd.read_csv("../data/concepts/subnew.csv", encoding="gbk")
+    data['code'] = data['code'].astype('str').str.zfill(6)
+    return data
 
-def filter_cyb(datadf):
-    datadf = datadf[datadf['code'].str.get(0) != '3']
-    return datadf
+def get_wavex():
+    data = pd.read_csv("../data/wavex.csv", encoding="gbk")
+    data['code'] = data['code'].astype('str').str.zfill(6)
+    return data
+
+def get_wavepa():
+    data = pd.read_csv("../data/wavepa.csv", encoding="gbk")
+    data['code'] = data['code'].astype('str').str.zfill(6)
+    return data
 
 #save to db
 def to_db(data, tbname=None):

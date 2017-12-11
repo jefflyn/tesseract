@@ -41,6 +41,7 @@ def re_exe(inc = 3) :
 
             pre_close = float(row['pre_close'])
             price = float(row['price'])
+            low = float(row['low'])
 
             price_diff = price - pre_close
             change = price_diff / pre_close * 100
@@ -69,9 +70,9 @@ def re_exe(inc = 3) :
 
             warn_sign = ''
             if profit > 0 :
-              warn_sign = '$$$'
-            elif btm_diff <= 0 :
-              warn_sign = '!!!'
+                warn_sign = '$$$'
+            elif btm_diff <= 0 or low < bottom :
+                warn_sign = '!!!'
 
             #datastr = warn_sign + ',' + str("%.3f"%change) + ',' + str("[%.3f%%]"%change) + ',' + str("[%.3f"%cost_diff) + ',' + str("%.3f"%profit) + ',' + str("%.3f"%profit_perc) + ',' + str("%.3f%%]"%profit_perc) + ',' + str("[%.3f"%bottom) + ',' + str("%.3f"%escape) + ',' + str("%.3f%%]"%btm_space) + ',' + str("%.3f%%"%esc_space)
             #data_list.append([astr for astr in datastr.split(',')])
@@ -80,7 +81,7 @@ def re_exe(inc = 3) :
             curt_data = []
             curt_data.append(warn_sign)
             curt_data.append(change)
-            curt_data.append(cost_diff)
+            curt_data.append(cost)
             curt_data.append(profit)
             curt_data.append(profit_perc)
             curt_data.append('['+str(bottom)+']')
@@ -90,9 +91,10 @@ def re_exe(inc = 3) :
             curt_data.append(price * share)
             data_list.append(curt_data)
 
-        df_append = pd.DataFrame(data_list, columns=['warn','change','cost_diff','profit_amt','profit_perc','bottom','esc_diff','btm_space','esc_space','total_amt'])
+        df_append = pd.DataFrame(data_list, columns=['warn','change','cost','profit_amt','profit_perc','bottom','esc_diff','btm_space','esc_space','total_amt'])
         df = df.join(df_append)
 
+        df = df[df.price > '1']
         # df['change'] = df['change'].astype('float32')
         # df['profit_perc'] = df['profit_perc'].astype('float32')
         if len(argv) > 2 and argv[2] == 'p':
@@ -108,7 +110,7 @@ def re_exe(inc = 3) :
         df['btm_space'] = df['btm_space'].apply(lambda x: str(round(x, 3)) + '%')
         df['esc_space'] = df['esc_space'].apply(lambda x: str(round(x, 3)) + '%')
 
-        print(df[['warn','code','name','price','change','bid','ask','low','high','bottom','btm_space','esc_diff','esc_space','cost_diff','profit_amt','profit_perc','total_amt']])
+        print(df[['warn','code','name','price','change','bid','ask','low','high','bottom','btm_space','cost','profit_amt','profit_perc','total_amt']])
 
         time.sleep(inc)
 

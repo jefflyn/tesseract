@@ -7,12 +7,15 @@ from sqlalchemy import create_engine
 from stocks.gene import limitup
 from stocks.gene import period
 
-filePath = "../app/data/trace.txt"
+filePath = "../app/data/pa.txt"
 mystk = pd.read_csv(filePath, sep=' ')
 
 mystk['code'] = mystk['code'].astype('str').str.zfill(6)
 codes = list(mystk['code'])
 mywavedata = period.get_wave(codes, start='2016-01-04')
+
+mywavedata.to_csv("../data/wavepa.csv")
+
 #save to db
 db_con = pymysql.connect(
     user = 'linjingu',
@@ -24,4 +27,4 @@ db_con = pymysql.connect(
     cursorclass = pymysql.cursors.DictCursor
 )
 engine = create_engine("mysql+pymysql://linjingu:linjingu@localhost:3306/stocks?charset=utf8")
-mywavedata.to_sql(name = 'wave_data_trace',con = engine,if_exists = 'replace',index = False,index_label = False)
+mywavedata.to_sql(name = 'wave_data_pa',con = engine,if_exists = 'replace',index = False,index_label = False)
