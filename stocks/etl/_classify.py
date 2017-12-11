@@ -9,4 +9,4 @@ from stocks.data import _datautils
 concepts = ts.get_concept_classified()
 concepts.to_csv("../data/concepts.csv")
 
-_datautils.to_db(concepts,tbname='basics')
+_datautils.to_db(concepts,tbname='concepts')

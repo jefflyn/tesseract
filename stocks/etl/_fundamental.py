@@ -32,6 +32,6 @@ from stocks.data import _datautils
 basics = ts.get_stock_basics()
 basics['code'] = basics.index
 # basics['code'] = basics['code'].astype('str').str.zfill(6)
-basics.to_csv("../data/basics.csv")
+basics.to_csv('../data/basics.csv', encoding='utf-8')
 
 _datautils.to_db(basics,tbname='basics')

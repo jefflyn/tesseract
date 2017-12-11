@@ -14,7 +14,7 @@ mystk['code'] = mystk['code'].astype('str').str.zfill(6)
 codes = list(mystk['code'])
 mywavedata = period.get_wave(codes, start='2016-01-04')
 
-mywavedata.to_csv("../data/wavepa.csv")
+mywavedata.to_csv("../data/wavepa.csv",encoding='utf-8')
 
 #save to db
 db_con = pymysql.connect(

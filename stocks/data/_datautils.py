@@ -11,7 +11,7 @@ def get_data(filepath=None, encoding='gbk'):
     return data
 
 def get_basics():
-    data = pd.read_csv("../data/basics.csv", encoding="gbk")
+    data = pd.read_csv("../data/basics.csv", encoding="utf-8")
     data['code'] = data['code'].astype('str').str.zfill(6)
     return data
 
@@ -21,17 +21,22 @@ def get_subnew():
     return data
 
 def get_wavex():
-    data = pd.read_csv("../data/wavex.csv", encoding="gbk")
+    data = pd.read_csv("../data/wavex.csv", encoding="utf-8")
     data['code'] = data['code'].astype('str').str.zfill(6)
     return data
 
 def get_wavepa():
-    data = pd.read_csv("../data/wavepa.csv", encoding="gbk")
+    data = pd.read_csv("../data/wavepa.csv", encoding="utf-8")
     data['code'] = data['code'].astype('str').str.zfill(6)
     return data
 
-def get_buttom():
-    data = pd.read_csv("../data/bottom.csv", encoding="gbk")
+def get_bottom():
+    data = pd.read_csv("../data/bottom.csv", encoding="utf-8")
+    data['code'] = data['code'].astype('str').str.zfill(6)
+    return data
+
+def get_limitup():
+    data = pd.read_csv("../data/limitup.csv", encoding="utf-8")
     data['code'] = data['code'].astype('str').str.zfill(6)
     return data
 

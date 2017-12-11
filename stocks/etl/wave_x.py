@@ -8,15 +8,17 @@ from stocks.gene import limitup
 from stocks.gene import period
 from stocks.data import _datautils
 
-concepts = _datautils.get_subnew()
-concepts = _datautils.filter_cyb(concepts)
+# x = _datautils.get_subnew()
+# x = _datautils.filter_cyb(x)
+
+x = _datautils.get_limitup()
+x = x[['code']].drop_duplicates()
 
 # processing...
-concepts['code'] = concepts['code'].astype('str').str.zfill(6)
-codes = list(concepts['code'])
+codes = list(x['code'])
 xdata = period.get_wave(codes, start='2016-01-04')
 
-xdata.to_csv("../data/wavex.csv")
+xdata.to_csv("../data/wavex.csv",encoding='utf-8')
 
 #save to db
 db_con = pymysql.connect(

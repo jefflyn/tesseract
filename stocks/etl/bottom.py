@@ -12,7 +12,7 @@ from stocks.data import _datautils
 # processing...
 df = bargain.get_bottom(_datautils.get_wavex())
 
-df.to_csv("../data/bottom.csv")
+df.to_csv("../data/bottom.csv",encoding='utf-8')
 
 #save to db
 db_con = pymysql.connect(
