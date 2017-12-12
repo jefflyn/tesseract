@@ -8,7 +8,7 @@ import tushare as ts
 
 # all 1 year takes about 330s
 def get_limit_up(codes = None, start = None, end = None, up = True):
-    print("get limitup... ")
+    print("get limitups... ")
     starttime = datetime.datetime.now()
     code_list = []
     if isinstance(codes, str):
@@ -42,5 +42,6 @@ def count(df=None):
     return dfgroup
 
 #from stocks.data import _datautils
-# df = get_limit_up('000519',start='2017-06-01')
-#print(count(_datautils.get_limitup()))
+# print(count(_datautils.get_limitup()))
+# df = get_limit_up('002620',start='2017-01-01')
+# print(df)
