@@ -8,6 +8,8 @@ import tushare as ts
 
 pd.set_option('display.width', 600)
 
+todaystr = datetime.datetime.now().strftime('%Y-%m-%d')
+
 def get_wave(codes=None, start='2016-01-04', end=None, beginlow=True, duration=0, pchange=0):
     starttime = datetime.datetime.now()
     print("get wave start at [%s]" % starttime)
@@ -19,7 +21,15 @@ def get_wave(codes=None, start='2016-01-04', end=None, beginlow=True, duration=0
     perioddf_list = []
     for code in code_list:
         print("   >>> processing %s ..." % code)
-        hist_data = ts.get_k_data(code, start) #one day delay issue
+        hist_data = ts.get_k_data(code, start) #one day delay issue, use realtime interface solved
+        lateestdate = hist_data.tail(1).at[hist_data.tail(1).index.get_values()[0], 'date']
+        if todaystr != lateestdate:
+            # get today data from [get_realtime_quotes(code)]
+            realtime = ts.get_realtime_quotes(code)
+            # ridx = realtime.index.get_values()[0]
+            newone = {'date':todaystr,'open':float(realtime.at[0,'open']),'close':float(realtime.at[0,'price']),'high':float(realtime.at[0,'high']), 'low':float(realtime.at[0,'low']),'volume':int(float(realtime.at[0,'volume'])/100),'code':code}
+            newdf = pd.DataFrame(newone, index=[0])
+            hist_data = hist_data.append(newdf, ignore_index=True)
         # hist_data = ts.get_h_data(code, start)  # network issue
         if hist_data is None or len(hist_data) == 0:
             continue
@@ -44,7 +54,7 @@ def get_wave(codes=None, start='2016-01-04', end=None, beginlow=True, duration=0
 def wavefrom(code, df, beginlow, direction='left', duration=0, pchange=0):
     period_data = []
     # for get_k_data use
-    firstdate = df.head(1).at[df.head(1).index.get_values()[0],'date']
+    firstdate = df.head(1).at[df.head(1).index.get_values()[0], 'date']
     lastdate = df.tail(1).at[df.tail(1).index.get_values()[0], 'date']
     # firstdate = datetime.datetime.utcfromtimestamp((df.tail(1).index.get_values()[0]).astype('O') / 1e9).strftime("%Y-%m-%d")
     # lastdate = datetime.datetime.utcfromtimestamp((df.head(1).index.get_values()[0]).astype('O') / 1e9).strftime("%Y-%m-%d")
