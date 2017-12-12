@@ -5,6 +5,8 @@ import pandas as pd
 import tushare as ts
 
 from stocks.data import _datautils
+from stocks.gene import period
+from stocks.gene import bargain
 
 def monitor(codes, inc=3):
     basics = _datautils.get_basics()
@@ -28,8 +30,15 @@ def monitor(codes, inc=3):
             price_diff = price - pre_close
             change = price_diff / pre_close * 100
 
-            index = list(_datautils.get_buttom()['code']).index(code)
-            bottom = _datautils.get_buttom().ix[index, 'bottom']
+            codelist = list(_datautils.get_bottom()['code'])
+            bottom = 0
+            if code in codelist:
+                index = codelist.index(code)
+                bottom = _datautils.get_bottom().ix[index, 'bottom']
+            else:
+                wavedf = period.get_wave(code)
+                bottomdf = bargain.get_bottom(wavedf)
+                bottom = bottomdf.at[bottomdf.index.get_values()[0],'bottom']
             ##calculate the bottom, the smaller the possibility of bounce is bigger.
             ##if negative, that means the bottom is broken, pay much attention if get out or wait for the escape line
             btm_diff = price - bottom

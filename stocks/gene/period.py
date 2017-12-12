@@ -8,7 +8,7 @@ import tushare as ts
 
 pd.set_option('display.width', 600)
 
-def get_wave(codes=None, start=None, end=None, beginlow=True, duration=0, pchange=0):
+def get_wave(codes=None, start='2016-01-04', end=None, beginlow=True, duration=0, pchange=0):
     starttime = datetime.datetime.now()
     print("get wave start at [%s]" % starttime)
     code_list = []

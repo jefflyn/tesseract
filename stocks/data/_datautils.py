@@ -5,8 +5,8 @@ import pymysql
 from sqlalchemy import create_engine
 
 
-def get_data(filepath=None, encoding='gbk'):
-    data = pd.read_csv(filepath, encoding=encoding)
+def get_data(filepath=None, encoding='gbk', sep=','):
+    data = pd.read_csv(filepath, sep=sep, encoding=encoding)
     data['code'] = data['code'].astype('str').str.zfill(6)
     return data
 
