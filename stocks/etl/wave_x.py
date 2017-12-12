@@ -14,6 +14,8 @@ from stocks.data import _datautils
 x = _datautils.get_limitup()
 x = x[['code']].drop_duplicates()
 
+x = _datautils.get_data('../data/concepts/hainan.csv')
+
 # processing...
 codes = list(x['code'])
 xdata = period.get_wave(codes, start='2016-01-04')
@@ -31,4 +33,4 @@ db_con = pymysql.connect(
     cursorclass = pymysql.cursors.DictCursor
 )
 engine = create_engine("mysql+pymysql://linjingu:linjingu@localhost:3306/stocks?charset=utf8")
-xdata.to_sql(name = 'wave_data_x',con = engine,if_exists = 'replace',index = False,index_label = False)
+xdata.to_sql(name='wave_data_x', con=engine, if_exists='replace', index=False, index_label=False)
