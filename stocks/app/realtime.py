@@ -81,7 +81,7 @@ def re_exe(inc = 3) :
             curt_data = []
             curt_data.append(warn_sign)
             curt_data.append(change)
-            curt_data.append(cost)
+            curt_data.append('{' + str(cost) + '}')
             curt_data.append(profit)
             curt_data.append(profit_perc)
             curt_data.append('['+str(bottom)+']')
@@ -110,7 +110,7 @@ def re_exe(inc = 3) :
         df['btm_space'] = df['btm_space'].apply(lambda x: str(round(x, 3)) + '%')
         df['esc_space'] = df['esc_space'].apply(lambda x: str(round(x, 3)) + '%')
 
-        print(df[['warn','code','name','price','change','bid','ask','low','high','bottom','btm_space','cost','profit_amt','profit_perc','total_amt']])
+        print(df[['warn','code','name','price','change','bid','ask','high','low','bottom','btm_space','cost','profit_amt','profit_perc','total_amt']])
 
         time.sleep(inc)
 

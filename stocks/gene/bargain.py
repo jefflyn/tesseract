@@ -15,12 +15,12 @@ def get_bottom(df = None, change = 20):
     for name, group in groupdf:
         # print(name)
         # print(group)
-        size = group.iloc[:,0].size
+        size = group.iloc[:, 0].size
         startfromlast = 1
         lastestrec = group.tail(startfromlast)
         idx = lastestrec.index.get_values()[0]
-        status = lastestrec.at[idx,'status']
-        bottom = lastestrec.at[idx,'begin_price'] if status == 'up' else lastestrec.at[idx,'end_price']
+        status = lastestrec.at[idx, 'status']
+        bottom = lastestrec.at[idx, 'begin_price'] if status == 'up' else lastestrec.at[idx, 'end_price']
 
         reclist = []
         while startfromlast < size:
@@ -29,9 +29,9 @@ def get_bottom(df = None, change = 20):
             lastidx = lastrec.index.get_values()[0]
             laststatus = lastrec.at[lastidx, 'status']
             lastp = lastrec.at[lastidx, 'p_change']
-            if abs(lastp) < change :
+            if abs(lastp) < change:
                 continue
-            else :
+            else:
                 bottom = lastrec.at[lastidx, 'begin_price'] if laststatus == 'up' else lastrec.at[lastidx, 'end_price']
                 break
         reclist.append(name)
