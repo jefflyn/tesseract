@@ -6,7 +6,7 @@ import pandas as pd
 
 import tushare as ts
 
-def get_bottom(df = None, change = 20):
+def get_bottom(df = None, limit = 20):
     starttime = datetime.datetime.now()
     if df is None:
         return df
@@ -29,7 +29,7 @@ def get_bottom(df = None, change = 20):
             lastidx = lastrec.index.get_values()[0]
             laststatus = lastrec.at[lastidx, 'status']
             lastp = lastrec.at[lastidx, 'p_change']
-            if abs(lastp) < change:
+            if abs(lastp) < limit:
                 continue
             else:
                 bottom = lastrec.at[lastidx, 'begin_price'] if laststatus == 'up' else lastrec.at[lastidx, 'end_price']

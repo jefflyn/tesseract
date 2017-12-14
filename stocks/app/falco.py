@@ -8,7 +8,7 @@ from stocks.data import _datautils
 from stocks.gene import period
 from stocks.gene import bargain
 
-def monitor(codes, inc=3):
+def monitor(codes, inc=3, limit=10):
     basics = _datautils.get_basics()
 
     while True:
@@ -37,7 +37,7 @@ def monitor(codes, inc=3):
                 bottom = _datautils.get_bottom().ix[index, 'bottom']
             else:
                 wavedf = period.get_wave(code)
-                bottomdf = bargain.get_bottom(wavedf)
+                bottomdf = bargain.get_bottom(wavedf, limit=limit)
                 bottom = bottomdf.at[bottomdf.index.get_values()[0],'bottom']
             ##calculate the bottom, the smaller the possibility of bounce is bigger.
             ##if negative, that means the bottom is broken, pay much attention if get out or wait for the escape line
@@ -51,7 +51,7 @@ def monitor(codes, inc=3):
             curt_data = []
             curt_data.append(warn_sign)
             curt_data.append(change)
-            curt_data.append("[" + str(bottom) + "]")
+            curt_data.append("[" + str(bottom) + " ->")
             curt_data.append(btm_space)
             curt_data.append(industry)
             curt_data.append(area)
@@ -62,7 +62,7 @@ def monitor(codes, inc=3):
         df = df.join(df_append)
         df = df.sort_values('btm_space', axis=0, ascending=False, inplace=False, kind='quicksort', na_position='last')
         df['change'] = df['change'].apply(lambda n: str(round(n, 3)) + '%')
-        df['btm_space'] = df['btm_space'].apply(lambda n : str(round(n, 3)) + '%')
+        df['btm_space'] = df['btm_space'].apply(lambda n : str(round(n, 3)) + '%]')
         print(df[['warn','code','name','change','price','low','bottom','btm_space','industry','area','pe']])
 
         time.sleep(inc)

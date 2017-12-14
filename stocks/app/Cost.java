@@ -33,7 +33,7 @@ public class Cost {
 			}
 			System.out.println("Final cost: " + newCost);
 			System.out.println("Total amount: " + totalAmt);
-			System.out.println("Total tax: " + (totalAmt * 0.0001));
+			System.out.println("Total tax: " + (totalAmt * 0.001));
 			String fs = String.format("%.2f", (newCost -  price) / price * 100);
 			System.out.println("Loss percent: " +  fs + "%");
 			}catch(Exception e){

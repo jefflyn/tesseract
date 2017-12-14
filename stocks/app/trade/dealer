@@ -1,0 +1,105 @@
+import sqlite3
+from datetime import datetime
+from pandas import DataFrame
+from stocks.app import _utils
+
+defaultcommision = 5.0
+commisionrate = 0.00025
+transferrate = 0.00002
+taxrate = 0.001
+
+columns = "tradedate, tradetime, tradetype, code, price, share, commision, transferfee, tax, cost"
+selectclause = "SELECT " + columns + " FROM trade "
+
+def create_trade():
+    conn = _utils.get_connection()
+    c = _utils.get_cursor()
+    # tradedate, tradetime, tradetype, code, price, share, commision, transferfee, tax, cost
+    c.execute('''CREATE TABLE IF NOT EXISTS trade
+       (tradedate CHAR(10)   NOT NULL,
+        tradetime CHAR(8)   NOT NULL,
+        tradetype CHAR(1)  NOT NULL,
+        code CHAR(6)   NOT NULL,
+        price DOUBLE  NOT NULL,
+        share INT     NOT NULL,
+        commision DOUBLE,
+        transferfee DOUBLE,
+        tax DOUBLE,
+        cost DOUBLE);''')
+    conn.commit()
+    print('Table trade created successfully')
+
+def validate(tradetype, code, price, share):
+    if tradetype not in 'bs':
+        print('trade type must be \'b\' or \'s\'')
+        return False
+    if len(str(code)) < 6 or str(code).isdecimal() == False or str(code)[0] not in '036':
+        print('invalid code')
+        return False
+    if _utils.isnumber(price) == False or price < 1:
+        print('price must be numeric and bigger than 1')
+        return False
+    if str(share).isdecimal() == False or share < 100:
+        print('share must be numeric and bigger than 100')
+        return False
+
+
+def add(tradetype, code, price, share):
+    if validate(tradetype=tradetype, code=code, price=price, share=share) == False:
+        return False
+
+    conn = _utils.get_connection()
+    c = _utils.get_cursor()
+
+    now = datetime.now()
+    tradedate = datetime.strftime(now, '%Y-%m-%d')
+    tradetime = datetime.strftime(now, '%H:%M:%S')
+    commision = 0.0
+    transferfee = 0.0
+    cost = 0.0
+    tax = 0.0
+
+    dealamt = price * share
+    if tradetype == 'b':
+        commision = round(dealamt * commisionrate, 3)
+        if commision < defaultcommision:
+            commision = defaultcommision;
+        # SH & SZ same
+        transferfee = round(dealamt * transferrate, 3)
+        totalamt = dealamt + commision + transferfee
+        cost = round(totalamt / share, 3)
+    else:
+        tax = round(dealamt * taxrate, 3)
+
+    c.execute("INSERT INTO trade VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", (tradedate, tradetime, tradetype, code, price, share, commision, transferfee, tax, cost))
+    conn.commit()
+    print('Add record to trade successfully')
+
+def queryall():
+    conn = _utils.get_connection()
+    cursor = conn.execute(selectclause)
+    rows = cursor.fetchall()
+
+    dfcolumns = columns.split(",")
+    dfcolumns = [s.strip() for s in dfcolumns]
+    dfvalues = []
+    if len(rows) > 0:
+        for i in range(len(rows)):
+            rec = rows[i]
+            print(rec)
+            dfvalues.append(rec)
+    resultdf = DataFrame(data=dfvalues, columns=dfcolumns)
+    return resultdf
+
+def querybycond(code=None, tradedate=None, tradeyear=None, trademonth=None, tradetype=None):
+    return
+
+if __name__ == '__main__':
+    create_trade()
+    add('b','600126',10.33,6000)
+    add('s', '600126', 12.3, 3000)
+    df = queryall()
+    print(df)
+    # querybycond(code='600126')
+    # querybycond(tradetype='s')
+    # querybycond(code='600126', tradetype='b')
