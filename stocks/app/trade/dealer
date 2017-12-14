@@ -95,9 +95,9 @@ def querybycond(code=None, tradedate=None, tradeyear=None, trademonth=None, trad
     return
 
 if __name__ == '__main__':
-    create_trade()
-    add('b','600126',10.33,6000)
-    add('s', '600126', 12.3, 3000)
+    # create_trade()
+    add('b','600958',15.08,700)
+    # add('s', '600126', 12.3, 3000)
     df = queryall()
     print(df)
     # querybycond(code='600126')
