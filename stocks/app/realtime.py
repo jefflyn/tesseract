@@ -15,7 +15,7 @@ include_files = {
         'pa': './data/pa.txt',
         'cf': './data/cf.txt',
         'idx': './data/idx.txt',
-        'other': './data/other.txt'
+        'ot': './data/other.txt'
         }
 keys = list(include_files.keys())
 if file not in keys:
@@ -84,7 +84,7 @@ def re_exe(inc = 3) :
             curt_data.append('{' + str(cost) + '}')
             curt_data.append(profit)
             curt_data.append(profit_perc)
-            curt_data.append('[' + str(bottom))
+            curt_data.append('[' + str(bottom) + ' -> ')
             curt_data.append(esc_diff)
             curt_data.append(btm_space)
             curt_data.append(esc_space)
