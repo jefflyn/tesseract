@@ -55,6 +55,6 @@ print("(%.3f*%d+%.3f*%d+%.3f+%.3f) / (%d+%d)" % (origincost, ownshare, buyprice,
 print("need: %.3f" % dealamt)
 print("new cost: %.3f" % cost)
 print("balance price: %.3f" % balanceprice)
-print("loss: %.2f%%" % ((cost - buyprice) / buyprice * 100))
+print("loss: %.2f%%" % ((balanceprice - buyprice) / buyprice * 100))
 print("total amount: %.3f " % totalamt)
 print("total tax: %.3f" % tax)
