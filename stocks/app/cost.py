@@ -1,10 +1,9 @@
 import sys
 from sys import argv
-import pandas as pd
+
 from stocks.app.trade import dealer
 from stocks.app import _utils
 
-pd.set_option('display.width',800)
 
 def isvalidprice(price):
     if _utils.isnumber(price) == False or float(price) < 0:
@@ -47,7 +46,3 @@ print("new cost: %.3f" % cost)
 print("loss: %.2f%%" % ((cost - buyprice) / buyprice * 100))
 print("total amount: %.3f " % totalamt)
 print("total tax: %.3f" % tax)
-
-
-
-
