@@ -29,6 +29,7 @@ if (isvalidprice(origincost) or isvalidprice(buyprice)) == False:
 if (isvalidshare(ownshare) or isvalidshare(buyshare)) == False:
     sys.exit(-1)
 
+# buy fee
 dealamt = buyprice * buyshare
 commision = dealamt * dealer.commisionrate
 if commision < dealer.defaultcommision:
@@ -41,8 +42,19 @@ totalamt = origincost * ownshare + buyprice * buyshare + commision + transferfee
 cost = totalamt / (ownshare + buyshare)
 tax = totalamt * dealer.taxrate
 
+# sell fee
+scommision = totalamt * dealer.commisionrate
+if scommision < dealer.defaultcommision:
+    scommision = dealer.defaultcommision;
+# SH & SZ same
+stransferfee = totalamt * dealer.transferrate
+safeamt = totalamt + scommision + stransferfee + tax
+balanceprice = safeamt / (ownshare + buyshare)
+
 print("(%.3f*%d+%.3f*%d+%.3f+%.3f) / (%d+%d)" % (origincost, ownshare, buyprice, buyshare, commision, transferfee, ownshare, buyshare))
+print("need: %.3f" % dealamt)
 print("new cost: %.3f" % cost)
+print("balance price: %.3f" % balanceprice)
 print("loss: %.2f%%" % ((cost - buyprice) / buyprice * 100))
 print("total amount: %.3f " % totalamt)
 print("total tax: %.3f" % tax)
