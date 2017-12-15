@@ -2,6 +2,7 @@ import tushare as ts
 import pandas as pd
 import time
 import datetime
+from matplotlib import pyplot
 
 pd.set_option('display.width',600)
 

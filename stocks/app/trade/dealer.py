@@ -60,15 +60,15 @@ def add(tradetype, code, price, share):
     tax = 0.0
 
     dealamt = price * share
+    commision = round(dealamt * commisionrate, 3)
+    if commision < defaultcommision:
+        commision = defaultcommision;
+    # SH & SZ same
+    transferfee = round(dealamt * transferrate, 3)
+    totalamt = dealamt + commision + transferfee
     if tradetype == 'b':
-        commision = round(dealamt * commisionrate, 3)
-        if commision < defaultcommision:
-            commision = defaultcommision;
-        # SH & SZ same
-        transferfee = round(dealamt * transferrate, 3)
-        totalamt = dealamt + commision + transferfee
         cost = round(totalamt / share, 3)
-    else:
+    if tradetype == 's':
         tax = round(dealamt * taxrate, 3)
 
     c.execute("INSERT INTO trade VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", (tradedate, tradetime, tradetype, code, price, share, commision, transferfee, tax, cost))
@@ -93,11 +93,21 @@ def queryall():
 
 def querybycond(code=None, tradedate=None, tradeyear=None, trademonth=None, tradetype=None):
     return
+    
+def update():
+    conn = _utils.get_connection()
+    c = _utils.get_cursor()
+    c.execute("update trade set tradedate='2017-12-14',tradetime='14:48:13' where code='600958' and tradedate='2017-12-15' and tradetime='11:46:13' and tradetype='b'")
+    c.execute("update trade set tradetime='10:18:06' where code='600958' and tradedate='2017-12-15' and tradetype='s'")
+    c.execute("update trade set tradetime='10:23:32' where code='000018' and tradedate='2017-12-15' and tradetype='b'")
+    conn.commit()
+    return
 
 if __name__ == '__main__':
     # create_trade()
-    add('b','600958',15.08,700)
-    # add('s', '600126', 12.3, 3000)
+    add('s','002158',12.04,800)
+    #add('b','601890',6.59,1400)
+    #add('s','600958',14.94, 700)
     df = queryall()
     print(df)
     # querybycond(code='600126')
