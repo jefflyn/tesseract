@@ -9,12 +9,12 @@ from stocks.gene import period
 from stocks.data import _datautils
 
 # x = _datautils.get_subnew()
-# x = _datautils.filter_cyb(x)
 
 x = _datautils.get_limitup()
 x = x[['code']].drop_duplicates()
 
-x = _datautils.get_data('../data/concepts/hainan.csv')
+x = _datautils.get_data('../data/concepts/bigdata.csv')
+x = _datautils.filter_cyb(x)
 
 # processing...
 codes = list(x['code'])

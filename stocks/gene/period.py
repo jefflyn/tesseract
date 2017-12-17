@@ -27,9 +27,11 @@ def get_wave(codes=None, start='2016-01-04', end=None, beginlow=True, duration=0
             # get today data from [get_realtime_quotes(code)]
             realtime = ts.get_realtime_quotes(code)
             # ridx = realtime.index.get_values()[0]
-            newone = {'date':todaystr,'open':float(realtime.at[0,'open']),'close':float(realtime.at[0,'price']),'high':float(realtime.at[0,'high']), 'low':float(realtime.at[0,'low']),'volume':int(float(realtime.at[0,'volume'])/100),'code':code}
-            newdf = pd.DataFrame(newone, index=[0])
-            hist_data = hist_data.append(newdf, ignore_index=True)
+            todayclose = float(realtime.at[0,'price'])
+            if todayclose > 0:
+                newone = {'date':todaystr,'open':float(realtime.at[0,'open']),'close':todayclose,'high':float(realtime.at[0,'high']), 'low':float(realtime.at[0,'low']),'volume':int(float(realtime.at[0,'volume'])/100),'code':code}
+                newdf = pd.DataFrame(newone, index=[0])
+                hist_data = hist_data.append(newdf, ignore_index=True)
         # hist_data = ts.get_h_data(code, start)  # network issue
         if hist_data is None or len(hist_data) == 0:
             continue
@@ -60,7 +62,7 @@ def wavefrom(code, df, beginlow, direction='left', duration=0, pchange=0):
     # lastdate = datetime.datetime.utcfromtimestamp((df.head(1).index.get_values()[0]).astype('O') / 1e9).strftime("%Y-%m-%d")
 
     # start from the lowest price, find the wave from both sides
-    pivot_low = df.min()['low']
+    pivot_low = df.min()['close'] if df.min()['low'] == 0 else df.min()['low']
     pivot_rec = df[df.low == pivot_low]
     # print(pivot_rec)
     pivot_index = pivot_rec.index.get_values()[0]
@@ -127,5 +129,6 @@ def wavefrom(code, df, beginlow, direction='left', duration=0, pchange=0):
         ismax = not ismax
     return period_data
 
-#result = get_wave(['600570'], start='2017-01-01', duration=0, pchange=0.0)
-#print(result)
+if __name__ == '__main__':
+    result = get_wave(['600797'], start='2017-01-01', duration=0, pchange=0.0)
+    #print(result)
