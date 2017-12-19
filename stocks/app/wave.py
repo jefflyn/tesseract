@@ -20,5 +20,5 @@ codes = argv[1]
 code_list = codes.split(',')
 print(code_list)
 
-result = period.get_wave(code_list, start='2016-01-04', duration=0, pchange=0.0)
+result = period.get_wave(code_list, start='2017-01-01', duration=0, pchange=0.0)
 print(result)
