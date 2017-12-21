@@ -14,6 +14,9 @@ todaystr = datetime.datetime.now().strftime('%Y-%m-%d')
 
 def get_k_data(code=None, start=None):
     hist_data = ts.get_k_data(code, start)  # one day delay issue, use realtime interface solved
+    if hist_data is None and len(hist_data) == 0:
+        print(code + ' hist data no found')
+        return None
     latestdate = hist_data.tail(1).at[hist_data.tail(1).index.get_values()[0], 'date']
     if todaystr != latestdate:
         # get today data from [get_realtime_quotes(code)]
@@ -22,8 +25,8 @@ def get_k_data(code=None, start=None):
         todaylow = float(realtime.at[0, 'low'])
         if todaylow > 0:
             newone = {'date': todaystr, 'open': float(realtime.at[0, 'open']), 'close': float(realtime.at[0, 'price']),
-                      'high': float(realtime.at[0, 'high']), 'low': todaylow,
-                      'volume': int(float(realtime.at[0, 'volume']) / 100), 'code': code}
+                          'high': float(realtime.at[0, 'high']), 'low': todaylow,
+                          'volume': int(float(realtime.at[0, 'volume']) / 100), 'code': code}
             newdf = pd.DataFrame(newone, index=[0])
             hist_data = hist_data.append(newdf, ignore_index=True)
     return hist_data

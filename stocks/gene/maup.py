@@ -29,9 +29,9 @@ def get_ma(codes=None, start='2016-01-04', end=None):
         latest_date_str = latest.at[idx, 'date']
         latest_date = datetime.datetime.strptime(latest_date_str, '%Y-%m-%d')
         delta = starttime - latest_date
-        # 可能停牌，排除
+        # excluding halting
         if (delta.days > 3):
-            print(code + "停牌")
+            print(code + ' halting...')
             continue
 
         ma5 = hist_data.tail(5).mean()['close']
@@ -43,6 +43,16 @@ def get_ma(codes=None, start='2016-01-04', end=None):
         ma120 = hist_data.tail(120).mean()['close']
         ma250 = hist_data.tail(250).mean()['close']
 
+        ma30ls = [ma5, ma10, ma20, ma30]
+        ma60ls = [ma5,ma10,ma20,ma30,ma60]
+        ma120ls = [ma5,ma10,ma20,ma30,ma60,ma90,ma120]
+        ma250ls = [ma5,ma10,ma20,ma30,ma60,ma90,ma120,ma250]
+
+        ma30std = np.std(np.array(ma30ls))
+        ma60std = np.std(np.array(ma60ls))
+        ma120std = np.std(np.array(ma120ls))
+        ma250std = np.std(np.array(ma250ls))
+
         row = dt.get_basics(code)
         idx = row.index.get_values()[0]
         malist = []
@@ -51,59 +61,41 @@ def get_ma(codes=None, start='2016-01-04', end=None):
         malist.append(row.at[idx, 'industry'])
         malist.append(row.at[idx, 'area'])
         malist.append(row.at[idx, 'pe'])
-        malist.append(ma5)
-        malist.append(ma10)
-        malist.append(ma20)
-        malist.append(ma30)
-        malist.append(ma60)
-        malist.append(ma90)
-        malist.append(ma120)
-        malist.append(ma250)
+        malist.append(round(ma5,2))
+        malist.append(round(ma10,2))
+        malist.append(round(ma20,2))
+        malist.append(round(ma30,2))
+        malist.append(round(ma60,2))
+        malist.append(round(ma90,2))
+        malist.append(round(ma120,2))
+        malist.append(round(ma250,2))
+        malist.append(ma30std)
+        malist.append(ma60std)
+        malist.append(ma120std)
+        malist.append(ma250std)
 
         madfdata.append(malist)
 
     ma_df = pd.DataFrame(madfdata, columns=['code', 'name', 'industry', 'area', 'pe', \
-                                      'ma5', 'ma10', 'ma20', 'ma30', 'ma60', 'ma90', 'ma120', 'ma250'])
+                                      'ma5', 'ma10', 'ma20', 'ma30', 'ma60', 'ma90', 'ma120', 'ma250', \
+                                            'ma30std','ma60std','ma120std','ma250std'])
     endtime = datetime.datetime.now()
     print("process ma data finish at [%s], total time: %ds" % (endtime, (endtime - starttime).seconds))
     return ma_df
 
 
-# all 1 year takes about 330s
-def get_limit_up(codes = None, start = None, end = None, up = True):
-    print("get limitups... ")
-    starttime = datetime.datetime.now()
-    code_list = []
-    if isinstance(codes, str):
-        code_list.append(codes)
-    else:
-        code_list = codes
+# filter ma data
+def get_ma_up(madf = None):
+    if madf is None:
+        return madf
+    result = madf[(madf.ma5 >= madf.ma10) & (madf.ma10 >= madf.ma20) & (madf.ma20 >= madf.ma30)]
 
-    result = pd.DataFrame()
-    for code in code_list:
-        hist_data = ts.get_hist_data(code, start, end)
-        if hist_data is None or len(hist_data) == 0:
-            continue
-        hist_data.insert(0, 'date', hist_data.index)
-        hist_data.insert(1, 'code', code)
-        hist_data = hist_data[['code', 'date', 'p_change']]
-        hist_data = hist_data[hist_data['p_change'] >= 9.9] if up else hist_data[hist_data['p_change'] <= -9.9]
-        # hist_data.reset_index()
-        result = result.append(hist_data, ignore_index=True)
-    endtime = datetime.datetime.now()
-    print("total time: %ds" % (endtime - starttime).seconds)
+
     return result
 
-def count(df=None):
-    if df.empty:
-        return df
 
-    df = df[df['p_change'] >= 9.9]
-    # dfgroup = df.groupby("code")['p_change'].count()
-    dfgroup = df.groupby("code").agg({'p_change': np.size})
-    dfgroup = dfgroup.sort_values('p_change', axis=0, ascending=False, inplace=False, kind='quicksort', na_position='last')
-    return dfgroup
 
 if __name__ == '__main__':
     df = get_ma('002620', start='2017-01-01')
+    df = get_ma_up(df)
     print(df)
