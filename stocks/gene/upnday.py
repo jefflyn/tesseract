@@ -37,8 +37,10 @@ def upnday(codes=None, n=3, change=None):
             print(code + ' halting...')
             continue
 
-
-        nhist = hist_data.tail(n)
+        histndf = hist_data.tail(n)
+        for index, row in histndf.iterrows():
+            open = float(row['open'])
+            close = float(row['close'])
 
 
 
