@@ -11,6 +11,16 @@ from sqlalchemy import create_engine
 
 todaystr = datetime.datetime.now().strftime('%Y-%m-%d')
 
+def get_app_codes():
+    cf = get_data('./data/cf.txt', sep=' ')['code'].astype('str').str.zfill(6)
+    # mo = get_data('./data/monitor.txt', sep=' ')['code'].astype('str').str.zfill(6)
+    ot = get_data('./data/other.txt', sep=' ')['code'].astype('str').str.zfill(6)
+    pa = get_data('./data/pa.txt', sep=' ')['code'].astype('str').str.zfill(6)
+    tr = get_data('./data/trace.txt', sep=' ')['code'].astype('str').str.zfill(6)
+
+    codes = list(cf) + list(ot) + list(pa) + list(tr)
+    return codes
+
 
 def get_k_data(code=None, start=None):
     hist_data = ts.get_k_data(code, start)  # one day delay issue, use realtime interface solved

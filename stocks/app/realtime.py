@@ -8,8 +8,8 @@ import time
 pd.set_option('display.width',800)
 
 if len(argv) < 2:
-        print("Invalid args! At least 2 args like: python xxx.py arg1 ...")
-        sys.exit(0)
+    print("Invalid args! At least 2 args like: python xxx.py arg1 ...")
+    sys.exit(0)
 file = argv[1]
 include_files = {
         'pa': './data/pa.txt',
@@ -19,8 +19,8 @@ include_files = {
         }
 keys = list(include_files.keys())
 if file not in keys:
-        print("File name NOT found. Try the followings: " + str(keys))
-        sys.exit(0)
+    print("File name NOT found. Try the followings: " + str(keys))
+    sys.exit(0)
 
 filePath = include_files[file]
 hddf = pd.read_csv(filePath, sep=' ')
