@@ -24,22 +24,27 @@ def get_app_codes():
 
 def get_k_data(code=None, start=None):
     hist_data = ts.get_k_data(code, start)  # one day delay issue, use realtime interface solved
-    if hist_data is None and len(hist_data) == 0:
-        print(code + ' hist data no found')
+    if hist_data is None or len(hist_data) == 0:
+        print(code + ' k data not found')
         return None
-    latestdate = hist_data.tail(1).at[hist_data.tail(1).index.get_values()[0], 'date']
-    if todaystr != latestdate:
-        # get today data from [get_realtime_quotes(code)]
-        realtime = ts.get_realtime_quotes(code)
-        # ridx = realtime.index.get_values()[0]
-        todaylow = float(realtime.at[0, 'low'])
-        if todaylow > 0:
-            newone = {'date': todaystr, 'open': float(realtime.at[0, 'open']), 'close': float(realtime.at[0, 'price']),
-                          'high': float(realtime.at[0, 'high']), 'low': todaylow,
-                          'volume': int(float(realtime.at[0, 'volume']) / 100), 'code': code}
-            newdf = pd.DataFrame(newone, index=[0])
-            hist_data = hist_data.append(newdf, ignore_index=True)
-    return hist_data
+    try:
+        latestdate = hist_data.tail(1).at[hist_data.tail(1).index.get_values()[0], 'date']
+        if todaystr != latestdate:
+            # get today data from [get_realtime_quotes(code)]
+            realtime = ts.get_realtime_quotes(code)
+            # ridx = realtime.index.get_values()[0]
+            todaylow = float(realtime.at[0, 'low'])
+            if todaylow > 0:
+                newone = {'date': todaystr, 'open': float(realtime.at[0, 'open']), 'close': float(realtime.at[0, 'price']),
+                              'high': float(realtime.at[0, 'high']), 'low': todaylow,
+                              'volume': int(float(realtime.at[0, 'volume']) / 100), 'code': code}
+                newdf = pd.DataFrame(newone, index=[0])
+                hist_data = hist_data.append(newdf, ignore_index=True)
+        return hist_data
+    except:
+        print(code + ' get k data found exception!')
+        return None
+
 
 
 def get_data(filepath=None, encoding='gbk', sep=','):
@@ -53,6 +58,15 @@ def get_basics(code=None):
     if code != None:
         data = data[data.code == code]
     return data
+    
+def get_basics(code=None, excludeCyb='y'):
+    data = pd.read_csv("../data/basics.csv", encoding="utf-8")
+    data['code'] = data['code'].astype('str').str.zfill(6)
+    if excludeCyb == 'y':
+        data = data[data['code'].str.get(0) != '3']
+    if code != None:
+        data = data[data.code == code]
+    return data    
 
 def get_subnew():
     data = pd.read_csv("../data/concepts/subnew.csv", encoding="gbk")

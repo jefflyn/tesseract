@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import datetime as dtime
 import datetime
 
 import numpy as np
@@ -10,10 +10,12 @@ from stocks.data import _datautils as dt
 
 pd.set_option('display.width', 600)
 
-lastmonthstr = (datetime.datetime.now() - 30).strftime('%Y-%m-%d')
+histnum = 30
+lastmonthstr = (dtime.now() + datetime.timedelta(days=-histnum)).strftime('%Y-%m-%d')
 
-def upnday(codes=None, n=3, change=None):
-    starttime = datetime.datetime.now()
+
+def get_upnday(codes=None, n=3, change=None):
+    starttime = dtime.now()
     print("process upnday data start at [%s]" % starttime)
     print("get k data from %s" % lastmonthstr)
     code_list = []
@@ -30,54 +32,60 @@ def upnday(codes=None, n=3, change=None):
         latest = hist_data.tail(1)
         idx = latest.index.get_values()[0]
         latest_date_str = latest.at[idx, 'date']
-        latest_date = datetime.datetime.strptime(latest_date_str, '%Y-%m-%d')
+        latest_date = dtime.strptime(latest_date_str, '%Y-%m-%d')
         delta = starttime - latest_date
         # excluding halting
         if (delta.days > 3):
             print(code + ' halting...')
             continue
 
-        histndf = hist_data.tail(n)
+        histndf = hist_data.tail(histnum)
+        histndf = histndf.sort_values('date', ascending=False)
+        sumup = 0.0
+        isndayup = True
+        beginp = 0.0
+        endp = 0.0
+        ndays = 0.0
         for index, row in histndf.iterrows():
             open = float(row['open'])
             close = float(row['close'])
+            if endp == 0.0:
+                endp = close
+            diff = close - open
+            if diff < 0:
+                isndayup = False
+                beginp = close
+                break
+            else:
+                ndays += 1
+        # not matche the n-days-up rule
+        if (isndayup == False and ndays < n) or ndays < n:
+            continue
+        else:
+            if beginp == 0.0:
+                continue
+            sumup = (endp - beginp) / beginp * 100
 
+        item = dt.get_basics(code)
+        idx = item.index.get_values()[0]
+        nlist = []
+        nlist.append(code)
+        nlist.append(item.at[idx, 'name'])
+        nlist.append(item.at[idx, 'industry'])
+        nlist.append(item.at[idx, 'area'])
+        nlist.append(item.at[idx, 'pe'])
+        nlist.append(ndays)
+        nlist.append(round(sumup,2))
 
+        upndata.append(nlist)
 
-        row = dt.get_basics(code)
-        idx = row.index.get_values()[0]
-        malist = []
-        malist.append(code)
-        malist.append(row.at[idx, 'name'])
-        malist.append(row.at[idx, 'industry'])
-        malist.append(row.at[idx, 'area'])
-        malist.append(row.at[idx, 'pe'])
-        malist.append(round(ma5,2))
-        malist.append(round(ma10,2))
-        malist.append(round(ma20,2))
-        malist.append(round(ma30,2))
-        malist.append(round(ma60,2))
-        malist.append(round(ma90,2))
-        malist.append(round(ma120,2))
-        malist.append(round(ma250,2))
-        malist.append(ma30std)
-        malist.append(ma60std)
-        malist.append(ma120std)
-        malist.append(ma250std)
-
-        upndata.append(malist)
-
-    upndf = pd.DataFrame(upndata, columns=['code', 'name', 'industry', 'area', 'pe', \
-                                      'ma5', 'ma10', 'ma20', 'ma30', 'ma60', 'ma90', 'ma120', 'ma250', \
-                                            'ma30std','ma60std','ma120std','ma250std'])
-    endtime = datetime.datetime.now()
+    upndf = pd.DataFrame(upndata, columns=['code', 'name', 'industry', 'area', 'pe', 'updays', 'sumup'])
+    upndf = upndf.sort_values(['updays', 'sumup'], ascending=[False, True])
+    endtime = dtime.now()
     print("process upnday data finish at [%s], total time: %ds" % (endtime, (endtime - starttime).seconds))
     return upndf
 
 
-
-
 if __name__ == '__main__':
-    df = get_ma('002620', start='2017-01-01')
-    df = get_ma_up(df)
+    df = get_upnday('603477')
     print(df)

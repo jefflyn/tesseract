@@ -8,13 +8,15 @@ from stocks.gene import limitup
 from stocks.gene import period
 from stocks.data import _datautils
 
-# x = _datautils.get_subnew()
+#x = _datautils.get_subnew()
+x = _datautils.get_basics()
+x = x[(x.timeToMarket>=20170901) & (x.timeToMarket<=20171214)]
 
-x = _datautils.get_limitup()
-x = x[['code']].drop_duplicates()
+# x = _datautils.get_limitup()
+# x = x[['code']].drop_duplicates()
 
-x = _datautils.get_data('../data/concepts/ai.csv')
-x = _datautils.filter_cyb(x)
+# x = _datautils.get_data('../data/concepts/ai.csv')
+# x = _datautils.filter_cyb(x)
 
 # processing...
 codes = list(x['code'])
