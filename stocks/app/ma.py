@@ -13,20 +13,20 @@ from stocks.gene import maup
 
 pd.set_option('display.width',800)
 
-if len(argv) < 2:
-    print("Invalid args! At least 2 args like: python ma.py False | True ...")
+if len(argv) < 3:
+    print("Invalid args! At least 2 args like: python ma.py code y | n ...")
     sys.exit(0)
 
-isup = argv[1]
+isup = argv[2]
 
 codes = []
 if len(argv) == 3:
-    codes = argv[2].split(',')
+    codes = argv[1].split(',')
 else:
     codes = _datautils.get_app_codes()
 
 data = maup.get_ma(codes)
-if isup == 'true':
+if isup == 'y':
     data = maup.get_ma_up(data)
 
 if len(argv) == 3:
