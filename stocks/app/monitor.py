@@ -10,6 +10,6 @@ pd.set_option('precision', 3)
 
 # df = _datautils.get_subnew()
 # df = _datautils.filter_cyb(df)
-df = _datautils.get_data('./data/monitor.txt', sep=' ')
+df = _datautils.get_data('./data/monitorot.txt', sep=' ')
 codes = list(df['code'])
-falco.monitor(codes, inc=5, limit=10)
+falco.monitor(codes, inc=5)

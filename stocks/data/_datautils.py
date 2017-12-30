@@ -59,10 +59,10 @@ def get_basics(code=None):
         data = data[data.code == code]
     return data
     
-def get_basics(code=None, excludeCyb='y'):
+def get_basics(code=None, excludeCyb=False):
     data = pd.read_csv("../data/basics.csv", encoding="utf-8")
     data['code'] = data['code'].astype('str').str.zfill(6)
-    if excludeCyb == 'y':
+    if excludeCyb:
         data = data[data['code'].str.get(0) != '3']
     if code != None:
         data = data[data.code == code]
@@ -84,9 +84,13 @@ def get_wavepa():
     return data
 
 def get_bottom():
-    data = pd.read_csv("../data/bottom.csv", encoding="utf-8")
-    data['code'] = data['code'].astype('str').str.zfill(6)
-    return data
+    try:
+        data = pd.read_csv("../data/bottom.csv", encoding="utf-8")
+        data['code'] = data['code'].astype('str').str.zfill(6)
+        return data
+    except:
+        print('bottom file not found')
+        return pd.DataFrame(columns=['code'])
 
 def get_limitup():
     data = pd.read_csv("../data/limitup.csv", encoding="utf-8")
