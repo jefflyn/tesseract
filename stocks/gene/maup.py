@@ -75,15 +75,14 @@ def get_ma(codes=None, start='2016-01-04', end=None):
         malist.append(round(ma120,2))
         malist.append(round(ma250,2))
         malist.append(ma30std)
-        malist.append(ma60std)
-        malist.append(ma120std)
-        malist.append(ma250std)
+        # malist.append(ma60std)
+        # malist.append(ma120std)
+        # malist.append(ma250std)
 
         madfdata.append(malist)
 
     ma_df = pd.DataFrame(madfdata, columns=['code', 'name', 'industry', 'area', 'pe', 'isup', 'price', \
-                                      'ma5', 'ma10', 'ma20', 'ma30', 'ma60', 'ma90', 'ma120', 'ma250', \
-                                            'ma30std','ma60std','ma120std','ma250std'])
+                                      'ma5', 'ma10', 'ma20', 'ma30', 'ma60', 'ma90', 'ma120', 'ma250', 'ma30std'])#,'ma60std','ma120std','ma250std'])
     endtime = datetime.datetime.now()
     print("process ma data finish at [%s], total time: %ds" % (endtime, (endtime - starttime).seconds))
     return ma_df

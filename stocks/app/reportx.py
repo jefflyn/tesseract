@@ -28,7 +28,6 @@ def generate_report(title=None, df=None, uad=False, ma=False, lup=False):
     rtdf = falco.get_monitor(codes)
     rtdf = rtdf[['warn','code','name','change','price','low','bottom','space','industry','area','pe']]
 
-    rtdf = rtdf.sort_values('space', ascending=False)
     rtdf_html = rtdf.to_html(escape=False, index=False, sparsify=True, border=1, index_names=False, header=True)
     html_content += rtdf_html
 
@@ -48,10 +47,12 @@ def generate_report(title=None, df=None, uad=False, ma=False, lup=False):
         html_content += '<h4>3.moving average prices of several crucial periods:</h4>'
         madf = maup.get_ma(codes, start='2017-01-01')
         madf_html = madf.to_html(escape=False, index=False, sparsify=True, border=1, index_names=False, header=True)
+        html_content += madf_html
 
+        html_content += '<h4>3.moving up average prices of several crucial periods:</h4>'
         maupdf = maup.get_ma_up(madf)
         maupdf_html = maupdf.to_html(escape=False, index=False, sparsify=True, border=1, index_names=False, header=True)
-        html_content += (madf_html + maupdf_html)
+        html_content += maupdf_html
 
     # 4.limit-up of recent 1 year
     if lup == True:
@@ -71,7 +72,7 @@ def mail(to_users=[], content=None):
         msg = MIMEText(content, 'html', 'utf-8')
         msg['From'] = formataddr(["FromRunoob", sender])  # sender nickname and account
         #msg['To'] = formataddr(["FK", to_users])  # receiver nickname and account
-        msg['Subject'] = todaystr + " Stocks Report"  # subject
+        msg['Subject'] = todaystr + " Sub-new Stocks Report"  # subject
 
         server = smtplib.SMTP_SSL("smtp.qq.com", 465)  #SMTP server and port
         server.login(sender, passw)
@@ -83,8 +84,8 @@ def mail(to_users=[], content=None):
 
 
 subnewdf = _datautils.get_subnew(excludeCyb=True)
-subnewdf = generate_report(title='The sub-new stocks report', df=subnewdf, uad=True, ma=True, lup=True)
-content = mail(to_users, content)
+content = generate_report(title='The sub-new stocks report', df=subnewdf, uad=True, ma=True, lup=True)
+ret = mail(to_users, content)
 if ret:
     print("Email send successfully")
 else:
