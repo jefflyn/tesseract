@@ -10,6 +10,8 @@ import pymysql
 from sqlalchemy import create_engine
 
 todaystr = datetime.datetime.now().strftime('%Y-%m-%d')
+yeardays = datetime.timedelta(days=-365)
+oneyearago = (datetime.datetime.now() + yeardays).strftime('%Y%m%d')
 
 def get_app_codes():
     cf = get_data('./data/cf.txt', sep=' ')['code'].astype('str').str.zfill(6)
@@ -68,19 +70,9 @@ def get_basics(code=None, excludeCyb=False):
         data = data[data.code == code]
     return data    
 
-def get_subnew():
-    data = pd.read_csv("../data/concepts/subnew.csv", encoding="gbk")
-    data['code'] = data['code'].astype('str').str.zfill(6)
-    return data
-
-def get_wavex():
-    data = pd.read_csv("../data/wavex.csv", encoding="utf-8")
-    data['code'] = data['code'].astype('str').str.zfill(6)
-    return data
-
-def get_wavepa():
-    data = pd.read_csv("../data/wavepa.csv", encoding="utf-8")
-    data['code'] = data['code'].astype('str').str.zfill(6)
+def get_subnew(excludeCyb=False):
+    data = get_basics(excludeCyb=excludeCyb)
+    data = data[data.timeToMarket >= int(oneyearago)]
     return data
 
 def get_bottom():
@@ -91,11 +83,6 @@ def get_bottom():
     except:
         print('bottom file not found')
         return pd.DataFrame(columns=['code'])
-
-def get_limitup():
-    data = pd.read_csv("../data/limitup.csv", encoding="utf-8")
-    data['code'] = data['code'].astype('str').str.zfill(6)
-    return data
 
 #save to db
 def to_db(data, tbname=None):

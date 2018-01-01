@@ -13,8 +13,8 @@ from stocks.gene import period
 from stocks.gene import maup
 from stocks.gene import bargain
 
-sender = '649054380@qq.com'  # 发件人邮箱账号
-passw = 'pznntikuyzfvbchb'  # 发件人邮箱密码
+sender = '649054380@qq.com'
+passw = 'pznntikuyzfvbchb'
 to_users = '649054380@qq.com'
 #to_users = ['649054380@qq.com', '1677258052@qq.com','53985188@qq.com']
 
@@ -175,8 +175,8 @@ def mail(to_users=[], content=None):
 
 
 # content = get_position_report('ot', uad=True, ma=True, lup=True)
-contenta = generate_report(title='The position stocks reports', filename='pa', uad=True, ma=True, lup=True)
-contentb = generate_report(title='The tracking stocks reports', monitor=True, filename='app/monitormy.txt', uad=True, ma=True, lup=True)
+contenta = generate_report(title='The position stocks report', filename='pa', uad=True, ma=True, lup=True)
+contentb = generate_report(title='The tracking stocks report', monitor=True, filename='app/monitormy.txt', uad=True, ma=True, lup=True)
 ret = mail(to_users, contenta+contentb)
 if ret:
     print("Email send successfully")
