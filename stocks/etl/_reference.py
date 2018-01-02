@@ -17,7 +17,6 @@ def get_forecast(year, season, excludeCyb=True, afterdate=None):
     rangeto =[]
 
     for i in range(len(ranges)):
-        print(i)
         rangestr = ranges[i]
         items = rangestr.split('~')
         if len(items) > 1:
