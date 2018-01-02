@@ -21,12 +21,13 @@ if __name__ == '__main__':
     codes = basics['code'].values
     maupdata = maup.get_ma(codes)
     maupdf = maup.get_ma_up(maupdata)
-
+    mauphtml = report.HTML_with_style(maupdf)
     #upnday
     nupdf = upnday.get_upnday(codes)
+    nupdfhtml = report.HTML_with_style(nupdf)
 
-    _utils.save_to_pdf(maupdf, 'report_maup.pdf')
-    _utils.save_to_pdf(nupdf, 'report_upnday.pdf')
+    _utils.save_to_pdf(mauphtml, 'report_maup.pdf')
+    _utils.save_to_pdf(nupdfhtml, 'report_upnday.pdf')
 
     att3 = report.create_attach('report_maup.pdf', 'report_maup.pdf')
     att4 = report.create_attach('report_upnday.pdf', 'report_upnday.pdf')

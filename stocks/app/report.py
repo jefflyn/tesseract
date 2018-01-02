@@ -77,19 +77,15 @@ def generate_report(title=None, filename=None, monitor=False, uad=False, ma=Fals
         rtdf = rtdf[['warn','code','name','change','price','low','bottom','space','industry','area','pe']]
 
     rtdf = rtdf.sort_values('space', ascending=False)
-    #rtdf_html = rtdf.to_html(escape=False, index=False, sparsify=True, border=0, index_names=False, header=True)
-    # style = """
-    # <style>
-    #     tr:nth-child(even) {color: green;}
-    #     tr:nth-child(odd)  {color: aqua;}
-    # </style>
-    # """
-    rtdf_html = HTML_with_style(rtdf)
-    html_content += rtdf_html
-
     codes = list(rtdf.code)
     names = list(rtdf.name)
     stkdict = dict(zip(codes, names))
+
+    #style format
+    # rtdf['code'] = rtdf['code'].apply(lambda x: str('<a href="http://m.10jqka.com.cn/stockpage/hs_' + x + '">' + x + '</a>'))
+    rtdf_html = HTML_with_style(rtdf)
+    html_content += rtdf_html
+
     # 2.up-and-down price of recent 1 year
     if uad == True:
         html_content += '<h4>2.up-and-down price of recent 1 year:</h4>'
@@ -166,10 +162,11 @@ def mail_with_attch(to_users=[], subject=None, content=None, attaches=[]):
 
 if __name__ == '__main__':
     content1 = generate_report(title='The position stocks report', filename='ot', uad=True, ma=True, lup=True)
-    _utils.save_to_pdf(content1, 'report/otreport.pdf')
-
+    _utils.save_to_pdf(content1, 'report_ot.pdf')
     content2 = generate_report(title='The tracking stocks report', monitor=True, filename='app/monitorot.txt', uad=True, ma=True, lup=True)
-    _utils.save_to_pdf(content2, 'report/trace_report.pdf')
+    _utils.save_to_pdf(content2, 'report_ot_trace.pdf')
+
+    exit(0)
     attaches = []
     att1 = create_attach('otreport.pdf', 'daily_report.pdf')
     att2 = create_attach('trace_report.pdf', 'trace_report.pdf')
@@ -177,7 +174,7 @@ if __name__ == '__main__':
     attaches.append(att2)
     # contenta = generate_report(title='The position stocks report', filename='pa', uad=True, ma=True, lup=True)
     # contentb = generate_report(title='The tracking stocks report', monitor=True, filename='app/monitormy.txt', uad=True, ma=True, lup=True)
-    subj = todaystr + " Stocks Report"
+    subj = "Stocks Report " + todaystr
     to_users = ['649054380@qq.com']#, '1677258052@qq.com', '53985188@qq.com']
     ret = mail_with_attch(to_users, subject=subj, content=content1+content2, attaches=attaches)
     if ret:
