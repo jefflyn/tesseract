@@ -44,7 +44,7 @@ def get_wave(codes=None, start='2016-01-04', end=None, beginlow=True, duration=0
     if perioddf_list is None or len(perioddf_list) == 0:
         return 'result is empty, please check the code is exist!'
     result = pd.concat(perioddf_list, ignore_index=True)
-    result = result.sort_values(by=['code','begin'], axis=0, ascending=True, inplace=False, kind='quicksort', na_position='last')
+    # result = result.sort_values(by=['code','begin'], axis=0, ascending=True, inplace=False, kind='quicksort', na_position='last')
 
     endtime = datetime.datetime.now()
     print("get wave finish at [%s], total time: %ds" % (endtime, (endtime - starttime).seconds))

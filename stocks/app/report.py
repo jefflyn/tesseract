@@ -34,9 +34,9 @@ def HTML_with_style(df, style=None, random_id=None):
     if style is None:
         style = """
         <style>
-            table#{random_id} {{border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: rgb(235, 242, 224);}}
-            table#{random_id} thead, table#{random_id} tr {{border-top-width: 1px; border-top-style: solid; border-top-color: rgb(235, 242, 224);}}
-            table#{random_id} td, table#{random_id} th {{word-break: keep-all; padding: 5px 10px; font-size: 12px; font-family: Verdana; color: rgb(149, 170, 109);}}
+            table#{random_id} {{border-collapse:collapse; border-width: 1px; border-style: solid; border-color: rgb(235, 242, 224);}}
+            table#{random_id} thead, table#{random_id} tr {{border-top-width: 1px; text-align:right;}}
+            table#{random_id} td, table#{random_id} th {{word-break: keep-all; padding: 5px 10px; font-size: 12px; font-family: Verdana;}}
             table#{random_id} tr:nth-child(even) {{background: rgb(230, 238, 214);}}
             table#{random_id} tr:nth-child(odd) {{background: #FFF;}}
         </style>
@@ -80,6 +80,7 @@ def generate_report(title=None, filename=None, monitor=False, uad=False, ma=Fals
     codes = list(rtdf.code)
     names = list(rtdf.name)
     stkdict = dict(zip(codes, names))
+    codes.reverse()
 
     #style format
     # rtdf['code'] = rtdf['code'].apply(lambda x: str('<a href="http://m.10jqka.com.cn/stockpage/hs_' + x + '">' + x + '</a>'))

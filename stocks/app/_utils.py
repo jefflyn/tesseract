@@ -1,5 +1,5 @@
 import os
-
+import platform
 import sqlite3
 
 import pdfkit
@@ -41,7 +41,13 @@ def save_to_pdf(htmlstr=None, desc=None):
         ],
         'no-outline': None
     }
-    config=pdfkit.configuration(wkhtmltopdf=r'D:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe')
-    pdfkit.from_string(htmlstr,desc,options=options,configuration=config)
-    # pdfkit.from_string(htmlstr, desc, options=options)
+    sysstr = platform.system()
+    if (sysstr == "Windows"):
+        config=pdfkit.configuration(wkhtmltopdf=r'D:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe')
+        pdfkit.from_string(htmlstr, desc, options=options, configuration=config)
+    elif (sysstr == "Linux"):
+        print("Call Linux tasks")
+    else:
+        pdfkit.from_string(htmlstr, desc, options=options)
+
     print('save to pdf successfully')

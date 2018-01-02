@@ -17,16 +17,16 @@ keys = list(include_files.keys())
 INDEX_LIST_NEW = dict(zip(list(x[2:] for x in ct.INDEX_LIST.values()), ct.INDEX_LIST.keys()))
 
 
-def re_exe(file=None, inc = 3):
+def re_exe(file=None, inc=3, sortby=None):
     while True:
         try:
-            df = get_realtime(file=file)
+            df = get_realtime(file=file, sortby=sortby)
             print(df)
         except Exception as e:
             print('excpetion: ' + e)
         time.sleep(inc)
 
-def get_realtime(file):
+def get_realtime(file, sortby=None):
     filePath = include_files[file]
     hddf = pd.read_csv(filePath, sep=' ')
     hddf['code'] = hddf['code'].astype('str').str.zfill(6)
@@ -93,9 +93,9 @@ def get_realtime(file):
     df = df[df.price > '1']
     # df['change'] = df['change'].astype('float32')
     # df['profit_perc'] = df['profit_perc'].astype('float32')
-    if len(argv) > 2 and argv[2] == 'p':
+    if sortby == 'p':
         df = df.sort_values('profit_perc', axis=0, ascending=True, inplace=False, kind='quicksort', na_position='last')
-    elif len(argv) > 2 and argv[2] == 'b':
+    elif sortby == 'b':
         df = df.sort_values('btm_space', axis=0, ascending=False, inplace=False, kind='quicksort', na_position='last')
     else:
         df = df.sort_values('change', axis=0, ascending=True, inplace=False, kind='quicksort', na_position='last')
@@ -113,7 +113,8 @@ if __name__ == '__main__':
         print("Invalid args! At least 2 args like: python xxx.py arg1 ...")
         sys.exit(0)
     file = argv[1]
-    re_exe(file, 3)
+    sort = argv[2]
+    re_exe(file, 3, sort)
     if file not in keys:
         print("File name NOT found. Try the followings: " + str(keys))
         sys.exit(0)

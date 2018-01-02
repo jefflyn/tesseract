@@ -3,32 +3,37 @@ import pandas as pd
 
 import tushare as ts
 
-# 基本面数据
-# code,代码
-# name,名称
-# industry,所属行业
-# area,地区
-# pe,市盈率
-# outstanding,流通股本(亿)
-# totals,总股本(亿)
-# totalAssets,总资产(万)
-# liquidAssets,流动资产
-# fixedAssets,固定资产
-# reserved,公积金
-# reservedPerShare,每股公积金
-# esp,每股收益
-# bvps,每股净资
-# pb,市净率
-# timeToMarket,上市日期
-# undp,未分利润
-# perundp, 每股未分配
-# rev,收入同比(%)
-# profit,利润同比(%)
-# gpr,毛利率(%)
-# npr,净利润率(%)
-# holders,股东人数
-basics = ts.get_stock_basics()
-basics['code'] = basics.index
-# basics['code'] = basics['code'].astype('str').str.zfill(6)
-basics.to_csv("../data/basics.csv")
 
+def get_forecast(year, season, excludeCyb=True, afterdate=None):
+    forecast = ts.forecast_data(year, season)
+    if excludeCyb:
+        forecast = forecast[forecast['code'].str.get(0) != '3']
+    if afterdate != None:
+        forecast = forecast[forecast['report_date'] >= afterdate]
+
+    ranges = list(forecast['range'])
+
+    rangefrom = []
+    rangeto =[]
+
+    for i in range(len(ranges)):
+        print(i)
+        rangestr = ranges[i]
+        items = rangestr.split('~')
+        if len(items) > 1:
+            rangefrom.append(items[0])
+            to = items[1]
+            rangeto.append(float(to[0:len(to) - 1]))
+        else:
+            rangefrom.append(items[0])
+            rangeto.append(float(items[0]))
+
+    forecast['range_from'] = rangefrom
+    forecast['range_to'] = rangeto
+    forecast = forecast.sort_values(by='range_to', ascending=False)
+    return forecast
+
+if __name__ == '__main__':
+    pd.set_option('display.width', 800)
+    forecast = get_forecast(2017, 4, afterdate='2017-12-01')
+    print(forecast)
