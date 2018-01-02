@@ -64,7 +64,7 @@ def generate_report(title=None, filename=None, monitor=False, uad=False, ma=Fals
 
     rtdf = None
     if monitor == False:
-        rtdf = realtime.get_realtime(filename)
+        rtdf = realtime.get_realtime(filename, sortby='b')
         rtdf = rtdf[
             ['warn', 'code', 'name', 'price', 'change', 'low', 'bottom', 'btm_space', 'cost', 'profit_amt', 'profit_perc', 'total_amt']]
         # rtdf.columns = ['a', 'b', 'c']
@@ -76,7 +76,7 @@ def generate_report(title=None, filename=None, monitor=False, uad=False, ma=Fals
         rtdf = falco.get_monitor(codes)
         rtdf = rtdf[['warn','code','name','change','price','low','bottom','space','industry','area','pe']]
 
-    rtdf = rtdf.sort_values('space', ascending=False)
+    # rtdf = rtdf.sort_values('space', ascending=False)
     codes = list(rtdf.code)
     names = list(rtdf.name)
     stkdict = dict(zip(codes, names))
