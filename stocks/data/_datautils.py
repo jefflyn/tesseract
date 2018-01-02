@@ -81,7 +81,7 @@ def get_bottom():
         data['code'] = data['code'].astype('str').str.zfill(6)
         return data
     except:
-        print('bottom file not found')
+        print('bottom file not found, return empty code list.')
         return pd.DataFrame(columns=['code'])
 
 #save to db

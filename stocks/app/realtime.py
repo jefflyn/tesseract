@@ -8,9 +8,9 @@ import time
 pd.set_option('display.width',800)
 
 include_files = {
-    'pa': './data/pa.txt',
-    'cf': './data/cf.txt',
-    'ot': './data/other.txt'
+    'pa': '../data/app/pa.txt',
+    'cf': '../data/app/cf.txt',
+    'ot': '../data/app/other.txt'
 }
 keys = list(include_files.keys())
 
@@ -19,9 +19,11 @@ INDEX_LIST_NEW = dict(zip(list(x[2:] for x in ct.INDEX_LIST.values()), ct.INDEX_
 
 def re_exe(file=None, inc = 3):
     while True:
-        df = get_realtime(file=file)
-        print(df)
-
+        try:
+            df = get_realtime(file=file)
+            print(df)
+        except Exception as e:
+            print('excpetion: ' + e)
         time.sleep(inc)
 
 def get_realtime(file):
@@ -74,10 +76,10 @@ def get_realtime(file):
         curt_data = []
         curt_data.append(warn_sign)
         curt_data.append(change)
-        curt_data.append(str(cost) + '}')
+        curt_data.append(str(cost))
         curt_data.append(profit)
         curt_data.append(profit_perc)
-        curt_data.append('[' + str(bottom) + ' ->')
+        curt_data.append(str(bottom))
         curt_data.append(esc_diff)
         curt_data.append(btm_space)
         curt_data.append(esc_space)

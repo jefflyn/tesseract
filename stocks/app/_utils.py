@@ -2,7 +2,9 @@ import os
 
 import sqlite3
 
-conn = sqlite3.connect('../data/trade.db')
+import pdfkit
+
+conn = sqlite3.connect('./trade/trade.db')
 
 def isnumber(a):
     try:
@@ -24,3 +26,22 @@ def get_cursor():
 
 def get_cursor():
     return conn.cursor()
+
+
+def save_to_pdf(htmlstr=None, desc=None):
+    options = {
+        'page-size': 'Letter',
+        'margin-top': '0.75in',
+        'margin-right': '0.75in',
+        'margin-bottom': '0.75in',
+        'margin-left': '0.75in',
+        'encoding': "UTF-8",
+        'custom-header': [
+            ('Accept-Encoding', 'gzip')
+        ],
+        'no-outline': None
+    }
+    config=pdfkit.configuration(wkhtmltopdf=r'D:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe')
+    pdfkit.from_string(htmlstr,desc,options=options,configuration=config)
+    # pdfkit.from_string(htmlstr, desc, options=options)
+    print('save to pdf successfully')

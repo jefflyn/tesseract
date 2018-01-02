@@ -6,7 +6,7 @@ from matplotlib import pyplot
 
 pd.set_option('display.width',600)
 
-simdf = pd.read_csv("./data/trace.txt", sep=' ')
+simdf = pd.read_csv("../data/app/trace.txt", sep=' ')
 simdf['code'] = simdf['code'].astype('str').str.zfill(6)
 
 codes = list(simdf['code'])

@@ -37,7 +37,7 @@ def get_wave(codes=None, start='2016-01-04', end=None, beginlow=True, duration=0
             continue
         left_data = wavefrom(code, hist_data, beginlow, 'left', duration, pchange)
         right_data = wavefrom(code, hist_data, beginlow, 'right', duration, pchange)
-        period_df = pd.DataFrame(left_data + right_data,columns=['code', 'begin', 'end', 'status', 'begin_price', 'end_price', 'days', 'p_change'])
+        period_df = pd.DataFrame(left_data + right_data,columns=['code', 'begin', 'end', 'status', 'begin_price', 'end_price', 'days', 'change'])
         perioddf_list.append(period_df)
         print("   >>> done!")
 
@@ -45,9 +45,6 @@ def get_wave(codes=None, start='2016-01-04', end=None, beginlow=True, duration=0
         return 'result is empty, please check the code is exist!'
     result = pd.concat(perioddf_list, ignore_index=True)
     result = result.sort_values(by=['code','begin'], axis=0, ascending=True, inplace=False, kind='quicksort', na_position='last')
-
-    # pd.set_option('display.width', 600)
-    # print(result)
 
     endtime = datetime.datetime.now()
     print("get wave finish at [%s], total time: %ds" % (endtime, (endtime - starttime).seconds))
