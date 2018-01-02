@@ -14,7 +14,7 @@ if __name__ == '__main__':
     attaches.append(att2)
     # contenta = generate_report(title='The position stocks report', filename='pa', uad=True, ma=True, lup=True)
     # contentb = generate_report(title='The tracking stocks report', monitor=True, filename='app/monitormy.txt', uad=True, ma=True, lup=True)
-    subj = report.todaystr + " Stocks Report"
+    subj = "Stocks Report " + report.todaystr
     to_users = ['649054380@qq.com', '1677258052@qq.com', '53985188@qq.com']
     ret = report.mail_with_attch(to_users, subject=subj, content=content1+content2, attaches=attaches)
     if ret:

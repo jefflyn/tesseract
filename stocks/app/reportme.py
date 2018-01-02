@@ -33,7 +33,7 @@ if __name__ == '__main__':
     attaches.append(att3)
     attaches.append(att4)
 
-    subj = report.todaystr + " Stocks Report"
+    subj = "My Stocks Report " + report.todaystr
     to_users = ['649054380@qq.com']
     ret = report.mail_with_attch(to_users, subject=subj, content=content1+content2, attaches=attaches)
     if ret:
