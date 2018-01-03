@@ -17,6 +17,18 @@ if __name__ == '__main__':
     attaches.append(att1)
     attaches.append(att2)
 
+    #attaches = generate_all(attaches)
+
+    subj = "My Stocks Report " + report.todaystr
+    to_users = ['649054380@qq.com']
+    ret = report.mail_with_attch(to_users, subject=subj, content=content1+content2, attaches=attaches)
+    if ret:
+        print("Email send successfully")
+    else:
+        print("Send failed")
+
+def generate_all(attaches):
+
     #maup
     basics = _datautils.get_basics(excludeCyb=True)
     codes = basics['code'].values
@@ -44,10 +56,4 @@ if __name__ == '__main__':
     att5 = report.create_attach('report_forecast.csv', 'report_forecast.csv')
     attaches.append(att5)
 
-    subj = "My Stocks Report " + report.todaystr
-    to_users = ['649054380@qq.com']
-    ret = report.mail_with_attch(to_users, subject=subj, content=content1+content2, attaches=attaches)
-    if ret:
-        print("Email send successfully")
-    else:
-        print("Send failed")
+    return attaches
