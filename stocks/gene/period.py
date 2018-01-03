@@ -36,6 +36,8 @@ def get_wave(codes=None, start='2016-01-04', end=None, beginlow=True, duration=0
         if hist_data is None or len(hist_data) == 0:
             continue
         left_data = wavefrom(code, hist_data, beginlow, 'left', duration, pchange)
+        #sorted by date asc
+        left_data.reverse()
         right_data = wavefrom(code, hist_data, beginlow, 'right', duration, pchange)
         period_df = pd.DataFrame(left_data + right_data,columns=['code', 'begin', 'end', 'status', 'begin_price', 'end_price', 'days', 'change'])
         perioddf_list.append(period_df)
