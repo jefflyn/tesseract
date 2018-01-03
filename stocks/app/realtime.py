@@ -113,7 +113,7 @@ if __name__ == '__main__':
         print("Invalid args! At least 2 args like: python xxx.py arg1 ...")
         sys.exit(0)
     file = argv[1]
-    sort = argv[2]
+    sort = argv[2] if len(argv) > 2 else None
     re_exe(file, 3, sort)
     if file not in keys:
         print("File name NOT found. Try the followings: " + str(keys))
