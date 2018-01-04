@@ -29,10 +29,10 @@ if __name__ == '__main__':
     xs = [datetime.strptime(d, '%Y-%m-%d').date() for d in dates]
 
     ys = [15.2, 13, 14.8, 15, 13.5, 14.1]
-    xs = range(0, len(ys))
+    xs = np.arange(len(ys))
     # 配置横坐标
     ax = plt.gca()
-    # ax.set_xticks(np.linspace(0, 1, 9))
+    ax.set_xticks(xs, tuple(dates))
     ax.set_xticklabels(('2017-11-02', '2017-11-23', '2017-12-04', '2018-01-02', '2018-01-03', '2018-01-04'))
 
     # ax.get_xaxis().get_major_formatter().set_useOffset(False)
