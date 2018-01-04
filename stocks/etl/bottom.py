@@ -10,19 +10,11 @@ from stocks.gene import bargain
 from stocks.data import _datautils
 
 # processing...
-df = bargain.get_bottom(_datautils.get_wavex())
+datadf = _datautils.get_data(filepath='../data/app/other.txt', sep=' ')
+codes = list(datadf['code'])
+
+wavedf = period.get_wave(codes)
+df = bargain.get_bottom(wavedf)
 
 df.to_csv("../data/bottom.csv",encoding='utf-8')
-
-#save to db
-db_con = pymysql.connect(
-    user = 'linjingu',
-    password = 'linjingu',
-    port = 3306,
-    host = 'localhost',
-    db = 'stocks',
-    charset = 'utf8',
-    cursorclass = pymysql.cursors.DictCursor
-)
-engine = create_engine("mysql+pymysql://linjingu:linjingu@localhost:3306/stocks?charset=utf8")
-df.to_sql(name = 'bottom',con = engine,if_exists = 'replace',index = False,index_label = False)
+_datautils.to_db(df, 'bottom')
