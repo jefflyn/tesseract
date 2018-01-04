@@ -8,6 +8,8 @@ from IPython.display import HTML
 import re
 import numpy as np
 import pandas as pd
+import matplotlib as mpl
+import matplotlib.pyplot as plt
 
 from stocks.app import realtime
 from stocks.app import falco
@@ -162,12 +164,12 @@ def mail_with_attch(to_users=[], subject=None, content=None, attaches=[]):
 
 
 if __name__ == '__main__':
+
     content1 = generate_report(title='The position stocks report', filename='ot', uad=True, ma=True, lup=True)
     _utils.save_to_pdf(content1, 'report_ot.pdf')
     content2 = generate_report(title='The tracking stocks report', monitor=True, filename='app/monitorot.txt', uad=True, ma=True, lup=True)
     _utils.save_to_pdf(content2, 'report_ot_trace.pdf')
 
-    exit(0)
     attaches = []
     att1 = create_attach('otreport.pdf', 'daily_report.pdf')
     att2 = create_attach('trace_report.pdf', 'trace_report.pdf')
