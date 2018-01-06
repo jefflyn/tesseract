@@ -16,7 +16,7 @@ from stocks.app import falco
 from stocks.app import _utils
 from stocks.data import _datautils
 from stocks.gene import limitup
-from stocks.gene import period
+from stocks.gene import wave
 from stocks.gene import maup
 from stocks.gene import bargain
 
@@ -92,15 +92,15 @@ def generate_report(title=None, filename=None, monitor=False, uad=False, ma=Fals
     # 2.up-and-down price of recent 1 year
     if uad == True:
         html_content += '<h4>2.up-and-down price of recent 1 year:</h4>'
-        wavedf = period.get_wave(codes, start='2017-01-01')
+        wavedf = wave.get_wave(codes, start='2017-01-01')
         wavedf = wavedf.replace(stkdict)
         # wavedf_html = wavedf.to_html(escape=False, index=False, sparsify=True, border=0, index_names=False, header=True)
         wavedf_html = HTML_with_style(wavedf)
         html_content += wavedf_html
 
-    # 3.moving average prices of several crucial periods
+    # 3.moving average prices of several crucial waves
     if ma == True:
-        html_content += '<h4>3.moving average prices of several crucial periods:</h4>'
+        html_content += '<h4>3.moving average prices of several crucial waves:</h4>'
         madf = maup.get_ma(codes, start='2017-01-01')
         # madf_html = madf.to_html(escape=False, index=False, sparsify=True, border=0, index_names=False, header=True)
         madf_html = HTML_with_style(madf)

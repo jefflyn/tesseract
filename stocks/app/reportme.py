@@ -12,8 +12,10 @@ if __name__ == '__main__':
     content2 = report.generate_report(title='The tracking stocks report', monitor=True, filename='app/monitormy.txt', uad=True, ma=True, lup=True)
     _utils.save_to_pdf(content2, 'report_my_trace.pdf')
     attaches = []
+    att0 = report.create_attach('test_demo.png', 'test.png')
     att1 = report.create_attach('report_my.pdf', 'daily_report.pdf')
     att2 = report.create_attach('report_my_trace.pdf', 'trace_report.pdf')
+    attaches.append(att0)
     attaches.append(att1)
     attaches.append(att2)
 

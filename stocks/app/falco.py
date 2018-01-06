@@ -5,7 +5,7 @@ import pandas as pd
 import tushare as ts
 
 from stocks.data import _datautils
-from stocks.gene import period
+from stocks.gene import wave
 from stocks.gene import bargain
 
 
@@ -35,7 +35,7 @@ def get_monitor(codes, limit=10):
             index = codelist.index(code)
             bottom = _datautils.get_bottom().ix[index, 'bottom']
         else:
-            wavedf = period.get_wave(code)
+            wavedf = wave.get_wave(code)
             bottomdf = bargain.get_bottom(wavedf, limit=limit)
             bottom = bottomdf.at[bottomdf.index.get_values()[0], 'bottom']
         ##calculate the bottom, the smaller the possibility of bounce is bigger.
