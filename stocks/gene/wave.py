@@ -22,13 +22,13 @@ todaystr = datetime.now().strftime('%Y-%m-%d')
 """
 df: code name date price
 """
-def plot_wave(dflist=None, filename='demo.png'):
+def plot_wave(dflist=None, filename='wave.png'):
     size = len(dflist)
     cols = 1
     rows = size / cols if (size % cols == 0) else int(size / cols + 1)
     cols = size if size < cols else cols
     plt.figure(figsize=(cols * 8, rows * 5))
-    plt.gcf().suptitle('Wave Model Of Recent Two Years', color='orangered', fontsize=20, fontweight='bold')
+    plt.gcf().suptitle('Wave Models', color='orangered', fontsize=20, fontweight='bold')
     for idx in range(size):
         df = dflist[idx]
         # subplot()
@@ -133,7 +133,7 @@ def format_wave_data(wavedf):
 def get_wave(codes=None, start=None, end=None, beginlow=True, duration=0, pchange=0):
     starttime = datetime.now()
     if start == None:
-        bwdays = dt.timedelta(-365*2)
+        bwdays = dt.timedelta(-365)
         start = (starttime + bwdays).strftime("%Y-%m-%d")
     print("get wave start at [%s]" % starttime)
     code_list = []
@@ -257,11 +257,12 @@ if __name__ == '__main__':
     mystk = pd.read_csv(filePath, sep=' ')
     mystk['code'] = mystk['code'].astype('str').str.zfill(6)
     codes = list(mystk['code'])
+    codes = ['000032']
     wavedflist = []
     for code in codes:
-        wavedata = get_wave(code, start='2015-01-04')
+        wavedata = get_wave(code, start='2016-01-04')
         result = format_wave_data(wavedata)
         wavedflist.append(result)
-        print(result)
+        print(wavedata)
 
     plot_wave(wavedflist, 'wavepa.png')

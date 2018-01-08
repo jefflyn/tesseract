@@ -113,7 +113,13 @@ def filter_basic(basics, cyb = False, before = 20170701):
     return basics
 
 ##
-def concept_filter():
-    return concepts
+def get_industry_data(filepath=None, encoding='utf-8', sep='\t', excludeCyb=True):
+    data = pd.read_csv('../data/industry/' + filepath, sep=sep, encoding=encoding)
+    data['code'] = data['code'].apply(lambda code : code[2:])
+    if excludeCyb:
+        data = data[data['code'].str.get(0) != '3']
+    return data
 
-#to_db(concepts,'concepts')
+if __name__ == '__main__':
+    data = get_industry_data('化学制药.txt')
+    print(data)

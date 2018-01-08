@@ -62,7 +62,7 @@ def get_monitor(codes, limit=10):
     df = df.sort_values('space', axis=0, ascending=False, inplace=False, kind='quicksort', na_position='last')
     df['change'] = df['change'].apply(lambda n: str(round(n, 3)) + '%')
     df['space'] = df['space'].apply(lambda n: str(round(n, 3)) + '%')
-    return df
+    return df[['warn','code','name','change','price','low','bottom','space','industry','area','pe']]
 
 def monitor(codes, inc=3):
     while True:

@@ -6,10 +6,15 @@ import pandas as pd
 
 import tushare as ts
 
-# all 1 year takes about 330s
+from stocks.data import  _datautils
+
+# all 1 year
 def get_limit_up(codes = None, start = None, end = None, up = True):
     print("get limitups... ")
     starttime = datetime.datetime.now()
+    if start == None:
+        days = datetime.timedelta(-365)
+        start = datetime.datetime.strftime(starttime + days, '%Y-%m-%d')
     code_list = []
     if isinstance(codes, str):
         code_list.append(codes)
@@ -31,17 +36,24 @@ def get_limit_up(codes = None, start = None, end = None, up = True):
     print("total time: %ds" % (endtime - starttime).seconds)
     return result
 
-def count(df=None):
+def count(df=None, times=None):
     if df.empty:
         return df
-
     df = df[df['p_change'] >= 9.9]
     # dfgroup = df.groupby("code")['p_change'].count()
     dfgroup = df.groupby("code").agg({'p_change': np.size})
-    dfgroup = dfgroup.sort_values('p_change', axis=0, ascending=False, inplace=False, kind='quicksort', na_position='last')
+    dfgroup.rename(columns={'p_change': 'count'}, inplace=True)
+    dfgroup = dfgroup.sort_values('count', axis=0, ascending=False, inplace=False, kind='quicksort', na_position='last')
+    if times != None:
+        dfgroup = dfgroup[dfgroup['count'] > times]
+    codes = list(dfgroup.index.get_values())
+    names = [_datautils.get_basics(code).at[_datautils.get_basics(code).index.get_values()[0], 'name'] for code in codes]
+    dfgroup['name'] = names
     return dfgroup
 
-#from stocks.data import _datautils
-# print(count(_datautils.get_limitup()))
-# df = get_limit_up('002620',start='2017-01-01')
-# print(df)
+if __name__ == '__main__':
+    # from stocks.data import _datautils
+    df = get_limit_up('002907', start='2017-01-01')
+    dfcount = (count(df))
+    print(df)
+    print(dfcount)
