@@ -109,7 +109,7 @@ def plot_wave(dflist=None, filename='wave.png'):
         ax.legend(line, (code,))
 
     plt.savefig(filename, dpi = 200)
-    plt.show()
+    # plt.show()
 
 
 def format_wave_data(wavedf):
