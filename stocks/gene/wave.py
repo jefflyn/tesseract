@@ -22,13 +22,13 @@ todaystr = datetime.now().strftime('%Y-%m-%d')
 """
 df: code name date price
 """
-def plot_wave(dflist=None, filename='wave.png'):
+def plot_wave(dflist=None, filename='wave.png', title=''):
     size = len(dflist)
     cols = 1
     rows = size / cols if (size % cols == 0) else int(size / cols + 1)
     cols = size if size < cols else cols
     plt.figure(figsize=(cols * 8, rows * 5))
-    plt.gcf().suptitle('Wave Models', color='orangered', fontsize=20, fontweight='bold')
+    plt.gcf().suptitle(title + '波段图', color='orangered', fontsize=20, fontweight='bold')
     for idx in range(size):
         df = dflist[idx]
         # subplot()

@@ -13,7 +13,8 @@ from stocks.gene import bargain
 
 
 if __name__ == '__main__':
-    data = _datautils.get_industry_data('电气设备.txt')
+    # data = _datautils.get_industry_data('国防军工.txt')
+    data = _datautils.get_concept_data('军民融合.txt')
     codes = list(data['code'])
     limitupdf = limitup.get_limit_up(codes)
     _datautils.to_db(limitupdf, 'limitupx')
@@ -43,8 +44,6 @@ if __name__ == '__main__':
         listdf.append(wave.format_wave_data(wdf))
     #figure display
     wave.plot_wave(listdf)
-
-
 
     # 5.limitup data
     print(limitupdf)

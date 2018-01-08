@@ -120,6 +120,13 @@ def get_industry_data(filepath=None, encoding='gbk', sep='\t', excludeCyb=True):
         data = data[data['code'].str.get(0) != '3']
     return data
 
+def get_concept_data(filepath=None, encoding='gbk', sep='\t', excludeCyb=True):
+    data = pd.read_csv('../data/concept/' + filepath, sep=sep, encoding=encoding)
+    data['code'] = data['code'].apply(lambda code : code[2:])
+    if excludeCyb:
+        data = data[data['code'].str.get(0) != '3']
+    return data
+
 if __name__ == '__main__':
     data = get_industry_data('钢铁.txt')
     print(data)
