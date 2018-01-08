@@ -13,7 +13,7 @@ from stocks.gene import bargain
 
 
 if __name__ == '__main__':
-    data = _datautils.get_industry_data('化学制药.txt')
+    data = _datautils.get_industry_data('电气设备.txt')
     codes = list(data['code'])
     limitupdf = limitup.get_limit_up(codes)
     _datautils.to_db(limitupdf, 'limitupx')
@@ -25,21 +25,26 @@ if __name__ == '__main__':
     # 2.get the bottom price data
     bottomdf = falco.get_monitor(codes)
     bottomdf = pd.merge(bottomdf, limitupcount[['name','count']], on='name', how='left')
-    print(bottomdf)
+    # print(bottomdf)
 
-    # 3.get wave data
-    wavedf = wave.get_wave(codes)
-    print(wavedf)
+    # 3.ma data
+    madf = maup.get_ma(codes)
+    # print(madf)
+    result = pd.merge(bottomdf, madf[['code','isup','ma5','ma10','ma20','ma30','ma60','ma30std','ma30_space']], on='code', how='left')
+    print(result)
+
+    wavecodes = list(result['code'])
+    # 4.get wave data
+    wavedf = wave.get_wave(wavecodes)
+    # print(wavedf)
     listdf = []
-    for code in codes:
+    for code in wavecodes:
         wdf = wavedf[wavedf.code == code]
         listdf.append(wave.format_wave_data(wdf))
     #figure display
     wave.plot_wave(listdf)
 
-    # 4.ma data
-    madf = maup.get_ma(codes)
-    print(madf)
+
 
     # 5.limitup data
     print(limitupdf)
