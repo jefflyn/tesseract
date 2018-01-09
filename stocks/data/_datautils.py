@@ -12,6 +12,10 @@ todaystr = datetime.datetime.now().strftime('%Y-%m-%d')
 yeardays = datetime.timedelta(days=-365)
 oneyearago = (datetime.datetime.now() + yeardays).strftime('%Y%m%d')
 
+def get_totay_quotations():
+    return ts.get_day_all()
+
+
 def get_app_codes():
     cf = get_data('./data/cf.txt', sep=' ')['code'].astype('str').str.zfill(6)
     # mo = get_data('./data/monitor.txt', sep=' ')['code'].astype('str').str.zfill(6)

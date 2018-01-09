@@ -8,6 +8,11 @@ import tushare as ts
 
 from stocks.data import  _datautils
 
+def get_today_limitup():
+    todayquo = _datautils.get_totay_quotations()
+    todayquo = todayquo[todayquo['p_change'] >= 9.9]
+    return todayquo[['code', 'name', 'p_change']]
+
 # all 1 year
 def get_limit_up(codes = None, start = None, end = None, up = True):
     print("get limitups... ")
@@ -55,6 +60,9 @@ def count(df=None, times=None):
     return dfgroup
 
 if __name__ == '__main__':
+    lu = get_today_limitup()
+    print(lu)
+    exit()
     # from stocks.data import _datautils
     df = get_limit_up(['002907','600985', '600856','601908','600917'], start='2017-01-01')
     dfcount = (count(df, 1))
