@@ -64,6 +64,7 @@ def generate_report(title=None, filename=None, monitor=False, uad=False, ma=Fals
     html_content += '<h4>1.realtime info:</h4>'
     # 1.realtime info
 
+    savefilename = filename + '.png'
     rtdf = None
     if monitor == False:
         rtdf = realtime.get_realtime(filename, sortby='b')
@@ -73,6 +74,7 @@ def generate_report(title=None, filename=None, monitor=False, uad=False, ma=Fals
         rtdf.rename(
             columns={'btm_space': 'space', 'profit_amt': 'profit', 'profit_perc': 'percent', 'total_amt': 'amount'}, inplace=True)
     else:
+        savefilename = 'trace.png'
         df = _datautils.get_data('../data/' + filename, sep=' ')
         codes = list(df['code'])
         rtdf = falco.get_monitor(codes)
@@ -93,6 +95,14 @@ def generate_report(title=None, filename=None, monitor=False, uad=False, ma=Fals
     if uad == True:
         html_content += '<h4>2.up-and-down price of recent 1 year:</h4>'
         wavedf = wave.get_wave(codes, start='2017-01-01')
+        # plot figure
+        listdf = []
+        for code in codes:
+            wdf = wavedf[wavedf.code == code]
+            listdf.append(wave.format_wave_data(wdf))
+        # figure display
+        wave.plot_wave(listdf, filename=savefilename)
+
         wavedf = wavedf.replace(stkdict)
         # wavedf_html = wavedf.to_html(escape=False, index=False, sparsify=True, border=0, index_names=False, header=True)
         wavedf_html = HTML_with_style(wavedf)
@@ -122,7 +132,7 @@ def mail(to_users=[], content=None):
     ret = True
     try:
         msg = MIMEText(content, 'html', 'utf-8')
-        msg['From'] = formataddr(["FromRunoob", sender])  # sender nickname and account
+        msg['From'] = formataddr(["Jefflyn", sender])  # sender nickname and account
         #msg['To'] = formataddr(["FK", to_users])  # receiver nickname and account
         msg['Subject'] = todaystr + " Stocks Report"  # subject
 
@@ -130,7 +140,8 @@ def mail(to_users=[], content=None):
         server.login(sender, passw)
         server.sendmail(sender, to_users, msg.as_string())
         server.quit()  # close connection
-    except Exception:
+    except Exception as e:
+        print(str(e))
         ret = False
     return ret
 
@@ -161,6 +172,7 @@ def mail_with_attch(to_users=[], subject=None, content=None, attaches=[]):
     except Exception:
         ret = False
     return ret
+
 
 
 if __name__ == '__main__':

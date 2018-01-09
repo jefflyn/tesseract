@@ -1,6 +1,5 @@
 from datetime import date
 import datetime
-
 import numpy as np
 import pandas as pd
 
@@ -113,20 +112,26 @@ def filter_basic(basics, cyb = False, before = 20170701):
     return basics
 
 ##
-def get_industry_data(filepath=None, encoding='gbk', sep='\t', excludeCyb=True):
-    data = pd.read_csv('../data/industry/' + filepath, sep=sep, encoding=encoding)
-    data['code'] = data['code'].apply(lambda code : code[2:])
-    if excludeCyb:
-        data = data[data['code'].str.get(0) != '3']
-    return data
+def get_stock_data(type='i', filename=None, encoding='gbk', sep='\t', excludeCyb=True):
+    path = ''
+    if type == 'i':
+        path = '../data/industry/' + filename
+    else:
+        path = '../data/concept/' + filename
+    data = None
+    try:
+        file = open(path)
+        data = pd.read_csv(file, sep=sep, encoding=encoding)
+    except:
+        file = open(path)
+        data = pd.read_csv(file, sep=sep, encoding='utf-8')
 
-def get_concept_data(filepath=None, encoding='gbk', sep='\t', excludeCyb=True):
-    data = pd.read_csv('../data/concept/' + filepath, sep=sep, encoding=encoding)
     data['code'] = data['code'].apply(lambda code : code[2:])
+
     if excludeCyb:
         data = data[data['code'].str.get(0) != '3']
     return data
 
 if __name__ == '__main__':
-    data = get_industry_data('钢铁.txt')
+    data = get_stock_data(type='c', filename='小金属.txt')
     print(data)

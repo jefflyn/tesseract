@@ -28,11 +28,11 @@ def plot_wave(dflist=None, filename='wave.png', title=''):
     rows = size / cols if (size % cols == 0) else int(size / cols + 1)
     cols = size if size < cols else cols
     plt.figure(figsize=(cols * 8, rows * 5))
-    plt.gcf().suptitle(title + '波段图', color='orangered', fontsize=20, fontweight='bold')
+    # plt.gcf().suptitle(title + '波段图', color='orangered', fontsize=20, fontweight='bold')
     for idx in range(size):
         df = dflist[idx]
         # subplot()
-        plt.subplot(rows, cols ,idx + 1)
+        plt.subplot(rows, cols, idx + 1)
         # 生成横纵坐标信息
         # labels = ['2017-01-03', '2017-02-23', '2017-05-24', '2017-08-04', '2017-12-06', '2018-01-05']
         labels = list(df['date'])
@@ -108,7 +108,7 @@ def plot_wave(dflist=None, filename='wave.png', title=''):
         # plt.gcf().autofmt_xdate()  # 自动旋转日期标记
         ax.legend(line, (code,))
 
-    plt.savefig(filename, dpi = 200)
+    plt.savefig(filename, dpi=200, bbox_inches='tight')
     # plt.show()
 
 
@@ -257,7 +257,7 @@ if __name__ == '__main__':
     mystk = pd.read_csv(filePath, sep=' ')
     mystk['code'] = mystk['code'].astype('str').str.zfill(6)
     codes = list(mystk['code'])
-    codes = ['000032']
+    # codes = ['000032']
     wavedflist = []
     for code in codes:
         wavedata = get_wave(code, start='2016-01-04')
@@ -265,4 +265,4 @@ if __name__ == '__main__':
         wavedflist.append(result)
         print(wavedata)
 
-    plot_wave(wavedflist, 'wavepa.png')
+    plot_wave(wavedflist, 'wave1.png')

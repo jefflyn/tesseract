@@ -13,12 +13,11 @@ from stocks.gene import bargain
 
 
 if __name__ == '__main__':
-    # data = _datautils.get_industry_data('国防军工.txt')
-    data = _datautils.get_concept_data('军民融合.txt')
+    data = _datautils.get_stock_data(type='i', filename='医疗器械.txt')
     codes = list(data['code'])
     limitupdf = limitup.get_limit_up(codes)
     _datautils.to_db(limitupdf, 'limitupx')
-    # 1.choose the active codes from the limitups which limitup at lease more than 3
+    # 1.choose the active codes from the limitups which limitup at lease more than n
     limitupcount = limitup.count(limitupdf, 3)
     # print(limitupcount)
 
@@ -43,7 +42,7 @@ if __name__ == '__main__':
         wdf = wavedf[wavedf.code == code]
         listdf.append(wave.format_wave_data(wdf))
     #figure display
-    wave.plot_wave(listdf)
+    wave.plot_wave(listdf, filename='pickup.png')
 
     # 5.limitup data
     print(limitupdf)
