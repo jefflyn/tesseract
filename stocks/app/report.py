@@ -64,7 +64,7 @@ def generate_report(title=None, filename=None, monitor=False, uad=False, ma=Fals
     html_content += '<h4>1.realtime info:</h4>'
     # 1.realtime info
 
-    savefilename = filename + '.png'
+    savefilename = 'report_'+ filename + '.png'
     rtdf = None
     if monitor == False:
         rtdf = realtime.get_realtime(filename, sortby='b')
@@ -74,7 +74,7 @@ def generate_report(title=None, filename=None, monitor=False, uad=False, ma=Fals
         rtdf.rename(
             columns={'btm_space': 'space', 'profit_amt': 'profit', 'profit_perc': 'percent', 'total_amt': 'amount'}, inplace=True)
     else:
-        savefilename = 'trace.png'
+        savefilename = 'report_trace.png'
         df = _datautils.get_data('../data/' + filename, sep=' ')
         codes = list(df['code'])
         rtdf = falco.get_monitor(codes)

@@ -16,9 +16,9 @@ if __name__ == '__main__':
     att2 = report.create_attach('report_my_trace.pdf', 'trace_report.pdf')
     attaches.append(att1)
     attaches.append(att2)
-    att3 = report.create_attach('pa.png', 'position.png')
+    att3 = report.create_attach('report_pa.png', 'position.png')
     attaches.append(att3)
-    att4 = report.create_attach('trace.png', 'trace.png')
+    att4 = report.create_attach('report_trace.png', 'trace.png')
     attaches.append(att4)
     #attaches = generate_all(attaches)
 
