@@ -146,6 +146,7 @@ if __name__ == '__main__':
     tradecomp = pd.HDFStore('trade_comp.h5')
     limitups = pd.read_hdf('trade.h5', 'hist')
     df = trade.select('hist')
-    print(df)
-    df1 = tradecomp.select('hist')
-    print(df1)
+
+    print(df[df.p_change > 9.9])
+    # df1 = tradecomp.select('hist')
+    # print(df1)
