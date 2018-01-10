@@ -13,7 +13,7 @@ from stocks.gene import bargain
 
 
 if __name__ == '__main__':
-    data = _datautils.get_stock_data(type='i', filename='医疗器械.txt')
+    data = _datautils.get_stock_data(type='', filename='稀缺资源.txt')
     codes = list(data['code'])
     limitupdf = limitup.get_limit_up(codes)
     _datautils.to_db(limitupdf, 'limitupx')
@@ -32,7 +32,9 @@ if __name__ == '__main__':
     # print(madf)
     result = pd.merge(bottomdf, madf[['code','isup','ma5','ma10','ma20','ma30','ma60','ma30std','ma30_space']], on='code', how='left')
     print(result)
+    exit()
 
+    #########
     wavecodes = list(result['code'])
     # 4.get wave data
     wavedf = wave.get_wave(wavecodes)

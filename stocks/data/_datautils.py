@@ -12,18 +12,27 @@ todaystr = datetime.datetime.now().strftime('%Y-%m-%d')
 yeardays = datetime.timedelta(days=-365)
 oneyearago = (datetime.datetime.now() + yeardays).strftime('%Y%m%d')
 
+def get_sz50():
+    sz50df = ts.get_sz50s()
+    return list(sz50df['code'])
+
+
 def get_totay_quotations():
     return ts.get_day_all()
 
 
 def get_app_codes():
-    cf = get_data('./data/cf.txt', sep=' ')['code'].astype('str').str.zfill(6)
-    # mo = get_data('./data/monitor.txt', sep=' ')['code'].astype('str').str.zfill(6)
-    ot = get_data('./data/other.txt', sep=' ')['code'].astype('str').str.zfill(6)
-    pa = get_data('./data/pa.txt', sep=' ')['code'].astype('str').str.zfill(6)
-    tr = get_data('./data/trace.txt', sep=' ')['code'].astype('str').str.zfill(6)
-
+    pa = get_data('../data/app/pa.txt', sep=' ')['code'].astype('str').str.zfill(6)
+    cf = get_data('../data/app/cf.txt', sep=' ')['code'].astype('str').str.zfill(6)
+    ot = get_data('../data/app/other.txt', sep=' ')['code'].astype('str').str.zfill(6)
+    tr = get_data('../data/app/trace.txt', sep=' ')['code'].astype('str').str.zfill(6)
     codes = list(cf) + list(ot) + list(pa) + list(tr)
+    return codes
+
+def get_monitor_codes():
+    my = get_data('../data/app/monitormy.txt', sep=' ')['code'].astype('str').str.zfill(6)
+    ot = get_data('../data/app/monitorot.txt', sep=' ')['code'].astype('str').str.zfill(6)
+    codes = list(my) + list(ot)
     return codes
 
 

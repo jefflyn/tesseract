@@ -41,7 +41,7 @@ def get_limit_up(codes = None, start = None, end = None, up = True):
     print("total time: %ds" % (endtime - starttime).seconds)
     return result
 
-def count(df=None, times=None):
+def count(df=None, times=None, condition=[90, 2]):
     if df.empty:
         return df
     df = df[df['p_change'] >= 9.9]
@@ -51,9 +51,9 @@ def count(df=None, times=None):
     dfgroup = dfgroup.sort_values('count', axis=0, ascending=False, inplace=False, kind='quicksort', na_position='last')
     if times != None:
         starttime = datetime.datetime.now()
-        days = datetime.timedelta(-90)
+        days = datetime.timedelta(-condition[0])
         start = datetime.datetime.strftime(starttime + days, '%Y-%m-%d')
-        dfgroup = dfgroup[(dfgroup['count'] > times) | ((dfgroup['date'] >= start) & (dfgroup['count'] > 1))] # at least 2 times in 90d
+        dfgroup = dfgroup[(dfgroup['count'] > times) | ((dfgroup['date'] >= start) & (dfgroup['count'] >= condition[1]))] # at least 2 times in 90d
     codes = list(dfgroup.index.get_values())
     names = [_datautils.get_basics(code).at[_datautils.get_basics(code).index.get_values()[0], 'name'] for code in codes]
     dfgroup['name'] = names
