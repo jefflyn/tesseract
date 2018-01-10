@@ -257,7 +257,7 @@ if __name__ == '__main__':
     mystk = pd.read_csv(filePath, sep=' ')
     mystk['code'] = mystk['code'].astype('str').str.zfill(6)
     codes = list(mystk['code'])
-    # codes = ['000032']
+    codes = ['000710']
     wavedflist = []
     for code in codes:
         wavedata = get_wave(code, start='2016-01-04')
@@ -265,4 +265,4 @@ if __name__ == '__main__':
         wavedflist.append(result)
         print(wavedata)
 
-    plot_wave(wavedflist, 'wave1.png')
+    plot_wave(wavedflist, 'wave.png')

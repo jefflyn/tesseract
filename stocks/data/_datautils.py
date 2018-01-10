@@ -17,8 +17,8 @@ def get_sz50():
     return list(sz50df['code'])
 
 
-def get_totay_quotations():
-    return ts.get_day_all()
+def get_totay_quotations(datestr=None):
+    return ts.get_day_all(date=datestr)
 
 
 def get_app_codes():
@@ -80,11 +80,6 @@ def get_basics(code=None, excludeCyb=False):
         data = data[data['code'].str.get(0) != '3']
     if code != None:
         data = data[data.code == code]
-    return data    
-
-def get_subnew(excludeCyb=False):
-    data = get_basics(excludeCyb=excludeCyb)
-    data = data[data.timeToMarket >= int(oneyearago)]
     return data
 
 def get_bottom():
@@ -146,5 +141,11 @@ def get_stock_data(type='i', filename=None, encoding='gbk', sep='\t', excludeCyb
     return data
 
 if __name__ == '__main__':
-    data = get_stock_data(type='c', filename='小金属.txt')
-    print(data)
+    # data = get_stock_data(type='c', filename='小金属.txt')
+    trade = pd.HDFStore('trade.h5')
+    tradecomp = pd.HDFStore('trade_comp.h5')
+    limitups = pd.read_hdf('trade.h5', 'hist')
+    df = trade.select('hist')
+    print(df)
+    df1 = tradecomp.select('hist')
+    print(df1)
