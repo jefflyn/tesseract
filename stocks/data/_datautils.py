@@ -60,7 +60,6 @@ def get_k_data(code=None, start=None):
         return None
 
 
-
 def get_data(filepath=None, encoding='gbk', sep=','):
     data = pd.read_csv(filepath, sep=sep, encoding=encoding)
     data['code'] = data['code'].astype('str').str.zfill(6)
@@ -128,8 +127,8 @@ def get_stock_data(type='i', filename=None, encoding='gbk', sep='\t', excludeCyb
         path = '../data/concept/' + filename
     data = None
     try:
-        file = open(path)
-        data = pd.read_csv(file, sep=sep, encoding=encoding)
+        # file = open(path)
+        data = pd.read_csv(path, sep=sep, encoding=encoding)
     except:
         file = open(path)
         data = pd.read_csv(file, sep=sep, encoding='utf-8')
@@ -145,8 +144,9 @@ if __name__ == '__main__':
     trade = pd.HDFStore('trade.h5')
     tradecomp = pd.HDFStore('trade_comp.h5')
     limitups = pd.read_hdf('trade.h5', 'hist')
-    df = trade.select('hist')
-
-    print(df[df.p_change > 9.9])
+    df = tradecomp.select('hist')
+    df = df[(df.p_change > 9.9) & (df['code'].str.get(0) != '3')][['code']]
+    df = df.drop_duplicates(['code'])
+    print(df)
     # df1 = tradecomp.select('hist')
     # print(df1)

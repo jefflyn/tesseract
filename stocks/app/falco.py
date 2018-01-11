@@ -16,6 +16,8 @@ def get_monitor(codes, limit=10):
     for index, row in df.iterrows():
         code = row['code']
         info = basics[basics['code'].astype(object) == code]
+        if info.index.tolist() == None or len(info.index.tolist()) == 0:
+            continue
         idx = info.index.tolist()[0]
         industry = info.at[idx, 'industry']
         area = info.at[idx, 'area']
