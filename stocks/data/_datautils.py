@@ -71,7 +71,17 @@ def get_basics(code=None):
     if code != None:
         data = data[data.code == code]
     return data
-    
+
+def get_basics_fromh5(code=None, excludeCyb=False):
+    fundamental = pd.HDFStore('fundamental.h5')
+    data = fundamental['basics']
+    if excludeCyb:
+        data = data[data['code'].str.get(0) != '3']
+    if code != None:
+        data = data[data.code == code]
+    fundamental.close()
+    return data
+
 def get_basics(code=None, excludeCyb=False):
     data = pd.read_csv("../data/basics.csv", encoding="utf-8")
     data['code'] = data['code'].astype('str').str.zfill(6)
