@@ -1,10 +1,23 @@
 import os
 import platform
 import sqlite3
-
+from datetime import datetime
 import pdfkit
 
 conn = sqlite3.connect('./trade/trade.db')
+
+
+
+def is_halting(code, latest_date_str=None):
+    starttime = datetime.now()
+    latest_date = datetime.strptime(latest_date_str, '%Y-%m-%d')
+    delta = starttime - latest_date
+    # excluding halting
+    if (delta.days > 3):
+        print(code + ' halting...')
+        return True
+    else:
+        return False
 
 def isnumber(a):
     try:

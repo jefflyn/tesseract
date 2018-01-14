@@ -1,10 +1,12 @@
-import time
+import datetime as dt
+from datetime import datetime
 
 import pandas as pd
 
 import tushare as ts
 
 from stocks.data import _datautils
+from stocks.app import _utils
 from stocks.gene import wave
 from stocks.gene import bargain
 
@@ -12,12 +14,15 @@ from stocks.gene import bargain
 def get_monitor(codes, limit=10):
     basics = _datautils.get_basics()
     df = ts.get_realtime_quotes(codes)
+    #filter halting code
+    df = df[df.low > '0.000']
     data_list = []
     for index, row in df.iterrows():
         code = row['code']
         info = basics[basics['code'].astype(object) == code]
         if info.index.tolist() == None or len(info.index.tolist()) == 0:
             continue
+
         idx = info.index.tolist()[0]
         industry = info.at[idx, 'industry']
         area = info.at[idx, 'area']
@@ -50,6 +55,7 @@ def get_monitor(codes, limit=10):
             warn_sign = '!!!'
 
         curt_data = []
+        curt_data.append(code)
         curt_data.append(warn_sign)
         curt_data.append(change)
         curt_data.append(bottom)
@@ -59,11 +65,11 @@ def get_monitor(codes, limit=10):
         curt_data.append(pe)
         data_list.append(curt_data)
 
-    df_append = pd.DataFrame(data_list, columns=['warn', 'change', 'bottom', 'space', 'industry', 'area', 'pe'])
-    df = df.join(df_append)
+    df_append = pd.DataFrame(data_list, columns=['code', 'warn', 'change', 'bottom', 'space', 'industry', 'area', 'pe'])
+    df = df.merge(df_append, on='code')
     df = df.sort_values('space', axis=0, ascending=False, inplace=False, kind='quicksort', na_position='last')
-    df['change'] = df['change'].apply(lambda n: str(round(n, 3)) + '%')
-    df['space'] = df['space'].apply(lambda n: str(round(n, 3)) + '%')
+    # df['change'] = df['change'].apply(lambda n: str(round(n, 3)) + '%')
+    # df['space'] = df['space'].apply(lambda n: str(round(n, 3)) + '%')
     return df[['warn','code','name','change','price','low','bottom','space','industry','area','pe']]
 
 def monitor(codes, inc=3):
