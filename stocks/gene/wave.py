@@ -114,21 +114,24 @@ def plot_wave(dflist=None, filename='wave.png', title=''):
 
 def format_wave_data(wavedf):
     latestone = wavedf.tail(1)
-    code = latestone.at[latestone.index.get_values()[0],'code']
-    stock = _datautils.get_basics(code)
-    name = stock.at[stock.index.get_values()[0],'name']
-    enddate = latestone.at[latestone.index.get_values()[0],'end']
-    endprice = latestone.at[latestone.index.get_values()[0],'end_price']
+    try:
+        code = latestone.at[latestone.index.get_values()[0],'code']
+        stock = _datautils.get_basics(code)
+        name = stock.at[stock.index.get_values()[0],'name']
+        enddate = latestone.at[latestone.index.get_values()[0],'end']
+        endprice = latestone.at[latestone.index.get_values()[0],'end_price']
 
-    codes = list(wavedf['code'])
-    codes.append(code)
-    names = [name] * len(codes)
-    dates = list(wavedf['begin'])
-    dates.append(enddate)
-    prices = list(wavedf['begin_price'])
-    prices.append(endprice)
-    newwavedf = pd.DataFrame({'code': codes, 'name': names, 'date': dates, 'price': prices})
-    return newwavedf
+        codes = list(wavedf['code'])
+        codes.append(code)
+        names = [name] * len(codes)
+        dates = list(wavedf['begin'])
+        dates.append(enddate)
+        prices = list(wavedf['begin_price'])
+        prices.append(endprice)
+        newwavedf = pd.DataFrame({'code': codes, 'name': names, 'date': dates, 'price': prices})
+        return newwavedf
+    except Exception as e:
+        print(latestone + ' error: ' + str(e))
 
 def get_wave(codes=None, start=None, end=None, beginlow=True, duration=0, pchange=0):
     starttime = datetime.now()

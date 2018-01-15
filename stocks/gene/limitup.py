@@ -44,19 +44,22 @@ def get_limit_up(codes = None, start = None, end = None, up = True):
 def count(df=None, times=None, condition=[90, 2]):
     if df.empty:
         return df
-    df = df[df['p_change'] >= 9.9]
-    # dfgroup = df.groupby("code")['p_change'].count()
-    dfgroup = df.groupby("code").agg({'p_change': np.size, 'date': np.min})
-    dfgroup.rename(columns={'p_change': 'count'}, inplace=True)
+    dfgroup = df.groupby('code')
+    codes = list(dfgroup.groups.keys())
+    size = dfgroup.p_change.count()
+    mindate = dfgroup.date.min()
+    maxdate = dfgroup.date.max()
+    low = dfgroup.low.first()
+
+    dfgroup = pd.DataFrame({'code': codes, 'count':size, 'mindate':mindate, 'maxdate':maxdate, 'lmtuplow':low})
     dfgroup = dfgroup.sort_values('count', axis=0, ascending=False, inplace=False, kind='quicksort', na_position='last')
     if times != None:
         starttime = datetime.datetime.now()
         days = datetime.timedelta(-condition[0])
         start = datetime.datetime.strftime(starttime + days, '%Y-%m-%d')
-        dfgroup = dfgroup[(dfgroup['count'] > times) | ((dfgroup['date'] >= start) & (dfgroup['count'] >= condition[1]))] # at least 2 times in 90d
-    codes = list(dfgroup.index.get_values())
-    names = [_datautils.get_basics(code).at[_datautils.get_basics(code).index.get_values()[0], 'name'] for code in codes]
-    dfgroup['name'] = names
+        dfgroup = dfgroup[(dfgroup['count'] > times) | ((dfgroup['mindate'] >= start) & (dfgroup['count'] >= condition[1]))] # at least 2 times in 90d
+    # names = [_datautils.get_basics(code).at[_datautils.get_basics(code).index.get_values()[0], 'name'] for code in codes]
+
     return dfgroup
 
 if __name__ == '__main__':

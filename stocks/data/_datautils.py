@@ -12,6 +12,17 @@ todaystr = datetime.datetime.now().strftime('%Y-%m-%d')
 yeardays = datetime.timedelta(days=-365)
 oneyearago = (datetime.datetime.now() + yeardays).strftime('%Y%m%d')
 
+
+def get_latest_h5(code=None, excludeCyb=False):
+    trade = pd.HDFStore('../data/trade.h5')
+    data = trade['latest']
+    if excludeCyb:
+        data = data[data['code'].str.get(0) != '3']
+    if code != None:
+        data = data[data.code == code]
+    trade.close()
+    return data
+
 def get_sz50():
     sz50df = ts.get_sz50s()
     return list(sz50df['code'])
@@ -73,7 +84,7 @@ def get_basics(code=None):
     return data
 
 def get_basics_fromh5(code=None, excludeCyb=False):
-    fundamental = pd.HDFStore('fundamental.h5')
+    fundamental = pd.HDFStore('../data/fundamental.h5')
     data = fundamental['basics']
     if excludeCyb:
         data = data[data['code'].str.get(0) != '3']

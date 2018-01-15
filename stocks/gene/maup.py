@@ -7,6 +7,7 @@ import pandas as pd
 import tushare as ts
 
 from stocks.data import _datautils as dt
+from stocks.app import _utils
 
 pd.set_option('display.width', 600)
 
@@ -28,11 +29,8 @@ def get_ma(codes=None, start='2016-01-04', end=None):
         idx = latest.index.get_values()[0]
         price = latest.at[idx, 'close']
         latest_date_str = latest.at[idx, 'date']
-        latest_date = datetime.datetime.strptime(latest_date_str, '%Y-%m-%d')
-        delta = starttime - latest_date
         # excluding halting
-        if (delta.days > 3):
-            print(code + ' halting...')
+        if (_utils.is_halting(code, latest_date_str)):
             continue
 
         ma5 = hist_data.tail(5).mean()['close']
