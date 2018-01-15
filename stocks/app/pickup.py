@@ -11,6 +11,23 @@ from stocks.gene import wave
 from stocks.gene import maup
 from stocks.gene import bargain
 
+
+def pickup_subnew():
+    data = _datautils.get_stock_data(type='c', filename='次新0115.txt')
+    codes = list(data['code'])
+
+    # get the bottom price data
+    bottomdf = falco.get_monitor(codes)
+
+    # ma data
+    madf = maup.get_ma(codes)
+    result = pd.merge(bottomdf, madf[['code', 'isup', 'ma5', 'ma10', 'ma20', 'ma30', 'ma60', 'ma30std', 'ma30_space']],
+                      on='code', how='left')
+    result = result.sort_values('space', axis=0, ascending=True, inplace=False, kind='quicksort', na_position='last')
+    result['change'] = result['change'].apply(lambda n: str(round(n, 3)) + '%')
+    result['space'] = result['space'].apply(lambda n: str(round(n, 3)) + '%')
+    result.to_csv('pickup_subnew.csv')
+
 def pickup_s1(type='', classname=''):
     data = _datautils.get_stock_data(type=type, filename=classname)
     codes = list(data['code'])
@@ -96,10 +113,11 @@ def pickup_s2():
     # wave.plot_wave(listdf, filename='pickup2.png')
 
 if __name__ == '__main__':
+    pickup_subnew()
     # bottomdf = falco.get_monitor('002852')
     # print(bottomdf)
     # exit()
-    pickup_s2()
+    #pickup_s2()
     # pickup_s1('i', '零售.txt')
 
 
