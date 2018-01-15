@@ -27,6 +27,7 @@ def pickup_subnew():
     result['change'] = result['change'].apply(lambda n: str(round(n, 3)) + '%')
     result['space'] = result['space'].apply(lambda n: str(round(n, 3)) + '%')
     result.to_csv('pickup_subnew.csv')
+    _datautils.to_db(result, 'pickup_subnew')
 
 def pickup_s1(type='', classname=''):
     data = _datautils.get_stock_data(type=type, filename=classname)
