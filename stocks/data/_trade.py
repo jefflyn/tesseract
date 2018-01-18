@@ -17,21 +17,22 @@ def append_newest_record():
     histdf = trade.get('hist')
     keys = trade.keys()
     oneday = dt.timedelta(-1)
-
+    targetdatestr = todaystr
     while True:
-        print(todaystr + ' get trade data >>>')
+        print(targetdatestr + ' get trade data >>>')
         try:
-            todaydf = _dt.get_totay_quotations(todaystr)
+            todaydf = _dt.get_totay_quotations(targetdatestr)
             size = len(todaydf.index.get_values())
-            dates = [todaystr] * size
+            dates = [targetdatestr] * size
             todaydf.insert(0, 'date', dates)
-            print('    total size: ' + str(size))
+            print('    insert successfully, total size: ' + str(size))
             # update latest tade
             if '/latest' in keys:
                 latestdf = trade.get('latest')
                 latest = latestdf[latestdf.date == todaystr]
                 if latest.empty:
                     trade.put('latest', todaydf)
+                    print('    latest trade data update')
                 else:
                     print('    latest trade data existed already')
             else:
@@ -48,7 +49,7 @@ def append_newest_record():
             print('    ' + str(e))
 
         today = today + oneday
-        todaystr = datetime.strftime(today, '%Y-%m-%d')
+        targetdatestr = datetime.strftime(today, '%Y-%m-%d')
 
     trade.close()
 

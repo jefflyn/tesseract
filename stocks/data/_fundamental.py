@@ -1,3 +1,5 @@
+import datetime
+
 import numpy as np
 import pandas as pd
 
@@ -22,4 +24,4 @@ def basics_to_hdf5():
 if __name__ == '__main__':
     basics_to_csv()
     basics_to_hdf5()
-    print('etl success')
+    print(str(datetime.datetime.now()) + ': etl basic data successfully')
