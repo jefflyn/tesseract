@@ -45,3 +45,12 @@ def get_bottom(df = None, limit = 20):
     print("total time: %ds" % (endtime - starttime).seconds)
     return result
 
+if __name__ == '__main__':
+    from stocks.data import _datautils
+    from stocks.gene import wave
+    codes = _datautils.get_monitor_codes()
+    wavedf = wave.get_wave(codes)
+    df = get_bottom(wavedf)
+
+    df.to_csv("../data/tmp/bottomx.csv", encoding='utf-8')
+    _datautils.to_db(df, 'bottomx')

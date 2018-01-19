@@ -99,5 +99,11 @@ def get_ma_up(madf = None):
 
 if __name__ == '__main__':
     df = get_ma('002620', start='2017-01-01')
-    # df = get_ma_up(df)
+    basics = dt.filter_basic(dt.get_basics())
+    codes = basics['code'].values
+
+    data = maup.get_ma(codes)
+    # data = maup.get_ma_up(data)
+
+    data.to_csv("../data/tmp/maupx.csv", encoding='utf-8')
     print(df)

@@ -254,6 +254,18 @@ def wavefrom(code, df, beginlow, direction='left', duration=0, pchange=0):
         ismax = not ismax
     return period_data
 
+
+def etl():
+    from stocks.gene import limitup
+    from stocks.gene import wave
+
+    filePath = "../data/app/pa.txt"
+    mystk = pd.read_csv(filePath, sep=' ')
+    mystk['code'] = mystk['code'].astype('str').str.zfill(6)
+    codes = list(mystk['code'])
+    mywavedata = wave.get_wave(codes, start='2016-01-04')
+    mywavedata.to_csv("../data/wavemy.csv", encoding='utf-8')
+
 if __name__ == '__main__':
     # get_wave()
     filePath = "../data/app/pa.txt"

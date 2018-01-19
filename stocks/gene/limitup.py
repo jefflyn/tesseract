@@ -62,6 +62,17 @@ def count(df=None, times=None, condition=[90, 2]):
 
     return dfgroup
 
+def etl():
+    basics = _datautils.filter_basic(_datautils.get_basics())
+    codes = basics['code'].values
+
+    ups = limitup.get_limit_up(codes)
+    ups.to_csv('../data/tmp/limitupx.csv', encoding='utf-8')
+    ups = limitup.count(ups)
+    ups['code'] = ups.index
+    #save to db
+    _datautils.to_db(ups, 'limitupx')
+
 if __name__ == '__main__':
     lu = get_today_limitup()
     print(lu)
