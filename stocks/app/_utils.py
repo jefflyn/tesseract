@@ -4,8 +4,7 @@ import sqlite3
 from datetime import datetime
 import pdfkit
 
-conn = sqlite3.connect('./trade/trade.db')
-
+conn = sqlite3.connect('../data/trade.db')
 
 
 def is_halting(code, latest_date_str=None):
@@ -19,6 +18,7 @@ def is_halting(code, latest_date_str=None):
     else:
         return False
 
+
 def isnumber(a):
     try:
         float(a)
@@ -26,16 +26,20 @@ def isnumber(a):
     except:
         return False
 
+
 def chdir(path=None):
     if path is None:
         return os.getcwd()
     os.chdir(path)
 
+
 def get_connection():
     return conn
 
+
 def get_cursor():
     return conn.cursor()
+
 
 def get_cursor():
     return conn.cursor()
@@ -62,5 +66,4 @@ def save_to_pdf(htmlstr=None, desc=None):
         print("Call Linux tasks")
     else:
         pdfkit.from_string(htmlstr, desc, options=options)
-
     print('save to pdf successfully')

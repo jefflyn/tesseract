@@ -12,13 +12,14 @@ from stocks.gene import wave
 
 pd.set_option('display.width', 600)
 
-if len(argv) < 2:
-    print("Invalid args! At least 2 args like: python xxx.py code1[,code2,...]")
-    sys.exit(0)
-codes = argv[1]
+if __name__ == '__main__':
+    if len(argv) < 2:
+        print("Invalid args! At least 2 args like: python xxx.py code1[,code2,...]")
+        sys.exit(0)
+    codes = argv[1]
 
-code_list = codes.split(',')
-print(code_list)
+    code_list = codes.split(',')
+    print(code_list)
 
-result = wave.get_wave(code_list, start='2017-01-01', duration=0, pchange=0.0)
-print(result)
+    result = wave.get_wave(code_list)
+    print(result)

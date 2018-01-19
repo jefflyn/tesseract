@@ -52,7 +52,7 @@ def get_ma(codes=None, start='2016-01-04', end=None):
         ma120std = np.std(np.array(ma120ls))
         ma250std = np.std(np.array(ma250ls))
 
-        isup = (ma5 >= ma10) & (ma10 >= ma20) & (ma20 >= ma30)
+        isup = (ma10 >= ma20) & (ma20 >= ma30)
 
         row = dt.get_basics(code)
         idx = row.index.get_values()[0]
@@ -73,7 +73,7 @@ def get_ma(codes=None, start='2016-01-04', end=None):
         malist.append(round(ma120,2))
         malist.append(round(ma250,2))
         malist.append(round(ma30std,3))
-        malist.append(round((price - ma30) / ma30 * 100, 3))
+        malist.append(round((price - ma10) / ma10 * 100, 3))
         # malist.append(ma60std)
         # malist.append(ma120std)
         # malist.append(ma250std)
@@ -81,8 +81,8 @@ def get_ma(codes=None, start='2016-01-04', end=None):
         madfdata.append(malist)
 
     ma_df = pd.DataFrame(madfdata, columns=['code', 'name', 'industry', 'area', 'pe', 'isup', 'price', \
-                                      'ma5', 'ma10', 'ma20', 'ma30', 'ma60', 'ma90', 'ma120', 'ma250', 'ma30std', 'ma30_space'])#,'ma60std','ma120std','ma250std'])
-    ma_df = ma_df.sort_values(by=['isup', 'ma30_space'], ascending=[False, True])
+                                      'ma5', 'ma10', 'ma20', 'ma30', 'ma60', 'ma90', 'ma120', 'ma250', 'ma30std', 'ma10_space'])#,'ma60std','ma120std','ma250std'])
+    ma_df = ma_df.sort_values(by=['isup', 'ma10_space'], ascending=[False, True])
     endtime = datetime.datetime.now()
     print("process ma data finish at [%s], total time: %ds" % (endtime, (endtime - starttime).seconds))
     return ma_df
@@ -98,12 +98,12 @@ def get_ma_up(madf = None):
 
 
 if __name__ == '__main__':
-    df = get_ma('002620', start='2017-01-01')
-    basics = dt.filter_basic(dt.get_basics())
+    basics = dt.get_basics(excludeCyb=True)
     codes = basics['code'].values
+    codes = ['002620']
 
-    data = maup.get_ma(codes)
-    # data = maup.get_ma_up(data)
+    df = get_ma(codes, start='2017-01-01')
+    # data = maup.get_ma_up(df)
 
-    data.to_csv("../data/tmp/maupx.csv", encoding='utf-8')
+    # data.to_csv("../data/tmp/maupx.csv", encoding='utf-8')
     print(df)

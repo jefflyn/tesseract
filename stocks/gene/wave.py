@@ -114,12 +114,13 @@ def plot_wave(dflist=None, filename='wave.png', title=''):
 
 def format_wave_data(wavedf):
     latestone = wavedf.tail(1)
+    code = ''
     try:
-        code = latestone.at[latestone.index.get_values()[0],'code']
+        code = latestone.at[latestone.index.get_values()[0], 'code']
         stock = _datautils.get_basics(code)
-        name = stock.at[stock.index.get_values()[0],'name']
-        enddate = latestone.at[latestone.index.get_values()[0],'end']
-        endprice = latestone.at[latestone.index.get_values()[0],'end_price']
+        name = stock.at[stock.index.get_values()[0], 'name']
+        enddate = latestone.at[latestone.index.get_values()[0], 'end']
+        endprice = latestone.at[latestone.index.get_values()[0], 'end_price']
 
         codes = list(wavedf['code'])
         codes.append(code)
@@ -131,8 +132,12 @@ def format_wave_data(wavedf):
         newwavedf = pd.DataFrame({'code': codes, 'name': names, 'date': dates, 'price': prices})
         return newwavedf
     except Exception as e:
-        print(latestone + ' error: ' + str(e))
+        print(code + ' error: ' + str(e))
 
+
+"""
+default get the recent one year data
+"""
 def get_wave(codes=None, start=None, end=None, beginlow=True, duration=0, pchange=0):
     starttime = datetime.now()
     if start == None:
@@ -147,7 +152,10 @@ def get_wave(codes=None, start=None, end=None, beginlow=True, duration=0, pchang
     perioddf_list = []
     for code in code_list:
         print("   >>> processing %s ..." % code)
+        # hist_data = ts.get_h_data(code, start)  # network issue
         hist_data = ts.get_k_data(code, start) #one day delay issue, use realtime interface solved
+        if hist_data is None or len(hist_data) == 0:
+            continue
         latestdate = hist_data.tail(1).at[hist_data.tail(1).index.get_values()[0], 'date']
         if todaystr != latestdate:
             # get today data from [get_realtime_quotes(code)]
@@ -158,9 +166,6 @@ def get_wave(codes=None, start=None, end=None, beginlow=True, duration=0, pchang
                 newone = {'date':todaystr,'open':float(realtime.at[0,'open']),'close':float(realtime.at[0,'price']),'high':float(realtime.at[0,'high']), 'low':todaylow,'volume':int(float(realtime.at[0,'volume'])/100),'code':code}
                 newdf = pd.DataFrame(newone, index=[0])
                 hist_data = hist_data.append(newdf, ignore_index=True)
-        # hist_data = ts.get_h_data(code, start)  # network issue
-        if hist_data is None or len(hist_data) == 0:
-            continue
         left_data = wavefrom(code, hist_data, beginlow, 'left', duration, pchange)
         #sorted by date asc
         left_data.reverse()
@@ -177,6 +182,7 @@ def get_wave(codes=None, start=None, end=None, beginlow=True, duration=0, pchang
     endtime = datetime.now()
     print("get wave finish at [%s], total time: %ds" % (endtime, (endtime - starttime).seconds))
     return result
+
 
 def wavefrom(code, df, beginlow, direction='left', duration=0, pchange=0):
     period_data = []

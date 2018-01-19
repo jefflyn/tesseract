@@ -27,6 +27,80 @@ passw = 'pznntikuyzfvbchb'
 
 todaystr = datetime.datetime.now().strftime('%Y-%m-%d')
 
+
+"""
+return result with html style
+"""
+def generate_holding_report(title=None, filename=None, monitor=False, uad=False, ma=False, lup=False):
+    body = """  <html>  <head>  <meta name="pdfkit-page-size" content="Legal"/>  <meta name="pdfkit-orientation" content="Landscape"/>  </head>  Hello World!  </html>  """
+    html_content = '<h3>' + title + '</h3>'
+    html_content += '<h4>1.realtime info:</h4>'
+    # 1.realtime info
+
+    savefilename = 'report_'+ filename + '.png'
+    rtdf = None
+    if monitor == False:
+        rtdf = realtime.get_realtime(filename, sortby='b')
+        rtdf = rtdf[
+            ['warn', 'code', 'name', 'price', 'change', 'low', 'bottom', 'btm_space', 'cost', 'profit_amt', 'profit_perc', 'total_amt']]
+        # rtdf.columns = ['a', 'b', 'c']
+        rtdf.rename(
+            columns={'btm_space': 'space', 'profit_amt': 'profit', 'profit_perc': 'percent', 'total_amt': 'amount'}, inplace=True)
+    else:
+        savefilename = 'report_trace.png'
+        df = _datautils.get_data('../data/' + filename, sep=' ')
+        codes = list(df['code'])
+        rtdf = falco.get_monitor(codes)
+        rtdf = rtdf[['warn','code','name','change','price','low','bottom','space','industry','area','pe']]
+
+    # rtdf = rtdf.sort_values('space', ascending=False)
+    codes = list(rtdf.code)
+    names = list(rtdf.name)
+    stkdict = dict(zip(codes, names))
+    codes.reverse()
+
+    #style format
+    # rtdf['code'] = rtdf['code'].apply(lambda x: str('<a href="http://m.10jqka.com.cn/stockpage/hs_' + x + '">' + x + '</a>'))
+    rtdf_html = HTML_with_style(rtdf)
+    html_content += rtdf_html
+
+    # 2.up-and-down price of recent 1 year
+    if uad == True:
+        html_content += '<h4>2.up-and-down price of recent 1 year:</h4>'
+        wavedf = wave.get_wave(codes, start='2017-01-01')
+        # plot figure
+        listdf = []
+        for code in codes:
+            wdf = wavedf[wavedf.code == code]
+            listdf.append(wave.format_wave_data(wdf))
+        # figure display
+        wave.plot_wave(listdf, filename=savefilename)
+
+        wavedf = wavedf.replace(stkdict)
+        # wavedf_html = wavedf.to_html(escape=False, index=False, sparsify=True, border=0, index_names=False, header=True)
+        wavedf_html = HTML_with_style(wavedf)
+        html_content += wavedf_html
+
+    # 3.moving average prices of several crucial waves
+    if ma == True:
+        html_content += '<h4>3.moving average prices of several crucial waves:</h4>'
+        madf = maup.get_ma(codes, start='2017-01-01')
+        # madf_html = madf.to_html(escape=False, index=False, sparsify=True, border=0, index_names=False, header=True)
+        madf_html = HTML_with_style(madf)
+        html_content += madf_html
+
+    # 4.limit-up of recent 1 year
+    if lup == True:
+        html_content += '<h4>4.limit-up of recent 1 year:</h4>'
+        limitupdf = limitup.get_limit_up(codes, start='2017-01-01')
+        limitupdf = limitupdf.replace(stkdict)
+        # limitupdf_html = limitupdf.to_html(escape=False, index=False, sparsify=True, border=0, index_names=False, header=True)
+        limitupdf_html = HTML_with_style(limitupdf)
+        html_content += limitupdf_html
+
+    return html_content
+
+
 def HTML_with_style(df, style=None, random_id=None):
     df_html = df.to_html(index=False, index_names=False)
 
@@ -156,7 +230,7 @@ def create_attach(file=None, attchname=None):
 def mail_with_attch(to_users=[], subject=None, content=None, attaches=[]):
     ret = True
     message = MIMEMultipart()
-    message['From'] = formataddr(["FromRunoob", sender])
+    message['From'] = formataddr(["jefflyn", sender])
     # message['To'] = Header("test to", 'utf-8')
     message['Subject'] = Header(subject, 'utf-8')
     message.attach(MIMEText(content, 'html', 'utf-8'))

@@ -13,6 +13,15 @@ yeardays = datetime.timedelta(days=-365)
 oneyearago = (datetime.datetime.now() + yeardays).strftime('%Y%m%d')
 
 
+def format_percent(df=None, columns=[], precision=2):
+    if df == None:
+        return None
+    for columm in columns:
+        df[columm] = df[columm].apply(lambda x: str(round(x, precision)) + '%')
+
+
+"""
+"""
 def get_latest_h5(code=None, excludeCyb=False):
     trade = pd.HDFStore('../data/trade.h5')
     data = trade['latest']
@@ -22,6 +31,7 @@ def get_latest_h5(code=None, excludeCyb=False):
         data = data[data.code == code]
     trade.close()
     return data
+
 
 def get_sz50():
     sz50df = ts.get_sz50s()
@@ -39,6 +49,7 @@ def get_app_codes():
     tr = get_data('../data/app/trace.txt', sep=' ')['code'].astype('str').str.zfill(6)
     codes = list(cf) + list(ot) + list(pa) + list(tr)
     return codes
+
 
 def get_monitor_codes():
     my = get_data('../data/app/monitormy.txt', sep=' ')['code'].astype('str').str.zfill(6)

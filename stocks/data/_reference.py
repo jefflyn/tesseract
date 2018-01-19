@@ -4,12 +4,12 @@ import pandas as pd
 import tushare as ts
 
 
-def get_forecast(year, season, excludeCyb=True, afterdate=None):
+def get_forecast(year=2017, season=4, excludeCyb=True, startdate=None):
     forecast = ts.forecast_data(year, season)
     if excludeCyb:
         forecast = forecast[forecast['code'].str.get(0) != '3']
-    if afterdate != None:
-        forecast = forecast[forecast['report_date'] >= afterdate]
+    if startdate != None:
+        forecast = forecast[forecast['report_date'] >= startdate]
 
     ranges = list(forecast['range'])
 

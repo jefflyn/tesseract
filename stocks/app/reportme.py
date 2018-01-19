@@ -1,9 +1,12 @@
 from stocks.app import report
 from stocks.app import _utils
 from stocks.data import _datautils
+from stocks.data import _reference
 from stocks.gene import maup
 from stocks.gene import upnday
-from stocks.etl import _reference
+
+def report(codes=None):
+    return None
 
 if __name__ == '__main__':
     content1 = report.generate_report(title='The position stocks report', filename='pa', uad=True, ma=True, lup=True)
