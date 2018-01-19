@@ -12,6 +12,7 @@ trade = pd.HDFStore('../data/trade.h5', complevel=9, complib='blosc')
 
 
 def append_newest_record():
+    # trade.remove('latest')
     today = datetime.today()
     todaystr = datetime.strftime(today, '%Y-%m-%d')
     histdf = trade.get('hist')
@@ -25,11 +26,11 @@ def append_newest_record():
             size = len(todaydf.index.get_values())
             dates = [targetdatestr] * size
             todaydf.insert(0, 'date', dates)
-            print('    insert successfully, total size: ' + str(size))
             # update latest tade
             if '/latest' in keys:
+                # trade.remove('latest')
                 latestdf = trade.get('latest')
-                latest = latestdf[latestdf.date == todaystr]
+                latest = latestdf[latestdf.date == targetdatestr]
                 if latest.empty:
                     trade.put('latest', todaydf)
                     print('    latest trade data update')
@@ -38,13 +39,13 @@ def append_newest_record():
             else:
                 trade.put('latest', todaydf)
 
-            todaydf = histdf[histdf.date == todaystr]
-            if todaydf.empty == False:
+            targetdf = histdf[histdf.date == targetdatestr]
+            if targetdf.empty == False:
                 print('    hist trade data existed already')
                 break
 
             trade.append('hist', todaydf)
-
+            print('    insert successfully, total size: ' + str(size))
         except Exception as e:
             print('    ' + str(e))
 
