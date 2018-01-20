@@ -12,7 +12,14 @@ indexdf = indexdf[indexdf['code'].isin(myindex)]
 indexdf = indexdf.sort_values('change', axis=0, ascending=True, inplace=False, kind='quicksort', na_position='last')
 print(indexdf)
 
-wavedf = wave.get_wave(myindex)
-formatdata = wave.format_wave_data(wavedf)
-wave.plot_wave(formatdata, filename='wave_index.png')
+wavedf = wave.get_wave(codes=myindex, index=True)
+print(wavedf)
+
+# plot figure
+listdf = []
+for code in myindex:
+    wdf = wavedf[wavedf.code == code]
+    listdf.append(wave.format_wave_data(wdf, index=True))
+# figure display
+wave.plot_wave(listdf, filename='wave_index.png', columns=3)
 

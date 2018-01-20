@@ -22,9 +22,9 @@ todaystr = datetime.now().strftime('%Y-%m-%d')
 """
 df: code name date price
 """
-def plot_wave(dflist=None, filename='wave.png', title=''):
+def plot_wave(dflist=None, filename='wave.png', title='', columns=1):
     size = len(dflist)
-    cols = 1
+    cols = columns
     rows = size / cols if (size % cols == 0) else int(size / cols + 1)
     cols = size if size < cols else cols
     plt.figure(figsize=(cols * 8, rows * 5))
@@ -112,13 +112,13 @@ def plot_wave(dflist=None, filename='wave.png', title=''):
     # plt.show()
 
 
-def format_wave_data(wavedf):
+def format_wave_data(wavedf=None, index=False):
     latestone = wavedf.tail(1)
     code = ''
     try:
         code = latestone.at[latestone.index.get_values()[0], 'code']
-        stock = _datautils.get_basics(code)
-        name = stock.at[stock.index.get_values()[0], 'name']
+        stock = _datautils.get_basics(code, index=index)
+        name = stock if isinstance(stock, str) else stock.at[stock.index.get_values()[0], 'name']
         enddate = latestone.at[latestone.index.get_values()[0], 'end']
         endprice = latestone.at[latestone.index.get_values()[0], 'end_price']
 
@@ -138,7 +138,7 @@ def format_wave_data(wavedf):
 """
 default get the recent one year data
 """
-def get_wave(codes=None, start=None, end=None, beginlow=True, duration=0, pchange=0):
+def get_wave(codes=None, index=False, start=None, end=None, beginlow=True, duration=0, pchange=0):
     starttime = datetime.now()
     if start == None:
         bwdays = dt.timedelta(-365)
@@ -153,7 +153,7 @@ def get_wave(codes=None, start=None, end=None, beginlow=True, duration=0, pchang
     for code in code_list:
         print("   >>> processing %s ..." % code)
         # hist_data = ts.get_h_data(code, start)  # network issue
-        hist_data = ts.get_k_data(code, start) #one day delay issue, use realtime interface solved
+        hist_data = ts.get_k_data(code=code, index=index, start=start) #one day delay issue, use realtime interface solved
         if hist_data is None or len(hist_data) == 0:
             continue
         latestdate = hist_data.tail(1).at[hist_data.tail(1).index.get_values()[0], 'date']

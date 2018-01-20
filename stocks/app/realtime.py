@@ -101,7 +101,7 @@ def get_realtime(file, sortby=None):
     # format data
     df['change'] = df['change'].apply(lambda x: str(round(x, 3)) + '%')
     df['profit_perc'] = df['profit_perc'].apply(lambda x: str(round(x, 3)) + '%')
-    df['btm_space'] = df['btm_space'].apply(lambda x: str(round(x, 3)) + '%')
+    # df['btm_space'] = df['btm_space'].apply(lambda x: str(round(x, 3)) + '%')
     # df['esc_space'] = df['esc_space'].apply(lambda x: str(round(x, 3)) + '%')
 
     return df[['warn','code','name','price','change','bid','ask','low','high','bottom','btm_space','cost','profit_amt','profit_perc','total_amt']]

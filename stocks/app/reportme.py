@@ -5,8 +5,6 @@ from stocks.data import _reference
 from stocks.gene import maup
 from stocks.gene import upnday
 
-def report(codes=None):
-    return None
 
 if __name__ == '__main__':
     content1 = report.generate_report(title='The position stocks report', filename='pa', uad=True, ma=True, lup=True)

@@ -33,13 +33,14 @@ def get_limit_up(codes = None, start = None, end = None, up = True):
             continue
         hist_data.insert(0, 'date', hist_data.index)
         hist_data.insert(1, 'code', code)
-        hist_data = hist_data[['code', 'date', 'close', 'p_change']]
+        hist_data = hist_data[['code', 'date', 'close', 'p_change', 'low']]
         hist_data = hist_data[hist_data['p_change'] >= 9.9] if up else hist_data[hist_data['p_change'] <= -9.9]
         # hist_data.reset_index()
         result = result.append(hist_data, ignore_index=True)
     endtime = datetime.datetime.now()
     print("total time: %ds" % (endtime - starttime).seconds)
     return result
+
 
 def count(df=None, times=None, condition=[90, 2]):
     if df.empty:

@@ -12,6 +12,9 @@ todaystr = datetime.datetime.now().strftime('%Y-%m-%d')
 yeardays = datetime.timedelta(days=-365)
 oneyearago = (datetime.datetime.now() + yeardays).strftime('%Y%m%d')
 
+INDEX_DICT = {'000001': '上证指数', '000016': '上证50', '000300': '沪深300',
+              '399001': '深证成指', '399005': '中小板指', '399006': '创业板指'}
+
 
 def format_percent(df=None, columns=[], precision=2):
     if df == None:
@@ -104,7 +107,10 @@ def get_basics_fromh5(code=None, excludeCyb=False):
     fundamental.close()
     return data
 
-def get_basics(code=None, excludeCyb=False):
+def get_basics(code=None, excludeCyb=False, index=False):
+    if index == True:
+        return INDEX_DICT[code]
+
     data = pd.read_csv("../data/basics.csv", encoding="utf-8")
     data['code'] = data['code'].astype('str').str.zfill(6)
     if excludeCyb:
