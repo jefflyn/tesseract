@@ -34,5 +34,5 @@ def get_forecast(year=2017, season=4, excludeCyb=True, startdate=None):
 
 if __name__ == '__main__':
     pd.set_option('display.width', 800)
-    forecast = get_forecast(2017, 4, afterdate='2017-12-01')
+    forecast = get_forecast(2017, 4, startdate='2018-01-01')
     print(forecast)
