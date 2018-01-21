@@ -53,6 +53,8 @@ def get_upnday(codes=None, n=3, change=None):
                 endp = close
             diff = close - open
             if diff < 0:
+                if index == 0:
+                    continue
                 isndayup = False
                 beginp = close
                 break
