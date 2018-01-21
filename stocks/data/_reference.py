@@ -3,6 +3,8 @@ import pandas as pd
 
 import tushare as ts
 
+from stocks.data import _datautils
+
 
 def get_forecast(year=2017, season=4, excludeCyb=True, startdate=None):
     forecast = ts.forecast_data(year, season)
@@ -30,6 +32,7 @@ def get_forecast(year=2017, season=4, excludeCyb=True, startdate=None):
     forecast['range_from'] = rangefrom
     forecast['range_to'] = rangeto
     forecast = forecast.sort_values(by='range_to', ascending=False)
+    _datautils.to_db(forecast, 'profit_forecast')
     return forecast
 
 if __name__ == '__main__':

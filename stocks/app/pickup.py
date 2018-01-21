@@ -111,14 +111,15 @@ def pickup_s2():
     result = pd.merge(bottomdf, madf[['code', 'isup', 'ma5', 'ma10', 'ma20', 'ma30', 'ma60', 'ma30std', 'ma10_space']], on='code', how='left')
     result = result.sort_values(['space', 'lmtuplow'], axis=0, ascending=[True, True], inplace=False, kind='quicksort',
                                 na_position='last')
-    #save
-    result.to_csv('pickup2.csv')
-    _datautils.to_db(result, 'pickup2')
+
     #format
     result['change'] = result['change'].apply(lambda n: str(round(n, 2)) + '%')
-    result['space'] = result['space'].apply(lambda n: str(round(n, 2)) + '%')
-    result['lmtspace'] = result['lmtspace'].apply(lambda n: str(round(n, 2)) + '%')
+    # result['space'] = result['space'].apply(lambda n: str(round(n, 2)) + '%')
+    # result['lmtspace'] = result['lmtspace'].apply(lambda n: str(round(n, 2)) + '%')
 
+    # save
+    result.to_csv('pickup2.csv')
+    _datautils.to_db(result, 'pickup2')
 
     wavecodes = list(result['code'])
     # # get wave data

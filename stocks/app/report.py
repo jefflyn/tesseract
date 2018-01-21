@@ -116,7 +116,7 @@ def HTML_with_style(df, style=None, random_id=None):
         <style>
             table#{random_id} {{border-collapse:collapse; border-width: 1px; border-style: solid; border-color: rgb(235, 242, 224);}}
             table#{random_id} thead, table#{random_id} tr {{border-top-width: 1px; text-align:right;}}
-            table#{random_id} td, table#{random_id} th {{word-break: keep-all; padding: 5px 10px; font-size: 12px; font-family: Verdana;}}
+            table#{random_id} td, table#{random_id} th {{word-break: keep-all; padding: 5px 10px; font-size: 14px; font-family: Verdana;}}
             table#{random_id} tr:nth-child(even) {{background: rgb(230, 238, 214);}}
             table#{random_id} tr:nth-child(odd) {{background: #FFF;}}
         </style>
