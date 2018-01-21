@@ -130,10 +130,11 @@ def pickup_s2():
 
     # # figure display
     # listdf = []
-    # for code in wavecodes:
-    #     wdf = wavedf[wavedf.code == code]
-    #     listdf.append(wave.format_wave_data(wdf))
-    # wave.plot_wave(listdf, filename='pickup2.png')
+    for code in wavecodes:
+        listdf = []
+        wdf = wavedf[wavedf.code == code]
+        listdf.append(wave.format_wave_data(wdf))
+        wave.plot_wave(listdf, filename='./wave/' + code + '.png')
 
 if __name__ == '__main__':
     # pickup_subnew()
