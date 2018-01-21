@@ -88,8 +88,8 @@ pickup from limitup
 """
 def pickup_s2():
     trade = pd.HDFStore('../data/trade.h5')
-    df = trade.select('hist')
-    limitupdf = df[(df.p_change > 9.9) & (df['code'].str.get(0) != '3')][['code', 'p_change', 'date', 'low']]
+    df = trade.select('k_limitup_hist')
+    limitupdf = df[(df['code'].str.get(0) != '3')][['code', 'p_change', 'date', 'low']]
     # limitupdf = df[(df.code == '603533') & (df.p_change > 9.9)][['code','p_change','date','low']]
     limitupdf = limitupdf.sort_values('date', ascending=True)
     _datautils.to_db(limitupdf, 'pickup2_limitup')
