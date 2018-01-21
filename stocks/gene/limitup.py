@@ -50,7 +50,7 @@ def count(df=None, times=None, condition=[90, 2]):
     size = dfgroup.p_change.count()
     mindate = dfgroup.date.min()
     maxdate = dfgroup.date.max()
-    low = dfgroup.low.first()
+    low = dfgroup.low.first() #时间区间内第一个涨停的最低价
 
     dfgroup = pd.DataFrame({'code': codes, 'count':size, 'mindate':mindate, 'maxdate':maxdate, 'lmtuplow':low})
     dfgroup = dfgroup.sort_values('count', axis=0, ascending=False, inplace=False, kind='quicksort', na_position='last')
