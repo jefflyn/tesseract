@@ -90,10 +90,11 @@ def pickup_s2():
     trade = pd.HDFStore('../data/trade.h5')
     df = trade.select('hist')
     limitupdf = df[(df.p_change > 9.9) & (df['code'].str.get(0) != '3')][['code', 'p_change', 'date', 'low']]
-    # limitupdf = df[(df.code == '000002') & (df.p_change > 9.9)][['code','p_change','date','low']]
-    _datautils.to_db(limitupdf, 'limitupx')
+    # limitupdf = df[(df.code == '603533') & (df.p_change > 9.9)][['code','p_change','date','low']]
+    limitupdf = limitupdf.sort_values('date', ascending=True)
+    _datautils.to_db(limitupdf, 'pickup2_limitup')
     # 1.choose the active codes from the limitups which limitup at lease more than n
-    limitupcount = limitup.count(limitupdf, times=3, condition=[100, 1])
+    limitupcount = limitup.count(limitupdf, times=3, condition=[180, 1])
     print('limitupcount size: ' + str(len(limitupcount)))
 
     codes = list(limitupcount['code'])

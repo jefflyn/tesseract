@@ -75,11 +75,11 @@ def etl():
     _datautils.to_db(ups, 'limitupx')
 
 if __name__ == '__main__':
-    lu = get_today_limitup()
-    print(lu)
-    exit()
+    # lu = get_today_limitup()
+    # print(lu)
+    # exit()
     # from stocks.data import _datautils
-    df = get_limit_up(['002907','600985', '600856','601908','600917'], start='2017-01-01')
+    df = get_limit_up(['603388','600985', '600856','601908','600917'], start='2017-01-01')
     dfcount = (count(df, 1))
     print(df)
     print(dfcount)
