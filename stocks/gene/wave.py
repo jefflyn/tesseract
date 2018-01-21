@@ -108,7 +108,7 @@ def plot_wave(dflist=None, filename='wave.png', title='', columns=1):
         # plt.gcf().autofmt_xdate()  # 自动旋转日期标记
         ax.legend(line, (code,))
 
-    plt.savefig(filename, dpi=200, bbox_inches='tight')
+    plt.savefig(filename, dpi=100, bbox_inches='tight')
     # plt.show()
 
 
