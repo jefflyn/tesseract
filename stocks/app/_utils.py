@@ -47,7 +47,8 @@ def get_cursor():
 
 def save_to_pdf(htmlstr=None, desc=None):
     options = {
-        'page-size': 'Letter',
+        'page-size': 'A4', # Letter
+        'minimum-font-size': 33,
         'margin-top': '0.75in',
         'margin-right': '0.75in',
         'margin-bottom': '0.75in',
@@ -56,7 +57,7 @@ def save_to_pdf(htmlstr=None, desc=None):
         'custom-header': [
             ('Accept-Encoding', 'gzip')
         ],
-        'no-outline': None
+        'no-outline': None,
     }
     sysstr = platform.system()
     if (sysstr == "Windows"):
