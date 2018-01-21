@@ -26,9 +26,13 @@ def pickup_subnew():
     result = result.sort_values('space', axis=0, ascending=True, inplace=False, kind='quicksort', na_position='last')
     result['change'] = result['change'].apply(lambda n: str(round(n, 3)) + '%')
     result['space'] = result['space'].apply(lambda n: str(round(n, 3)) + '%')
-    result.to_csv('pickup_subnew.csv')
+    #result.to_csv('pickup_subnew.csv')
     _datautils.to_db(result, 'pickup_subnew')
 
+
+"""
+pickup from industry or concept
+"""
 def pickup_s1(type='', classname=''):
     data = _datautils.get_stock_data(type=type, filename=classname)
     codes = list(data['code'])
@@ -67,6 +71,7 @@ def pickup_s1(type='', classname=''):
     # 5.limitup data
     print(limitupdf)
 
+
 def get_limitup_space(df):
     price = float(df[0])
     low = float(df[1])
@@ -77,6 +82,10 @@ def get_warn_space(df):
     low = float(df[1])
     return (price - low)
 
+
+"""
+pickup from limitup
+"""
 def pickup_s2():
     trade = pd.HDFStore('../data/trade.h5')
     df = trade.select('hist')
@@ -100,23 +109,29 @@ def pickup_s2():
     madf = maup.get_ma(codes)
     # print(madf)
     result = pd.merge(bottomdf, madf[['code', 'isup', 'ma5', 'ma10', 'ma20', 'ma30', 'ma60', 'ma30std', 'ma10_space']], on='code', how='left')
-    # print(result)
-    result = result.sort_values(['space', 'lmtuplow'], axis=0, ascending=[True,True], inplace=False, kind='quicksort', na_position='last')
+    result = result.sort_values(['space', 'lmtuplow'], axis=0, ascending=[True, True], inplace=False, kind='quicksort',
+                                na_position='last')
+    #save
+    result.to_csv('pickup2.csv')
+    _datautils.to_db(result, 'pickup2')
+    #format
     result['change'] = result['change'].apply(lambda n: str(round(n, 2)) + '%')
     result['space'] = result['space'].apply(lambda n: str(round(n, 2)) + '%')
     result['lmtspace'] = result['lmtspace'].apply(lambda n: str(round(n, 2)) + '%')
-    result.to_csv('pickup2.csv')
-    _datautils.to_db(result, 'pickup2')
 
-    # wavecodes = list(result['code'])
-    # # 4.get wave data
-    # wavedf = wave.get_wave(wavecodes[len(wavecodes) - 20 :])
-    # # print(wavedf)
+
+    wavecodes = list(result['code'])
+    # # get wave data
+    # wavedf = wave.get_wave(wavecodes[len(wavecodes) - 20 :]) #get 20
+    wavedf = wave.get_wave(wavecodes)  # get all
+    #wavedf.to_csv('pickup2_wave.csv')
+    _datautils.to_db(wavedf, 'pickup2_wave')
+
+    # # figure display
     # listdf = []
     # for code in wavecodes:
     #     wdf = wavedf[wavedf.code == code]
     #     listdf.append(wave.format_wave_data(wdf))
-    # # figure display
     # wave.plot_wave(listdf, filename='pickup2.png')
 
 if __name__ == '__main__':
