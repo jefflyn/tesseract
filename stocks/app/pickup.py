@@ -13,7 +13,7 @@ from stocks.gene import bargain
 
 
 def pickup_subnew():
-    data = _datautils.get_stock_data(type='c', filename='次新0115.txt')
+    data = _datautils.get_subnew()
     codes = list(data['code'])
 
     # get the bottom price data
@@ -138,11 +138,11 @@ def pickup_s2():
         wave.plot_wave(listdf, filename='./wave/' + code + '.png')
 
 if __name__ == '__main__':
-    # pickup_subnew()
+    pickup_subnew()
     # bottomdf = falco.get_monitor('002852')
     # print(bottomdf)
     # exit()
-    pickup_s2()
+    #pickup_s2()
     #pickup_s1('i', '零售.txt')
 
 

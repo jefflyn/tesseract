@@ -15,6 +15,14 @@ oneyearago = (datetime.datetime.now() + yeardays).strftime('%Y%m%d')
 INDEX_DICT = {'000001': '上证指数', '000016': '上证50', '000300': '沪深300',
               '399001': '深证成指', '399005': '中小板指', '399006': '创业板指'}
 
+def get_subnew(cyb = False):
+    basics = get_basics_fromh5(excludeCyb=cyb)
+    # filter unused code
+    if cyb is False:
+        basics = basics[basics['code'].str.get(0) != '3']
+    basics = basics[(basics['timeToMarket'] >= int(oneyearago))]
+    return basics
+
 
 def format_percent(df=None, columns=[], precision=2):
     if df == None:
