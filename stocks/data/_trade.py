@@ -12,41 +12,47 @@ trade = pd.HDFStore('../data/trade.h5', complevel=9, complib='blosc')
 trade_k = pd.HDFStore('../data/trade_k.h5', complevel=9, complib='blosc')
 
 
+"""
+暂时不用
+"""
+def get_hist_k_code():
+    todaydf = _dt.get_totay_quotations('2018-01-24')
+    codes = list(todaydf['code'])
+
+    index = 0
+    for code in codes:
+        hist_k = ts.get_k_data(code, start='2016-01-24')
+        trade_k.put(code, hist_k)
+        index = index + 1
+        print(str(index) + ' ' + code)
+
+    trade_k.close()
+
+
 def append_hist_k_limitup_record():
     # trade.remove('latest')
     today = datetime.today()
     todaystr = datetime.strftime(today, '%Y-%m-%d')
-    histdf = trade.get('hist')
+    histdf = trade.get('k_limitup_hist')
     keys = trade.keys()
     oneday = dt.timedelta(-1)
-    targetdatestr = todaystr
     while True:
         print(targetdatestr + ' get trade data >>>')
         try:
-            todaydf = _dt.get_totay_quotations(targetdatestr)
+            todaydf = _dt.get_totay_quotations(todaystr)
+            todaydf = todaydf[todaydf.p_change > 9.9]
             size = len(todaydf.index.get_values())
+            print('    total size: ' + str(size))
             dates = [targetdatestr] * size
             todaydf.insert(0, 'date', dates)
-            # update latest tade
-            if '/latest' in keys:
-                # trade.remove('latest')
-                latestdf = trade.get('latest')
-                latestdate = latestdf.at[0, 'date']
-                if latestdate < targetdatestr:
-                    trade.put('latest', todaydf)
-                    print('    latest trade data update')
-                else:
-                    print('    latest trade data existed already')
-            else:
-                trade.put('latest', todaydf)
 
-            targetdf = histdf[histdf.date == targetdatestr]
+            targetdf = histdf[histdf.date == todaystr]
             if targetdf.empty == False:
-                print('    hist trade data existed already')
+                print('    limitup hist k data existed already')
                 break
 
-            trade.append('hist', todaydf)
-            print('    insert successfully, total size: ' + str(size))
+            trade.append('k_limitup_hist', todaydf)
+            print('    insert limitup hist k data successfully, total size: ' + str(size))
         except Exception as e:
             print('    ' + str(e))
 
@@ -56,7 +62,7 @@ def append_hist_k_limitup_record():
     trade.close()
 
 
-def get_hist_k_limitup_date():
+def get_hist_k_limitup_data():
     startdate = None
     oneday = dt.timedelta(-1)
     i = 0
@@ -86,23 +92,6 @@ def get_hist_k_limitup_date():
         todaystr = datetime.strftime(today, '%Y-%m-%d')
 
     trade.close()
-
-
-"""
-暂时不用
-"""
-def get_hist_k_code():
-    todaydf = _dt.get_totay_quotations('2018-01-24')
-    codes = list(todaydf['code'])
-
-    index = 0
-    for code in codes:
-        hist_k = ts.get_k_data(code, start='2016-01-24')
-        trade_k.put(code, hist_k)
-        index = index + 1
-        print(str(index) + ' ' + code)
-
-    trade_k.close()
 
 
 def append_newest_record():
@@ -179,5 +168,6 @@ def get_hist_trade(startdate=None):
 
 
 if __name__ == '__main__':
-    # get_hist_k_limitup_date()
+    get_hist_k_limitup_data()
+    append_hist_k_limitup_record()
     append_newest_record()
