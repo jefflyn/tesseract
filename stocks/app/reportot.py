@@ -7,8 +7,8 @@ if __name__ == '__main__':
     _utils.save_to_pdf(content1 + content2, 'report_ot.pdf')
 
     attaches = []
-    att0 = report.create_attach('wave_index.png', 'index.png')
-    attaches.append(att0)
+    # att0 = report.create_attach('wave_index.png', 'index.png')
+    # attaches.append(att0)
 
     att1 = report.create_attach('report_ot.pdf', 'daily_report.pdf')
     attaches.append(att1)

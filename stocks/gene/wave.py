@@ -160,6 +160,8 @@ def get_wave(codes=None, index=False, start=None, end=None, beginlow=True, durat
         if todaystr != latestdate:
             # get today data from [get_realtime_quotes(code)]
             realtime = ts.get_realtime_quotes(code)
+            if realtime == None or realtime.empty == True:
+                continue
             # ridx = realtime.index.get_values()[0]
             todaylow = float(realtime.at[0,'low'])
             if todaylow > 0:
