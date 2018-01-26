@@ -158,8 +158,8 @@ def generate_report(title=None, filename=None, monitor=False, uad=False, ma=Fals
         rtdf = falco.get_monitor(codes)
         rtdf = rtdf[['warn','code','name','change','price','low','bottom','space','industry','area','pe']]
 
-    # df['p_change'] = df['p_change'].apply(lambda n: str(round(n, 3)) + '%')
-    df['space'] = df['space'].apply(lambda n: str(round(n, 3)) + '%')
+        rtdf['change'] = rtdf['change'].apply(lambda n: str(round(n, 3)) + '%')
+        rtdf['space'] = rtdf['space'].apply(lambda n: str(round(n, 3)) + '%')
     # rtdf = rtdf.sort_values('space', ascending=False)
     codes = list(rtdf.code)
     names = list(rtdf.name)
