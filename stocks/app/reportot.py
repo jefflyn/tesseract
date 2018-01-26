@@ -3,6 +3,13 @@ from stocks.app import _utils
 
 
 def report_to_zl():
+    """
+    601668
+    002415
+    601111
+    600477
+    :return:
+    """
     content = report.generate_report(title='The tracking stocks report', monitor=True, filename='app/zl.txt', uad=True, ma=True, lup=True)
     _utils.save_to_pdf(content, 'report_zl.pdf')
 
@@ -50,5 +57,5 @@ def report_to_kk():
         print("Send failed")
 
 if __name__ == '__main__':
-    # report_to_zl()
-    report_to_kk()
+    report_to_zl()
+    # report_to_kk()
