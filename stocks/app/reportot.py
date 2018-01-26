@@ -8,6 +8,19 @@ def report_to_zl():
     002415
     601111
     600477
+
+    601988
+    601006
+    601328
+    601186
+    600690
+    000069
+    601398
+    600028
+    600036
+    600153
+    601939
+    600018
     :return:
     """
     content = report.generate_report(title='The tracking stocks report', monitor=True, filename='app/zl.txt', uad=True, ma=True, lup=True)
