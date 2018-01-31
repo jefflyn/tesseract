@@ -168,6 +168,6 @@ def get_hist_trade(startdate=None):
 
 
 if __name__ == '__main__':
-    get_hist_k_limitup_data()
+    # get_hist_k_limitup_data()
     append_hist_k_limitup_record()
     append_newest_record()

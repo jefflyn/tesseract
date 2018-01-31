@@ -69,8 +69,8 @@ def get_monitor_codes():
     return codes
 
 
-def get_k_data(code=None, start=None):
-    hist_data = ts.get_k_data(code, start)  # one day delay issue, use realtime interface solved
+def get_k_data(code=None, start=None, end=None):
+    hist_data = ts.get_k_data(code, start, end)  # one day delay issue, use realtime interface solved
     if hist_data is None or len(hist_data) == 0:
         print(code + ' k data not found')
         return None

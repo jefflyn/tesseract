@@ -21,6 +21,7 @@ def re_exe(file=None, inc=3, sortby=None):
     while True:
         try:
             df = get_realtime(file=file, sortby=sortby)
+            df['btm_space'] = df['btm_space'].apply(lambda x: str(round(x, 3)) + '%')
             print(df)
         except Exception as e:
             print('excpetion: ' + e)

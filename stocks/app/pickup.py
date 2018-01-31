@@ -1,6 +1,8 @@
 import numpy as np
 import pandas as pd
 
+import tushare as ts
+
 from stocks.app import realtime
 from stocks.app import falco
 from stocks.app import _utils
@@ -10,6 +12,29 @@ from stocks.gene import limitup
 from stocks.gene import wave
 from stocks.gene import maup
 from stocks.gene import bargain
+
+def pickup_subnew_issue_space():
+    subnewbasic = _datautils.get_subnew()
+    codes = list(subnewbasic['code'])
+    codes = ['601108']
+    # get the bottom price data
+    df = ts.get_realtime_quotes(codes)
+    for index, row in df.iterrows():
+        code = row['code']
+        basic = subnewbasic[subnewbasic.code == code]
+        basic.i
+        firstData = _datautils.get_k_data(code, start='', end='')
+        print(firstData)
+
+    # # ma data
+    # madf = maup.get_ma(codes)
+    # result = pd.merge(bottomdf, madf[['code', 'isup', 'ma5', 'ma10', 'ma20', 'ma30', 'ma60', 'ma30std', 'ma10_space']],
+    #                   on='code', how='left')
+    # result = result.sort_values('space', axis=0, ascending=True, inplace=False, kind='quicksort', na_position='last')
+    # result['change'] = result['change'].apply(lambda n: str(round(n, 3)) + '%')
+    # result['space'] = result['space'].apply(lambda n: str(round(n, 3)) + '%')
+    # #result.to_csv('pickup_subnew.csv')
+    # _datautils.to_db(result, 'pickup_subnew')
 
 
 def pickup_subnew():
@@ -138,7 +163,8 @@ def pickup_s2():
         wave.plot_wave(listdf, filename='./wave/' + code + '.png')
 
 if __name__ == '__main__':
-    pickup_subnew()
+    pickup_subnew_issue_space()
+    # pickup_subnew()
     # bottomdf = falco.get_monitor('002852')
     # print(bottomdf)
     # exit()
