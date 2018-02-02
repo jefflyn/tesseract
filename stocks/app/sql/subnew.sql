@@ -21,7 +21,7 @@ where `code` = a.`code` and end < a.`end`) < 2
 and `status` = 'down'
 
 -- 3rd up
-drop table wave_3;
+drop table if EXISTS wave_3;
 CREATE TABLE wave_3
 select * from wave_subnew
 where code in(
@@ -41,6 +41,31 @@ order by `change`;
 
 select s.*, u.*
 from pickup_subnew_issue_space s
-inner join wave_3_up u on (s.code = u.code)
+inner join wave_3_up u
+on (s.code = u.code)
+order by `change`;
 
+-- 5th up
+drop table if EXISTS wave_5;
+CREATE TABLE wave_5
+select * from wave_subnew
+where code in(
+select code
+from wave_subnew
+group by code
+having count(1) = 5);
 
+drop table if EXISTS wave_5_up;
+CREATE TABLE wave_5_up
+SELECT * FROM `wave_5` b
+where (
+select count(1) from `wave_5`
+where `code` = b.`code` and end > b.`end`) < 2
+and `status` = 'up'
+order by `change`;
+
+select s.*, u.*
+from pickup_subnew_issue_space s
+inner join wave_5_up u
+on (s.code = u.code)
+order by `change`;
