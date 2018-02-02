@@ -69,7 +69,7 @@ def pickup_subnew_issue_space():
         curt_data.append(round(stdrate, 2))
 
         data_list.append(curt_data)
-    columns = ['code', 'name','industry','area','pe','liquid_assets','total_assets' 'issue_days', 'issue_price', 'current_price', 'issue_space', 'avg_price', 'std_99', 'stdrate']
+    columns = ['code', 'name','industry','area','pe','liquid_assets','total_assets', 'issue_days', 'issue_price', 'current_price', 'issue_space', 'avg_price', 'std_99', 'stdrate']
     resultdf = pd.DataFrame(data_list, columns=columns)
 
     resultdf = resultdf.sort_values('issue_space', axis=0, ascending=True, inplace=False, kind='quicksort', na_position='last')
