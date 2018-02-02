@@ -73,12 +73,13 @@ def pickup_subnew_issue_space():
     resultdf = pd.DataFrame(data_list, columns=columns)
 
     resultdf = resultdf.sort_values('issue_space', axis=0, ascending=True, inplace=False, kind='quicksort', na_position='last')
+    resultdf['rank'] = [i+1 for i in range(resultdf.index.size)]
+    _datautils.to_db(resultdf, 'pickup_subnew_issue_space')
     resultdf['issue_space'] = resultdf['issue_space'].apply(lambda x: str(round(x, 2)) + '%')
     # resultdf['varrate'] = resultdf['varrate'].apply(lambda x: str(round(x, 2)) + '%')
     resultdf['stdrate'] = resultdf['stdrate'].apply(lambda x: str(round(x, 2)) + '%')
-
     resultdf.to_csv('pickup_subnew_issue_space.csv')
-    _datautils.to_db(resultdf, 'pickup_subnew_issue_space')
+
 
     wavedf = wave.get_wave(list(resultdf['code']))
     _datautils.to_db(wavedf, 'wave_subnew')
