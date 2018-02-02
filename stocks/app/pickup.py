@@ -61,7 +61,7 @@ def pickup_subnew_issue_space():
         curt_data.append(issuedays)
         curt_data.append(issue_close_price)
         curt_data.append(current_price)
-        curt_data.append(issue_space)
+        curt_data.append(round(issue_space, 2))
         curt_data.append(round(avg, 2))
         # curt_data.append(var)
         curt_data.append(round(std, 2))
