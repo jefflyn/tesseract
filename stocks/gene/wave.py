@@ -35,6 +35,7 @@ def plot_wave(dflist=None, filename='wave.png', title='', columns=1):
         plt.subplot(rows, cols, idx + 1)
         # 生成横纵坐标信息
         # labels = ['2017-01-03', '2017-02-23', '2017-05-24', '2017-08-04', '2017-12-06', '2018-01-05']
+
         labels = list(df['date'])
         xs = np.arange(len(labels))
         # ys = [28.51, 32.50, 13.68, 22.56, 14.0, 16.9]
@@ -114,25 +115,21 @@ def plot_wave(dflist=None, filename='wave.png', title='', columns=1):
 
 def format_wave_data(wavedf=None, index=False):
     latestone = wavedf.tail(1)
-    code = ''
-    try:
-        code = latestone.at[latestone.index.get_values()[0], 'code']
-        stock = _datautils.get_basics(code, index=index)
-        name = stock if isinstance(stock, str) else stock.at[stock.index.get_values()[0], 'name']
-        enddate = latestone.at[latestone.index.get_values()[0], 'end']
-        endprice = latestone.at[latestone.index.get_values()[0], 'end_price']
+    code = latestone.at[latestone.index.get_values()[0], 'code']
+    stock = _datautils.get_basics(code, index=index)
+    name = stock if isinstance(stock, str) else stock.at[stock.index.get_values()[0], 'name']
+    enddate = latestone.at[latestone.index.get_values()[0], 'end']
+    endprice = latestone.at[latestone.index.get_values()[0], 'end_price']
 
-        codes = list(wavedf['code'])
-        codes.append(code)
-        names = [name] * len(codes)
-        dates = list(wavedf['begin'])
-        dates.append(enddate)
-        prices = list(wavedf['begin_price'])
-        prices.append(endprice)
-        newwavedf = pd.DataFrame({'code': codes, 'name': names, 'date': dates, 'price': prices})
-        return newwavedf
-    except Exception as e:
-        print(code + ' error: ' + str(e))
+    codes = list(wavedf['code'])
+    codes.append(code)
+    names = [name] * len(codes)
+    dates = list(wavedf['begin'])
+    dates.append(enddate)
+    prices = list(wavedf['begin_price'])
+    prices.append(endprice)
+    newwavedf = pd.DataFrame({'code': codes, 'name': names, 'date': dates, 'price': prices})
+    return newwavedf
 
 
 """
@@ -157,7 +154,7 @@ def get_wave(codes=None, index=False, start=None, end=None, beginlow=True, durat
         if hist_data is None or len(hist_data) == 0:
             continue
         latestdate = hist_data.tail(1).at[hist_data.tail(1).index.get_values()[0], 'date']
-        if todaystr != latestdate:
+        if todaystr != latestdate and index == False:
             # get today data from [get_realtime_quotes(code)]
             realtime = ts.get_realtime_quotes(code)
             if realtime is None or realtime.empty == True:

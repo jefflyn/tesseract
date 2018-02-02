@@ -6,18 +6,16 @@ from stocks.gene import wave
 
 pd.set_option('display.width', 600)
 
-myindex = ['000001','000016','000300','399001','399005','399006']
+target = ['000001','000016','000300','399001','399005','399006']
 indexdf = ts.get_index()
-indexdf = indexdf[indexdf['code'].isin(myindex)]
+indexdf = indexdf[indexdf['code'].isin(target)]
 indexdf = indexdf.sort_values('change', axis=0, ascending=True, inplace=False, kind='quicksort', na_position='last')
-print(indexdf)
 
-wavedf = wave.get_wave(codes=myindex, index=True)
-print(wavedf)
+wavedf = wave.get_wave(codes=target, index=True)
 
 # plot figure
 listdf = []
-for code in myindex:
+for code in target:
     wdf = wavedf[wavedf.code == code]
     listdf.append(wave.format_wave_data(wdf, index=True))
 # figure display

@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
-
+import datetime
+from datetime import datetime as dt
 import tushare as ts
 
 from stocks.app import realtime
@@ -16,25 +17,38 @@ from stocks.gene import bargain
 def pickup_subnew_issue_space():
     subnewbasic = _datautils.get_subnew()
     codes = list(subnewbasic['code'])
-    codes = ['601108']
+    # codes = ['601108']
     # get the bottom price data
     df = ts.get_realtime_quotes(codes)
+    subnewbasic = subnewbasic.set_index('code')
+
+    data_list = []
     for index, row in df.iterrows():
         code = row['code']
-        basic = subnewbasic[subnewbasic.code == code]
-        basic.i
-        firstData = _datautils.get_k_data(code, start='', end='')
-        print(firstData)
+        current_price = float(row['price'])
+        timeToMarket = subnewbasic.ix[code, 'timeToMarket']
+        if timeToMarket == 0:
+            continue;
+        timeToMarket = str(timeToMarket)
+        timeToMarket = timeToMarket[0:4] + '-' + timeToMarket[4:6] + '-' + timeToMarket[6:8]
+        firstData = _datautils.get_k_data(code, start=timeToMarket, end=timeToMarket)
+        issue_close_price = float(firstData.ix[0, 'close'])
+        issue_space = (current_price - issue_close_price) / issue_close_price * 100
 
-    # # ma data
-    # madf = maup.get_ma(codes)
-    # result = pd.merge(bottomdf, madf[['code', 'isup', 'ma5', 'ma10', 'ma20', 'ma30', 'ma60', 'ma30std', 'ma10_space']],
-    #                   on='code', how='left')
-    # result = result.sort_values('space', axis=0, ascending=True, inplace=False, kind='quicksort', na_position='last')
-    # result['change'] = result['change'].apply(lambda n: str(round(n, 3)) + '%')
-    # result['space'] = result['space'].apply(lambda n: str(round(n, 3)) + '%')
-    # #result.to_csv('pickup_subnew.csv')
-    # _datautils.to_db(result, 'pickup_subnew')
+        curt_data = []
+        curt_data.append(issue_close_price)
+        curt_data.append(issue_space)
+        data_list.append(curt_data)
+    df_append = pd.DataFrame(data_list, columns=['issue_close_price', 'issue_space'])
+    df = df.join(df_append)
+
+    df = df.sort_values('issue_space', axis=0, ascending=True, inplace=False, kind='quicksort', na_position='last')
+
+    df['issue_space'] = df['issue_space'].apply(lambda x: str(round(x, 3)) + '%')
+    df = df[['code', 'name', 'price', 'issue_close_price', 'issue_space']]
+
+    df.to_csv('pickup_subnew_issue_space.csv')
+    _datautils.to_db(df, 'pickup_subnew_issue_space')
 
 
 def pickup_subnew():
