@@ -56,8 +56,8 @@ def pickup_subnew_issue_space():
         curt_data.append(subnewbasic.ix[code, 'industry'])
         curt_data.append(subnewbasic.ix[code, 'area'])
         curt_data.append(subnewbasic.ix[code, 'pe'])
-        curt_data.append(_datautils.format_amount(subnewbasic.ix[code, 'liquidAssets']))
-        curt_data.append(_datautils.format_amount(subnewbasic.ix[code, 'totalAssets']))
+        curt_data.append(_datautils.format_amount(subnewbasic.ix[code, 'liquidAssets'] * 10000))
+        curt_data.append(_datautils.format_amount(subnewbasic.ix[code, 'totalAssets'] * 10000))
         curt_data.append(issuedays)
         curt_data.append(issue_close_price)
         curt_data.append(current_price)
@@ -74,11 +74,14 @@ def pickup_subnew_issue_space():
 
     resultdf = resultdf.sort_values('issue_space', axis=0, ascending=True, inplace=False, kind='quicksort', na_position='last')
     resultdf['issue_space'] = resultdf['issue_space'].apply(lambda x: str(round(x, 2)) + '%')
-    resultdf['varrate'] = resultdf['varrate'].apply(lambda x: str(round(x, 2)) + '%')
+    # resultdf['varrate'] = resultdf['varrate'].apply(lambda x: str(round(x, 2)) + '%')
     resultdf['stdrate'] = resultdf['stdrate'].apply(lambda x: str(round(x, 2)) + '%')
 
     resultdf.to_csv('pickup_subnew_issue_space.csv')
     _datautils.to_db(resultdf, 'pickup_subnew_issue_space')
+
+    wavedf = wave.get_wave(list(resultdf['code']))
+    _datautils.to_db(wavedf, 'wave_subnew')
 
 
 def pickup_subnew():

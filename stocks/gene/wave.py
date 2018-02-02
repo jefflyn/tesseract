@@ -243,7 +243,7 @@ def wavefrom(code, df, beginlow, direction='left', duration=0, pchange=0):
         list.append(beginprice)
         list.append(endprice)
         list.append((datetime.strptime(enddate, '%Y-%m-%d') - datetime.strptime(begindate, '%Y-%m-%d')).days)
-        list.append(str(round(diff_precent, 3)) + '%')
+        list.append(round(diff_precent, 2))
         period_data.append(list)
 
         if direction == 'left':
