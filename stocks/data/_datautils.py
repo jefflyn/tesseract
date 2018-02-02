@@ -185,14 +185,52 @@ def get_stock_data(type='i', filename=None, encoding='gbk', sep='\t', excludeCyb
         data = data[data['code'].str.get(0) != '3']
     return data
 
+
+def isnumber(a):
+    try:
+        float(a)
+        return True
+    except:
+        return False
+
+
+def format_amount(amount=None):
+    if isnumber(amount) == False:
+        return amount
+    amtstr = str(amount)
+    length = len(amtstr)
+    if '.' in amtstr:
+        length = len(amtstr.split('.')[0])
+
+    if length < 5:
+        return amtstr
+    elif length < 9:
+        result = round(amount / 10000, 1)
+        return str(result) + '万'
+    else:
+        result = round(amount / (10000*10000), 1)
+        return str(result) + '亿'
+
+
 if __name__ == '__main__':
+    print(format_amount(''))
+    print(format_amount(None))
+    print(format_amount(12.23))
+    print(format_amount(12.2389999989))
+    print(format_amount(1236))
+    print(format_amount(32589))
+    print(format_amount(325862))
+    print(format_amount(2369852))
+    print(format_amount(25896325))
+    print(format_amount(369852369))
+    print(format_amount(3628523869.9236))
     # data = get_stock_data(type='c', filename='小金属.txt')
-    trade = pd.HDFStore('trade.h5')
-    tradecomp = pd.HDFStore('trade_comp.h5')
-    limitups = pd.read_hdf('trade.h5', 'hist')
-    df = tradecomp.select('hist')
-    df = df[(df.p_change > 9.9) & (df['code'].str.get(0) != '3')][['code']]
-    df = df.drop_duplicates(['code'])
-    print(df)
+    # trade = pd.HDFStore('trade.h5')
+    # tradecomp = pd.HDFStore('trade_comp.h5')
+    # limitups = pd.read_hdf('trade.h5', 'hist')
+    # df = tradecomp.select('hist')
+    # df = df[(df.p_change > 9.9) & (df['code'].str.get(0) != '3')][['code']]
+    # df = df.drop_duplicates(['code'])
+    # print(df)
     # df1 = tradecomp.select('hist')
     # print(df1)

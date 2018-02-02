@@ -15,6 +15,10 @@ from stocks.gene import maup
 from stocks.gene import bargain
 
 def pickup_subnew_issue_space():
+    starttime = dt.now()
+    days = datetime.timedelta(-99)
+    startstr = dt.strftime(starttime + days, '%Y-%m-%d')
+
     subnewbasic = _datautils.get_subnew()
     codes = list(subnewbasic['code'])
     # codes = ['601108']
@@ -22,8 +26,10 @@ def pickup_subnew_issue_space():
     df = ts.get_realtime_quotes(codes)
     subnewbasic = subnewbasic.set_index('code')
 
+    rowsize = df.index.size
     data_list = []
     for index, row in df.iterrows():
+        print(rowsize - index)
         code = row['code']
         current_price = float(row['price'])
         timeToMarket = subnewbasic.ix[code, 'timeToMarket']
@@ -31,24 +37,48 @@ def pickup_subnew_issue_space():
             continue;
         timeToMarket = str(timeToMarket)
         timeToMarket = timeToMarket[0:4] + '-' + timeToMarket[4:6] + '-' + timeToMarket[6:8]
+        issuedays = (starttime - dt.strptime(timeToMarket, '%Y-%m-%d')).days
+
         firstData = _datautils.get_k_data(code, start=timeToMarket, end=timeToMarket)
         issue_close_price = float(firstData.ix[0, 'close'])
         issue_space = (current_price - issue_close_price) / issue_close_price * 100
 
+        hist99 = _datautils.get_k_data(code, start=startstr)
+        # var = hist99.var()['close']
+        std = hist99.std()['close']
+        avg = hist99.mean()['close']
+        # varrate = var / avg * 100
+        stdrate = std / avg * 100
+
         curt_data = []
+        curt_data.append(code)
+        curt_data.append(row['name'])
+        curt_data.append(subnewbasic.ix[code, 'industry'])
+        curt_data.append(subnewbasic.ix[code, 'area'])
+        curt_data.append(subnewbasic.ix[code, 'pe'])
+        curt_data.append(_datautils.format_amount(subnewbasic.ix[code, 'liquidAssets']))
+        curt_data.append(_datautils.format_amount(subnewbasic.ix[code, 'totalAssets']))
+        curt_data.append(issuedays)
         curt_data.append(issue_close_price)
+        curt_data.append(current_price)
         curt_data.append(issue_space)
+        curt_data.append(round(avg, 2))
+        # curt_data.append(var)
+        curt_data.append(round(std, 2))
+        # curt_data.append(varrate)
+        curt_data.append(round(stdrate, 2))
+
         data_list.append(curt_data)
-    df_append = pd.DataFrame(data_list, columns=['issue_close_price', 'issue_space'])
-    df = df.join(df_append)
+    columns = ['code', 'name','industry','area','pe','liquid_assets','total_assets' 'issue_days', 'issue_price', 'current_price', 'issue_space', 'avg_price', 'std_99', 'stdrate']
+    resultdf = pd.DataFrame(data_list, columns=columns)
 
-    df = df.sort_values('issue_space', axis=0, ascending=True, inplace=False, kind='quicksort', na_position='last')
+    resultdf = resultdf.sort_values('issue_space', axis=0, ascending=True, inplace=False, kind='quicksort', na_position='last')
+    resultdf['issue_space'] = resultdf['issue_space'].apply(lambda x: str(round(x, 2)) + '%')
+    resultdf['varrate'] = resultdf['varrate'].apply(lambda x: str(round(x, 2)) + '%')
+    resultdf['stdrate'] = resultdf['stdrate'].apply(lambda x: str(round(x, 2)) + '%')
 
-    df['issue_space'] = df['issue_space'].apply(lambda x: str(round(x, 3)) + '%')
-    df = df[['code', 'name', 'price', 'issue_close_price', 'issue_space']]
-
-    df.to_csv('pickup_subnew_issue_space.csv')
-    _datautils.to_db(df, 'pickup_subnew_issue_space')
+    resultdf.to_csv('pickup_subnew_issue_space.csv')
+    _datautils.to_db(resultdf, 'pickup_subnew_issue_space')
 
 
 def pickup_subnew():

@@ -70,5 +70,5 @@ def report_to_kk():
         print("Send failed")
 
 if __name__ == '__main__':
-    report_to_zl()
-    # report_to_kk()
+    # report_to_zl()
+    report_to_kk()
