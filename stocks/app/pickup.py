@@ -27,7 +27,7 @@ def pickup_subnew_issue_space():
         code = row['code']
         current_price = float(row['price'])
         timeToMarket = subnewbasic.ix[code, 'timeToMarket']
-        if timeToMarket == 0:
+        if timeToMarket == 0 or current_price <= 0:
             continue;
         timeToMarket = str(timeToMarket)
         timeToMarket = timeToMarket[0:4] + '-' + timeToMarket[4:6] + '-' + timeToMarket[6:8]
