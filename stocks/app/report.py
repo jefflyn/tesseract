@@ -96,7 +96,10 @@ def generate_report2(title=None, filename=None, monitor=False):
     listdf = []
     for code in codes:
         wdf = wavedf[wavedf.code == code]
-        listdf.append(wave.format_wave_data(wdf))
+        wave_format = wave.format_wave_data(wdf)
+        if wave_format is None:
+            continue
+        listdf.append(wave_format)
     # figure display
     wave.plot_wave(listdf, filename=savefilename)
 

@@ -29,8 +29,8 @@ def get_bottom(df = None, limit = 20):
             lastidx = lastrec.index.get_values()[0]
             laststatus = lastrec.at[lastidx, 'status']
             lastp = lastrec.at[lastidx, 'change']
-            s = lastp[0:len(lastp)-1]
-            if abs(float(lastp[0:len(lastp)-1])) < limit:
+            # val = lastp[0:len(lastp)-1]
+            if abs(float(lastp)) < limit:
                 continue
             else:
                 bottom = lastrec.at[lastidx, 'begin_price'] if laststatus == 'up' else lastrec.at[lastidx, 'end_price']

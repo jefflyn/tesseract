@@ -114,8 +114,11 @@ def plot_wave(dflist=None, filename='wave.png', title='', columns=1):
 
 
 def format_wave_data(wavedf=None, index=False):
-    latestone = wavedf.tail(1)
-    code = latestone.at[latestone.index.get_values()[0], 'code']
+    latestone = wavedf.tail(1) # get the newest record
+    if latestone.empty == True:
+        return None
+    i = latestone.index.get_values()[0]
+    code = latestone.at[i, 'code']
     stock = _datautils.get_basics(code, index=index)
     name = stock if isinstance(stock, str) else stock.at[stock.index.get_values()[0], 'name']
     enddate = latestone.at[latestone.index.get_values()[0], 'end']
