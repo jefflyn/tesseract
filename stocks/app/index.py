@@ -11,6 +11,8 @@ indexdf = ts.get_index()
 indexdf = indexdf[indexdf['code'].isin(target)]
 indexdf = indexdf.sort_values('change', axis=0, ascending=True, inplace=False, kind='quicksort', na_position='last')
 
+print(indexdf)
+
 wavedf = wave.get_wave(codes=target, index=True)
 
 # plot figure

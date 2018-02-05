@@ -69,12 +69,12 @@ def pickup_subnew_issue_space():
         curt_data.append(round(stdrate, 2))
 
         data_list.append(curt_data)
-    columns = ['code', 'name','industry','area','pe','liquid_assets','total_assets', 'issue_days', 'issue_price', 'current_price', 'issue_space', 'avg_price', 'std_99', 'stdrate']
+    columns = ['code', 'name','industry','area','pe','liquid_assets','total_assets', 'issue_days', 'issue_price', 'current_price', 'issue_space', 'avg_99', 'std_99', 'stdrate']
     resultdf = pd.DataFrame(data_list, columns=columns)
 
     resultdf = resultdf.sort_values('issue_space', axis=0, ascending=True, inplace=False, kind='quicksort', na_position='last')
     resultdf['rank'] = [i+1 for i in range(resultdf.index.size)]
-    _datautils.to_db(resultdf, 'pickup_subnew_issue_space')
+    _datautils.to_db(resultdf, 'pickup_subnew_issue_space' + startstr)
     resultdf['issue_space'] = resultdf['issue_space'].apply(lambda x: str(round(x, 2)) + '%')
     # resultdf['varrate'] = resultdf['varrate'].apply(lambda x: str(round(x, 2)) + '%')
     resultdf['stdrate'] = resultdf['stdrate'].apply(lambda x: str(round(x, 2)) + '%')
