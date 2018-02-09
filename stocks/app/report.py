@@ -91,7 +91,7 @@ def generate_report2(title=None, filename=None, monitor=False):
     html_content += rtdf_html
 
     # up-and-down price of recent 1 year
-    wavedf = wave.get_wave(codes)
+    wavedf = wave.get_wave(codes, start='2016-01-01')
     # plot figure
     listdf = []
     for code in codes:
@@ -177,7 +177,7 @@ def generate_report(title=None, filename=None, monitor=False, uad=False, ma=Fals
     # 2.up-and-down price of recent 1 year
     if uad == True:
         html_content += '<h4>2.up-and-down price of recent 1 year:</h4>'
-        wavedf = wave.get_wave(codes, start='2017-01-01')
+        wavedf = wave.get_wave(codes, start='2016-01-01')
         # plot figure
         listdf = []
         for code in codes:
