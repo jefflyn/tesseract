@@ -4,6 +4,7 @@ import pandas as pd
 import tushare as ts
 
 from stocks.data import _datautils
+from stocks.app import _utils
 
 
 def get_forecast(year=2017, season=4, excludeCyb=True, startdate=None):
@@ -20,6 +21,10 @@ def get_forecast(year=2017, season=4, excludeCyb=True, startdate=None):
 
     for i in range(len(ranges)):
         rangestr = ranges[i]
+        if _utils.isnumber(rangestr):
+            rangefrom.append(rangestr)
+            rangeto.append(rangestr)
+            continue
         items = rangestr.split('~')
         if len(items) > 1:
             rangefrom.append(items[0])
