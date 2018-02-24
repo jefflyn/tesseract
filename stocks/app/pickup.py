@@ -102,6 +102,16 @@ def pickup_subnew():
     #result.to_csv('pickup_subnew.csv')
     _datautils.to_db(result, 'pickup_subnew')
 
+    wavedf = wave.get_wave(codes)  # get all
+    # wavedf.to_csv('pickup2_wave.csv')
+    _datautils.to_db(wavedf, 'wave_subnew')
+
+    for code in codes:
+        listdf = []
+        wdf = wavedf[wavedf.code == code]
+        listdf.append(wave.format_wave_data(wdf))
+        wave.plot_wave(listdf, filename='./wave/' + code + '.png')
+
 
 """
 pickup from industry or concept
