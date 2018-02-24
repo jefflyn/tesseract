@@ -26,8 +26,6 @@ def get_hist_k_code():
         index = index + 1
         print(str(index) + ' ' + code)
 
-    trade_k.close()
-
 
 def append_hist_k_limitup_record():
     # trade.remove('latest')
@@ -37,13 +35,13 @@ def append_hist_k_limitup_record():
     keys = trade.keys()
     oneday = dt.timedelta(-1)
     while True:
-        print(targetdatestr + ' get trade data >>>')
+        print(todaystr + ' get trade data >>>')
         try:
             todaydf = _dt.get_totay_quotations(todaystr)
             todaydf = todaydf[todaydf.p_change > 9.9]
             size = len(todaydf.index.get_values())
             print('    total size: ' + str(size))
-            dates = [targetdatestr] * size
+            dates = [todaystr] * size
             todaydf.insert(0, 'date', dates)
 
             targetdf = histdf[histdf.date == todaystr]
@@ -57,9 +55,8 @@ def append_hist_k_limitup_record():
             print('    ' + str(e))
 
         today = today + oneday
-        targetdatestr = datetime.strftime(today, '%Y-%m-%d')
+        todaystr = datetime.strftime(today, '%Y-%m-%d')
 
-    trade.close()
 
 
 def get_hist_k_limitup_data():
@@ -91,7 +88,6 @@ def get_hist_k_limitup_data():
         today = today + oneday
         todaystr = datetime.strftime(today, '%Y-%m-%d')
 
-    trade.close()
 
 
 def append_newest_record():
@@ -135,7 +131,6 @@ def append_newest_record():
         today = today + oneday
         targetdatestr = datetime.strftime(today, '%Y-%m-%d')
 
-    trade.close()
 
 
 def get_hist_trade(startdate=None):
@@ -164,10 +159,12 @@ def get_hist_trade(startdate=None):
         today = today + oneday
         todaystr = datetime.strftime(today, '%Y-%m-%d')
 
-    trade.close()
 
 
 if __name__ == '__main__':
+    # get_hist_trade()
     # get_hist_k_limitup_data()
     append_hist_k_limitup_record()
     append_newest_record()
+    trade.close()
+    trade_k.close()
