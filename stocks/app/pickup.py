@@ -44,6 +44,8 @@ def pickup_subnew_issue_space():
         issue_space = (current_price - issue_close_price) / issue_close_price * 100
 
         hist99 = _datautils.get_k_data(code, start=startstr)
+        if hist99 is None:
+            continue
         # var = hist99.var()['close']
         std = hist99.std()['close']
         avg = hist99.mean()['close']
@@ -226,7 +228,7 @@ if __name__ == '__main__':
     # bottomdf = falco.get_monitor('002852')
     # print(bottomdf)
     # exit()
-    #pickup_s2()
+    pickup_s2()
     #pickup_s1('i', '零售.txt')
 
 
