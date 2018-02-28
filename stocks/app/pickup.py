@@ -138,8 +138,8 @@ def pickup_s1(type='', classname=''):
     # print(madf)
     result = pd.merge(bottomdf, madf[['code', 'isup', 'ma5', 'ma10', 'ma20', 'ma30', 'ma60', 'ma30std', 'ma10_space']],
                       on='code', how='left')
-    result.to_csv('pickup.csv')
-    _datautils.to_db(result, 'pickup1_wave')
+    result.to_csv('pickup1.csv')
+    _datautils.to_db(result, 'pickup1')
     # exit()
 
     #########
@@ -152,7 +152,7 @@ def pickup_s1(type='', classname=''):
         wdf = wavedf[wavedf.code == code]
         listdf.append(wave.format_wave_data(wdf))
     # figure display
-    wave.plot_wave(listdf, filename='pickup.png')
+    wave.plot_wave(listdf, filename='pickup1.png')
 
     # 5.limitup data
     print(limitupdf)
