@@ -130,7 +130,7 @@ def pickup_s1(type='', classname=''):
     codes = list(limitupcount.index.get_values())
     # 2.get the bottom price data
     bottomdf = falco.get_monitor(codes)
-    bottomdf = pd.merge(bottomdf, limitupcount[['name', 'count']], on='name', how='left')
+    bottomdf = pd.merge(bottomdf, limitupcount[['code', 'count']], on='code', how='left')
     # print(bottomdf)
 
     # 3.ma data
@@ -139,7 +139,8 @@ def pickup_s1(type='', classname=''):
     result = pd.merge(bottomdf, madf[['code', 'isup', 'ma5', 'ma10', 'ma20', 'ma30', 'ma60', 'ma30std', 'ma10_space']],
                       on='code', how='left')
     result.to_csv('pickup.csv')
-    exit()
+    _datautils.to_db(result, 'pickup1_wave')
+    # exit()
 
     #########
     wavecodes = list(result['code'])
@@ -223,13 +224,13 @@ def pickup_s2():
         wave.plot_wave(listdf, filename='./wave/' + code + '.png')
 
 if __name__ == '__main__':
-    pickup_subnew_issue_space()
+    # pickup_subnew_issue_space()
     # pickup_subnew()
     # bottomdf = falco.get_monitor('002852')
     # print(bottomdf)
     # exit()
-    pickup_s2()
-    #pickup_s1('i', '零售.txt')
+    # pickup_s2()
+    pickup_s1('', '粤港澳.txt')
 
 
 
