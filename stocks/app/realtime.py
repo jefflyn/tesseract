@@ -21,6 +21,7 @@ def re_exe(file=None, inc=3, sortby=None):
     while True:
         try:
             df = get_realtime(file=file, sortby=sortby)
+            df = df[df.share > 100]
             df['btm_space'] = df['btm_space'].apply(lambda x: str(round(x, 3)) + '%')
             print(df)
         except Exception as e:
@@ -82,11 +83,11 @@ def get_realtime(file, sortby=None):
         curt_data.append(str(bottom))
         # curt_data.append(esc_diff)
         curt_data.append(btm_space)
-        # curt_data.append(esc_space)
+        curt_data.append(share)
         curt_data.append(price * share)
         data_list.append(curt_data)
 
-    df_append = pd.DataFrame(data_list, columns=['warn', 'change', 'cost', 'profit_amt', 'profit_perc', 'bottom', 'btm_space', 'total_amt'])
+    df_append = pd.DataFrame(data_list, columns=['warn', 'change', 'cost', 'profit_amt', 'profit_perc', 'bottom', 'btm_space', 'share', 'total_amt'])
     df = df.join(df_append)
 
     df = df[df.price > '1']
@@ -105,7 +106,7 @@ def get_realtime(file, sortby=None):
     # df['btm_space'] = df['btm_space'].apply(lambda x: str(round(x, 3)) + '%')
     # df['esc_space'] = df['esc_space'].apply(lambda x: str(round(x, 3)) + '%')
 
-    return df[['warn','code','name','price','change','bid','ask','low','high','bottom','btm_space','cost','profit_amt','profit_perc','total_amt']]
+    return df[['warn','code','name','price','change','bid','ask','low','high','bottom','btm_space','cost','profit_amt','profit_perc', 'share', 'total_amt']]
 
 if __name__ == '__main__':
     if len(argv) < 2:
