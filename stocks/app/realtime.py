@@ -22,7 +22,17 @@ def re_exe(file=None, inc=3, sortby=None):
         try:
             df = get_realtime(file=file, sortby=sortby)
             df = df[df.share > 100]
-            df['btm_space'] = df['btm_space'].apply(lambda x: str(round(x, 3)) + '%')
+            # format data
+            df['price'] = df['price'].apply(lambda x: str(round(float(x), 2)))
+            df['bid'] = df['bid'].apply(lambda x: str(round(float(x), 2)))
+            df['ask'] = df['ask'].apply(lambda x: str(round(float(x), 2)))
+            df['low'] = df['low'].apply(lambda x: '_' + str(round(float(x), 2)))
+            df['high'] = df['high'].apply(lambda x: '^' + str(round(float(x), 2)))
+            df['bottom'] = df['bottom'].apply(lambda x: '[' + str(x) + ']')
+            df['change'] = df['change'].apply(lambda x: str(round(x, 2)) + '%')
+            df['profit_perc'] = df['profit_perc'].apply(lambda x: str(round(x, 2)) + '%')
+            df['btm_space'] = df['btm_space'].apply(lambda x: str(round(x, 2)) + '%')
+
             print(df)
         except Exception as e:
             print('excpetion: ' + e)
@@ -100,13 +110,7 @@ def get_realtime(file, sortby=None):
     else:
         df = df.sort_values('change', axis=0, ascending=True, inplace=False, kind='quicksort', na_position='last')
 
-    # format data
-    df['change'] = df['change'].apply(lambda x: str(round(x, 3)) + '%')
-    df['profit_perc'] = df['profit_perc'].apply(lambda x: str(round(x, 3)) + '%')
-    # df['btm_space'] = df['btm_space'].apply(lambda x: str(round(x, 3)) + '%')
-    # df['esc_space'] = df['esc_space'].apply(lambda x: str(round(x, 3)) + '%')
-
-    return df[['warn','code','name','price','change','bid','ask','low','high','bottom','btm_space','cost','profit_amt','profit_perc', 'share', 'total_amt']]
+    return df[['warn', 'code', 'name', 'price', 'change', 'bid', 'ask', 'low', 'high', 'bottom', 'btm_space', 'cost', 'profit_amt', 'profit_perc', 'share', 'total_amt']]
 
 if __name__ == '__main__':
     if len(argv) < 2:
