@@ -21,7 +21,7 @@ def re_exe(file=None, inc=3, sortby=None):
     while True:
         try:
             df = get_realtime(file=file, sortby=sortby)
-            df = df[df.share > 100]
+            df = df[(df.share > 100) & (df.bid > '0.01')]
             # format data
             df['price'] = df['price'].apply(lambda x: str(round(float(x), 2)))
             df['bid'] = df['bid'].apply(lambda x: str(round(float(x), 2)))
