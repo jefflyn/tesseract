@@ -114,8 +114,6 @@ def get_realtime(file, sortby=None):
     else:
         df = df.sort_values('change', axis=0, ascending=True, inplace=False, kind='quicksort', na_position='last')
 
-    df = format_realtime(df)
-
     return df[['warn', 'code', 'name', 'price', 'change', 'bid', 'ask', 'low', 'high', 'bottom', 'btm_space', 'cost', 'profit_amt', 'profit_perc', 'share', 'total_amt']]
 
 if __name__ == '__main__':
