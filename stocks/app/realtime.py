@@ -37,6 +37,7 @@ def re_exe(file=None, inc=3, sortby=None):
             df = get_realtime(file=file, sortby=sortby)
             # filter
             df = df[(df.share > 100) & (df.bid > '0.01')]
+            df = format_realtime(df)
             print(df)
         except Exception as e:
             print('excpetion: ' + e)

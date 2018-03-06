@@ -1,7 +1,7 @@
 library(quantmod)
 setSymbolLookup(HGGF=list(name='600570.ss',src='yahoo'))
 getSymbols("HGGF")
-#View(HGGF)
+View(HGGF)
 #head(HGGF)
 #chartSeries(HGGF)
 

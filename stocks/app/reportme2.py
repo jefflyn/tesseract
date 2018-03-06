@@ -14,11 +14,11 @@ if __name__ == '__main__':
     content = content + content1 + content12 + content2 + '</body></html>'
     # content = content + content12 + '</body></html>'
 
-    _utils.save_to_pdf(content, 'report_my.pdf')
+    # _utils.save_to_pdf(content, 'report_my.pdf')
 
     attaches = []
-    att1 = report.create_attach('report_my.pdf', 'daily_report.pdf')
-    attaches.append(att1)
+    # att1 = report.create_attach('report_my.pdf', 'daily_report.pdf')
+    # attaches.append(att1)
     att0 = report.create_attach('wave_index.png', 'index.png')
     attaches.append(att0)
     att3 = report.create_attach('report_pa.png', 'holding-pa.png')
