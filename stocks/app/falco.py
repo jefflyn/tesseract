@@ -1,8 +1,7 @@
 import datetime as dt
+import time
 from datetime import datetime
-
 import pandas as pd
-
 import tushare as ts
 
 from stocks.data import _datautils
@@ -70,12 +69,6 @@ def get_monitor(codes, limit=10):
     df = df.sort_values('space', axis=0, ascending=False, inplace=False, kind='quicksort', na_position='last')
     # df['change'] = df['change'].apply(lambda n: str(round(n, 3)) + '%')
     # df['space'] = df['space'].apply(lambda n: str(round(n, 3)) + '%')
-    return df[['warn','code','name','change','price','low','bottom','space','industry','area','pe']]
+    return df#[['warn','code','name','change','price','low','bottom','space','industry','area','pe']]
 
-def monitor(codes, inc=3):
-    while True:
-        df = get_monitor(codes)
-        print(df[['warn','code','name','change','price','low','bottom','space','industry','area','pe']])
-
-        time.sleep(inc)
 
