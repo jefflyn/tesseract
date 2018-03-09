@@ -224,13 +224,13 @@ def pickup_s2():
         wave.plot_wave(listdf, filename='./wave/' + code + '.png')
 
 if __name__ == '__main__':
-    # pickup_subnew_issue_space()
+    pickup_subnew_issue_space()
     # pickup_subnew()
     # bottomdf = falco.get_monitor('002852')
     # print(bottomdf)
     # exit()
     # pickup_s2()
-    pickup_s1('', '粤港澳.txt')
+    # pickup_s1('', '粤港澳.txt')
 
 
 
