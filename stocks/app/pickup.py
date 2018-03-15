@@ -124,7 +124,7 @@ def pickup_s1(type='', classname=''):
     limitupdf = limitup.get_limit_up(codes)
     _datautils.to_db(limitupdf, 'limitupx')
     # 1.choose the active codes from the limitups which limitup at lease more than n
-    limitupcount = limitup.count(limitupdf, times=3, condition=[90,1])
+    limitupcount = limitup.count(limitupdf, times=0, condition=[90,0])
     # print(limitupcount)
 
     codes = list(limitupcount.index.get_values())
@@ -224,13 +224,13 @@ def pickup_s2():
         wave.plot_wave(listdf, filename='./wave/' + code + '.png')
 
 if __name__ == '__main__':
-    pickup_subnew_issue_space()
+    # pickup_subnew_issue_space()
     # pickup_subnew()
     # bottomdf = falco.get_monitor('002852')
     # print(bottomdf)
     # exit()
     # pickup_s2()
-    # pickup_s1('', '粤港澳.txt')
+    pickup_s1('i', '饮料制造.txt')
 
 
 
