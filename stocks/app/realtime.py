@@ -36,7 +36,7 @@ def re_exe(file=None, inc=3, sortby=None):
         try:
             df = get_realtime(file=file, sortby=sortby)
             # filter
-            df = df[(df.share > 100) & (df.bid > '0.01')]
+            df = df[df.bid > '0.01']
             df = format_realtime(df)
             print(df)
         except Exception as e:
@@ -109,11 +109,11 @@ def get_realtime(file, sortby=None):
     # df['change'] = df['change'].astype('float32')
     # df['profit_perc'] = df['profit_perc'].astype('float32')
     if sortby == 'p':
-        df = df.sort_values('profit_perc', axis=0, ascending=True, inplace=False, kind='quicksort', na_position='last')
+        df = df.sort_values(['profit_perc'], axis=0, ascending=True, inplace=False, kind='quicksort', na_position='last')
     elif sortby == 'b':
-        df = df.sort_values('btm_space', axis=0, ascending=False, inplace=False, kind='quicksort', na_position='last')
+        df = df.sort_values(['btm_space'], axis=0, ascending=False, inplace=False, kind='quicksort', na_position='last')
     else:
-        df = df.sort_values('change', axis=0, ascending=True, inplace=False, kind='quicksort', na_position='last')
+        df = df.sort_values(['share','change'], axis=0, ascending=True, inplace=False, kind='quicksort', na_position='last')
 
     return df[['warn', 'code', 'name', 'price', 'change', 'bid', 'ask', 'low', 'high', 'bottom', 'btm_space', 'cost', 'profit_amt', 'profit_perc', 'share', 'total_amt']]
 
