@@ -17,7 +17,11 @@ if __name__ == '__main__':
         print("Invalid args! At least 2 args like: python xxx.py code1[,code2,...]")
         sys.exit(0)
     codes = argv[1]
-    index = (argv[2] == 'true')
+    index = False
+    try:
+        index = (argv[2] == 'true')
+    except Exception as e:
+        index = False
 
     code_list = codes.split(',')
     print(code_list)

@@ -230,7 +230,7 @@ if __name__ == '__main__':
     # print(bottomdf)
     # exit()
     # pickup_s2()
-    pickup_s1('i', '饮料制造.txt')
+    pickup_s1('c', '无人零售.txt')
 
 
 
