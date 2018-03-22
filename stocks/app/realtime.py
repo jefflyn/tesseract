@@ -112,8 +112,10 @@ def get_realtime(file, sortby=None):
         df = df.sort_values(['profit_perc'], axis=0, ascending=True, inplace=False, kind='quicksort', na_position='last')
     elif sortby == 'b':
         df = df.sort_values(['btm_space'], axis=0, ascending=False, inplace=False, kind='quicksort', na_position='last')
+    elif sortby == 't':
+        df = df.sort_values(['total_amt'], axis=0, ascending=True, inplace=False, kind='quicksort', na_position='last')
     else:
-        df = df.sort_values(['share','change'], axis=0, ascending=True, inplace=False, kind='quicksort', na_position='last')
+        df = df.sort_values(['change'], axis=0, ascending=True, inplace=False, kind='quicksort', na_position='last')
 
     return df[['warn', 'code', 'name', 'price', 'change', 'bid', 'ask', 'low', 'high', 'bottom', 'btm_space', 'cost', 'profit_amt', 'profit_perc', 'share', 'total_amt']]
 
