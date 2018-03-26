@@ -23,7 +23,7 @@ if __name__ == '__main__':
     except Exception as e:
         index = False
 
-    code_list = codes.split(' ')
+    code_list = codes.split(',')
     print(code_list)
 
     result = wave.get_wave(code_list, index=index, start='2016-01-01')
