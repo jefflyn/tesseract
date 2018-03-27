@@ -42,6 +42,9 @@ def get_limit_up(codes = None, start = None, end = None, up = True):
     return result
 
 
+"""
+get limit up times by default 2 times in 90 days
+"""
 def count(df=None, times=None, condition=[90, 2]):
     if df.empty:
         return df

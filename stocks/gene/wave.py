@@ -19,13 +19,13 @@ pd.set_option('display.width', 600)
 todaystr = datetime.now().strftime('%Y-%m-%d')
 
 def get_bottom(df = None, limit = 20):
-    starttime = datetime.datetime.now()
+    starttime = datetime.now()
     if df is None:
         return df
     groupdf = df.groupby("code")
     dfresult = []
-    for name, group in groupdf:
-        # print(name)
+    for code, group in groupdf:
+        # print(code)
         # print(group)
         size = group.iloc[:, 0].size
         startfromlast = 1
@@ -33,6 +33,7 @@ def get_bottom(df = None, limit = 20):
         idx = lastestrec.index.get_values()[0]
         status = lastestrec.at[idx, 'status']
         bottom = lastestrec.at[idx, 'begin_price'] if status == 'up' else lastestrec.at[idx, 'end_price']
+        top = lastestrec.at[idx, 'end_price'] if status == 'up' else lastestrec.at[idx, 'begin_price']
 
         reclist = []
         while startfromlast < size:
@@ -46,14 +47,19 @@ def get_bottom(df = None, limit = 20):
                 continue
             else:
                 bottom = lastrec.at[lastidx, 'begin_price'] if laststatus == 'up' else lastrec.at[lastidx, 'end_price']
+                top = lastrec.at[lastidx, 'end_price'] if laststatus == 'up' else lastrec.at[lastidx, 'begin_price']
                 break
-        reclist.append(name)
+        reclist.append(code)
         reclist.append(bottom)
+        # add three buy positions for wave periods
+        reclist.append(top*0.66)
+        reclist.append(top*0.5)
+        reclist.append(top*0.33)
         dfresult.append(reclist)
 
-    result = pd.DataFrame(dfresult, columns=['code', 'bottom'])
+    result = pd.DataFrame(dfresult, columns=['code', 'bottom', 'buy1', 'buy2', 'buy3'])
 
-    endtime = datetime.datetime.now()
+    endtime = datetime.now()
     print("total time: %ds" % (endtime - starttime).seconds)
     return result
 
@@ -312,7 +318,16 @@ def etl():
     mywavedata = wave.get_wave(codes, start='2016-01-04')
     mywavedata.to_csv("../data/wavemy.csv", encoding='utf-8')
 
+
+def testBottom():
+    df = get_wave('600216')
+    bottom = get_bottom(df)
+    print(bottom)
+
+
+
 if __name__ == '__main__':
+    testBottom()
     # get_wave()
     filePath = "../data/app/pa.txt"
     mystk = pd.read_csv(filePath, sep=' ')

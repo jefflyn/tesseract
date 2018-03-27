@@ -11,7 +11,7 @@ from stocks.app import _utils
 
 pd.set_option('display.width', 600)
 
-def get_ma(codes=None, start='2016-01-04', end=None):
+def get_ma(codes=None, start='2017-01-04', end=None):
     starttime = datetime.datetime.now()
     print("process ma data start at [%s]" % starttime)
     code_list = []

@@ -115,6 +115,9 @@ def get_basics_fromh5(code=None, excludeCyb=False):
     fundamental.close()
     return data
 
+"""
+index: code
+"""
 def get_basics(code=None, excludeCyb=False, index=False):
     if index == True:
         return INDEX_DICT[code]

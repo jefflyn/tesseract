@@ -12,7 +12,74 @@ from stocks.data import _datautils
 from stocks.gene import limitup
 from stocks.gene import wave
 from stocks.gene import maup
-from stocks.gene import bargain
+from stocks.gene import upnday
+
+today = dt.now()
+
+"""
+return specific subnew code list
+"""
+def pickup_subnew_codes():
+    return []
+
+def pickup_result(codes):
+    df = ts.get_realtime_quotes(codes)
+
+    data_list = []
+    for index, row in df.iterrows():
+        code = row['code']
+        current_price = float(row['price'])
+        # maybe in trading halt or others situation, ignore this code
+        if current_price <= 0:
+            continue;
+
+        basic = _datautils.get_basics(code, True)
+        curt_data = []
+        curt_data.append(code)
+        curt_data.append(row['name'])
+        curt_data.append(basic.ix[code, 'industry'])
+        curt_data.append(basic.ix[code, 'area'])
+        curt_data.append(basic.ix[code, 'pe'])
+
+        curt_data.append(current_price)
+
+        # get wave data and bottom top
+        wavedf = wave.get_wave(code) # need to save
+        bottomdf = wave.get_bottom(wavedf)
+
+        # limit up data
+        limitupdf = limitup.get_limit_up(code)
+        limitupcountdf = limitup.count(limitup)
+
+        # up n day data
+        upndaydf = upnday.get_upnday(code)
+
+        # get maup data
+        maupdf = maup.get_ma(code)
+
+        curt_data.append(round(issue_space, 2))
+        curt_data.append(round(avg, 2))
+        # curt_data.append(var)
+        curt_data.append(round(std, 2))
+        # curt_data.append(varrate)
+        curt_data.append(round(stdrate, 2))
+
+        data_list.append(curt_data)
+    columns = ['code', 'name', 'industry', 'area', 'pe', 'liquid_assets', 'total_assets', 'issue_days', 'issue_price',
+               'current_price', 'issue_space', 'avg_99', 'std_99', 'stdrate']
+    resultdf = pd.DataFrame(data_list, columns=columns)
+
+    resultdf = resultdf.sort_values('issue_space', axis=0, ascending=True, inplace=False, kind='quicksort', na_position='last')
+
+    _datautils.to_db(resultdf, 'pickup_subnew_issue_space' + startstr)
+
+    resultdf.to.to_csv('pickup_subnew_issue_space.csv')
+
+    wavedf = wave.get_wave(list(resultdf['code']))
+    _datautils.to_db(wavedf, 'wave_subnew')
+
+
+
 
 def pickup_subnew_issue_space():
     starttime = dt.now()
@@ -58,8 +125,7 @@ def pickup_subnew_issue_space():
         curt_data.append(subnewbasic.ix[code, 'industry'])
         curt_data.append(subnewbasic.ix[code, 'area'])
         curt_data.append(subnewbasic.ix[code, 'pe'])
-        curt_data.append(_datautils.format_amount(subnewbasic.ix[code, 'liquidAssets'] * 10000))
-        curt_data.append(_datautils.format_amount(subnewbasic.ix[code, 'totalAssets'] * 10000))
+
         curt_data.append(issuedays)
         curt_data.append(issue_close_price)
         curt_data.append(current_price)

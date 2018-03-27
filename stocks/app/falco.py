@@ -42,7 +42,7 @@ def get_monitor(codes, limit=10):
             bottom = _datautils.get_bottom().ix[index, 'bottom']
         else:
             wavedf = wave.get_wave(code)
-            bottomdf = bargain.get_bottom(wavedf, limit=limit)
+            bottomdf = wave.get_bottom(wavedf, limit=limit)
             bottom = bottomdf.at[bottomdf.index.get_values()[0], 'bottom']
         ##calculate the bottom, the smaller the possibility of bounce is bigger.
         ##if negative, that means the bottom is broken, pay much attention if get out or wait for the escape line
