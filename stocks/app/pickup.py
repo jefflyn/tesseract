@@ -26,6 +26,7 @@ def pickup_result(codes):
     df = ts.get_realtime_quotes(codes)
 
     data_list = []
+    wavedf_list = []
     for index, row in df.iterrows():
         code = row['code']
         current_price = float(row['price'])
@@ -45,24 +46,48 @@ def pickup_result(codes):
 
         # get wave data and bottom top
         wavedf = wave.get_wave(code) # need to save
+        wavedf_list.append(wavedf)
         bottomdf = wave.get_bottom(wavedf)
+        bottom = bottomdf.ix[0, 'bottom']
+        curt_data.append(bottom)
+        curt_data.append((current_price - bottom) / bottom)
+        curt_data.append(bottomdf.ix[0, 'buy1'])
+        curt_data.append(bottomdf.ix[0, 'buy2'])
+        curt_data.append(bottomdf.ix[0, 'buy3'])
 
         # limit up data
         limitupdf = limitup.get_limit_up(code)
-        limitupcountdf = limitup.count(limitup)
+        limitupcount = 0
+        limitup_lastday = "-"
+        limitupcountdf = limitup.count(limitupdf)
+        if limitupcountdf.empty == False:
+            limitupcount = limitupcountdf.ix[0, 'count']
+            limitup_lastday = limitupcountdf.ix[0, 'maxdate']
+        curt_data.append(limitupcount)
+        curt_data.append(limitup_lastday)
 
         # up n day data
         upndaydf = upnday.get_upnday(code)
+        updays = 0
+        sumup = 0
+        if upndaydf.empty == False:
+            updays = upndaydf.ix[0, 'updays']
+            sumup = upndaydf.ix[0, 'sumup']
+        curt_data.append(updays)
+        curt_data.append(sumup)
 
         # get maup data
         maupdf = maup.get_ma(code)
+        curt_data.append(maupdf.ix[0, 'isup'])
+        curt_data.append(maupdf.ix[0, 'ma5'])
+        curt_data.append(maupdf.ix[0, 'ma10'])
+        curt_data.append(maupdf.ix[0, 'ma20'])
+        curt_data.append(maupdf.ix[0, 'ma30'])
+        curt_data.append(maupdf.ix[0, 'ma60'])
+        curt_data.append(maupdf.ix[0, 'ma90'])
+        curt_data.append(maupdf.ix[0, 'ma1120'])
+        curt_data.append(maupdf.ix[0, 'ma250'])
 
-        curt_data.append(round(issue_space, 2))
-        curt_data.append(round(avg, 2))
-        # curt_data.append(var)
-        curt_data.append(round(std, 2))
-        # curt_data.append(varrate)
-        curt_data.append(round(stdrate, 2))
 
         data_list.append(curt_data)
     columns = ['code', 'name', 'industry', 'area', 'pe', 'liquid_assets', 'total_assets', 'issue_days', 'issue_price',
@@ -71,9 +96,9 @@ def pickup_result(codes):
 
     resultdf = resultdf.sort_values('issue_space', axis=0, ascending=True, inplace=False, kind='quicksort', na_position='last')
 
-    _datautils.to_db(resultdf, 'pickup_subnew_issue_space' + startstr)
+    _datautils.to_db(resultdf, 'pickup_result')
 
-    resultdf.to.to_csv('pickup_subnew_issue_space.csv')
+    resultdf.to.to_csv('pickup_result.csv')
 
     wavedf = wave.get_wave(list(resultdf['code']))
     _datautils.to_db(wavedf, 'wave_subnew')
@@ -290,6 +315,7 @@ def pickup_s2():
         wave.plot_wave(listdf, filename='./wave/' + code + '.png')
 
 if __name__ == '__main__':
+    pickup_result('002158')
     # pickup_subnew_issue_space()
     # pickup_subnew()
     # bottomdf = falco.get_monitor('002852')

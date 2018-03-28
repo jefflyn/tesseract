@@ -18,7 +18,6 @@ from stocks.data import _datautils
 from stocks.gene import limitup
 from stocks.gene import wave
 from stocks.gene import maup
-from stocks.gene import bargain
 
 sender = '649054380@qq.com'
 passw = 'pznntikuyzfvbchb'

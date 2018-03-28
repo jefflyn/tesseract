@@ -128,6 +128,7 @@ def get_basics(code=None, excludeCyb=False, index=False):
         data = data[data['code'].str.get(0) != '3']
     if code != None:
         data = data[data.code == code]
+    data.index = list(data['code'])
     return data
 
 def get_bottom():

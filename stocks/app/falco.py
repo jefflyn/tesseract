@@ -7,7 +7,6 @@ import tushare as ts
 from stocks.data import _datautils
 from stocks.app import _utils
 from stocks.gene import wave
-from stocks.gene import bargain
 
 
 def get_monitor(codes, limit=10):
