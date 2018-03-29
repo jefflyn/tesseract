@@ -26,7 +26,7 @@ def pickup_result(codes):
     df = ts.get_realtime_quotes(codes)
 
     data_list = []
-    wavedf_list = []
+    wavedfset = pd.DataFrame(columns=['code', 'begin', 'end', 'status', 'begin_price', 'end_price', 'days', 'change'])
     for index, row in df.iterrows():
         code = row['code']
         current_price = float(row['price'])
@@ -41,19 +41,19 @@ def pickup_result(codes):
         curt_data.append(basic.ix[code, 'industry'])
         curt_data.append(basic.ix[code, 'area'])
         curt_data.append(basic.ix[code, 'pe'])
-
         curt_data.append(current_price)
 
         # get wave data and bottom top
         wavedf = wave.get_wave(code) # need to save
-        wavedf_list.append(wavedf)
+        wavedfset.append(wavedf)
         bottomdf = wave.get_bottom(wavedf)
         bottom = bottomdf.ix[0, 'bottom']
         curt_data.append(bottom)
-        curt_data.append((current_price - bottom) / bottom)
-        curt_data.append(bottomdf.ix[0, 'buy1'])
-        curt_data.append(bottomdf.ix[0, 'buy2'])
-        curt_data.append(bottomdf.ix[0, 'buy3'])
+        space = (current_price - bottom) / bottom * 100
+        curt_data.append(round(space, 2))
+        curt_data.append(round(bottomdf.ix[0, 'buy1'], 2))
+        curt_data.append(round(bottomdf.ix[0, 'buy2'], 2))
+        curt_data.append(round(bottomdf.ix[0, 'buy3'], 2))
 
         # limit up data
         limitupdf = limitup.get_limit_up(code)
@@ -85,23 +85,21 @@ def pickup_result(codes):
         curt_data.append(maupdf.ix[0, 'ma30'])
         curt_data.append(maupdf.ix[0, 'ma60'])
         curt_data.append(maupdf.ix[0, 'ma90'])
-        curt_data.append(maupdf.ix[0, 'ma1120'])
+        curt_data.append(maupdf.ix[0, 'ma120'])
         curt_data.append(maupdf.ix[0, 'ma250'])
 
 
         data_list.append(curt_data)
-    columns = ['code', 'name', 'industry', 'area', 'pe', 'liquid_assets', 'total_assets', 'issue_days', 'issue_price',
-               'current_price', 'issue_space', 'avg_99', 'std_99', 'stdrate']
+    columns = ['code', 'name', 'industry', 'area', 'pe', 'price', 'bottom', 'space', 'buy1', 'buy2', 'buy3','count', 'lastday', 'updays',
+               'sumup', 'isup', 'ma5', 'ma10', 'ma20', 'ma30', 'ma60', 'ma90', 'ma120', 'ma250']
     resultdf = pd.DataFrame(data_list, columns=columns)
 
-    resultdf = resultdf.sort_values('issue_space', axis=0, ascending=True, inplace=False, kind='quicksort', na_position='last')
+    resultdf = resultdf.sort_values('bottom', axis=0, ascending=True, inplace=False, kind='quicksort', na_position='last')
 
     _datautils.to_db(resultdf, 'pickup_result')
-
-    resultdf.to.to_csv('pickup_result.csv')
-
-    wavedf = wave.get_wave(list(resultdf['code']))
-    _datautils.to_db(wavedf, 'wave_subnew')
+    resultdf.to_csv('pickup_result.csv')
+    _datautils.to_db(wavedfset, 'pick_wave')
+    print("pickup finish...")
 
 
 
@@ -322,7 +320,7 @@ if __name__ == '__main__':
     # print(bottomdf)
     # exit()
     # pickup_s2()
-    pickup_s1('c', '无人零售.txt')
+    # pickup_s1('c', '无人零售.txt')
 
 
 
