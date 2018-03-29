@@ -6,6 +6,18 @@ import pdfkit
 
 conn = sqlite3.connect('../data/trade.db')
 
+"""
+include begin
+exclude end
+"""
+def is_inrange(num=None, begin=None, end=None):
+    if num is None or begin is None:
+        return False
+    if end is None:
+        return num >= begin
+    else:
+        return num >= begin and num < end
+
 
 def is_halting(code, latest_date_str=None):
     starttime = datetime.now()
@@ -68,3 +80,7 @@ def save_to_pdf(htmlstr=None, desc=None):
     else:
         pdfkit.from_string(htmlstr, desc, options=options)
     print('save to pdf successfully')
+
+
+if __name__ == '__main__':
+    print(is_inrange(0.1, 0, 0.11))

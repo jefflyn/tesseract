@@ -51,13 +51,14 @@ def get_bottom(df = None, limit = 20):
                 break
         reclist.append(code)
         reclist.append(bottom)
+        reclist.append(top)
         # add three buy positions for wave periods
         reclist.append(top*0.66)
         reclist.append(top*0.5)
         reclist.append(top*0.33)
         dfresult.append(reclist)
 
-    result = pd.DataFrame(dfresult, columns=['code', 'bottom', 'buy1', 'buy2', 'buy3'])
+    result = pd.DataFrame(dfresult, columns=['code', 'bottom', 'top', 'buy1', 'buy2', 'buy3'])
 
     endtime = datetime.now()
     print("total time: %ds" % (endtime - starttime).seconds)
@@ -185,7 +186,7 @@ default get the recent one year data
 def get_wave(codes=None, index=False, start=None, end=None, beginlow=True, duration=0, pchange=0):
     starttime = datetime.now()
     if start == None:
-        bwdays = dt.timedelta(-365)
+        bwdays = dt.timedelta(-730)
         start = (starttime + bwdays).strftime("%Y-%m-%d")
     print("get wave start at [%s]" % starttime)
     code_list = []
@@ -193,6 +194,9 @@ def get_wave(codes=None, index=False, start=None, end=None, beginlow=True, durat
         code_list.append(codes)
     else: code_list = codes
 
+    index_realtime = []
+    if index == True:
+        index_realtime = ts.get_index()
     perioddf_list = []
     for code in code_list:
         print("   >>> processing %s ..." % code)
@@ -201,17 +205,29 @@ def get_wave(codes=None, index=False, start=None, end=None, beginlow=True, durat
         if hist_data is None or len(hist_data) == 0:
             continue
         latestdate = hist_data.tail(1).at[hist_data.tail(1).index.get_values()[0], 'date']
-        if todaystr != latestdate and index == False:
-            # get today data from [get_realtime_quotes(code)]
-            realtime = ts.get_realtime_quotes(code)
-            if realtime is None or realtime.empty == True:
-                continue
-            # ridx = realtime.index.get_values()[0]
-            todaylow = float(realtime.at[0,'low'])
-            if todaylow > 0:
-                newone = {'date':todaystr,'open':float(realtime.at[0,'open']),'close':float(realtime.at[0,'price']),'high':float(realtime.at[0,'high']), 'low':todaylow,'volume':int(float(realtime.at[0,'volume'])/100),'code':code}
-                newdf = pd.DataFrame(newone, index=[0])
-                hist_data = hist_data.append(newdf, ignore_index=True)
+        if todaystr != latestdate: # not the latest record
+            if index == False:
+                # get today data from [get_realtime_quotes(code)]
+                realtime = ts.get_realtime_quotes(code)
+                if realtime is None or realtime.empty == True:
+                    continue
+                todaylow = float(realtime.at[0, 'low'])
+                if todaylow > 0:
+                    newone = {'date':todaystr,'open':float(realtime.at[0,'open']),'close':float(realtime.at[0,'price']),'high':float(realtime.at[0,'high']), 'low':todaylow,'volume':int(float(realtime.at[0,'volume'])/100),'code':code}
+                    newdf = pd.DataFrame(newone, index=[0])
+                    hist_data = hist_data.append(newdf, ignore_index=True)
+            else:
+                indexdf = index_realtime[index_realtime['code'] == code]
+                if indexdf is None or indexdf.empty == True:
+                    continue
+                todaylow = float(indexdf.at[indexdf.index.values[0], 'low'])
+                if todaylow > 0:
+                    newone = {'date': todaystr, 'open': float(realtime.at[0, 'open']),
+                              'close': float(realtime.at[0, 'price']), 'high': float(realtime.at[0, 'high']),
+                              'low': todaylow, 'volume': int(float(realtime.at[0, 'volume'])), 'code': code}
+                    newdf = pd.DataFrame(newone, index=[0])
+                    hist_data = hist_data.append(newdf, ignore_index=True)
+
         left_data = wavefrom(code, hist_data, beginlow, 'left', duration, pchange)
         #sorted by date asc
         left_data.reverse()
@@ -320,9 +336,12 @@ def etl():
 
 
 def testBottom():
-    df = get_wave('600216')
-    bottom = get_bottom(df)
-    print(bottom)
+    df = get_wave('399005', index=True)
+    print(df)
+    bottom_def = get_bottom(df)
+    print(bottom_def.ix[0, 'bottom'])
+    bottom_my = get_bottom(df, limit=8)
+    print(bottom_my.ix[0, 'bottom'])
 
 
 
