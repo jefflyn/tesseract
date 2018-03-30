@@ -2,6 +2,7 @@ import sys
 from sys import argv
 import tushare as ts
 from tushare.stock import cons as ct
+from stocks.gene import wave
 import pandas as pd
 import time
 from tkinter import *
@@ -25,10 +26,14 @@ def format_realtime(df):
     df['ask'] = df['ask'].apply(lambda x: str(round(float(x), 2)))
     df['low'] = df['low'].apply(lambda x: '_' + str(round(float(x), 2)))
     df['high'] = df['high'].apply(lambda x: '^' + str(round(float(x), 2)))
-    df['bottom'] = df['bottom'].apply(lambda x: '[' + str(x) + ']')
+    df['bottom'] = df['bottom'].apply(lambda x: '[' + str(x) )
+    df['top'] = df['top'].apply(lambda x: str(x) + ']')
+    df['cost'] = df['cost'].apply(lambda x: '<' + str(round(x, 2)) + '>')
     df['change'] = df['change'].apply(lambda x: str(round(x, 2)) + '%')
     df['profit_perc'] = df['profit_perc'].apply(lambda x: str(round(x, 2)) + '%')
-    df['btm_space'] = df['btm_space'].apply(lambda x: str(round(x, 2)) + '%')
+    df['uspace'] = df['uspace'].apply(lambda x: str(round(x, 2)) + '%')
+    df['dspace'] = df['dspace'].apply(lambda x: str(round(x, 2)) + '%')
+    df['position'] = df['position'].apply(lambda x: str(round(x, 2)) + '%')
     return df
 
 def re_exe(file=None, inc=3, sortby=None):
@@ -52,9 +57,7 @@ def get_realtime(file, sortby=None):
     data_list = []
     for index, row in df.iterrows():
         code = row['code']
-
         code = INDEX_LIST_NEW[code] if code in INDEX_LIST_NEW.keys() else code
-
         pre_close = float(row['pre_close'])
         price = float(row['price'])
         low = float(row['low'])
@@ -65,7 +68,14 @@ def get_realtime(file, sortby=None):
         index = list(hddf['code']).index(code)
         cost = hddf.ix[index, 'cost']
         share = hddf.ix[index, 'share']
+        wavedf = wave.get_wave(code)
+        bdf = wave.get_bottom(wavedf)
         bottom = hddf.ix[index, 'bottom']
+        if bottom is None:
+            bottom = bdf.ix[0, 'bottom']
+        top = bdf.ix[0, 'top']
+        dspace = (price - top) / top * 100
+        position = (price - bottom) / (top - bottom) * 100
 
         cost_diff = price - cost
         profit = (cost_diff) * share
@@ -92,17 +102,19 @@ def get_realtime(file, sortby=None):
         curt_data = []
         curt_data.append(warn_sign)
         curt_data.append(change)
-        curt_data.append(str(cost))
+        curt_data.append(cost)
         curt_data.append(profit)
         curt_data.append(profit_perc)
-        curt_data.append(str(bottom))
-        # curt_data.append(esc_diff)
+        curt_data.append(bottom)
         curt_data.append(btm_space)
+        curt_data.append(dspace)
+        curt_data.append(top)
+        curt_data.append(position)
         curt_data.append(share)
         curt_data.append(price * share)
         data_list.append(curt_data)
 
-    df_append = pd.DataFrame(data_list, columns=['warn', 'change', 'cost', 'profit_amt', 'profit_perc', 'bottom', 'btm_space', 'share', 'total_amt'])
+    df_append = pd.DataFrame(data_list, columns=['warn', 'change', 'cost', 'profit_amt', 'profit_perc', 'bottom', 'uspace', 'dspace', 'top', 'position', 'share', 'total_amt'])
     df = df.join(df_append)
 
     df = df[df.price > '1']
@@ -111,13 +123,13 @@ def get_realtime(file, sortby=None):
     if sortby == 'p':
         df = df.sort_values(['profit_perc'], axis=0, ascending=True, inplace=False, kind='quicksort', na_position='last')
     elif sortby == 'b':
-        df = df.sort_values(['btm_space'], axis=0, ascending=False, inplace=False, kind='quicksort', na_position='last')
+        df = df.sort_values(['uspace'], axis=0, ascending=False, inplace=False, kind='quicksort', na_position='last')
     elif sortby == 't':
         df = df.sort_values(['total_amt'], axis=0, ascending=True, inplace=False, kind='quicksort', na_position='last')
     else:
         df = df.sort_values(['change'], axis=0, ascending=True, inplace=False, kind='quicksort', na_position='last')
 
-    return df[['warn', 'code', 'name', 'price', 'change', 'bid', 'ask', 'low', 'high', 'bottom', 'btm_space', 'cost', 'profit_amt', 'profit_perc', 'share', 'total_amt']]
+    return df[['warn', 'code', 'name', 'price', 'change', 'bid', 'ask', 'low', 'high', 'bottom', 'uspace', 'dspace', 'top', 'position', 'cost', 'profit_amt', 'profit_perc', 'share', 'total_amt']]
 
 if __name__ == '__main__':
     if len(argv) < 2:

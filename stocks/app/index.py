@@ -41,10 +41,12 @@ def get_status():
         bottom = bottomdf.ix[0, 'bottom']
         top = bottomdf.ix[0, 'top']
         positon = (current_point - bottom) / (top - bottom) * 100
-        space = (current_point - bottom) / bottom * 100
+        uspace = (current_point - bottom) / bottom * 100
+        dspace = (current_point - top) / top * 100
 
         row_data.append(bottom)
-        row_data.append(round(space, 2))
+        row_data.append(round(uspace, 2))
+        row_data.append(round(dspace, 2))
         row_data.append(top)
         row_data.append(round(positon, 2))
 
@@ -53,7 +55,7 @@ def get_status():
 
         result_data.append(row_data)
 
-    columns = ['code', 'name', 'change', 'close', 'low', 'high', 'volume', 'amount','bottom', 'space', 'top', 'position', 'suggest']
+    columns = ['code', 'name', 'change', 'close', 'low', 'high', 'volume', 'amount','bottom', 'uspace','dspace', 'top', 'position', 'suggest']
     resultdf = pd.DataFrame(result_data, columns=columns)
 
     resultdf = resultdf.sort_values('position', axis=0, ascending=False, inplace=False, kind='quicksort', na_position='last')

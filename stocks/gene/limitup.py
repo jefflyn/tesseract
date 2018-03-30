@@ -15,7 +15,7 @@ def get_today_limitup():
 
 # all 1 year
 def get_limit_up(codes = None, start = None, end = None, up = True):
-    print("get limitups... ")
+    # print("get limitups... ")
     starttime = datetime.datetime.now()
     if start == None:
         days = datetime.timedelta(-365)
@@ -38,7 +38,7 @@ def get_limit_up(codes = None, start = None, end = None, up = True):
         # hist_data.reset_index()
         result = result.append(hist_data, ignore_index=True)
     endtime = datetime.datetime.now()
-    print("total time: %ds" % (endtime - starttime).seconds)
+    # print("total time: %ds" % (endtime - starttime).seconds)
     return result
 
 

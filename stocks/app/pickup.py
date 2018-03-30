@@ -14,24 +14,48 @@ from stocks.gene import wave
 from stocks.gene import maup
 from stocks.gene import upnday
 
+pd.set_option('display.width', 5000)
+
 today = dt.now()
+LIMITUP = 'limitup'
+BOTTOM = 'bottom'
+UPNDAY = 'upnday'
+MAUP = 'maup'
+QUATO_WEIGHT = {
+    LIMITUP: 0.4,
+    BOTTOM: 0.3,
+    UPNDAY : 0.2,
+    MAUP : 0.1
+}
 
 """
 return specific subnew code list
 """
-def pickup_subnew_codes():
-    return []
+def pick_subnew(fromTime=20170901):
+    subnewbasic = _datautils.get_subnew(marketTimeFrom=fromTime)
+    codes = list(subnewbasic['code'])
+    print(pickup_result(codes))
+
+def pick_concepts(name):
+    data = _datautils.get_stock_data(type='c', filename=name)
+    codes = list(data['code'])
+    print(pickup_result(codes))
+
+def pick_industry(name):
+    data = _datautils.get_stock_data(type='i', filename=name)
+    codes = list(data['code'])
+    print(pickup_result(codes))
 
 def pickup_result(codes):
     df = ts.get_realtime_quotes(codes)
-
     data_list = []
     wavedfset = pd.DataFrame(columns=['code', 'begin', 'end', 'status', 'begin_price', 'end_price', 'days', 'change'])
     for index, row in df.iterrows():
         code = row['code']
+        open = float(row['open'])
         current_price = float(row['price'])
         # maybe in trading halt or others situation, ignore this code
-        if current_price <= 0:
+        if open <= 0 or current_price <= 0:
             continue;
 
         basic = _datautils.get_basics(code, True)
@@ -48,9 +72,15 @@ def pickup_result(codes):
         wavedfset.append(wavedf)
         bottomdf = wave.get_bottom(wavedf)
         bottom = bottomdf.ix[0, 'bottom']
+        top = bottomdf.ix[0, 'top']
         curt_data.append(bottom)
-        space = (current_price - bottom) / bottom * 100
-        curt_data.append(round(space, 2))
+        uspace = (current_price - bottom) / bottom * 100
+        dspace = (current_price - top) / top * 100
+        curt_data.append(round(uspace, 2))
+        curt_data.append(round(dspace, 2))
+        curt_data.append(round(top, 2))
+        position = (current_price - bottom) / (top - bottom) * 100
+        curt_data.append(round(position, 2))
         curt_data.append(round(bottomdf.ix[0, 'buy1'], 2))
         curt_data.append(round(bottomdf.ix[0, 'buy2'], 2))
         curt_data.append(round(bottomdf.ix[0, 'buy3'], 2))
@@ -88,20 +118,30 @@ def pickup_result(codes):
         curt_data.append(maupdf.ix[0, 'ma120'])
         curt_data.append(maupdf.ix[0, 'ma250'])
 
-
         data_list.append(curt_data)
-    columns = ['code', 'name', 'industry', 'area', 'pe', 'price', 'bottom', 'space', 'buy1', 'buy2', 'buy3','count', 'lastday', 'updays',
-               'sumup', 'isup', 'ma5', 'ma10', 'ma20', 'ma30', 'ma60', 'ma90', 'ma120', 'ma250']
+    columns = ['code', 'name', 'industry', 'area', 'pe', 'price', 'bottom', 'uspace','dspace', 'top', 'position', 'buy1', 'buy2', 'buy3',
+               'count', 'lastday', 'updays', 'sumup', 'isup', 'ma5', 'ma10', 'ma20', 'ma30', 'ma60', 'ma90', 'ma120', 'ma250']
     resultdf = pd.DataFrame(data_list, columns=columns)
-
     resultdf = resultdf.sort_values('bottom', axis=0, ascending=True, inplace=False, kind='quicksort', na_position='last')
 
     _datautils.to_db(resultdf, 'pickup_result')
     resultdf.to_csv('pickup_result.csv')
     _datautils.to_db(wavedfset, 'pick_wave')
+
     print("pickup finish...")
+    return resultdf
 
+def score_limitup():
+    return QUATO_WEIGHT.get('limiup')
 
+def score_bottom(bspace):
+    return 5
+
+def score_upndays(days):
+    return 5
+
+def score_maup(malist):
+    return 0
 
 
 def pickup_subnew_issue_space():
@@ -170,7 +210,6 @@ def pickup_subnew_issue_space():
     # resultdf['varrate'] = resultdf['varrate'].apply(lambda x: str(round(x, 2)) + '%')
     resultdf['stdrate'] = resultdf['stdrate'].apply(lambda x: str(round(x, 2)) + '%')
     resultdf.to_csv('pickup_subnew_issue_space.csv')
-
 
     wavedf = wave.get_wave(list(resultdf['code']))
     _datautils.to_db(wavedf, 'wave_subnew')
@@ -312,8 +351,11 @@ def pickup_s2():
         listdf.append(wave.format_wave_data(wdf))
         wave.plot_wave(listdf, filename='./wave/' + code + '.png')
 
+def test_pickup():
+    print(pickup_result('002158'))
+
 if __name__ == '__main__':
-    pickup_result('002158')
+    pick_subnew()
     # pickup_subnew_issue_space()
     # pickup_subnew()
     # bottomdf = falco.get_monitor('002852')

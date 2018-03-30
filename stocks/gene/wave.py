@@ -61,7 +61,7 @@ def get_bottom(df = None, limit = 20):
     result = pd.DataFrame(dfresult, columns=['code', 'bottom', 'top', 'buy1', 'buy2', 'buy3'])
 
     endtime = datetime.now()
-    print("total time: %ds" % (endtime - starttime).seconds)
+    # print("total time: %ds" % (endtime - starttime).seconds)
     return result
 
 """
@@ -188,7 +188,7 @@ def get_wave(codes=None, index=False, start=None, end=None, beginlow=True, durat
     if start == None:
         bwdays = dt.timedelta(-730)
         start = (starttime + bwdays).strftime("%Y-%m-%d")
-    print("get wave start at [%s]" % starttime)
+    # print("get wave start at [%s]" % starttime)
     code_list = []
     if isinstance(codes, str):
         code_list.append(codes)
@@ -199,7 +199,7 @@ def get_wave(codes=None, index=False, start=None, end=None, beginlow=True, durat
         index_realtime = ts.get_index()
     perioddf_list = []
     for code in code_list:
-        print("   >>> processing %s ..." % code)
+        # print("   >>> processing %s ..." % code)
         # hist_data = ts.get_h_data(code, start)  # network issue
         hist_data = ts.get_k_data(code=code, index=index, start=start) #one day delay issue, use realtime interface solved
         if hist_data is None or len(hist_data) == 0:
@@ -235,7 +235,7 @@ def get_wave(codes=None, index=False, start=None, end=None, beginlow=True, durat
         right_data = wavefrom(code, hist_data, beginlow, 'right', duration, pchange)
         period_df = pd.DataFrame(left_data + right_data,columns=['code', 'begin', 'end', 'status', 'begin_price', 'end_price', 'days', 'change'])
         perioddf_list.append(period_df)
-        print("   >>> done!")
+        # print("   >>> done!")
 
     if perioddf_list is None or len(perioddf_list) == 0:
         return 'result is empty, please check the code is exist!'
@@ -243,7 +243,7 @@ def get_wave(codes=None, index=False, start=None, end=None, beginlow=True, durat
     # result = result.sort_values(by=['code','begin'], axis=0, ascending=True, inplace=False, kind='quicksort', na_position='last')
 
     endtime = datetime.now()
-    print("get wave finish at [%s], total time: %ds" % (endtime, (endtime - starttime).seconds))
+    # print("get wave finish at [%s], total time: %ds" % (endtime, (endtime - starttime).seconds))
     return result
 
 

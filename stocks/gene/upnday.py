@@ -16,8 +16,8 @@ lastmonthstr = (dtime.now() + datetime.timedelta(days=-histnum)).strftime('%Y-%m
 
 def get_upnday(codes=None, n=3, change=None):
     starttime = dtime.now()
-    print("process upnday data start at [%s]" % starttime)
-    print("get k data from %s" % lastmonthstr)
+    # print("process upnday data start at [%s]" % starttime)
+    # print("get k data from %s" % lastmonthstr)
     code_list = []
     if isinstance(codes, str):
         code_list.append(codes)
@@ -84,7 +84,7 @@ def get_upnday(codes=None, n=3, change=None):
     upndf = pd.DataFrame(upndata, columns=['code', 'name', 'industry', 'area', 'pe', 'updays', 'sumup'])
     upndf = upndf.sort_values(['updays', 'sumup'], ascending=[False, True])
     endtime = dtime.now()
-    print("process upnday data finish at [%s], total time: %ds" % (endtime, (endtime - starttime).seconds))
+    # print("process upnday data finish at [%s], total time: %ds" % (endtime, (endtime - starttime).seconds))
     return upndf
 
 
