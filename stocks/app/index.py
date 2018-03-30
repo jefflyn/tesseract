@@ -107,7 +107,7 @@ if __name__ == '__main__':
     if len(argv) > 1:
         while True:
             print(get_status())
-            time.sleep(30)
+            time.sleep(60)
     else:
         wavedf = wave.get_wave(codes=target, index=True)
         # plot figure

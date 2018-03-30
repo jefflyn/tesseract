@@ -220,11 +220,12 @@ def get_wave(codes=None, index=False, start=None, end=None, beginlow=True, durat
                 indexdf = index_realtime[index_realtime['code'] == code]
                 if indexdf is None or indexdf.empty == True:
                     continue
-                todaylow = float(indexdf.at[indexdf.index.values[0], 'low'])
+                index = indexdf.index.values[0]
+                todaylow = float(indexdf.at[index, 'low'])
                 if todaylow > 0:
-                    newone = {'date': todaystr, 'open': float(realtime.at[0, 'open']),
-                              'close': float(realtime.at[0, 'price']), 'high': float(realtime.at[0, 'high']),
-                              'low': todaylow, 'volume': int(float(realtime.at[0, 'volume'])), 'code': code}
+                    newone = {'date': todaystr, 'open': float(indexdf.at[index, 'open']),
+                              'close': float(indexdf.at[index, 'close']), 'high': float(indexdf.at[index, 'high']),
+                              'low': todaylow, 'volume': int(float(indexdf.at[index, 'volume'])), 'code': code}
                     newdf = pd.DataFrame(newone, index=[0])
                     hist_data = hist_data.append(newdf, ignore_index=True)
 
