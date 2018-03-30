@@ -14,7 +14,7 @@ histnum = 30
 lastmonthstr = (dtime.now() + datetime.timedelta(days=-histnum)).strftime('%Y-%m-%d')
 
 
-def get_upnday(codes=None, n=3, change=None):
+def get_upnday(codes=None, n=0, change=None):
     starttime = dtime.now()
     # print("process upnday data start at [%s]" % starttime)
     # print("get k data from %s" % lastmonthstr)

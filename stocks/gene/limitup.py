@@ -13,7 +13,11 @@ def get_today_limitup():
     todayquo = todayquo[todayquo['p_change'] >= 9.9]
     return todayquo[['code', 'name', 'p_change']]
 
-# all 1 year
+
+"""
+limitup default in one year 
+start: YYYY-MM-DD
+"""
 def get_limit_up(codes = None, start = None, end = None, up = True):
     # print("get limitups... ")
     starttime = datetime.datetime.now()
