@@ -15,6 +15,7 @@ from stocks.gene import maup
 from stocks.gene import upnday
 
 pd.set_option('display.width', 5000)
+pd.set_option('max_colwidth', 200)
 
 today = dt.now()
 LIMITUP = 'limitup'
@@ -355,7 +356,10 @@ def test_pickup():
     print(pickup_result('002158'))
 
 if __name__ == '__main__':
-    pick_subnew()
+    test_pickup()
+    # pick_subnew()
+    # pick_concepts('无人零售.txt')
+    # pick_industry('半导体.txt')
     # pickup_subnew_issue_space()
     # pickup_subnew()
     # bottomdf = falco.get_monitor('002852')
