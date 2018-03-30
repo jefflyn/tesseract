@@ -14,8 +14,9 @@ from stocks.gene import wave
 from stocks.gene import maup
 from stocks.gene import upnday
 
-pd.set_option('display.width', 5000)
-pd.set_option('max_colwidth', 200)
+pd.set_option('display.width', 2000)
+pd.set_option('max_columns', 50)
+pd.set_option('max_rows', 300)
 
 today = dt.now()
 LIMITUP = 'limitup'
