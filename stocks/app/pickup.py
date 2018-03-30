@@ -128,7 +128,7 @@ def pickup_result(codes):
 
     _datautils.to_db(resultdf, 'pickup_result')
     resultdf.to_csv('pickup_result.csv')
-    _datautils.to_db(wavedfset, 'pick_wave')
+    _datautils.to_db(wavedfset, 'pickup_wave')
 
     print("pickup finish...")
     return resultdf
@@ -357,10 +357,10 @@ def test_pickup():
     print(pickup_result('002158'))
 
 if __name__ == '__main__':
-    test_pickup()
+    # test_pickup()
     # pick_subnew()
     # pick_concepts('无人零售.txt')
-    # pick_industry('半导体.txt')
+    pick_industry('半导体.txt')
     # pickup_subnew_issue_space()
     # pickup_subnew()
     # bottomdf = falco.get_monitor('002852')
