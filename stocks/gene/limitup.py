@@ -33,6 +33,7 @@ def get_limit_up(codes = None, start = None, end = None, up = True):
     result = pd.DataFrame()
     for code in code_list:
         hist_data = ts.get_hist_data(code, start, end)
+        hist_k = ts.get_k_data(code, start, end)
         if hist_data is None or len(hist_data) == 0:
             continue
         hist_data.insert(0, 'date', hist_data.index)
@@ -86,7 +87,7 @@ if __name__ == '__main__':
     # print(lu)
     # exit()
     # from stocks.data import _datautils
-    df = get_limit_up(['603388','600985', '600856','601908','600917'], start='2017-01-01')
+    df = get_limit_up(['603712','600985', '600856','601908','600917'], start='2017-01-01')
     dfcount = (count(df, 1))
     print(df)
     print(dfcount)

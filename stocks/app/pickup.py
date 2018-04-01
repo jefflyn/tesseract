@@ -353,14 +353,14 @@ def pickup_s2():
         listdf.append(wave.format_wave_data(wdf))
         wave.plot_wave(listdf, filename='./wave/' + code + '.png')
 
-def test_pickup():
-    print(pickup_result('002158'))
+def pickuptest():
+    print(pickup_result('603083'))
 
 if __name__ == '__main__':
-    # test_pickup()
-    # pick_subnew()
+    # pickuptest()
+    pick_subnew()
     # pick_concepts('无人零售.txt')
-    pick_industry('半导体.txt')
+    # pick_industry('半导体.txt')
     # pickup_subnew_issue_space()
     # pickup_subnew()
     # bottomdf = falco.get_monitor('002852')

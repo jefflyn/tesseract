@@ -47,7 +47,20 @@ def get_bottom(df = None, limit = 20):
                 continue
             else:
                 bottom = lastrec.at[lastidx, 'begin_price'] if laststatus == 'up' else lastrec.at[lastidx, 'end_price']
-                top = lastrec.at[lastidx, 'end_price'] if laststatus == 'up' else lastrec.at[lastidx, 'begin_price']
+                if size == 1:
+                    top = lastrec.at[lastidx, 'end_price'] if laststatus == 'up' else lastrec.at[lastidx, 'begin_price']
+                else:
+                    if lastidx == size - 1: #last one
+                        if laststatus == 'up':
+                            #get previous down one
+                            top = lastrec.at[lastidx - 1, 'begin_price']
+                        else:
+                            top = lastrec.at[lastidx, 'begin_price']
+                    else:
+                        top = lastrec.at[lastidx, 'end_price'] if laststatus == 'up' else lastrec.at[lastidx, 'begin_price']
+
+
+
                 break
         reclist.append(code)
         reclist.append(bottom)
@@ -308,7 +321,8 @@ def wavefrom(code, df, beginlow, direction='left', duration=0, pchange=0):
         list.append(endprice)
         list.append((datetime.strptime(enddate, '%Y-%m-%d') - datetime.strptime(begindate, '%Y-%m-%d')).days)
         list.append(round(diff_precent, 2))
-        period_data.append(list)
+        if beginprice != endprice:
+            period_data.append(list)
 
         if direction == 'left':
             begindate = firstdate
