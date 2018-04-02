@@ -48,6 +48,10 @@ def pick_industry(name):
     codes = list(data['code'])
     print(pickup_result(codes))
 
+
+"""
+latest pickup info 
+"""
 def pickup_result(codes):
     df = ts.get_realtime_quotes(codes)
     data_list = []
@@ -88,15 +92,37 @@ def pickup_result(codes):
         curt_data.append(round(bottomdf.ix[0, 'buy3'], 2))
 
         # limit up data
-        limitupdf = limitup.get_limit_up(code)
-        limitupcount = 0
-        limitup_lastday = "-"
-        limitupcountdf = limitup.count(limitupdf)
-        if limitupcountdf.empty == False:
-            limitupcount = limitupcountdf.ix[0, 'count']
-            limitup_lastday = limitupcountdf.ix[0, 'maxdate']
-        curt_data.append(limitupcount)
-        curt_data.append(limitup_lastday)
+        limitupdf = limitup.get_limitup_data(code)
+        lupcount = 0
+        lupcount30 = 0
+        lupcountq1 = 0
+        lupcountq2 = 0
+        lupcountq3 = 0
+        lupcountq4 = 0
+        lup_lastday = "-"
+        luplow = 0
+        luphigh = 0
+        lupcountdf = limitup.count(limitupdf)
+        if lupcountdf.empty == False:
+            lupcount = lupcountdf.ix[0, 'count']
+            lupcount30 = lupcountdf.ix[0, 'count_30d']
+            lupcountq1 = lupcountdf.ix[0, 'count_q1']
+            lupcountq2 = lupcountdf.ix[0, 'count_q2']
+            lupcountq3 = lupcountdf.ix[0, 'count_q3']
+            lupcountq4 = lupcountdf.ix[0, 'count_q4']
+            lup_lastday = lupcountdf.ix[0, 'maxdate']
+            luplow = lupcountdf.ix[0, 'lup_low']
+            luphigh = lupcountdf.ix[0, 'lup_high']
+
+        curt_data.append(lupcount)
+        curt_data.append(lupcount30)
+        curt_data.append(lupcountq1)
+        curt_data.append(lupcountq2)
+        curt_data.append(lupcountq3)
+        curt_data.append(lupcountq4)
+        curt_data.append(lup_lastday)
+        curt_data.append(luplow)
+        curt_data.append(luphigh)
 
         # up n day data
         upndaydf = upnday.get_upnday(code)
@@ -122,7 +148,8 @@ def pickup_result(codes):
 
         data_list.append(curt_data)
     columns = ['code', 'name', 'industry', 'area', 'pe', 'price', 'bottom', 'uspace','dspace', 'top', 'position', 'buy1', 'buy2', 'buy3',
-               'count', 'lastday', 'updays', 'sumup', 'isup', 'ma5', 'ma10', 'ma20', 'ma30', 'ma60', 'ma90', 'ma120', 'ma250']
+               'count', 'count_30d', 'count_q1', 'count_q2', 'count_q3', 'count_q4', 'maxdate', 'lup_low', 'lup_high',
+               'updays', 'sumup', 'isup', 'ma5', 'ma10', 'ma20', 'ma30', 'ma60', 'ma90', 'ma120', 'ma250']
     resultdf = pd.DataFrame(data_list, columns=columns)
     resultdf = resultdf.sort_values('bottom', axis=0, ascending=True, inplace=False, kind='quicksort', na_position='last')
 

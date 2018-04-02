@@ -8,9 +8,17 @@ import tushare as ts
 
 from stocks.data import  _datautils
 
+trade = pd.HDFStore('../data/trade.h5', complevel=9, complib='blosc')
+histlimitup = trade.get('k_limitup_hist')
+
+LIMITUP_MIN = 9.9
+LIMITUP_MAX = 10.9
+LIMITUP_FROM_DAYS = -365
+
+
 def get_today_limitup():
     todayquo = _datautils.get_totay_quotations()
-    todayquo = todayquo[todayquo['p_change'] >= 9.9]
+    todayquo = todayquo[todayquo['p_change'] >= LIMITUP_MIN]
     return todayquo[['code', 'name', 'p_change']]
 
 
@@ -18,11 +26,37 @@ def get_today_limitup():
 limitup default in one year 
 start: YYYY-MM-DD
 """
+def get_limitup_data(codes = None, isNature = True, start = None, end = None):
+    starttime = datetime.datetime.now()
+    if start == None:
+        days = datetime.timedelta(LIMITUP_FROM_DAYS)
+        start = datetime.datetime.strftime(starttime + days, '%Y-%m-%d')
+
+    code_list = []
+    if isinstance(codes, str):
+        code_list.append(codes)
+    else:
+        code_list = codes
+
+    limitupdf = histlimitup[histlimitup.code.isin(code_list)]
+    limitupdf = limitupdf[limitupdf.date >= start]
+    if end is not None:
+        limitupdf = limitupdf[limitupdf.date <= end]
+    if isNature:
+        limitupdf = limitupdf[(limitupdf.p_change <= LIMITUP_MAX) & (limitupdf.high > limitupdf.low)]
+
+    return limitupdf
+
+"""
+Deprecated
+limitup default in one year 
+start: YYYY-MM-DD
+"""
 def get_limit_up(codes = None, start = None, end = None, up = True):
     # print("get limitups... ")
     starttime = datetime.datetime.now()
     if start == None:
-        days = datetime.timedelta(-365)
+        days = datetime.timedelta(LIMITUP_FROM_DAYS)
         start = datetime.datetime.strftime(starttime + days, '%Y-%m-%d')
     code_list = []
     if isinstance(codes, str):
@@ -39,7 +73,7 @@ def get_limit_up(codes = None, start = None, end = None, up = True):
         hist_data.insert(0, 'date', hist_data.index)
         hist_data.insert(1, 'code', code)
         hist_data = hist_data[['code', 'date', 'close', 'p_change', 'low']]
-        hist_data = hist_data[hist_data['p_change'] >= 9.9] if up else hist_data[hist_data['p_change'] <= -9.9]
+        hist_data = hist_data[hist_data['p_change'] >= LIMITUP_MIN] if up else hist_data[hist_data['p_change'] <= -LIMITUP_MIN]
         # hist_data.reset_index()
         result = result.append(hist_data, ignore_index=True)
     endtime = datetime.datetime.now()
@@ -50,44 +84,72 @@ def get_limit_up(codes = None, start = None, end = None, up = True):
 """
 get limit up times by default 2 times in 90 days
 """
-def count(df=None, times=None, condition=[90, 2]):
+def count(df=None):
     if df.empty:
         return df
+
+    count_data_list = []
+    # group by data
     dfgroup = df.groupby('code')
-    codes = list(dfgroup.groups.keys())
-    size = dfgroup.p_change.count()
-    mindate = dfgroup.date.min()
-    maxdate = dfgroup.date.max()
-    low = dfgroup.low.last() #时间区间内最近涨停的最低价
-
-    dfgroup = pd.DataFrame({'code': codes, 'count':size, 'mindate':mindate, 'maxdate':maxdate, 'lmtuplow':low})
-    dfgroup = dfgroup.sort_values('count', axis=0, ascending=False, inplace=False, kind='quicksort', na_position='last')
-    if times != None:
+    for name, group in dfgroup:
+        count_data = []
         starttime = datetime.datetime.now()
-        days = datetime.timedelta(-condition[0])
-        start = datetime.datetime.strftime(starttime + days, '%Y-%m-%d')
-        dfgroup = dfgroup[(dfgroup['count'] > times) | ((dfgroup['mindate'] >= start) & (dfgroup['count'] >= condition[1]))] # at least 2 times in 90d
-    # names = [_datautils.get_basics(code).at[_datautils.get_basics(code).index.get_values()[0], 'name'] for code in codes]
+        days = datetime.timedelta(-30)
+        start30 = datetime.datetime.strftime(starttime + days, '%Y-%m-%d')
+        lupdf = group[group.date >= start30]
+        count_30d = lupdf.iloc[:, 0].size
 
-    return dfgroup
+        days = datetime.timedelta(-90)
+        qrt1st = datetime.datetime.strftime(starttime + days, '%Y-%m-%d')
+        lupdf = group[(group.date >= qrt1st) & (group.date < start30)]
+        count_qrt1st = lupdf.iloc[:, 0].size
 
-def etl():
-    basics = _datautils.filter_basic(_datautils.get_basics())
-    codes = basics['code'].values
+        days = datetime.timedelta(-180)
+        qrt2nd = datetime.datetime.strftime(starttime + days, '%Y-%m-%d')
+        lupdf = group[(group.date >= qrt2nd) & (group.date < qrt1st)]
+        count_qrt2nd = lupdf.iloc[:, 0].size
 
-    ups = limitup.get_limit_up(codes)
-    ups.to_csv('../data/tmp/limitupx.csv', encoding='utf-8')
-    ups = limitup.count(ups)
-    ups['code'] = ups.index
-    #save to db
-    _datautils.to_db(ups, 'limitupx')
+        days = datetime.timedelta(-270)
+        qrt3rd = datetime.datetime.strftime(starttime + days, '%Y-%m-%d')
+        lupdf = group[(group.date >= qrt3rd) & (group.date < qrt2nd)]
+        count_qrt3rd = lupdf.iloc[:, 0].size
+
+        lupdf = group[group.date < qrt3rd]
+        count_qrt4th = lupdf.iloc[:, 0].size
+
+        size = group.p_change.count()
+        mindate = group.date.min()
+        maxdate = group.date.max()
+        low = group.low.min() #the low in time limitup time zone
+        high = group.high.max()
+
+        count_data.append(name)
+        count_data.append(size)
+        count_data.append(count_30d)
+        count_data.append(count_qrt1st)
+        count_data.append(count_qrt2nd)
+        count_data.append(count_qrt3rd)
+        count_data.append(count_qrt4th)
+        count_data.append(mindate)
+        count_data.append(maxdate)
+        count_data.append(round(low, 2))
+        count_data.append(round(high, 2))
+        count_data_list.append(count_data)
+
+    count_result = pd.DataFrame(data=count_data_list,
+        columns=['code', 'count', 'count_30d', 'count_q1', 'count_q2', 'count_q3', 'count_q4', 'mindate', 'maxdate',
+                 'lup_low', 'lup_high'])
+    count_result = count_result.sort_values('count', axis=0, ascending=False, inplace=False, kind='quicksort', na_position='last')
+
+    return count_result
 
 if __name__ == '__main__':
     # lu = get_today_limitup()
     # print(lu)
     # exit()
     # from stocks.data import _datautils
-    df = get_limit_up(['603712','600985', '600856','601908','600917'], start='2017-01-01')
-    dfcount = (count(df, 1))
+    df = get_limitup_data(['600831','000710'])
+    dfcount = count(df)
+
     print(df)
     print(dfcount)

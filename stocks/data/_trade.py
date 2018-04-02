@@ -13,7 +13,7 @@ trade = pd.HDFStore('../data/trade.h5', complevel=9, complib='blosc')
 
 def get_hist_limitup_data():
     # trade.remove('k_limitup_hist') # for reset
-
+    print('[get_hist_limitup_data start]...')
     histdf = None
     keys = trade.keys()
     if '/k_limitup_hist' in keys:
@@ -60,6 +60,7 @@ def get_hist_limitup_data():
 
 
 def append_latest_trade():
+    print('[append_latest_trade start]...')
     # trade.remove('latest')
     today = datetime.today()
     todaystr = datetime.strftime(today, '%Y-%m-%d')
@@ -132,7 +133,9 @@ def get_hist_trade(startdate=None):
 def view_hist_data():
     histdf = trade.get('hist')
     #histdf.to_csv('hist_trade')
-    # _dt.to_db(histdf, 'hist_data')
+    #_dt.to_db(histdf, 'hist_data')
+
+
 
 def view_limitup_hist():
     histdf = trade.get('k_limitup_hist')
