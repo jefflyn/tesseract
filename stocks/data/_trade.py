@@ -12,7 +12,7 @@ trade = pd.HDFStore('../data/trade.h5', complevel=9, complib='blosc')
 
 
 def get_hist_limitup_data():
-    # trade.remove('k_limitup_hist')
+    trade.remove('k_limitup_hist')
 
     histdf = None
     keys = trade.keys()
