@@ -152,7 +152,7 @@ def to_db(data, tbname=None):
         cursorclass = pymysql.cursors.DictCursor
     )
     engine = create_engine("mysql+pymysql://linjingu:linjingu@localhost:3306/stocks?charset=utf8")
-    data.to_sql(name = tbname,con = engine,if_exists = 'replace',index = False,index_label = False)
+    data.to_sql(name = tbname, con = engine, if_exists = 'replace', index = False, index_label = False)
 
 #filter cyb
 def filter_cyb(datadf):

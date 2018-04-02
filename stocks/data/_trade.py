@@ -13,6 +13,7 @@ trade = pd.HDFStore('../data/trade.h5', complevel=9, complib='blosc')
 
 def get_hist_limitup_data():
     # trade.remove('k_limitup_hist') # for reset
+
     print('[get_hist_limitup_data start]...')
     histdf = None
     keys = trade.keys()
@@ -25,6 +26,8 @@ def get_hist_limitup_data():
     todaystr = datetime.strftime(today, '%Y-%m-%d') if startdate == None else startdate
 
     while todaystr > '2017-06-13':
+        limitupdf = pd.DataFrame(columns=['date','open','close','high','low','volume','code','p_change'])
+        # limitupdf = pd.DataFrame()
         try:
             print(todaystr + ' get trade data >>>')
             i = i + 1
@@ -39,26 +42,40 @@ def get_hist_limitup_data():
             todaydf = todaydf[todaydf.p_change > 9.9]
             size = len(todaydf.index.get_values())
 
-
-            # limitupdf = pd.DataFrame(columns=['date','open','close','high','low','volume','code','p_change'])
-            limitupdf = pd.DataFrame()
             for index, row in todaydf.iterrows():
                 code = row['code']
                 change = row['p_change']
-
-                hist_k = ts.get_k_data(code, start=todaystr, end=todaystr)
-                hist_k['p_change'] = change
-                limitupdf = limitupdf.append(hist_k)
+                open = row['open']
+                close = row['price']
+                high = row['high']
+                low = row['low']
+                volume = row['volume']
+                try:
+                    hist_k = ts.get_k_data(code)
+                    hist_k = hist_k[hist_k.date == todaystr]
+                    hist_k['p_change'] = change
+                    if hist_k is None or len(hist_k) == 0:
+                        quotadata = {'date': todaystr, 'open': open, 'close': close, 'high': high, 'low': low,
+                                     'volume': volume, 'code': code, 'p_change': change}
+                        hist_k = quotadata
+                    limitupdf = limitupdf.append(hist_k, ignore_index=True)
+                except Exception as le:
+                    quotadata = {'date': todaystr, 'open':open, 'close':close, 'high':high, 'low': low, 'volume':volume, 'code': code, 'p_change':change}
+                    limitupdf = limitupdf.append(pd.DataFrame(quotadata), ignore_index=True)
+                    print('    ' + str(le) + ', use today quota data')
 
             trade.append('k_limitup_hist', limitupdf)
             print('    append limitup hist k data successfully, total size: ' + str(len(limitupdf.index.values)))
         except Exception as e:
             print('    ' + str(e))
+
         today = today + oneday
         todaystr = datetime.strftime(today, '%Y-%m-%d')
 
 
-
+"""
+append the latest trade data every trade date
+"""
 def append_latest_trade():
     print('[append_latest_trade start]...')
     # trade.remove('latest')
@@ -136,21 +153,19 @@ def view_hist_data():
     #_dt.to_db(histdf, 'hist_data')
 
 
-
 def view_limitup_hist():
     histdf = trade.get('k_limitup_hist')
     _dt.to_db(histdf, 'hist_limitup')
 
 
 if __name__ == '__main__':
-    # view_hist_data()
-    view_limitup_hist()
 
     append_latest_trade()
-
     get_hist_limitup_data()
 
     # get_hist_trade()
 
+    # view_hist_data()
+    view_limitup_hist()
 
     trade.close()

@@ -23,6 +23,7 @@ def get_today_limitup():
 
 
 """
+from 
 limitup default in one year 
 start: YYYY-MM-DD
 """
@@ -48,11 +49,11 @@ def get_limitup_data(codes = None, isNature = True, start = None, end = None):
     return limitupdf
 
 """
-Deprecated
+from get_hist_data
 limitup default in one year 
 start: YYYY-MM-DD
 """
-def get_limit_up(codes = None, start = None, end = None, up = True):
+def get_limit_up(codes = None, start = None, end = None):
     # print("get limitups... ")
     starttime = datetime.datetime.now()
     if start == None:
@@ -67,14 +68,12 @@ def get_limit_up(codes = None, start = None, end = None, up = True):
     result = pd.DataFrame()
     for code in code_list:
         hist_data = ts.get_hist_data(code, start, end)
-        hist_k = ts.get_k_data(code, start, end)
         if hist_data is None or len(hist_data) == 0:
             continue
         hist_data.insert(0, 'date', hist_data.index)
         hist_data.insert(1, 'code', code)
-        hist_data = hist_data[['code', 'date', 'close', 'p_change', 'low']]
-        hist_data = hist_data[hist_data['p_change'] >= LIMITUP_MIN] if up else hist_data[hist_data['p_change'] <= -LIMITUP_MIN]
-        # hist_data.reset_index()
+        hist_data = hist_data[['code', 'date', 'close', 'p_change', 'low', 'high']]
+        hist_data = hist_data[(hist_data.p_change >= LIMITUP_MIN) & (hist_data.p_change <= LIMITUP_MAX) & (hist_data.high > hist_data.low)]
         result = result.append(hist_data, ignore_index=True)
     endtime = datetime.datetime.now()
     # print("total time: %ds" % (endtime - starttime).seconds)
