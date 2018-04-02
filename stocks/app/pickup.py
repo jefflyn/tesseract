@@ -151,7 +151,7 @@ def pickup_result(codes):
                'count', 'count_30d', 'count_q1', 'count_q2', 'count_q3', 'count_q4', 'maxdate', 'lup_low', 'lup_high',
                'updays', 'sumup', 'isup', 'ma5', 'ma10', 'ma20', 'ma30', 'ma60', 'ma90', 'ma120', 'ma250']
     resultdf = pd.DataFrame(data_list, columns=columns)
-    resultdf = resultdf.sort_values('bottom', axis=0, ascending=True, inplace=False, kind='quicksort', na_position='last')
+    resultdf = resultdf.sort_values('uspace', axis=0, ascending=True, inplace=False, kind='quicksort', na_position='last')
 
     _datautils.to_db(resultdf, 'pickup_result')
     resultdf.to_csv('pickup_result.csv')
