@@ -75,7 +75,7 @@ def pickup_result(codes):
 
         # get wave data and bottom top
         wavedf = wave.get_wave(code) # need to save
-        wavedfset.append(wavedf)
+        wavedfset = wavedfset.append(wavedf)
         bottomdf = wave.get_bottom(wavedf)
         bottom = bottomdf.ix[0, 'bottom']
         top = bottomdf.ix[0, 'top']
