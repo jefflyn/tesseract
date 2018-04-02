@@ -57,8 +57,8 @@ def pickup_result(codes):
     data_list = []
     wavedfset = pd.DataFrame(columns=['code', 'begin', 'end', 'status', 'begin_price', 'end_price', 'days', 'change'])
 
-    l1 = pd.DataFrame()
-    l2 = pd.DataFrame()
+    # l1 = pd.DataFrame()
+    # l2 = pd.DataFrame()
     for index, row in df.iterrows():
         code = row['code']
         open = float(row['open'])
@@ -98,8 +98,8 @@ def pickup_result(codes):
         lupdf = limitup.get_limit_up(code)
         limitupdf = limitup.get_limitup_data(code)
 
-        l1 = l1.append(lupdf, ignore_index=True)
-        l2 = l2.append(limitupdf, ignore_index=True)
+        # l1 = l1.append(lupdf, ignore_index=True)
+        # l2 = l2.append(limitupdf, ignore_index=True)
 
         lupcount = 0
         lupcount30 = 0
@@ -161,8 +161,8 @@ def pickup_result(codes):
     resultdf = pd.DataFrame(data_list, columns=columns)
     resultdf = resultdf.sort_values('uspace', axis=0, ascending=True, inplace=False, kind='quicksort', na_position='last')
 
-    _datautils.to_db(l1, 'limitup_hist')
-    _datautils.to_db(l2, 'limitup_quota')
+    # _datautils.to_db(l1, 'limitup_hist')
+    # _datautils.to_db(l2, 'limitup_quota')
 
 
     _datautils.to_db(resultdf, 'pickup_result')
