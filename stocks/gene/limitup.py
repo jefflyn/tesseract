@@ -101,7 +101,7 @@ def count(df=None):
 
         days = datetime.timedelta(-90)
         qrt1st = datetime.datetime.strftime(starttime + days, '%Y-%m-%d')
-        lupdf = group[(group.date >= qrt1st) & (group.date < start30)]
+        lupdf = group[group.date >= qrt1st]
         count_qrt1st = lupdf.iloc[:, 0].size
 
         days = datetime.timedelta(-180)
