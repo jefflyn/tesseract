@@ -13,6 +13,8 @@ from stocks.gene import limitup
 from stocks.gene import wave
 from stocks.gene import maup
 from stocks.gene import upnday
+from stocks.data.concept import constants as CCONTS
+from stocks.data.industry import constants as ICONTS
 
 pd.set_option('display.width', 2000)
 pd.set_option('max_columns', 50)
@@ -375,15 +377,14 @@ if __name__ == '__main__':
     print('select start...')
     # selecttest()
     # select_subnew(fromTime=20170409)
-    select_concepts('无人驾驶.txt')
-    # select_industry('半导体.txt')
+    select_concepts(CCONTS.CONCEPT_LDC)
+    # select_industry(ICONTS.INDUSTRY_BDT)
     # select_subnew_issue_space()
     # select_subnew()
     # bottomdf = falco.get_monitor('002852')
     # print(bottomdf)
-    # exit()
-    # select_s2()
-    # select_s1('c', '无人零售.txt')
+
+
 
 
 
