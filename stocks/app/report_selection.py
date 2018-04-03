@@ -5,8 +5,9 @@ from stocks.app import selector
 if __name__ == '__main__':
     content = 'Please find the attaches for the selection report details.'
 
-    index.get_status()
-    selector.select_subnew()
+    # index.get_status()
+    selector.select_concepts('水泥.txt')
+    # selector.select_subnew()
 
     attaches = []
     att1 = report.create_attach('index_status.csv')
