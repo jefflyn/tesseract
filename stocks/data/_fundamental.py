@@ -22,6 +22,7 @@ def basics_to_hdf5():
 
 
 if __name__ == '__main__':
+    print('【get basic data start】...')
     basics_to_csv()
     basics_to_hdf5()
     print(str(datetime.datetime.now()) + ': etl basic data successfully')
