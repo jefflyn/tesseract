@@ -15,6 +15,10 @@ oneyearago = (datetime.datetime.now() + yeardays).strftime('%Y%m%d')
 INDEX_DICT = {'000001': '上证指数', '000016': '上证50', '000300': '沪深300',
               '399001': '深证成指', '399005': '中小板指', '399006': '创业板指'}
 
+
+"""
+marketTimeFrom: yyyymmdd
+"""
 def get_subnew(cyb = False, marketTimeFrom = oneyearago):
     basics = get_basics_fromh5(excludeCyb=cyb)
     # filter unused code

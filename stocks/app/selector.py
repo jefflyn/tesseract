@@ -32,8 +32,9 @@ QUATO_WEIGHT = {
 
 """
 return specific subnew code list
+fromTime: yyyymmdd
 """
-def select_subnew(fromTime=20170901):
+def select_subnew(fromTime=20170409):
     subnewbasic = _datautils.get_subnew(marketTimeFrom=fromTime)
     codes = list(subnewbasic['code'])
     result = select_result(codes)
@@ -371,9 +372,10 @@ def selecttest():
     print(select_result('603083'))
 
 if __name__ == '__main__':
-    selecttest()
-    # select_subnew()
-    # select_concepts('无人零售.txt')
+    print('select start...')
+    # selecttest()
+    # select_subnew(fromTime=20170409)
+    select_concepts('无人驾驶.txt')
     # select_industry('半导体.txt')
     # select_subnew_issue_space()
     # select_subnew()

@@ -47,9 +47,9 @@ def generate_report2(title=None, filename=None, monitor=False):
     if monitor == False:
         rtdf = realtime.get_realtime(filename, sortby='b')
         rtdf = rtdf[
-            ['warn', 'code', 'name', 'price', 'change', 'low', 'bottom', 'btm_space', 'cost', 'profit_amt', 'profit_perc', 'total_amt']]
+            ['warn', 'code', 'name', 'price', 'change', 'low', 'bottom', 'uspace', 'cost', 'profit_amt', 'profit_perc', 'total_amt']]
         rtdf.rename(
-            columns={'btm_space': 'space', 'profit_amt': 'profit', 'profit_perc': 'percent', 'total_amt': 'amount'}, inplace=True)
+            columns={'uspace': 'space', 'profit_amt': 'profit', 'profit_perc': 'percent', 'total_amt': 'amount'}, inplace=True)
     else:
         savefilename = 'report_trace.png'
         df = _datautils.get_data('../data/' + filename, sep=' ')
@@ -72,9 +72,9 @@ def generate_report2(title=None, filename=None, monitor=False):
 
     result = pd.merge(rtdf, madf[['code', 'isup', 'ma5', 'ma10', 'ma20', 'ma30', 'ma60', 'ma10_space']],
                       on='code', how='left')
-    result = pd.merge(result, limitupcount[['code', 'count', 'mindate', 'maxdate', 'lmtuplow']],
+    result = pd.merge(result, limitupcount[['code', 'count', 'mindate', 'maxdate', 'lup_low']],
                       on='code', how='left')
-    result['lmtspace'] = result[['price', 'lmtuplow']].apply(get_limitup_space, axis=1)
+    result['lmtspace'] = result[['price', 'lup_low']].apply(get_limitup_space, axis=1)
     result['warn'] = result[['lmtspace', 'space']].apply(get_warn_space, axis=1)
 
     result['warn'] = result['warn'].apply(lambda x: str(round(x, 2)) + '%')
