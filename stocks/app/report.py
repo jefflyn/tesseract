@@ -42,7 +42,7 @@ return result with html style
 """
 def generate_report2(title=None, filename=None, monitor=False):
     # 1.realtime info
-    html_content = '<h4>' + title + '</h4>'
+    html_content = '<h5>' + title + '</h5>'
     savefilename = 'report_'+ filename + '.png'
     rtdf = None
     if monitor == False:

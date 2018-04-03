@@ -16,6 +16,18 @@ INDEX_CYB = ['399006']
 
 target = ['000001', '000016', '000300', '399001', '399005', '399006']
 
+def format_index(df):
+    # format data
+    df['change'] = df['change'].apply(lambda x: str(round(x, 2)) + '%')
+    df['low'] = df['low'].apply(lambda x: '_' + str(x))
+    df['high'] = df['high'].apply(lambda x: '^' + str(x))
+    df['bottom'] = df['bottom'].apply(lambda x: '[' + str(x) )
+    df['top'] = df['top'].apply(lambda x: str(x) + ']')
+    df['uspace'] = df['uspace'].apply(lambda x: str(round(x, 2)) + '%')
+    df['dspace'] = df['dspace'].apply(lambda x: str(round(x, 2)) + '%')
+    df['position'] = df['position'].apply(lambda x: str(round(x, 2)) + '%')
+    return df
+
 
 def get_status():
     indexdf = ts.get_index()
@@ -55,7 +67,7 @@ def get_status():
 
         result_data.append(row_data)
 
-    columns = ['code', 'name', 'change', 'close', 'low', 'high', 'volume', 'amount','bottom', 'uspace','dspace', 'top', 'position', 'suggest']
+    columns = ['code', 'name', 'change', 'close', 'low', 'high', 'volume', 'amount', 'bottom', 'uspace', 'dspace', 'top', 'position', 'suggest']
     resultdf = pd.DataFrame(result_data, columns=columns)
 
     resultdf = resultdf.sort_values('position', axis=0, ascending=False, inplace=False, kind='quicksort', na_position='last')
@@ -108,8 +120,8 @@ def suggest_by_position(code, position):
 if __name__ == '__main__':
     if len(argv) > 1:
         while True:
-            print(get_status())
-            time.sleep(60)
+            print(format_index(get_status()))
+            time.sleep(30)
     else:
         wavedf = wave.get_wave(codes=target, index=True)
         # plot figure
