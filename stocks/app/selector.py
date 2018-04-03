@@ -36,17 +36,17 @@ return specific subnew code list
 def select_subnew(fromTime=20170901):
     subnewbasic = _datautils.get_subnew(marketTimeFrom=fromTime)
     codes = list(subnewbasic['code'])
-    print(select_result(codes))
+    # print(select_result(codes))
 
 def select_concepts(name):
     data = _datautils.get_stock_data(type='c', filename=name)
     codes = list(data['code'])
-    print(select_result(codes))
+    # print(select_result(codes))
 
 def select_industry(name):
     data = _datautils.get_stock_data(type='i', filename=name)
     codes = list(data['code'])
-    print(select_result(codes))
+    # print(select_result(codes))
 
 
 """

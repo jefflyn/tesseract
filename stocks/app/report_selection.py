@@ -9,7 +9,7 @@ if __name__ == '__main__':
     selector.select_subnew()
 
     attaches = []
-    att1 = report.create_attach('index_status.csv', 'index_status')
+    att1 = report.create_attach('index_status.csv')
     att2 = report.create_attach('select_result.csv', 'select_result')
     att3 = report.create_attach('select_wave.csv', 'select_wave')
     attaches.append(att1)

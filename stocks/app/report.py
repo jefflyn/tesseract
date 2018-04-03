@@ -1,23 +1,22 @@
 import datetime
+import os
+import re
 import smtplib
+from email.header import Header
+from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.utils import formataddr
-from email.mime.multipart import MIMEMultipart
-from email.header import Header
-from IPython.display import HTML
-import re
+
 import numpy as np
 import pandas as pd
-import matplotlib as mpl
-import matplotlib.pyplot as plt
 
-from stocks.app import realtime
-from stocks.app import falco
 from stocks.app import _utils
+from stocks.app import falco
+from stocks.app import realtime
 from stocks.data import _datautils
 from stocks.gene import limitup
-from stocks.gene import wave
 from stocks.gene import maup
+from stocks.gene import wave
 
 sender = '649054380@qq.com'
 passw = 'pznntikuyzfvbchb'
@@ -229,7 +228,10 @@ def mail(to_users=[], content=None):
 
 
 def create_attach(file=None, attchname=None):
-    attach = MIMEText(open(file, 'rb').read(), 'base64', 'utf-8')
+    attchfile = open(file, 'rb')
+    filename = os.path.basename(attchfile.name)
+    attchname = filename if attchname is None else attchname
+    attach = MIMEText(attchfile.read(), 'base64', 'utf-8')
     attach["Content-Type"] = 'application/octet-stream'
     attach["Content-Disposition"] = 'attachment; filename=' + attchname
     return attach
