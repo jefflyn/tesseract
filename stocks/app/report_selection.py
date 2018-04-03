@@ -10,8 +10,8 @@ if __name__ == '__main__':
 
     attaches = []
     att1 = report.create_attach('index_status.csv')
-    att2 = report.create_attach('select_result.csv', 'select_result')
-    att3 = report.create_attach('select_wave.csv', 'select_wave')
+    att2 = report.create_attach('select_result.csv')
+    att3 = report.create_attach('select_wave.csv')
     attaches.append(att1)
     attaches.append(att2)
     attaches.append(att3)
