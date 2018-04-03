@@ -253,7 +253,7 @@ def select_subnew_issue_space():
     resultdf['issue_space'] = resultdf['issue_space'].apply(lambda x: str(round(x, 2)) + '%')
     # resultdf['varrate'] = resultdf['varrate'].apply(lambda x: str(round(x, 2)) + '%')
     resultdf['stdrate'] = resultdf['stdrate'].apply(lambda x: str(round(x, 2)) + '%')
-    resultdf.to_csv('select_subnew_issue_space.csv', encoding='gbk')
+    resultdf.to_csv('select_subnew_issue_space.csv')
 
     wavedf = wave.get_wave(list(resultdf['code']))
     _datautils.to_db(wavedf, 'wave_subnew')
@@ -283,7 +283,7 @@ def select_s1(type='', classname=''):
     # print(madf)
     result = pd.merge(bottomdf, madf[['code', 'isup', 'ma5', 'ma10', 'ma20', 'ma30', 'ma60', 'ma30std', 'ma10_space']],
                       on='code', how='left')
-    result.to_csv('select1.csv', encoding='gbk')
+    result.to_csv('select1.csv')
     _datautils.to_db(result, 'select1')
     # exit()
 
@@ -350,7 +350,7 @@ def select_s2():
     # result['lmtspace'] = result['lmtspace'].apply(lambda n: str(round(n, 2)) + '%')
 
     # save
-    result.to_csv('select2.csv', encoding='gbk')
+    result.to_csv('select2.csv')
     _datautils.to_db(result, 'select2')
 
     wavecodes = list(result['code'])
