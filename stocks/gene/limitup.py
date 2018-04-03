@@ -23,7 +23,7 @@ def get_today_limitup():
 
 
 """
-from 
+from hist trade limitup data in hdf5
 limitup default in one year 
 start: YYYY-MM-DD
 """
@@ -49,7 +49,7 @@ def get_limitup_from_hist_trade(codes = None, isNature = True, start = None, end
     return limitupdf
 
 """
-from get_hist_data
+from hist k data
 limitup default in one year 
 start: YYYY-MM-DD
 """

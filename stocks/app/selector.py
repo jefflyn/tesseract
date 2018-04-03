@@ -377,7 +377,7 @@ if __name__ == '__main__':
     print('select start...')
     # selecttest()
     # select_subnew(fromTime=20170409)
-    select_concepts(CCONTS.CONCEPT_YGA)
+    select_concepts(CCONTS.CONCEPT_QKL)
     # select_industry(ICONTS.INDUSTRY_BDT)
     # select_subnew_issue_space()
     # select_subnew()
