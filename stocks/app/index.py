@@ -23,7 +23,7 @@ def format_index(df):
     df['high'] = df['high'].apply(lambda x: '^' + str(x))
     df['bottom'] = df['bottom'].apply(lambda x: '[' + str(x) )
     df['top'] = df['top'].apply(lambda x: str(x) + ']')
-    df['uspace'] = df['uspace'].apply(lambda x: str(round(x, 2)) + '%')
+    df['uspace'] = df['uspace'].apply(lambda x: '+' + str(round(x, 2)) + '%')
     df['dspace'] = df['dspace'].apply(lambda x: str(round(x, 2)) + '%')
     df['position'] = df['position'].apply(lambda x: str(round(x, 2)) + '%')
     return df

@@ -33,26 +33,26 @@ QUATO_WEIGHT = {
 """
 return specific subnew code list
 """
-def pick_subnew(fromTime=20170901):
+def select_subnew(fromTime=20170901):
     subnewbasic = _datautils.get_subnew(marketTimeFrom=fromTime)
     codes = list(subnewbasic['code'])
-    print(pickup_result(codes))
+    print(select_result(codes))
 
-def pick_concepts(name):
+def select_concepts(name):
     data = _datautils.get_stock_data(type='c', filename=name)
     codes = list(data['code'])
-    print(pickup_result(codes))
+    print(select_result(codes))
 
-def pick_industry(name):
+def select_industry(name):
     data = _datautils.get_stock_data(type='i', filename=name)
     codes = list(data['code'])
-    print(pickup_result(codes))
+    print(select_result(codes))
 
 
 """
-latest pickup info 
+latest select info 
 """
-def pickup_result(codes):
+def select_result(codes):
     df = ts.get_realtime_quotes(codes)
     data_list = []
     wavedfset = pd.DataFrame(columns=['code', 'begin', 'end', 'status', 'begin_price', 'end_price', 'days', 'change'])
@@ -164,12 +164,12 @@ def pickup_result(codes):
     # _datautils.to_db(l1, 'limitup_hist')
     # _datautils.to_db(l2, 'limitup_quota')
 
+    _datautils.to_db(resultdf, 'select_result')
+    resultdf.to_csv('select_result.csv')
+    _datautils.to_db(wavedfset, 'select_wave')
+    wavedfset.to_csv('select_wave.csv')
 
-    _datautils.to_db(resultdf, 'pickup_result')
-    resultdf.to_csv('pickup_result.csv')
-    _datautils.to_db(wavedfset, 'pickup_wave')
-
-    print("pickup finish...")
+    print("stock selection finish...")
     return resultdf
 
 def score_limitup():
@@ -185,7 +185,7 @@ def score_maup(malist):
     return 0
 
 
-def pickup_subnew_issue_space():
+def select_subnew_issue_space():
     starttime = dt.now()
     days = datetime.timedelta(-99)
     startstr = dt.strftime(starttime + days, '%Y-%m-%d')
@@ -246,48 +246,21 @@ def pickup_subnew_issue_space():
 
     resultdf = resultdf.sort_values('issue_space', axis=0, ascending=True, inplace=False, kind='quicksort', na_position='last')
     resultdf['rank'] = [i+1 for i in range(resultdf.index.size)]
-    _datautils.to_db(resultdf, 'pickup_subnew_issue_space' + startstr)
+    _datautils.to_db(resultdf, 'select_subnew_issue_space' + startstr)
     resultdf['issue_space'] = resultdf['issue_space'].apply(lambda x: str(round(x, 2)) + '%')
     # resultdf['varrate'] = resultdf['varrate'].apply(lambda x: str(round(x, 2)) + '%')
     resultdf['stdrate'] = resultdf['stdrate'].apply(lambda x: str(round(x, 2)) + '%')
-    resultdf.to_csv('pickup_subnew_issue_space.csv')
+    resultdf.to_csv('select_subnew_issue_space.csv')
 
     wavedf = wave.get_wave(list(resultdf['code']))
     _datautils.to_db(wavedf, 'wave_subnew')
 
 
-def pickup_subnew():
-    data = _datautils.get_subnew()
-    codes = list(data['code'])
-
-    # get the bottom price data
-    bottomdf = falco.get_monitor(codes)
-
-    # ma data
-    madf = maup.get_ma(codes)
-    result = pd.merge(bottomdf, madf[['code', 'isup', 'ma5', 'ma10', 'ma20', 'ma30', 'ma60', 'ma30std', 'ma10_space']],
-                      on='code', how='left')
-    result = result.sort_values('space', axis=0, ascending=True, inplace=False, kind='quicksort', na_position='last')
-    result['change'] = result['change'].apply(lambda n: str(round(n, 3)) + '%')
-    result['space'] = result['space'].apply(lambda n: str(round(n, 3)) + '%')
-    #result.to_csv('pickup_subnew.csv')
-    _datautils.to_db(result, 'pickup_subnew')
-
-    wavedf = wave.get_wave(codes)  # get all
-    # wavedf.to_csv('pickup2_wave.csv')
-    _datautils.to_db(wavedf, 'wave_subnew')
-
-    for code in codes:
-        listdf = []
-        wdf = wavedf[wavedf.code == code]
-        listdf.append(wave.format_wave_data(wdf))
-        wave.plot_wave(listdf, filename='./wave/' + code + '.png')
-
 
 """
-pickup from industry or concept
+select from industry or concept
 """
-def pickup_s1(type='', classname=''):
+def select_s1(type='', classname=''):
     data = _datautils.get_stock_data(type=type, filename=classname)
     codes = list(data['code'])
     limitupdf = limitup.get_limit_up(codes)
@@ -307,8 +280,8 @@ def pickup_s1(type='', classname=''):
     # print(madf)
     result = pd.merge(bottomdf, madf[['code', 'isup', 'ma5', 'ma10', 'ma20', 'ma30', 'ma60', 'ma30std', 'ma10_space']],
                       on='code', how='left')
-    result.to_csv('pickup1.csv')
-    _datautils.to_db(result, 'pickup1')
+    result.to_csv('select1.csv')
+    _datautils.to_db(result, 'select1')
     # exit()
 
     #########
@@ -321,7 +294,7 @@ def pickup_s1(type='', classname=''):
         wdf = wavedf[wavedf.code == code]
         listdf.append(wave.format_wave_data(wdf))
     # figure display
-    wave.plot_wave(listdf, filename='pickup1.png')
+    wave.plot_wave(listdf, filename='select1.png')
 
     # 5.limitup data
     print(limitupdf)
@@ -339,15 +312,15 @@ def get_warn_space(df):
 
 
 """
-pickup from limitup
+select from limitup
 """
-def pickup_s2():
+def select_s2():
     trade = pd.HDFStore('../data/trade.h5')
     df = trade.select('k_limitup_hist')
     limitupdf = df[(df['code'].str.get(0) != '3')][['code', 'p_change', 'date', 'low']]
     # limitupdf = df[(df.code == '603533') & (df.p_change > 9.9)][['code','p_change','date','low']]
     limitupdf = limitupdf.sort_values('date', ascending=True)
-    _datautils.to_db(limitupdf, 'pickup2_limitup')
+    _datautils.to_db(limitupdf, 'select2_limitup')
     # 1.choose the active codes from the limitups which limitup at lease more than n
     limitupcount = limitup.count(limitupdf, times=3, condition=[180, 1])
     print('limitupcount size: ' + str(len(limitupcount)))
@@ -374,15 +347,14 @@ def pickup_s2():
     # result['lmtspace'] = result['lmtspace'].apply(lambda n: str(round(n, 2)) + '%')
 
     # save
-    result.to_csv('pickup2.csv')
-    _datautils.to_db(result, 'pickup2')
+    result.to_csv('select2.csv')
+    _datautils.to_db(result, 'select2')
 
     wavecodes = list(result['code'])
     # # get wave data
     # wavedf = wave.get_wave(wavecodes[len(wavecodes) - 20 :]) #get 20
     wavedf = wave.get_wave(wavecodes)  # get all
-    #wavedf.to_csv('pickup2_wave.csv')
-    _datautils.to_db(wavedf, 'pickup2_wave')
+    _datautils.to_db(wavedf, 'select2_wave')
 
     # # figure display
     # listdf = []
@@ -392,21 +364,21 @@ def pickup_s2():
         listdf.append(wave.format_wave_data(wdf))
         wave.plot_wave(listdf, filename='./wave/' + code + '.png')
 
-def pickuptest():
-    print(pickup_result('603083'))
+def selecttest():
+    print(select_result('603083'))
 
 if __name__ == '__main__':
-    # pickuptest()
-    pick_subnew()
-    # pick_concepts('无人零售.txt')
-    # pick_industry('半导体.txt')
-    # pickup_subnew_issue_space()
-    # pickup_subnew()
+    # selecttest()
+    select_subnew()
+    # select_concepts('无人零售.txt')
+    # select_industry('半导体.txt')
+    # select_subnew_issue_space()
+    # select_subnew()
     # bottomdf = falco.get_monitor('002852')
     # print(bottomdf)
     # exit()
-    # pickup_s2()
-    # pickup_s1('c', '无人零售.txt')
+    # select_s2()
+    # select_s1('c', '无人零售.txt')
 
 
 
