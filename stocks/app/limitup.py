@@ -19,5 +19,5 @@ codes = argv[1]
 code_list = codes.split(',')
 print(code_list)
 
-df = limitup.get_limit_up(code_list, start='2017-06-01')
+df = limitup.get_limitup_from_hist_k(code_list, start='2017-06-01')
 print(df)

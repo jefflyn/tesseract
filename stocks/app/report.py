@@ -67,7 +67,7 @@ def generate_report2(title=None, filename=None, monitor=False):
     madf = maup.get_ma(codes, start='2017-01-01')
 
     # limit-up of recent half year
-    limitupdf = limitup.get_limit_up(codes, start='2017-01-01')
+    limitupdf = limitup.get_limitup_from_hist_k(codes, start='2017-01-01')
     limitupcount = limitup.count(limitupdf)
 
     result = pd.merge(rtdf, madf[['code', 'isup', 'ma5', 'ma10', 'ma20', 'ma30', 'ma60', 'ma10_space']],
@@ -200,7 +200,7 @@ def generate_report(title=None, filename=None, monitor=False, uad=False, ma=Fals
     # 4.limit-up of recent 1 year
     if lup == True:
         html_content += '<h4>4.limit-up of recent 1 year:</h4>'
-        limitupdf = limitup.get_limit_up(codes, start='2017-01-01')
+        limitupdf = limitup.get_limitup_from_hist_k(codes, start='2017-01-01')
         limitupdf = limitupdf.replace(stkdict)
         # limitupdf_html = limitupdf.to_html(escape=False, index=False, sparsify=True, border=0, index_names=False, header=True)
         limitupdf_html = HTML_with_style(limitupdf)

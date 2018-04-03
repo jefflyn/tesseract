@@ -27,7 +27,7 @@ from
 limitup default in one year 
 start: YYYY-MM-DD
 """
-def get_limitup_data(codes = None, isNature = True, start = None, end = None):
+def get_limitup_from_hist_trade(codes = None, isNature = True, start = None, end = None):
     starttime = datetime.datetime.now()
     if start == None:
         days = datetime.timedelta(LIMITUP_FROM_DAYS)
@@ -53,7 +53,7 @@ from get_hist_data
 limitup default in one year 
 start: YYYY-MM-DD
 """
-def get_limit_up(codes = None, start = None, end = None):
+def get_limitup_from_hist_k(codes = None, start = None, end = None):
     # print("get limitups... ")
     starttime = datetime.datetime.now()
     if start == None:
@@ -143,12 +143,10 @@ def count(df=None):
     return count_result
 
 if __name__ == '__main__':
-    # lu = get_today_limitup()
-    # print(lu)
-    # exit()
-    # from stocks.data import _datautils
-    df = get_limitup_data(['600831','000710'])
-    dfcount = count(df)
+    lpdf = get_limitup_from_hist_k(['000507'])
+    print(lpdf)
 
+    df = get_limitup_from_hist_trade(['000507'])
     print(df)
+    dfcount = count(df)
     print(dfcount)

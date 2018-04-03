@@ -101,8 +101,8 @@ def select_result(codes):
         curt_data.append(round(bottomdf.ix[0, 'buy3'], 2))
 
         # limit up data
-        lupdf = limitup.get_limit_up(code)
-        limitupdf = limitup.get_limitup_data(code)
+        limitupdf = limitup.get_limitup_from_hist_k(code)
+        limitupdf = limitup.get_limitup_from_hist_trade(code) if limitupdf.empty == True else limitupdf
 
         # l1 = l1.append(lupdf, ignore_index=True)
         # l2 = l2.append(limitupdf, ignore_index=True)
@@ -269,7 +269,7 @@ select from industry or concept
 def select_s1(type='', classname=''):
     data = _datautils.get_stock_data(type=type, filename=classname)
     codes = list(data['code'])
-    limitupdf = limitup.get_limit_up(codes)
+    limitupdf = limitup.get_limitup_from_hist_k(codes)
     _datautils.to_db(limitupdf, 'limitupx')
     # 1.choose the active codes from the limitups which limitup at lease more than n
     limitupcount = limitup.count(limitupdf, times=0, condition=[90,0])
@@ -377,7 +377,7 @@ if __name__ == '__main__':
     print('select start...')
     # selecttest()
     # select_subnew(fromTime=20170409)
-    select_concepts(CCONTS.CONCEPT_LDC)
+    select_concepts(CCONTS.CONCEPT_YGA)
     # select_industry(ICONTS.INDUSTRY_BDT)
     # select_subnew_issue_space()
     # select_subnew()

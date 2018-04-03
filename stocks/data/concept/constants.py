@@ -25,7 +25,6 @@ CONCEPT_YGA =  '粤港澳.txt'
 CONCEPT_WLAQ =  '网络安全.txt'
 CONCEPT_XP =  '芯片.txt'
 CONCEPT_CJPP =  '超级品牌.txt'
-CONCEPT_LDC =  '锂电池.txt'
 CONCEPT_XAXQ =  '雄安新区.txt'
 
 
