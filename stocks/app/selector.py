@@ -36,29 +36,29 @@ QUATO_WEIGHT = {
 return specific subnew code list
 fromTime: yyyymmdd
 """
-def select_subnew(fromTime=20170409):
+def select_subnew(fromTime=20170409, fname=''):
     subnewbasic = _datautils.get_subnew(marketTimeFrom=fromTime)
     codes = list(subnewbasic['code'])
-    result = select_result(codes)
+    result = select_result(codes, filename=fname)
     # print(result)
 
-def select_concepts(name):
+def select_concepts(name, fname=''):
     data = _datautils.get_stock_data(type='c', filename=name)
     codes = list(data['code'])
-    result = select_result(codes)
+    result = select_result(codes, filename=fname)
     # print(result)
 
-def select_industry(name):
+def select_industry(name, fname=''):
     data = _datautils.get_stock_data(type='i', filename=name)
     codes = list(data['code'])
-    result = select_result(codes)
+    result = select_result(codes, filename=fname)
     # print(result)
 
 
 """
 latest select info 
 """
-def select_result(codes):
+def select_result(codes, filename=''):
     df = ts.get_realtime_quotes(codes)
     data_list = []
     wavedfset = pd.DataFrame(columns=['code', 'begin', 'end', 'status', 'begin_price', 'end_price', 'days', 'change'])
@@ -170,9 +170,9 @@ def select_result(codes):
     # _datautils.to_db(l1, 'limitup_hist')
     # _datautils.to_db(l2, 'limitup_quota')
 
-    _datautils.to_db(resultdf, 'select_result')
+    _datautils.to_db(resultdf, 'select_result_' + filename)
     resultdf.to_csv('select_result.csv')
-    _datautils.to_db(wavedfset, 'select_wave')
+    _datautils.to_db(wavedfset, 'select_wave_' + filename)
     wavedfset.to_csv('select_wave.csv')
 
     print("stock selection finish...")
@@ -377,7 +377,8 @@ if __name__ == '__main__':
     print('select start...')
     # selecttest()
     # select_subnew(fromTime=20170409)
-    select_concepts(CCONTS.CONCEPT_QKL)
+    # select_concepts(CCONTS.CONCEPT_XAXQ, 'xaxq')
+    select_concepts(CCONTS.CONCEPT_DJS, 'djs')
     # select_industry(ICONTS.INDUSTRY_BDT)
     # select_subnew_issue_space()
     # select_subnew()
