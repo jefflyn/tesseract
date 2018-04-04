@@ -27,7 +27,7 @@ def get_upnday(codes=None, n=0, change=None):
     upndata = []
     for code in code_list:
         hist_data = dt.get_k_data(code, start=lastmonthstr)
-        if hist_data is None or len(hist_data) == 0:
+        if hist_data is None or len(hist_data) < 5:
             continue
         latest = hist_data.tail(1)
         idx = latest.index.get_values()[0]
@@ -46,17 +46,12 @@ def get_upnday(codes=None, n=0, change=None):
         beginp = 0.0
         endp = 0.0
         ndays = 0.0
-        is_multi_vol = False
-        day1vol = 0
-        day2vol = 0
+        volumes = [row[1]['volume'] for row in histndf.iterrows()]
+        is_multi_vol = True if (volumes[0] > volumes[1] * 2.1 or volumes[1] > volumes[2] * 2.1) else False
         for index, row in histndf.iterrows():
             open = float(row['open'])
             close = float(row['close'])
-            volume = float(row['volume'])
-            if index == 0:
-                day1vol = volume
-            if index == 1:
-                day2vol = volume
+
             if endp == 0.0:
                 endp = close
             diff = close - open
@@ -86,8 +81,6 @@ def get_upnday(codes=None, n=0, change=None):
         nlist.append(item.at[idx, 'pe'])
         nlist.append(ndays)
         nlist.append(round(sumup,2))
-        if day2vol * 2.1 < day1vol:
-            is_multi_vol = True
         nlist.append(is_multi_vol)
 
         upndata.append(nlist)

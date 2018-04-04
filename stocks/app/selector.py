@@ -142,11 +142,14 @@ def select_result(codes, filename=''):
         upndaydf = upnday.get_upnday(code)
         updays = 0
         sumup = 0
+        ismulti = False
         if upndaydf.empty == False:
             updays = upndaydf.ix[0, 'updays']
             sumup = upndaydf.ix[0, 'sumup']
+            ismulti = upndaydf.ix[0, 'multi_vol']
         curt_data.append(updays)
         curt_data.append(sumup)
+        curt_data.append(ismulti)
 
         # get maup data
         maupdf = maup.get_ma(code)
@@ -163,7 +166,7 @@ def select_result(codes, filename=''):
         data_list.append(curt_data)
     columns = ['code', 'name', 'industry', 'area', 'pe', 'price', 'bottom', 'uspace','dspace', 'top', 'position', 'buy1', 'buy2', 'buy3',
                'count', 'count_30d', 'count_q1', 'count_q2', 'count_q3', 'count_q4', 'maxdate', 'lup_low', 'lup_high',
-               'updays', 'sumup', 'isup', 'ma5', 'ma10', 'ma20', 'ma30', 'ma60', 'ma90', 'ma120', 'ma250']
+               'updays', 'sumup', 'multi_vol', 'isup', 'ma5', 'ma10', 'ma20', 'ma30', 'ma60', 'ma90', 'ma120', 'ma250']
     resultdf = pd.DataFrame(data_list, columns=columns)
     resultdf = resultdf.sort_values('uspace', axis=0, ascending=True, inplace=False, kind='quicksort', na_position='last')
 
@@ -377,9 +380,9 @@ if __name__ == '__main__':
     print('select start...')
     # selecttest()
     # select_subnew(fromTime=20170409)
-    # select_concepts(CCONTS.CONCEPT_XAXQ, 'xaxq')
-    select_concepts(CCONTS.CONCEPT_DJS, 'djs')
-    # select_industry(ICONTS.INDUSTRY_BDT)
+    # select_concepts(CCONTS.XAXQ, 'xaxq')
+    # select_concepts(CCONTS.DJS, 'djs')
+    select_industry(ICONTS.YLZZ, 'ylzz')
     # select_subnew_issue_space()
     # select_subnew()
     # bottomdf = falco.get_monitor('002852')
