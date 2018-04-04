@@ -379,10 +379,10 @@ def selecttest():
 if __name__ == '__main__':
     print('select start...')
     # selecttest()
-    # select_subnew(fromTime=20170409)
+    select_subnew(fromTime=20170409)
     # select_concepts(CCONTS.XAXQ, 'xaxq')
     # select_concepts(CCONTS.DJS, 'djs')
-    select_industry(ICONTS.YLZZ, 'ylzz')
+    # select_industry(ICONTS.YLZZ, 'ylzz')
     # select_subnew_issue_space()
     # select_subnew()
     # bottomdf = falco.get_monitor('002852')
