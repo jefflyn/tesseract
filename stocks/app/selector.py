@@ -179,8 +179,9 @@ def select_result(codes, filename=''):
     # _datautils.to_db(l1, 'limitup_hist')
     # _datautils.to_db(l2, 'limitup_quota')
 
-    _datautils.to_db(resultdf, 'select_result_' + filename)
-    # resultdf.to_csv('select_result.csv')
+    result_name = 'select_result_' + filename
+    _datautils.to_db(resultdf, result_name)
+    resultdf.to_csv(result_name + '.csv')
     # _datautils.to_db(wavedfset, 'select_wave_' + filename)
     # wavedfset.to_csv('select_wave.csv')
 
