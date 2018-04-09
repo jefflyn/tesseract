@@ -60,9 +60,8 @@ def get_totay_quotations(datestr=None):
 def get_app_codes():
     pa = get_data('../data/app/pa.txt', sep=' ')['code'].astype('str').str.zfill(6)
     cf = get_data('../data/app/cf.txt', sep=' ')['code'].astype('str').str.zfill(6)
-    ot = get_data('../data/app/other.txt', sep=' ')['code'].astype('str').str.zfill(6)
-    tr = get_data('../data/app/trace.txt', sep=' ')['code'].astype('str').str.zfill(6)
-    codes = list(cf) + list(ot) + list(pa) + list(tr)
+    ot =[] #get_data('../data/app/other.txt', sep=' ')['code'].astype('str').str.zfill(6)
+    codes = list(pa) + list(cf) + list(ot)
     return codes
 
 

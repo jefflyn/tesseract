@@ -32,6 +32,7 @@ QUATO_WEIGHT = {
     MAUP : 0.1
 }
 
+
 """
 return specific subnew code list
 fromTime: yyyymmdd
@@ -53,6 +54,11 @@ def select_industry(name, fname=''):
     codes = list(data['code'])
     result = select_result(codes, filename=fname)
     # print(result)
+
+
+def select_xxx(fname=''):
+    codes = _datautils.get_app_codes()
+    result = select_result(codes, filename=fname)
 
 
 """
@@ -174,9 +180,9 @@ def select_result(codes, filename=''):
     # _datautils.to_db(l2, 'limitup_quota')
 
     _datautils.to_db(resultdf, 'select_result_' + filename)
-    resultdf.to_csv('select_result.csv')
-    _datautils.to_db(wavedfset, 'select_wave_' + filename)
-    wavedfset.to_csv('select_wave.csv')
+    # resultdf.to_csv('select_result.csv')
+    # _datautils.to_db(wavedfset, 'select_wave_' + filename)
+    # wavedfset.to_csv('select_wave.csv')
 
     print("stock selection finish...")
     return resultdf
@@ -379,7 +385,8 @@ def selecttest():
 if __name__ == '__main__':
     print('select start...')
     # selecttest()
-    select_subnew(fromTime=20170409)
+    select_xxx('xxx')
+    # select_subnew(fromTime=20170409)
     # select_concepts(CCONTS.XAXQ, 'xaxq')
     # select_concepts(CCONTS.DJS, 'djs')
     # select_industry(ICONTS.YLZZ, 'ylzz')
