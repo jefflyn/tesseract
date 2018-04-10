@@ -11,6 +11,8 @@ from sqlalchemy import create_engine
 todaystr = datetime.datetime.now().strftime('%Y-%m-%d')
 yeardays = datetime.timedelta(days=-365)
 oneyearago = (datetime.datetime.now() + yeardays).strftime('%Y%m%d')
+oneweek = datetime.timedelta(days=-7)
+weekago = (datetime.datetime.now() + oneweek).strftime('%Y%m%d')
 
 INDEX_DICT = {'000001': '上证指数', '000016': '上证50', '000300': '沪深300',
               '399001': '深证成指', '399005': '中小板指', '399006': '创业板指'}
@@ -89,7 +91,6 @@ def get_letter(string, upper=True):
 
 
 
-
 """
 marketTimeFrom: yyyymmdd
 """
@@ -98,7 +99,7 @@ def get_subnew(cyb = False, marketTimeFrom = oneyearago):
     # filter unused code
     if cyb is False:
         basics = basics[basics['code'].str.get(0) != '3']
-    basics = basics[(basics['timeToMarket'] >= int(marketTimeFrom))]
+    basics = basics[(basics.timeToMarket >= int(marketTimeFrom)) & (basics.timeToMarket < int(weekago))]
     return basics
 
 
