@@ -47,7 +47,7 @@ def generate_report2(title=None, filename=None, monitor=False):
     if monitor == False:
         rtdf = realtime.get_realtime(filename, sortby='b')
         rtdf = rtdf[
-            ['warn', 'code', 'name', 'price', 'change', 'low', 'bottom', 'uspace', 'cost', 'profit_amt', 'profit_perc', 'total_amt']]
+            ['warn', 'code', 'name', 'price', 'change', 'low', 'wave', 'bottom', 'uspace', 'cost', 'profit_amt', 'profit_perc', 'total_amt']]
         rtdf.rename(
             columns={'uspace': 'space', 'profit_amt': 'profit', 'profit_perc': 'percent', 'total_amt': 'amount'}, inplace=True)
     else:

@@ -350,13 +350,50 @@ def etl():
     mywavedata.to_csv("../data/wavemy.csv", encoding='utf-8')
 
 
+def wave_to_str(wavedf=None, size=3, change=10):
+    if wavedf is None or size < 1:
+        return ''
+    changelist = list(wavedf['change'])
+    # changelist = changelist[::-1]
+    str_list = []
+    sum_last = 0
+    for i in range(0, len(changelist)):
+        lastone = changelist[i]
+        if abs(lastone) >= change:
+            if sum_last > 0:
+                str_list.append(sum_last)
+                sum_last = 0
+            str_list.append(lastone)
+            continue
+        else:
+            sum_last += lastone
+            if abs(sum_last) >= change:
+                str_list.append(sum_last)
+                sum_last = 0
+                continue
+            else:
+                if i == len(changelist) - 1:
+                    str_list.append(sum_last)
+                    sum_last = 0
+    takes = len(str_list) - size if len(str_list) - size > 0 else 0
+    str_list = str_list[takes:]
+    wavestr = ''
+    for k in range(0, len(str_list)):
+        wavestr += ('|' + str(round(str_list[k],2)))
+    return wavestr
+
+
+
 def testBottom():
-    df = get_wave('399005', index=True)
+    # df = get_wave('399005', index=True)
+    df = get_wave('600405')
+    wave_to_str(df, size=3)
     print(df)
     bottom_def = get_bottom(df)
     print(bottom_def.ix[0, 'bottom'])
     bottom_my = get_bottom(df, limit=8)
     print(bottom_my.ix[0, 'bottom'])
+
 
 
 

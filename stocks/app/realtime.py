@@ -69,6 +69,7 @@ def get_realtime(file, sortby=None):
         cost = hddf.ix[index, 'cost']
         share = hddf.ix[index, 'share']
         wavedf = wave.get_wave(code)
+        wavestr = wave.wave_to_str(wavedf)
         bdf = wave.get_bottom(wavedf)
         bottom = hddf.ix[index, 'bottom']
         if bottom is None:
@@ -105,6 +106,7 @@ def get_realtime(file, sortby=None):
         curt_data.append(cost)
         curt_data.append(profit)
         curt_data.append(profit_perc)
+        curt_data.append(wavestr)
         curt_data.append(bottom)
         curt_data.append(btm_space)
         curt_data.append(dspace)
@@ -114,7 +116,7 @@ def get_realtime(file, sortby=None):
         curt_data.append(price * share)
         data_list.append(curt_data)
 
-    df_append = pd.DataFrame(data_list, columns=['warn', 'change', 'cost', 'profit_amt', 'profit_perc', 'bottom', 'uspace', 'dspace', 'top', 'position', 'share', 'total_amt'])
+    df_append = pd.DataFrame(data_list, columns=['warn', 'change', 'cost', 'profit_amt', 'profit_perc', 'wave', 'bottom', 'uspace', 'dspace', 'top', 'position', 'share', 'total_amt'])
     df = df.join(df_append)
 
     df = df[df.price > '1']
@@ -129,7 +131,7 @@ def get_realtime(file, sortby=None):
     else:
         df = df.sort_values(['change'], axis=0, ascending=True, inplace=False, kind='quicksort', na_position='last')
 
-    return df[['warn', 'code', 'name', 'price', 'change', 'bid', 'ask', 'low', 'high', 'bottom', 'uspace', 'dspace', 'top', 'position', 'cost', 'profit_amt', 'profit_perc', 'share', 'total_amt']]
+    return df[['warn', 'code', 'name', 'price', 'change', 'bid', 'ask', 'low', 'high', 'wave', 'bottom', 'uspace', 'dspace', 'top', 'position', 'cost', 'profit_amt', 'profit_perc', 'share', 'total_amt']]
 
 if __name__ == '__main__':
     if len(argv) < 2:

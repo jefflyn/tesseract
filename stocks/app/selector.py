@@ -90,17 +90,21 @@ def select_result(codes, filename=''):
 
         # get wave data and bottom top
         wavedf = wave.get_wave(code) # need to save
+        wavestr = wave.wave_to_str(wavedf)
         wavedfset = wavedfset.append(wavedf)
         bottomdf = wave.get_bottom(wavedf)
         bottom = bottomdf.ix[0, 'bottom']
         top = bottomdf.ix[0, 'top']
-        curt_data.append(bottom)
         uspace = (current_price - bottom) / bottom * 100
         dspace = (current_price - top) / top * 100
+        position = (current_price - bottom) / (top - bottom) * 100
+
+        curt_data.append(wavestr)
+        curt_data.append(bottom)
         curt_data.append(round(uspace, 2))
         curt_data.append(round(dspace, 2))
         curt_data.append(round(top, 2))
-        position = (current_price - bottom) / (top - bottom) * 100
+
         curt_data.append(round(position, 2))
         curt_data.append(round(bottomdf.ix[0, 'buy1'], 2))
         curt_data.append(round(bottomdf.ix[0, 'buy2'], 2))
@@ -170,7 +174,7 @@ def select_result(codes, filename=''):
         curt_data.append(maupdf.ix[0, 'ma250'])
 
         data_list.append(curt_data)
-    columns = ['code', 'name', 'industry', 'area', 'pe', 'price', 'bottom', 'uspace','dspace', 'top', 'position', 'buy1', 'buy2', 'buy3',
+    columns = ['code', 'name', 'industry', 'area', 'pe', 'price', 'wave', 'bottom', 'uspace','dspace', 'top', 'position', 'buy1', 'buy2', 'buy3',
                'count', 'count_30d', 'count_q1', 'count_q2', 'count_q3', 'count_q4', 'maxdate', 'lup_low', 'lup_high',
                'updays', 'sumup', 'multi_vol', 'isup', 'ma5', 'ma10', 'ma20', 'ma30', 'ma60', 'ma90', 'ma120', 'ma250']
     resultdf = pd.DataFrame(data_list, columns=columns)
@@ -388,13 +392,14 @@ if __name__ == '__main__':
     # selecttest()
     # select_xxx('xxx')
     # select_subnew(fromTime=20171009)
-    select_concepts(CCONTS.JYYC, 'jyyc')
-    select_concepts(CCONTS.RGZN, 'rgzn')
-    select_industry(ICONTS.JSJYY, 'jsjyy')
+    # select_concepts(CCONTS.JYYC, 'jyyc')
+    # select_concepts(CCONTS.RGZN, 'rgzn')
+    select_industry(ICONTS.SN, 'sn')
     # select_subnew_issue_space()
     # select_subnew()
     # bottomdf = falco.get_monitor('002852')
     # print(bottomdf)
+    print('select finish...')
 
 
 
