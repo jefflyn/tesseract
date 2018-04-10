@@ -90,7 +90,7 @@ def select_result(codes, filename=''):
 
         # get wave data and bottom top
         wavedf = wave.get_wave(code) # need to save
-        wavestr = wave.wave_to_str(wavedf)
+        wavestr = wave.wave_to_str(wavedf, size=10)
         wavedfset = wavedfset.append(wavedf)
         bottomdf = wave.get_bottom(wavedf)
         bottom = bottomdf.ix[0, 'bottom']
@@ -388,18 +388,14 @@ def selecttest():
     print(select_result('603083'))
 
 if __name__ == '__main__':
-    print('select start...')
     # selecttest()
-    # select_xxx('xxx')
-    select_subnew(fromTime=20171009, fname='subnew')
+    print('select start...')
+    # select_subnew(fromTime=20170709, fname='subnew')
     # select_concepts(CCONTS.JYYC, 'jyyc')
     # select_concepts(CCONTS.RGZN, 'rgzn')
     # select_industry(ICONTS.GKHY, 'GKHY')
-    # select_subnew_issue_space()
-    # select_subnew()
-    # bottomdf = falco.get_monitor('002852')
-    # print(bottomdf)
     print('select finish...')
+
 
 
 

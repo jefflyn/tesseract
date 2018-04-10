@@ -350,7 +350,7 @@ def etl():
     mywavedata.to_csv("../data/wavemy.csv", encoding='utf-8')
 
 
-def wave_to_str(wavedf=None, size=3, change=10):
+def wave_to_str(wavedf=None, size=4, change=10):
     if wavedf is None or size < 1:
         return ''
     changelist = list(wavedf['change'])
