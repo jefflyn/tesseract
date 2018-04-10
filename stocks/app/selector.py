@@ -391,7 +391,7 @@ if __name__ == '__main__':
     print('select start...')
     # selecttest()
     # select_xxx('xxx')
-    select_subnew(fromTime=20171009)
+    select_subnew(fromTime=20171009, fname='subnew')
     # select_concepts(CCONTS.JYYC, 'jyyc')
     # select_concepts(CCONTS.RGZN, 'rgzn')
     # select_industry(ICONTS.GKHY, 'GKHY')
