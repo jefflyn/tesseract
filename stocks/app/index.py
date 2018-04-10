@@ -19,7 +19,7 @@ target = ['000001', '000016', '000300', '399001', '399005', '399006']
 def format_index(df):
     # format data
     df['change'] = df['change'].apply(lambda x: str(round(x, 2)) + '%')
-    df['close'] = df['close'].apply(lambda x: '_' + str(round(x, 2)))
+    df['close'] = df['close'].apply(lambda x: str(round(x, 2)))
     df['low'] = df['low'].apply(lambda x: '_' + str(round(x, 2)))
     df['high'] = df['high'].apply(lambda x: '^' + str(round(x, 2)))
     df['bottom'] = df['bottom'].apply(lambda x: '[' + str(x) )
