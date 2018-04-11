@@ -8,18 +8,19 @@ if __name__ == '__main__':
     content = 'Please find the attaches for the selection report details.'
 
     # index.get_status()
-    selector.select_concepts(CCONTS.JYYC, 'jyyc')
-    selector.select_concepts(CCONTS.RGZN, 'rgzn')
-    selector.select_industry(ICONTS.JSJYY, 'jsjyy')
+    selector.select_xxx('app')
+    # selector.select_concepts(CCONTS.JYYC, 'jyyc')
+    # selector.select_concepts(CCONTS.RGZN, 'rgzn')
+    # selector.select_industry(ICONTS.JSJYY, 'jsjyy')
     # selector.select_subnew()
 
     attaches = []
-    att1 = report.create_attach('select_jyyc.csv')
-    att2 = report.create_attach('select_rgzn.csv')
-    att3 = report.create_attach('select_jsjyy.csv')
+    att1 = report.create_attach('select_result_app.csv')
     attaches.append(att1)
-    attaches.append(att2)
-    attaches.append(att3)
+    # att2 = report.create_attach('select_rgzn.csv')
+    # attaches.append(att2)
+    # att3 = report.create_attach('select_jsjyy.csv')
+    # attaches.append(att3)
 
     subj = "Stock Selection Report " + report.todaystr
     to_users = ['649054380@qq.com']
