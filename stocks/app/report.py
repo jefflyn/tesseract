@@ -75,9 +75,8 @@ def generate_report2(title=None, filename=None, monitor=False):
     result = pd.merge(result, limitupcount[['code', 'count', 'mindate', 'maxdate', 'lup_low']],
                       on='code', how='left')
     result['lmtspace'] = result[['price', 'lup_low']].apply(get_limitup_space, axis=1)
-    result['warn'] = result[['lmtspace', 'space']].apply(get_warn_space, axis=1)
-
-    result['warn'] = result['warn'].apply(lambda x: str(round(x, 2)) + '%')
+    # result['warn'] = result[['lmtspace', 'space']].apply(get_warn_space, axis=1)
+    # result['warn'] = result['warn'].apply(lambda x: str(round(x, 2)) + '%')
     # result['change'] = result['change'].apply(lambda x: str(round(x, 2)) + '%')
     result['space'] = result['space'].apply(lambda x: str(round(x, 2)) + '%')
     result['ma10_space'] = result['ma10_space'].apply(lambda x: str(round(x, 2)) + '%')
