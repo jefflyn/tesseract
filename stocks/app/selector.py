@@ -1,3 +1,5 @@
+import sys
+from sys import argv
 import numpy as np
 import pandas as pd
 import datetime
@@ -388,13 +390,13 @@ def selecttest():
     print(select_result('603083'))
 
 if __name__ == '__main__':
-    # selecttest()
-    print('select start...')
-    # select_subnew(fromTime=20170709, fname='subnew')
-    # select_concepts(CCONTS.JYYC, 'jyyc')
-    # select_concepts(CCONTS.RGZN, 'rgzn')
-    # select_industry(ICONTS.GKHY, 'GKHY')
-    print('select finish...')
+    if len(argv) < 2:
+        print("Invalid args! At least 2 args like: python xxx.py code1[,code2,...]")
+        sys.exit(0)
+    codes = argv[1]
+
+    result = select_result(codes)
+    print(result)
 
 
 
