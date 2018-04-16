@@ -46,7 +46,7 @@ def re_exe(file=None, inc=3, sortby=None):
             df = format_realtime(df)
             print(df)
         except Exception as e:
-            print('excpetion: ' + e)
+            print('excpetion: ' + str(e))
         time.sleep(inc)
 
 def get_realtime(file, sortby=None):
