@@ -3,6 +3,7 @@ from datetime import datetime
 import pandas as pd
 import numpy as np
 import tushare as ts
+from stocks.data import _datautils as _dt
 
 pd.set_option('display.width', 600)
 
@@ -62,28 +63,34 @@ def get_trump(codes=None, start=None, end=None):
 
             next3cls = list(next3k['close'])
             next3vol = list(next3k['volume'])
-            min_n3k = np.min(next3k.close)
-            mean_n3k = np.mean(next3k.close)
+            min_cls_n3k = np.min(next3k.close)
+            min_opn_n3k = np.min(next3k.open)
+            min_low_n3k = np.min(next3k.low)
+            mean_cls_n3k = np.mean(next3k.close)
 
             start_idx += 1
             #multi volume appear, price raise and the next 3days min price higher than the bottom price, checkout
-            if prevol * 2 <= nextvol and precls < nextcls and prebtm < min_n3k :
+            if curtvol > prevol * 1.8 and curtcls > precls and curtbtm < min_cls_n3k :
                 trump_list = []
-                trump_price = prebtm
+                trump_price = curttop
                 trump_grade = TRUMP_GENERAL
 
-                if mean_n3k > precls: # mean price bigger than pre close
+                if min_low_n3k < curttop:
+                    trump_price = curtbtm
+
+                nxt3_max_vol = np.max(next3vol)
+                if (min_cls_n3k > curtcls or min_cls_n3k > curtcls * 0.99) and (nxt3_max_vol <= curtvol):
                     trump_grade = TRUMP_GOLDEN
-                if min_n3k >= pretop:
-                    trump_price = pretop
+
                 trump_list.append(code)
-                trump_list.append(predate)
+                trump_list.append(curtdate)
                 trump_list.append(trump_price)
                 trump_list.append(trump_grade)
                 trump_lists.append(trump_list)
 
-            print(pre_k)
-            print(next3k)
+            # print(pre_k)
+            # print(curtk)
+            # print(next3k)
 
         trump_df = pd.DataFrame(trump_lists, columns=['code', 'date', 'price', 'grade'])
         trumpdf_list.append(trump_df)
@@ -96,5 +103,7 @@ def get_trump(codes=None, start=None, end=None):
 
 if __name__ == '__main__':
     print('search trump...')
-    result = get_trump('000710')
+    codes = _dt.get_app_codes()
+    result = get_trump(codes)
+    _dt.to_db(result, 'trump_x')
     print(result)
