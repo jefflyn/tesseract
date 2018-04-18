@@ -110,7 +110,7 @@ def get_trump(codes=None, start=None, end=None):
 if __name__ == '__main__':
     print('search trump...')
     codes = _dt.get_app_codes()
-    codes = '000836'
+    codes = '002703'
     result = get_trump(codes)
     _dt.to_db(result, 'trump_x')
     print(result)
