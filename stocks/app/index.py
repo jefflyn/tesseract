@@ -122,7 +122,7 @@ if __name__ == '__main__':
     if len(argv) > 1:
         while True:
             print(format_index(get_status()))
-            time.sleep(30)
+            time.sleep(5)
     else:
         wavedf = wave.get_wave(codes=target, index=True)
         # plot figure
