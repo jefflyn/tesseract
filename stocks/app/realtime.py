@@ -29,7 +29,8 @@ def format_realtime(df):
     df['high'] = df['high'].apply(lambda x: '^' + str(round(float(x), 2)))
     df['bottom'] = df['bottom'].apply(lambda x: '[' + str(x) )
     df['top'] = df['top'].apply(lambda x: str(x) + ']')
-    df['cost'] = df['cost'].apply(lambda x: '<' + str(round(x, 2)) + '>')
+    df['cost'] = df['cost'].apply(lambda x: '<' + str(round(x, 2)))
+    df['share'] = df['share'].apply(lambda x: str(round(x, 2)) + '>')
     df['change'] = df['change'].apply(lambda x: str(round(x, 2)) + '%')
     df['profit_perc'] = df['profit_perc'].apply(lambda x: str(round(x, 2)) + '%')
     df['uspace'] = df['uspace'].apply(lambda x: str(round(x, 2)) + '%')
@@ -132,7 +133,7 @@ def get_realtime(file, sortby=None):
     else:
         df = df.sort_values(['change'], axis=0, ascending=True, inplace=False, kind='quicksort', na_position='last')
 
-    return df[['warn', 'code', 'name', 'price', 'change', 'bid', 'ask', 'low', 'high', 'wave', 'bottom', 'uspace', 'dspace', 'top', 'position', 'cost', 'profit_amt', 'profit_perc', 'share', 'total_amt']]
+    return df[['warn', 'code', 'name', 'price', 'change', 'bid', 'ask', 'low', 'high', 'wave', 'bottom', 'uspace', 'dspace', 'top', 'position', 'cost', 'share', 'total_amt','profit_amt', 'profit_perc']]
 
 if __name__ == '__main__':
     if len(argv) < 2:

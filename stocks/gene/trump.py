@@ -49,6 +49,7 @@ def get_trump(codes=None, start=None, end=None):
             curtk = next4k.head(1)
             next3k = next4k.tail(3)
 
+            preopn = pre_k.iat[0, 1]  # open
             precls = pre_k.iat[0, 2]  # close
             prevol = pre_k.iat[0, 5]  # volume
 
@@ -62,6 +63,7 @@ def get_trump(codes=None, start=None, end=None):
             curtbtm = curtopn if curtcls >= curtopn else curtcls
 
             next3cls = list(next3k['close'])
+            next3low = list(next3k['low'])
             next3vol = list(next3k['volume'])
             min_cls_n3k = np.min(next3k.close)
             min_opn_n3k = np.min(next3k.open)
@@ -81,6 +83,10 @@ def get_trump(codes=None, start=None, end=None):
                 nxt3_max_vol = np.max(next3vol)
                 if (min_cls_n3k > curtcls or min_cls_n3k > curtcls * 0.99) and (nxt3_max_vol <= curtvol):
                     trump_grade = TRUMP_GOLDEN
+
+                if next3low[0] > curtcls:
+                    trump_grade = TRUMP_MARSHAL
+                    trump_price = preopn
 
                 trump_list.append(code)
                 trump_list.append(curtdate)
