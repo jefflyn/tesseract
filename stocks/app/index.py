@@ -124,6 +124,7 @@ if __name__ == '__main__':
             print(format_index(get_status()))
             time.sleep(5)
     else:
+        format_index(get_status())
         wavedf = wave.get_wave(codes=target, index=True)
         # plot figure
         listdf = []
