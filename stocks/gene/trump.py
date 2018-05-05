@@ -17,7 +17,7 @@ todaystr = datetime.now().strftime('%Y-%m-%d')
 def get_trump(codes=None, start=None, end=None):
     starttime = datetime.now()
     if start == None:
-        bwdays = dt.timedelta(-365)
+        bwdays = dt.timedelta(-180)
         start = (starttime + bwdays).strftime("%Y-%m-%d")
     code_list = []
     if isinstance(codes, str):
