@@ -188,7 +188,7 @@ def select_result(codes, filename=''):
     result_name = 'select_result_' + filename
     _datautils.to_db(resultdf, result_name)
     resultdf.to_csv(result_name + '.csv')
-    # _datautils.to_db(wavedfset, 'select_wave_' + filename)
+    _datautils.to_db(wavedfset, 'select_wave_' + filename)
     # wavedfset.to_csv('select_wave.csv')
 
     print("stock selection finish...")

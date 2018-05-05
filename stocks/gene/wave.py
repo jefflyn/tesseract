@@ -360,7 +360,7 @@ def wave_to_str(wavedf=None, size=4, change=10):
     for i in range(0, len(changelist)):
         lastone = changelist[i]
         if abs(lastone) >= change:
-            if sum_last > 0:
+            if sum_last != 0:
                 str_list.append(sum_last)
                 sum_last = 0
             str_list.append(lastone)
@@ -384,10 +384,10 @@ def wave_to_str(wavedf=None, size=4, change=10):
 
 
 
-def testBottom():
+def tryBottom():
     # df = get_wave('399005', index=True)
-    df = get_wave('600405')
-    wave_to_str(df, size=3)
+    df = get_wave('600238')
+    wave_to_str(df, size=10)
     print(df)
     bottom_def = get_bottom(df)
     print(bottom_def.ix[0, 'bottom'])
@@ -398,7 +398,7 @@ def testBottom():
 
 
 if __name__ == '__main__':
-    testBottom()
+    tryBottom()
     # get_wave()
     filePath = "../data/app/pa.txt"
     mystk = pd.read_csv(filePath, sep=' ')
