@@ -81,7 +81,7 @@ def select_result(codes, filename=''):
         if open <= 0 or current_price <= 0:
             continue;
 
-        basic = _datautils.get_basics(code, True)
+        basic = _datautils.get_basics(code)
         curt_data = []
         curt_data.append(code)
         curt_data.append(row['name'])
