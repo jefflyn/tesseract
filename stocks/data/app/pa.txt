@@ -14,7 +14,7 @@ wujiangbank 603323 8.454 100 7.26
 sanwei 002115 8.874 100 6.80
 lingnan 000524 1 0 9.15
 yongan 000663 1 0 9.51
-shangfeng 000672 1 0 10.6
+shangfeng 000672 1 0 9.31
 xianyinshi 000721 1 0 4.66
 ruihe 002620 1 0 8.4
 luchang 002813 1 0 22.52
