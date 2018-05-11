@@ -139,6 +139,11 @@ def get_app_codes():
     codes = list(pa) + list(cf) + list(ot)
     return codes
 
+def get_ot_codes():
+    ot = get_data('../data/app/other.txt', sep=' ')['code'].astype('str').str.zfill(6)
+    codes = list(ot)
+    return codes
+
 
 def get_monitor_codes():
     my = get_data('../data/app/monitormy.txt', sep=' ')['code'].astype('str').str.zfill(6)
