@@ -141,9 +141,10 @@ def get_app_codes():
 
 
 def get_monitor_codes():
-    my = get_data('../data/app/monitormy.txt', sep=' ')['code'].astype('str').str.zfill(6)
+    # my = get_data('../data/app/monitormy.txt', sep=' ')['code'].astype('str').str.zfill(6)
     ot = get_data('../data/app/monitorot.txt', sep=' ')['code'].astype('str').str.zfill(6)
-    codes = list(my) + list(ot)
+    # codes = list(my) + list(ot)
+    codes = list(ot)
     return codes
 
 
