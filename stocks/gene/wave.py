@@ -18,6 +18,9 @@ pd.set_option('display.width', 600)
 
 todaystr = datetime.now().strftime('%Y-%m-%d')
 
+"""
+take the bottom price when droped more than 20% by default
+"""
 def get_bottom(df = None, limit = 20):
     starttime = datetime.now()
     if df is None:
@@ -386,7 +389,7 @@ def wave_to_str(wavedf=None, size=4, change=10):
 
 def tryBottom():
     # df = get_wave('399005', index=True)
-    df = get_wave('600238')
+    df = get_wave('002158')
     wave_to_str(df, size=10)
     print(df)
     bottom_def = get_bottom(df)

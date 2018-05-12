@@ -1,5 +1,4 @@
 codename code cost share bottom
 meikailo 601828 16.154 0 14.40
-suotong 603612 43.798 0 41.16
-beirui 000710 53.433 0 37.15
-shuju 603881 43 0 30.52
+suotong 603612 43.798 0 36.21
+xinmao 000836 4.15 0 4.15

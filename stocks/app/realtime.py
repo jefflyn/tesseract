@@ -69,13 +69,18 @@ def get_realtime(file, sortby=None):
 
         index = list(hddf['code']).index(code)
         cost = hddf.ix[index, 'cost']
+        cost = cost if cost > 1 else price
         share = hddf.ix[index, 'share']
         wavedf = wave.get_wave(code)
         wavestr = wave.wave_to_str(wavedf)
         bdf = wave.get_bottom(wavedf)
         bottom = hddf.ix[index, 'bottom']
-        if bottom is None:
-            bottom = bdf.ix[0, 'bottom']
+        bottom_auto = bdf.ix[0, 'bottom']
+        bottom_auto_flag = ''
+        if bottom is None or bottom < bottom_auto:
+            bottom = bottom_auto
+            bottom_auto_flag = 'a'
+
         top = bdf.ix[0, 'top']
         dspace = (price - top) / top * 100
         position = (price - bottom) / (top - bottom) * 100
@@ -109,7 +114,7 @@ def get_realtime(file, sortby=None):
         curt_data.append(profit)
         curt_data.append(profit_perc)
         curt_data.append(wavestr)
-        curt_data.append(bottom)
+        curt_data.append(str(bottom) + bottom_auto_flag)
         curt_data.append(btm_space)
         curt_data.append(dspace)
         curt_data.append(top)
