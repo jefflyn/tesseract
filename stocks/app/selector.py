@@ -180,7 +180,7 @@ def select_result(codes, filename=''):
                'count', 'count_30d', 'count_q1', 'count_q2', 'count_q3', 'count_q4', 'maxdate', 'lup_low', 'lup_high',
                'updays', 'sumup%', 'multi_vol', 'isup', 'ma5', 'ma10', 'ma20', 'ma30', 'ma60', 'ma90', 'ma120', 'ma250']
     resultdf = pd.DataFrame(data_list, columns=columns)
-    resultdf = resultdf.sort_values('uspace', axis=0, ascending=True, inplace=False, kind='quicksort', na_position='last')
+    resultdf = resultdf.sort_values('uspace%', axis=0, ascending=True, inplace=False, kind='quicksort', na_position='last')
 
     # _datautils.to_db(l1, 'limitup_hist')
     # _datautils.to_db(l2, 'limitup_quota')
