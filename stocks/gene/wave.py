@@ -389,7 +389,7 @@ def wave_to_str(wavedf=None, size=4, change=10):
 
 def tryBottom():
     # df = get_wave('399005', index=True)
-    df = get_wave('002158')
+    df = get_wave('600213')
     wave_to_str(df, size=10)
     print(df)
     bottom_def = get_bottom(df)
