@@ -184,7 +184,9 @@ def select_result(codes, filename=''):
 
     # _datautils.to_db(l1, 'limitup_hist')
     # _datautils.to_db(l2, 'limitup_quota')
-
+    resultdf = resultdf['code', 'name', 'industry', 'area', 'pe', 'price', 'wave', 'bottom', 'uspace','dspace', 'top', 'position', 'buy1', 'buy2', 'buy3',
+               'count', 'count_30d', 'updays', 'sumup', 'multi_vol', 'isup', 'count_q1', 'count_q2', 'count_q3', 'count_q4', 'maxdate', 'lup_low', 'lup_high',
+               'ma5', 'ma10', 'ma20', 'ma30', 'ma60', 'ma90', 'ma120', 'ma250']
     result_name = 'select_result_' + filename
     _datautils.to_db(resultdf, result_name)
     resultdf.to_csv(result_name + '.csv')
