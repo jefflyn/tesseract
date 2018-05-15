@@ -79,7 +79,7 @@ def get_realtime(file, sortby=None):
         bottom_auto_flag = ''
         if bottom is None or bottom < bottom_auto:
             bottom = bottom_auto
-            bottom_auto_flag = 'a'
+            bottom_auto_flag = 'A'
 
         top = bdf.ix[0, 'top']
         dspace = (price - top) / top * 100
