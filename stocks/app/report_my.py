@@ -1,3 +1,4 @@
+from datetime import datetime
 from stocks.app import report
 from stocks.app import _utils
 from stocks.data import _datautils
@@ -34,7 +35,8 @@ if __name__ == '__main__':
     to_users = ['649054380@qq.com']
     ret = report.mail_with_attch(to_users, subject=subj, content=content, attaches=attaches)
     if ret:
-        print("Email send successfully")
+        todaystr = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        print("Email send successfully. " + todaystr)
     else:
         print("Send failed")
 
