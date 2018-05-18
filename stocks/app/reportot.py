@@ -54,7 +54,7 @@ def report_to_kk():
     content1 = 'Please check the attaches for more details.'
     content = content + content1 + '</body></html>'
 
-    selector.select_result(_datautils.get_monitor_codes(), 'ot')
+    selector.select_result(_datautils.get_monitor_codes('ot'), 'ot')
 
     attaches = []
     att1 = report.create_attach('select_result_ot.csv', 'select_result_ot.csv')

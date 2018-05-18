@@ -1,4 +1,4 @@
-codename code cost share bottom
-meikailo 601828 16.154 0 14.40
-suotong 603612 43.798 0 36.21
-xinmao 000836 4.15 0 4.15
+codename code
+meikailo 601828
+suotong 603612
+xinmao 000836
