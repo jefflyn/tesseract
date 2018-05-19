@@ -179,6 +179,7 @@ def get_month_firstday_lastday(howmany=12):
         current_end = current_begin - timedelta(days=1)
         current_begin = datetime.date(current_end.year, current_end.month, 1)
         result_list.append((format(current_begin, default_format), format(current_end, default_format)))
+    result_list = result_list[::-1]
     return result_list
 
 
