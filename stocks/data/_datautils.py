@@ -218,6 +218,17 @@ def get_basics(code=None, excludeCyb=False, index=False):
     data.index = list(data['code'])
     return data
 
+
+def get_hist_volume():
+    """
+    hist two weeks volume data
+    :return: 
+    """
+    data = pd.read_csv("../data/hist_volume.csv", encoding="utf-8")
+    data['code'] = data['code'].astype('str').str.zfill(6)
+    return data
+
+
 def get_bottom():
     try:
         data = pd.read_csv("../data/bottom.csv", encoding="utf-8")
@@ -304,7 +315,8 @@ def format_amount(amount=None):
 
 
 if __name__ == '__main__':
-
+    k_data = ts.get_k_data('000836',ktype='W')
+    print(k_data)
     print(format_amount(''))
     print(format_amount(None))
     print(format_amount(12.23))
