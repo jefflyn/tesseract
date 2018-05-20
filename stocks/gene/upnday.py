@@ -47,6 +47,7 @@ def get_upnday(codes=None, n=0, change=None):
         endp = 0.0
         ndays = 0.0
         volumes = [row[1]['volume'] for row in histndf.iterrows()]
+        vol_rate = volumes[0] / volumes[1]
         is_multi_vol = True if (volumes[0] > volumes[1] * 2.1 or volumes[1] > volumes[2] * 2.1) else False
         for index, row in histndf.iterrows():
             open = float(row['open'])
@@ -82,10 +83,10 @@ def get_upnday(codes=None, n=0, change=None):
         nlist.append(ndays)
         nlist.append(round(sumup,2))
         nlist.append(is_multi_vol)
-
+        nlist.append(round(vol_rate, 2))
         upndata.append(nlist)
 
-    upndf = pd.DataFrame(upndata, columns=['code', 'name', 'industry', 'area', 'pe', 'updays', 'sumup', 'multi_vol'])
+    upndf = pd.DataFrame(upndata, columns=['code', 'name', 'industry', 'area', 'pe', 'updays', 'sumup', 'multi_vol', 'vol_rate'])
     upndf = upndf.sort_values(['updays', 'sumup'], ascending=[False, True])
     endtime = dtime.now()
     # print("process upnday data finish at [%s], total time: %ds" % (endtime, (endtime - starttime).seconds))

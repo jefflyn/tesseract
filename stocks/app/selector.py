@@ -155,13 +155,16 @@ def select_result(codes, filename=''):
         updays = 0
         sumup = 0
         ismulti = False
+        vol_rate = 0
         if upndaydf.empty == False:
             updays = upndaydf.ix[0, 'updays']
             sumup = upndaydf.ix[0, 'sumup']
             ismulti = upndaydf.ix[0, 'multi_vol']
+            vol_rate = upndaydf.ix[0, 'vol_rate']
         curt_data.append(updays)
         curt_data.append(sumup)
         curt_data.append(ismulti)
+        curt_data.append(vol_rate)
 
         # get maup data
         maupdf = maup.get_ma(code)
@@ -178,14 +181,14 @@ def select_result(codes, filename=''):
         data_list.append(curt_data)
     columns = ['code', 'name', 'industry', 'area', 'pe', 'price', 'wave', 'bottom', 'uspace%','dspace%', 'top', 'position%', 'buy1', 'buy2', 'buy3',
                'count', 'count_30d', 'count_q1', 'count_q2', 'count_q3', 'count_q4', 'maxdate', 'lup_low', 'lup_high',
-               'updays', 'sumup%', 'multi_vol', 'isup', 'ma5', 'ma10', 'ma20', 'ma30', 'ma60', 'ma90', 'ma120', 'ma250']
+               'updays', 'sumup%', 'multi_vol', 'vol_rate', 'isup', 'ma5', 'ma10', 'ma20', 'ma30', 'ma60', 'ma90', 'ma120', 'ma250']
     resultdf = pd.DataFrame(data_list, columns=columns)
     resultdf = resultdf.sort_values('uspace%', axis=0, ascending=True, inplace=False, kind='quicksort', na_position='last')
 
     # _datautils.to_db(l1, 'limitup_hist')
     # _datautils.to_db(l2, 'limitup_quota')
     resultdf = resultdf[['code', 'name', 'industry', 'area', 'pe', 'price', 'wave', 'bottom', 'uspace%','dspace%', 'top', 'position%', 'buy1', 'buy2', 'buy3',
-               'count', 'count_30d', 'updays', 'sumup%', 'multi_vol', 'isup', 'count_q1', 'count_q2', 'count_q3', 'count_q4', 'maxdate', 'lup_low', 'lup_high',
+               'count', 'count_30d', 'updays', 'sumup%', 'vol_rate', 'multi_vol', 'isup', 'count_q1', 'count_q2', 'count_q3', 'count_q4', 'maxdate', 'lup_low', 'lup_high',
                'ma5', 'ma10', 'ma20', 'ma30', 'ma60', 'ma90', 'ma120', 'ma250']]
     result_name = 'select_result_' + filename
     _datautils.to_db(resultdf, result_name)

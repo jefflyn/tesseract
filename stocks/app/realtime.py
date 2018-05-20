@@ -12,6 +12,7 @@ pd.set_option('display.width',800)
 include_files = {
     'pa': '../data/app/pa.txt',
     'cf': '../data/app/cf.txt',
+    'sim': '../data/app/sim.txt',
     'mo': '../data/app/monitormy.txt',
     'ot': '../data/app/other.txt'
 }
