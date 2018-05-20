@@ -1,0 +1,8 @@
+name code cost share bottom
+baotailong 601011 7.27 10000 6.66
+chuangyehb 600874 12.92 10000 11.25
+zhongbai 000759 8.27 10000 7.206
+huazi 600191 6.83 10000 6.08
+chongqing 600917 8.38 10000 7.12
+baichuan 002455 8.16 10000 7.39
+haohua 601101 7.05 10000 6.35
