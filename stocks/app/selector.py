@@ -39,7 +39,7 @@ QUATO_WEIGHT = {
 return specific subnew code list
 fromTime: yyyymmdd
 """
-def select_subnew(fromTime=20170409, fname=''):
+def select_subnew(fromTime=None, fname=''):
     subnewbasic = _datautils.get_subnew(marketTimeFrom=fromTime)
     codes = list(subnewbasic['code'])
     result = select_result(codes, filename=fname)
@@ -87,6 +87,7 @@ def select_result(codes, filename=''):
         curt_data.append(row['name'])
         curt_data.append(basic.ix[code, 'industry'])
         curt_data.append(basic.ix[code, 'area'])
+        curt_data.append(basic.ix[code, 'timeToMarket'])
         curt_data.append(basic.ix[code, 'pe'])
         curt_data.append(current_price)
 
@@ -179,7 +180,7 @@ def select_result(codes, filename=''):
         curt_data.append(maupdf.ix[0, 'ma250'])
 
         data_list.append(curt_data)
-    columns = ['code', 'name', 'industry', 'area', 'pe', 'price', 'wave', 'bottom', 'uspace%','dspace%', 'top', 'position%', 'buy1', 'buy2', 'buy3',
+    columns = ['code', 'name', 'industry', 'area', 'market_time', 'pe', 'price', 'wave', 'bottom', 'uspace%','dspace%', 'top', 'position%', 'buy1', 'buy2', 'buy3',
                'count', 'count_30d', 'count_q1', 'count_q2', 'count_q3', 'count_q4', 'maxdate', 'lup_low', 'lup_high',
                'updays', 'sumup%', 'multi_vol', 'vol_rate', 'isup', 'ma5', 'ma10', 'ma20', 'ma30', 'ma60', 'ma90', 'ma120', 'ma250']
     resultdf = pd.DataFrame(data_list, columns=columns)
@@ -187,7 +188,7 @@ def select_result(codes, filename=''):
 
     # _datautils.to_db(l1, 'limitup_hist')
     # _datautils.to_db(l2, 'limitup_quota')
-    resultdf = resultdf[['code', 'name', 'industry', 'area', 'pe', 'price', 'wave', 'bottom', 'uspace%','dspace%', 'top', 'position%', 'buy1', 'buy2', 'buy3',
+    resultdf = resultdf[['code', 'name', 'industry', 'area', 'market_time', 'pe', 'price', 'wave', 'bottom', 'uspace%','dspace%', 'top', 'position%', 'buy1', 'buy2', 'buy3',
                'count', 'count_30d', 'updays', 'sumup%', 'vol_rate', 'multi_vol', 'isup', 'count_q1', 'count_q2', 'count_q3', 'count_q4', 'maxdate', 'lup_low', 'lup_high',
                'ma5', 'ma10', 'ma20', 'ma30', 'ma60', 'ma90', 'ma120', 'ma250']]
     result_name = 'select_result_' + filename

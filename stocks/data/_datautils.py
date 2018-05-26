@@ -94,7 +94,9 @@ def get_letter(string, upper=True):
 """
 marketTimeFrom: yyyymmdd
 """
-def get_subnew(cyb = False, marketTimeFrom = oneyearago):
+def get_subnew(cyb = False, marketTimeFrom = None):
+    if marketTimeFrom == None:
+        marketTimeFrom = oneyearago
     basics = get_basics_fromh5(excludeCyb=cyb)
     # filter unused code
     if cyb is False:

@@ -115,7 +115,7 @@ def multi_volume_appear():
 if __name__ == '__main__':
     # target_k_data = ts.get_k_data('603520', start=last_2month_start, end=today, ktype='W')
     # print(target_k_data)
-    # period_statis(period=-8, ktype='W', db_name='change_week_statis')
     # period_statis(ktype='M', db_name='change_month_statis')
+    period_statis(period=-4, ktype='W', db_name='change_week_statis')
     multi_volume_appear()
 
