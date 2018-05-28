@@ -78,7 +78,7 @@ def get_realtime(file, sortby=None):
         bottom = hddf.ix[index, 'bottom']
         bottom_auto = bdf.ix[0, 'bottom']
         bottom_auto_flag = ''
-        if bottom is None or bottom < bottom_auto:
+        if bottom is None or bottom < (bottom_auto and low > bottom_auto):
             bottom = bottom_auto
             bottom_auto_flag = 'A'
 

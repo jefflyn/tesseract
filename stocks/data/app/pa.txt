@@ -18,7 +18,7 @@ shangfeng 000672 1 0 9.31
 xianyinshi 000721 1 0 4.66
 ruihe 002620 1 0 8.4
 luchang 002813 1 0 22.52
-wuchangyu 600275 1 0 4.21
+wuchangyu 600275 1 0 4.19
 bailidq 600468 1 0 5.61
 taihua 600281 1 0 4.29
 wuxibank 600908 1 0 6.74
