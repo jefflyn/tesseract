@@ -155,6 +155,9 @@ def get_monitor_codes(flag=None):
     elif flag == 'my':
         my = get_data('../data/app/monitormy.txt', sep=' ')['code'].astype('str').str.zfill(6)
         codes = list(my)
+    elif flag == 'x':
+        my = get_data('../data/app/monitorx.txt', sep=' ')['code'].astype('str').str.zfill(6)
+        codes = list(my)
     return codes
 
 

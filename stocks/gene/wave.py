@@ -4,6 +4,7 @@ import datetime as dt
 import numpy as np
 import pandas as pd
 import matplotlib
+
 matplotlib.use('TkAgg')
 matplotlib.rcParams['font.sans-serif'] = 'SimHei'
 import matplotlib.pyplot as plt
@@ -21,7 +22,9 @@ todaystr = datetime.now().strftime('%Y-%m-%d')
 """
 take the bottom price when droped more than 20% by default
 """
-def get_bottom(df = None, limit = 20):
+
+
+def get_bottom(df=None, limit=20):
     starttime = datetime.now()
     if df is None:
         return df
@@ -53,25 +56,24 @@ def get_bottom(df = None, limit = 20):
                 if size == 1:
                     top = lastrec.at[lastidx, 'end_price'] if laststatus == 'up' else lastrec.at[lastidx, 'begin_price']
                 else:
-                    if lastidx == size - 1: #last one
+                    if lastidx == size - 1:  # last one
                         if laststatus == 'up':
-                            #get previous down one
+                            # get previous down one
                             top = lastrec.at[lastidx - 1, 'begin_price']
                         else:
                             top = lastrec.at[lastidx, 'begin_price']
                     else:
-                        top = lastrec.at[lastidx, 'end_price'] if laststatus == 'up' else lastrec.at[lastidx, 'begin_price']
-
-
+                        top = lastrec.at[lastidx, 'end_price'] if laststatus == 'up' else lastrec.at[
+                            lastidx, 'begin_price']
 
                 break
         reclist.append(code)
         reclist.append(bottom)
         reclist.append(top)
         # add three buy positions for wave periods
-        reclist.append(top*0.66)
-        reclist.append(top*0.5)
-        reclist.append(top*0.33)
+        reclist.append(top * 0.66)
+        reclist.append(top * 0.5)
+        reclist.append(top * 0.33)
         dfresult.append(reclist)
 
     result = pd.DataFrame(dfresult, columns=['code', 'bottom', 'top', 'buy1', 'buy2', 'buy3'])
@@ -80,9 +82,12 @@ def get_bottom(df = None, limit = 20):
     # print("total time: %ds" % (endtime - starttime).seconds)
     return result
 
+
 """
 df: code name date price
 """
+
+
 def plot_wave(dflist=None, filename='wave.png', title='', columns=1):
     size = len(dflist)
     cols = columns
@@ -106,7 +111,7 @@ def plot_wave(dflist=None, filename='wave.png', title='', columns=1):
         name = list(df['name'])[0]
 
         daymap = {}
-        dayx = list(map(lambda x : x + 0.5, xs))[0 : len(ys) ]
+        dayx = list(map(lambda x: x + 0.5, xs))[0: len(ys)]
         dayy = [min(ys) * 0.6] * (len(ys) - 1)
         changemap = {}
         newx = []
@@ -115,16 +120,17 @@ def plot_wave(dflist=None, filename='wave.png', title='', columns=1):
             if n < len(ys) - 1:
                 startx = xs[n]
                 starty = ys[n]
-                nextx = xs[n+1]
-                nexty = ys[n+1]
+                nextx = xs[n + 1]
+                nexty = ys[n + 1]
                 midx = (startx + nextx) / 2
                 midy = (starty + nexty) / 2
                 newx.append(midx)
                 newy.append(midy)
                 changemap[midx] = round((nexty - starty) / starty * 100, 2)
                 begindate = labels[n]
-                enddate = labels[n+1]
-                daymap[dayx[n]] = (datetime.strptime(enddate, '%Y-%m-%d') - datetime.strptime(begindate, '%Y-%m-%d')).days
+                enddate = labels[n + 1]
+                daymap[dayx[n]] = (
+                    datetime.strptime(enddate, '%Y-%m-%d') - datetime.strptime(begindate, '%Y-%m-%d')).days
 
         # 配置横坐标
         ax = plt.gca()
@@ -145,15 +151,14 @@ def plot_wave(dflist=None, filename='wave.png', title='', columns=1):
         ax.yaxis.grid(True, which='major')
         # 在折线图上标记数据
         datadotxy = tuple(zip(xs, ys))
-        flag = 0 if ys[0] < ys[1] else 1 #判断第一个值是否底部
+        flag = 0 if ys[0] < ys[1] else 1  # 判断第一个值是否底部
         for dotx, doty in datadotxy:
-            if dotx%2 == flag: #低点，调整底部往下一点
+            if dotx % 2 == flag:  # 低点，调整底部往下一点
                 dotxy = (dotx - 0.2, round(doty * 0.9, 2))
                 ax.annotate(str(doty), xy=dotxy, fontsize=10, color='blue')
             else:
                 dotxy = (dotx, round(doty + 1, 2))
                 ax.annotate(str(doty), xy=dotxy, fontsize=10, color='red')
-
 
         spacexy = tuple(zip(newx, newy))
         for spxy in spacexy:
@@ -175,7 +180,7 @@ def plot_wave(dflist=None, filename='wave.png', title='', columns=1):
 
 
 def format_wave_data(wavedf=None, index=False):
-    latestone = wavedf.tail(1) # get the newest record
+    latestone = wavedf.tail(1)  # get the newest record
     if latestone.empty == True:
         return None
     i = latestone.index.get_values()[0]
@@ -199,6 +204,8 @@ def format_wave_data(wavedf=None, index=False):
 """
 default get the recent one year data
 """
+
+
 def get_wave(codes=None, index=False, start=None, end=None, beginlow=True, duration=0, pchange=0):
     starttime = datetime.now()
     if start == None:
@@ -208,7 +215,8 @@ def get_wave(codes=None, index=False, start=None, end=None, beginlow=True, durat
     code_list = []
     if isinstance(codes, str):
         code_list.append(codes)
-    else: code_list = codes
+    else:
+        code_list = codes
 
     index_realtime = []
     if index == True:
@@ -217,11 +225,12 @@ def get_wave(codes=None, index=False, start=None, end=None, beginlow=True, durat
     for code in code_list:
         # print("   >>> processing %s ..." % code)
         # hist_data = ts.get_h_data(code, start)  # network issue
-        hist_data = ts.get_k_data(code=code, index=index, start=start) #one day delay issue, use realtime interface solved
+        hist_data = ts.get_k_data(code=code, index=index,
+                                  start=start)  # one day delay issue, use realtime interface solved
         if hist_data is None or len(hist_data) == 0:
             continue
         latestdate = hist_data.tail(1).at[hist_data.tail(1).index.get_values()[0], 'date']
-        if todaystr != latestdate: # not the latest record
+        if todaystr != latestdate:  # not the latest record
             if index == False:
                 # get today data from [get_realtime_quotes(code)]
                 realtime = ts.get_realtime_quotes(code)
@@ -229,7 +238,9 @@ def get_wave(codes=None, index=False, start=None, end=None, beginlow=True, durat
                     continue
                 todaylow = float(realtime.at[0, 'low'])
                 if todaylow > 0:
-                    newone = {'date':todaystr,'open':float(realtime.at[0,'open']),'close':float(realtime.at[0,'price']),'high':float(realtime.at[0,'high']), 'low':todaylow,'volume':int(float(realtime.at[0,'volume'])/100),'code':code}
+                    newone = {'date': todaystr, 'open': float(realtime.at[0, 'open']),
+                              'close': float(realtime.at[0, 'price']), 'high': float(realtime.at[0, 'high']),
+                              'low': todaylow, 'volume': int(float(realtime.at[0, 'volume']) / 100), 'code': code}
                     newdf = pd.DataFrame(newone, index=[0])
                     hist_data = hist_data.append(newdf, ignore_index=True)
             else:
@@ -246,10 +257,12 @@ def get_wave(codes=None, index=False, start=None, end=None, beginlow=True, durat
                     hist_data = hist_data.append(newdf, ignore_index=True)
 
         left_data = wavefrom(code, hist_data, beginlow, 'left', duration, pchange)
-        #sorted by date asc
+        # sorted by date asc
         left_data.reverse()
         right_data = wavefrom(code, hist_data, beginlow, 'right', duration, pchange)
-        period_df = pd.DataFrame(left_data + right_data,columns=['code', 'begin', 'end', 'status', 'begin_price', 'end_price', 'days', 'change'])
+        period_df = pd.DataFrame(left_data + right_data,
+                                 columns=['code', 'begin', 'end', 'status', 'begin_price', 'end_price', 'days',
+                                          'change'])
         perioddf_list.append(period_df)
         # print("   >>> done!")
 
@@ -292,7 +305,8 @@ def wavefrom(code, df, beginlow, direction='left', duration=0, pchange=0):
     diff_days = datetime.strptime(enddate, '%Y-%m-%d') - datetime.strptime(begindate, '%Y-%m-%d')
 
     while diff_days.days > duration:
-        data = df[(df.date >= begindate) & (df.date < enddate)] if direction == 'left' else df[(df.date > begindate) & (df.date <= enddate)]
+        data = df[(df.date >= begindate) & (df.date < enddate)] if direction == 'left' else df[
+            (df.date > begindate) & (df.date <= enddate)]
         price = data.max()['high'] if ismax else data.min()['low']
 
         status = ''
@@ -306,7 +320,7 @@ def wavefrom(code, df, beginlow, direction='left', duration=0, pchange=0):
             begindate = date
             status = 'down' if ismax else 'up'
         if direction == 'right':
-            #if the latest one, get the close price, calculate the actual rises
+            # if the latest one, get the close price, calculate the actual rises
             endprice = close if date == lastdate else price
             enddate = date
             status = 'up' if ismax else 'down'
@@ -382,9 +396,8 @@ def wave_to_str(wavedf=None, size=4, change=10):
     str_list = str_list[takes:]
     wavestr = ''
     for k in range(0, len(str_list)):
-        wavestr += ('|' + str(round(str_list[k],2)))
+        wavestr += ('|' + str(round(str_list[k], 2)))
     return wavestr
-
 
 
 def tryBottom():
@@ -396,8 +409,6 @@ def tryBottom():
     print(bottom_def.ix[0, 'bottom'])
     bottom_my = get_bottom(df, limit=8)
     print(bottom_my.ix[0, 'bottom'])
-
-
 
 
 if __name__ == '__main__':
