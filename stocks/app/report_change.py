@@ -43,9 +43,11 @@ def period_statis(period=-8, ktype='W', db_name='change_week_statis'):
         markettime = str(row['timeToMarket'])  # exclude new stock by 2 months
         if markettime > last_2month_start:
             continue
-        target_k_data = hist_k_week[hist_k_week.code == index]
+        target_k_data = None
         if ktype == 'M':
             target_k_data = hist_k_month[hist_k_month.code == index]
+        elif ktype == 'W':
+            target_k_data = hist_k_week[hist_k_week.code == index]
         if target_k_data is None or len(target_k_data) == 0:
             continue
 
@@ -117,7 +119,7 @@ def multi_volume_appear():
 
 
 if __name__ == '__main__':
-    # period_statis(ktype='M', db_name='change_month_statis')
-    period_statis(period=-4, ktype='W', db_name='change_week_statis')
-    multi_volume_appear()
+    period_statis(ktype='M', db_name='change_month_statis')
+    # period_statis(period=-4, ktype='W', db_name='change_week_statis')
+    # multi_volume_appear()
 
