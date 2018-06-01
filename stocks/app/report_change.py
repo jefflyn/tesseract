@@ -38,7 +38,7 @@ def period_statis(period=-8, ktype='W', db_name='change_week_statis'):
     date_columns = [_dateutil.get_week_firstday_lastday(w) for w in range(period, 0)]
     if ktype == 'M':
         date_columns = [monthday for monthday in _dateutil.get_month_firstday_lastday()]
-    columns = ['代码', '名称', '行业', '地区', '上市时间'] + [d[1] for d in date_columns]
+    columns = ['code', 'name', 'industry', 'area', 'market_time'] + [d[1] for d in date_columns]
     for index, row in basics.iterrows():
         markettime = str(row['timeToMarket'])  # exclude new stock by 2 months
         if markettime > last_2month_start:
@@ -120,6 +120,6 @@ def multi_volume_appear():
 
 if __name__ == '__main__':
     period_statis(ktype='M', db_name='change_statis_month')
-    # period_statis(period=-4, ktype='W', db_name='change_statis_week')
-    # multi_volume_appear()
+    period_statis(period=-4, ktype='W', db_name='change_statis_week')
+    multi_volume_appear()
 
