@@ -227,12 +227,18 @@ def get_basics(code=None, excludeCyb=False, index=False):
     return data
 
 
-def get_hist_volume():
+def get_hist_k(ktype=None):
     """
-    hist two weeks volume data
+    hist k data
     :return: 
     """
-    data = pd.read_csv("../data/hist_volume.csv", encoding="utf-8")
+    data = None
+    if ktype == 'W':
+        data = pd.read_csv("../data/hist_k_week.csv", encoding="utf-8")
+    elif ktype == 'M':
+        data = pd.read_csv("../data/hist_k_month.csv", encoding="utf-8")
+    else:
+        data = pd.read_csv("../data/hist_k_day.csv", encoding="utf-8")
     data['code'] = data['code'].astype('str').str.zfill(6)
     return data
 

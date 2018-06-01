@@ -12,6 +12,10 @@ last_month_start = _dateutil.get_last_month_start()
 last_2month_start = _dateutil.get_last_2month_start()
 last_year_start = _dateutil.get_last_year_start()
 
+hist_k_day = _datautils.get_hist_k()
+hist_k_week = _datautils.get_hist_k('W')
+hist_k_month = _datautils.get_hist_k('M')
+
 
 def get_period_change(period_k=None):
     first = period_k.head(1)
@@ -39,9 +43,9 @@ def period_statis(period=-8, ktype='W', db_name='change_week_statis'):
         markettime = str(row['timeToMarket'])  # exclude new stock by 2 months
         if markettime > last_2month_start:
             continue
-        target_k_data = ts.get_k_data(index, start=last_2month_start, end=today, ktype=ktype)
+        target_k_data = hist_k_week[hist_k_week.code == index]
         if ktype == 'M':
-            target_k_data = ts.get_k_data(index, start=last_year_start, end=today, ktype=ktype)
+            target_k_data = hist_k_month[hist_k_month.code == index]
         if target_k_data is None or len(target_k_data) == 0:
             continue
 
@@ -74,7 +78,7 @@ def multi_volume_appear():
     print('start at', start_time)
     result_list = []
 
-    hist_vol = _datautils.get_hist_volume()
+    hist_vol = _datautils.get_hist_k()
     for index, row in basics.iterrows():
         markettime = str(row['timeToMarket'])  # exclude new stock
         lastmonth = _dateutil.get_last_month_start('%Y%m%d')
@@ -113,8 +117,6 @@ def multi_volume_appear():
 
 
 if __name__ == '__main__':
-    # target_k_data = ts.get_k_data('603520', start=last_2month_start, end=today, ktype='W')
-    # print(target_k_data)
     # period_statis(ktype='M', db_name='change_month_statis')
     period_statis(period=-4, ktype='W', db_name='change_week_statis')
     multi_volume_appear()

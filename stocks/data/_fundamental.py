@@ -10,7 +10,8 @@ from stocks.app import _dateutil
 
 today = _dateutil.get_today()
 last_week_start = _dateutil.get_last_week_start()
-
+last_2month_start = _dateutil.get_last_2month_start()
+last_year_start = _dateutil.get_last_year_start()
 
 
 def basics_to_csv():
@@ -30,16 +31,26 @@ def basics_to_hdf5():
 
 def hist_volume_to_csv():
     basics = _datautils.get_basics(excludeCyb=False)
-    init_df = pd.DataFrame(columns=['code', 'date', 'open', 'close', 'volume'])
+    day_df = pd.DataFrame(columns=['code', 'date', 'open', 'high', 'low', 'close', 'volume'])
+    week_df = pd.DataFrame(columns=['code', 'date', 'open', 'high', 'low', 'close', 'volume'])
+    month_df = pd.DataFrame(columns=['code', 'date', 'open', 'high', 'low', 'close', 'volume'])
     for index, row in basics.iterrows():
-        target_k_data = ts.get_k_data(index, start=last_week_start, end=today)
-        if target_k_data is None or len(target_k_data) < 2:
-            continue
-        init_df = init_df.append(target_k_data[['code', 'date', 'open', 'close', 'volume']], ignore_index=True)
+        k_data_day = ts.get_k_data(index, start=last_week_start, end=today)
+        k_data_week = ts.get_k_data(index, start=last_2month_start, end=today, ktype='W')
+        k_data_month = ts.get_k_data(index, start=last_year_start, end=today, ktype='M')
+        if k_data_day is not None and len(k_data_day) > 1:
+            day_df = day_df.append(k_data_day[['code', 'date', 'open', 'high', 'low', 'close', 'volume']], ignore_index=True)
+        if k_data_week is not None and len(k_data_week) > 0:
+            week_df = week_df.append(k_data_week[['code', 'date', 'open', 'high', 'low', 'close', 'volume']], ignore_index=True)
+        if k_data_month is not None and len(k_data_month) > 0:
+            month_df = month_df.append(k_data_month[['code', 'date', 'open', 'high', 'low', 'close', 'volume']], ignore_index=True)
 
-    # print(init_df)
-    init_df.to_csv('../data/hist_volume.csv', encoding='utf-8')
-    _datautils.to_db(init_df, tbname='hist_volume'+today)
+    day_df.to_csv('../data/hist_k_day.csv', encoding='utf-8')
+    _datautils.to_db(day_df, tbname='hist_k_day')
+    week_df.to_csv('../data/hist_k_week.csv', encoding='utf-8')
+    _datautils.to_db(week_df, tbname='hist_k_week')
+    month_df.to_csv('../data/hist_k_month.csv', encoding='utf-8')
+    _datautils.to_db(month_df, tbname='hist_k_month')
 
 
 if __name__ == '__main__':
