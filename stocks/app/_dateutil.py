@@ -4,7 +4,7 @@ import datetime
 from datetime import timedelta
 from dateutil.relativedelta import relativedelta
 from dateutil.rrule import *
-
+import urllib.request as request
 
 now = datetime.datetime.now()
 
@@ -56,7 +56,9 @@ this_year_end = datetime.datetime(now.year + 1, 1, 1) - timedelta(days=1)
 last_year_end = this_year_start - timedelta(days=1)
 last_year_start = datetime.datetime(last_year_end.year, 1, 1)
 
-default_format='%Y-%m-%d'
+default_format = '%Y-%m-%d'
+date_format = '%Y%m%d'
+
 
 # 本周第一天和最后一天
 def get_today(format=default_format):
@@ -139,13 +141,66 @@ def get_last_year_end(format=default_format):
     return last_year_end.strftime(format)
 
 
+def get_day_type(query_date):
+    url = 'http://tool.bitefu.net/jiari/?d=' + query_date
+    resp = request.urlopen(url)
+    content = resp.read()
+    if content:
+        try:
+            day_type = int(content)
+        except ValueError:
+            return -1
+        else:
+            return day_type
+    else:
+        return -1
+
+
+def is_tradeday(query_date):
+    weekday = datetime.datetime.strptime(query_date, '%Y%m%d').isoweekday()
+    if weekday <= 5 and get_day_type(query_date) == 0:
+        return True
+    else:
+        return False
+
+
+def today_is_tradeday():
+    query_date = datetime.datetime.strftime(datetime.datetime.today(), '%Y%m%d')
+    return is_tradeday(query_date)
+
+
+def get_trade_day(nday=-4):
+    """
+
+    :param n:
+    :return: [today, last n day ...]
+    """
+    n_trade_day_pair = []
+    n = 1
+    while True:
+        target_date = (now - timedelta(days=n)).strftime(date_format)
+        if is_tradeday(target_date):
+            start_date = now - timedelta(days=n)
+            to_date = (now - timedelta(days=n)).strftime(default_format)
+            from_date = None
+            for i in range(1, 10):
+                target_from_date = (start_date - timedelta(days=i)).strftime(date_format)
+                if is_tradeday(target_from_date):
+                    from_date = (start_date - timedelta(days=i)).strftime(default_format)
+                    break
+            n_trade_day_pair.append([from_date, to_date])
+        n += 1
+        if len(n_trade_day_pair) == abs(nday):
+            break
+    return n_trade_day_pair[::-1]
+
+
 def get_week_firstday_lastday(which=-1):
     if which == 0:
         which = 1
     monday = today + relativedelta(weekday=MO(which))
     friday = today + relativedelta(weekday=FR(which))
     return [monday.strftime(default_format), friday.strftime(default_format)]
-
 
 
 def get_month_firstday_lastday(howmany=12):
@@ -175,7 +230,7 @@ def get_month_firstday_lastday(howmany=12):
     current_end = datetime.date(year=year, month=month, day=monthRange)
 
     result_list = [(format(current_begin, default_format), format(current_end, default_format))]
-    for i in range(howmany-1):
+    for i in range(howmany - 1):
         current_end = current_begin - timedelta(days=1)
         current_begin = datetime.date(current_end.year, current_end.month, 1)
         result_list.append((format(current_begin, default_format), format(current_end, default_format)))
@@ -184,7 +239,6 @@ def get_month_firstday_lastday(howmany=12):
 
 
 if __name__ == '__main__':
-
     print(get_month_firstday_lastday(8))
     print(this_month_start)
     print(get_week_firstday_lastday(-8))

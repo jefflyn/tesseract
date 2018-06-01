@@ -18,6 +18,11 @@ hist_k_month = _datautils.get_hist_k('M')
 
 
 def get_period_change(period_k=None):
+    """
+    including price change, volume change
+    :param period_k:
+    :return:
+    """
     first = period_k.head(1)
     last = period_k.tail(1)
     last_begin_open = first.ix[first.index.get_values()[0], 'open'] if (first is not None and len(first) > 0) else 0
@@ -25,20 +30,31 @@ def get_period_change(period_k=None):
     last_change = 0
     if last_begin_open > 0:
         last_change = (last_end_close - last_begin_open) / last_begin_open * 100
-    return round(last_change, 2)
+
+    last_begin_vol = first.ix[first.index.get_values()[0], 'volume'] if (first is not None and len(first) > 0) else 0
+    last_end_vol = last.ix[last.index.get_values()[0], 'volume'] if (last is not None and len(last) > 0) else 0
+    vol_change = 0
+    if last_begin_vol > 0:
+        vol_change = last_end_vol / last_begin_vol
+    return [round(last_change, 2), round(vol_change, 2)]
 
 
 """
 get last 8 statistics by default
 """
-def period_statis(period=-8, ktype='W', db_name='change_week_statis'):
+def period_statis(period=-4, ktype=None, db_name='change_week_statis'):
     start_time = datetime.datetime.now()
     print('start at', start_time)
     result_list = []
-    date_columns = [_dateutil.get_week_firstday_lastday(w) for w in range(period, 0)]
+    date_columns = _dateutil.get_trade_day(period)
+    columns = None
     if ktype == 'M':
         date_columns = [monthday for monthday in _dateutil.get_month_firstday_lastday()]
-    columns = ['code', 'name', 'industry', 'area', 'market_time'] + [d[1] for d in date_columns]
+    elif ktype == 'W':
+        date_columns = [_dateutil.get_week_firstday_lastday(w) for w in range(period, 0)]
+
+    columns = ['code', 'name', 'industry', 'area', 'market_time'] + [d[1] for d in date_columns] + [d[1] + '_vol' for d in date_columns]
+
     for index, row in basics.iterrows():
         markettime = str(row['timeToMarket'])  # exclude new stock by 2 months
         if markettime > last_2month_start:
@@ -48,6 +64,8 @@ def period_statis(period=-8, ktype='W', db_name='change_week_statis'):
             target_k_data = hist_k_month[hist_k_month.code == index]
         elif ktype == 'W':
             target_k_data = hist_k_week[hist_k_week.code == index]
+        else:
+            target_k_data = hist_k_day[hist_k_day.code == index]
         if target_k_data is None or len(target_k_data) == 0:
             continue
 
@@ -58,10 +76,12 @@ def period_statis(period=-8, ktype='W', db_name='change_week_statis'):
         rec_list.append(row['area'])
         rec_list.append(markettime)
         # print(row['code'])
+
         for targetdate in date_columns:
             kdata = target_k_data[(target_k_data.date >= targetdate[0]) & (target_k_data.date <= targetdate[1])]
             change = get_period_change(kdata)
-            rec_list.append(change)
+            rec_list.append(change[0])
+            rec_list.append(change[1])
         result_list.append(rec_list)
         # break
     print(len(result_list))
@@ -119,7 +139,8 @@ def multi_volume_appear():
 
 
 if __name__ == '__main__':
-    period_statis(ktype='M', db_name='change_statis_month')
+    # period_statis(ktype='M', db_name='change_statis_month')
     period_statis(period=-4, ktype='W', db_name='change_statis_week')
-    multi_volume_appear()
+    period_statis(period=-5, ktype='D', db_name='change_statis_day')
+    # multi_volume_appear()
 
