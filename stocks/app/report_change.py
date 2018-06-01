@@ -144,11 +144,28 @@ def multi_volume_appear():
     _datautils.to_db(result_df, 'change_statis_volume')
     print('end at', datetime.datetime.now())
     print('total time', datetime.datetime.now() - start_time)
+    print('\n')
+
+
+def period_statis_from_hist():
+    start_time = datetime.datetime.now()
+    print('start at', start_time)
+    result = []
+    for index, row in basics.iterrows():
+        markettime = str(row['timeToMarket'])  # exclude new stock by 2 months
+        if markettime > last_2month_start:
+            continue
+        hist_data = ts.get_hist_data(code=index, ktype='W')
+        result.append(hist_data)
+    print(len(result))
+    print('end at', datetime.datetime.now())
+    print('total time', datetime.datetime.now() - start_time)
 
 
 if __name__ == '__main__':
+    period_statis_from_hist()
     # period_statis(ktype='M', db_name='change_statis_month')
-    period_statis(period=-4, ktype='W', db_name='change_statis_week')
-    period_statis(period=-5, ktype='D', db_name='change_statis_day')
+    # period_statis(period=-4, ktype='W', db_name='change_statis_week')
+    # period_statis(period=-5, ktype='D', db_name='change_statis_day')
     # multi_volume_appear()
 
