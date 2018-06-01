@@ -36,6 +36,9 @@ def get_period_change(period_k=None):
     vol_change = 0
     if last_begin_vol > 0:
         vol_change = last_end_vol / last_begin_vol
+
+    if vol_change == 1:
+        vol_change = last_end_vol
     return [round(last_change, 2), round(vol_change, 2)]
 
 
@@ -46,14 +49,19 @@ def period_statis(period=-4, ktype=None, db_name='change_week_statis'):
     start_time = datetime.datetime.now()
     print('start at', start_time)
     result_list = []
-    date_columns = _dateutil.get_trade_day(period)
+    date_pairs = _dateutil.get_trade_day(period)
     columns = None
     if ktype == 'M':
-        date_columns = [monthday for monthday in _dateutil.get_month_firstday_lastday()]
+        date_pairs = [monthday for monthday in _dateutil.get_month_firstday_lastday()]
     elif ktype == 'W':
-        date_columns = [_dateutil.get_week_firstday_lastday(w) for w in range(period, 0)]
+        date_pairs = [_dateutil.get_week_firstday_lastday(w) for w in range(period, 0)]
 
-    columns = ['code', 'name', 'industry', 'area', 'market_time'] + [d[1] for d in date_columns] + [d[1] + '_vol' for d in date_columns]
+    date_columns = [d[1] for d in date_pairs]
+    new_date_columns = []
+    for col in date_columns:
+        new_date_columns.append(col)
+        new_date_columns.append(col + '_vol')
+    columns = ['code', 'name', 'industry', 'area', 'market_time'] + new_date_columns
 
     for index, row in basics.iterrows():
         markettime = str(row['timeToMarket'])  # exclude new stock by 2 months
@@ -77,7 +85,7 @@ def period_statis(period=-4, ktype=None, db_name='change_week_statis'):
         rec_list.append(markettime)
         # print(row['code'])
 
-        for targetdate in date_columns:
+        for targetdate in date_pairs:
             kdata = target_k_data[(target_k_data.date >= targetdate[0]) & (target_k_data.date <= targetdate[1])]
             change = get_period_change(kdata)
             rec_list.append(change[0])
