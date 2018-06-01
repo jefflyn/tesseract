@@ -113,13 +113,13 @@ def multi_volume_appear():
     result_df = pd.DataFrame(result_list, columns=['code', 'name', 'industry', 'area', 'market_time', 'vol_rate', 'change'])
 
     result_df = result_df.sort_values('vol_rate', ascending=False)
-    _datautils.to_db(result_df, 'change_volume')
+    _datautils.to_db(result_df, 'change_statis_volume')
     print('end at', datetime.datetime.now())
     print('total time', datetime.datetime.now() - start_time)
 
 
 if __name__ == '__main__':
-    period_statis(ktype='M', db_name='change_month_statis')
-    # period_statis(period=-4, ktype='W', db_name='change_week_statis')
+    period_statis(ktype='M', db_name='change_statis_month')
+    # period_statis(period=-4, ktype='W', db_name='change_statis_week')
     # multi_volume_appear()
 
