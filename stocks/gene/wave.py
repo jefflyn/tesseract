@@ -46,7 +46,7 @@ def get_bottom(df=None, limit=20):
             startfromlast += 1
             lastrec = group.tail(startfromlast)
             idx_list = lastrec.index.get_values()
-            lastidx = idx_list[len(idx_list) - 1]
+            lastidx = idx_list[0]
             laststatus = lastrec.at[lastidx, 'status']
             lastp = lastrec.at[lastidx, 'change']
             # val = lastp[0:len(lastp)-1]

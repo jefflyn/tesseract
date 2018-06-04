@@ -1,6 +1,6 @@
 name code cost share bottom
-shujug 603881 40 0 30.398
-beirui 000710 53.433 0 37.15
+shujug 603881 40 0 39.59
+beirui 000710 53.433 0 52.33
 yilite 600197 20 0 17.45
 zhongwen 600373 17.588 100 13.72
 qingang 601326 5.442 5000 5
