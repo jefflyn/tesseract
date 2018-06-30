@@ -17,6 +17,9 @@ from stocks.gene import maup
 from stocks.gene import upnday
 from stocks.data.concept import constants as CCONTS
 from stocks.data.industry import constants as ICONTS
+from stocks.base.logging import Logger
+
+logger = Logger(logname='log.txt', loglevel=1, logger="selector").getlog()
 
 pd.set_option('display.width', 2000)
 pd.set_option('max_columns', 50)
@@ -43,12 +46,12 @@ def select_from_all(excludeCyb=True, fname='all'):
     :param fname: 
     :return: 
     """
-    basics = _datautils.get_basics(excludeCyb=excludeCyb)
+    basics = _datautils.get_basics(excludeCyb=excludeCyb, before=20170901)
     codes = list(basics['code'])
-    print('total %d to process...' %len(codes))
+    logger.info('total %d to process...' %len(codes))
     result = select_result(codes, filename=fname)
-    print('total %d to result...' %len(result.index.get_values()))
-    # print(result)
+    logger.info('total %d to result...' %len(result.index.get_values()))
+    # logger.info(result)
 
 
 """
@@ -58,26 +61,26 @@ fromTime: yyyymmdd
 def select_subnew(fromTime=None, fname='subnew'):
     subnewbasic = _datautils.get_subnew(marketTimeFrom=fromTime)
     codes = list(subnewbasic['code'])
-    print('total %d to process...' % len(codes))
+    logger.info('total %d to process...' % len(codes))
     result = select_result(codes, filename=fname)
-    print('total %d to result...' % len(result.index.get_values()))
-    # print(result)
+    logger.info('total %d to result...' % len(result.index.get_values()))
+    # logger.info(result)
 
 def select_concepts(name, fname='concept'):
     data = _datautils.get_stock_data(type='c', filename=name)
     codes = list(data['code'])
-    print('total %d to process...' % len(codes))
+    logger.info('total %d to process...' % len(codes))
     result = select_result(codes, filename=fname)
-    print('total %d to result...' % len(result.index.get_values()))
-    # print(result)
+    logger.info('total %d to result...' % len(result.index.get_values()))
+    # logger.info(result)
 
 def select_industry(name, fname='industry'):
     data = _datautils.get_stock_data(type='i', filename=name)
     codes = list(data['code'])
-    print('total %d to process...' % len(codes))
+    logger.info('total %d to process...' % len(codes))
     result = select_result(codes, filename=fname)
-    print('total %d to result...' % len(result.index.get_values()))
-    # print(result)
+    logger.info('total %d to result...' % len(result.index.get_values()))
+    # logger.info(result)
 
 
 def select_xxx(fname='xxx'):
@@ -96,7 +99,7 @@ def select_result(codeset, filename=''):
     endIndex = beginIndex + limit if size > limit else size
 
     while endIndex <= size:
-        print('total %d, begin from %d' %size %beginIndex)
+        logger.info('process from %d' %beginIndex)
         codes = codeset[beginIndex : endIndex]
         df = ts.get_realtime_quotes(codes)
         wavedfset = pd.DataFrame(columns=['code', 'begin', 'end', 'status', 'begin_price', 'end_price', 'days', 'change'])
@@ -227,8 +230,7 @@ def select_result(codeset, filename=''):
     resultdf.to_csv(result_name + '.csv')
     _datautils.to_db(wavedfset, 'select_wave_' + filename)
     # wavedfset.to_csv('select_wave.csv')
-
-    print("stock selection finish...")
+    logger.info("stocks select finished!")
     return resultdf
 
 def score_limitup():
@@ -259,7 +261,7 @@ def select_subnew_issue_space():
     rowsize = df.index.size
     data_list = []
     for index, row in df.iterrows():
-        print(rowsize - index)
+        logger.info(rowsize - index)
         code = row['code']
         current_price = float(row['price'])
         timeToMarket = subnewbasic.ix[code, 'timeToMarket']
@@ -326,17 +328,17 @@ def select_s1(type='', classname=''):
     _datautils.to_db(limitupdf, 'limitupx')
     # 1.choose the active codes from the limitups which limitup at lease more than n
     limitupcount = limitup.count(limitupdf, times=0, condition=[90,0])
-    # print(limitupcount)
+    # logger.info(limitupcount)
 
     codes = list(limitupcount.index.get_values())
     # 2.get the bottom price data
     bottomdf = falco.get_monitor(codes)
     bottomdf = pd.merge(bottomdf, limitupcount[['code', 'count']], on='code', how='left')
-    # print(bottomdf)
+    # logger.info(bottomdf)
 
     # 3.ma data
     madf = maup.get_ma(codes)
-    # print(madf)
+    # logger.info(madf)
     result = pd.merge(bottomdf, madf[['code', 'isup', 'ma5', 'ma10', 'ma20', 'ma30', 'ma60', 'ma30std', 'ma10_space']],
                       on='code', how='left')
     result.to_csv('select1.csv')
@@ -347,7 +349,7 @@ def select_s1(type='', classname=''):
     wavecodes = list(result['code'])
     # 4.get wave data
     wavedf = wave.get_wave(wavecodes)
-    # print(wavedf)
+    # logger.info(wavedf)
     listdf = []
     for code in wavecodes:
         wdf = wavedf[wavedf.code == code]
@@ -356,7 +358,7 @@ def select_s1(type='', classname=''):
     wave.plot_wave(listdf, filename='select1.png')
 
     # 5.limitup data
-    print(limitupdf)
+    logger.info(limitupdf)
 
 
 def get_limitup_space(df):
@@ -382,7 +384,7 @@ def select_s2():
     _datautils.to_db(limitupdf, 'select2_limitup')
     # 1.choose the active codes from the limitups which limitup at lease more than n
     limitupcount = limitup.count(limitupdf, times=3, condition=[180, 1])
-    print('limitupcount size: ' + str(len(limitupcount)))
+    logger.info('limitupcount size: ' + str(len(limitupcount)))
 
     codes = list(limitupcount['code'])
     # 2.get the bottom price data
@@ -390,12 +392,12 @@ def select_s2():
     bottomdf = pd.merge(bottomdf, limitupcount, on='code', how='left')
     bottomdf['lmtspace'] = bottomdf[['price', 'lmtuplow']].apply(get_limitup_space, axis=1)
     bottomdf['warn'] = bottomdf[['lmtspace', 'space']].apply(get_warn_space, axis=1)
-    print('bottomdf size: ' + str(len(bottomdf)))
+    logger.info('bottomdf size: ' + str(len(bottomdf)))
 
     codes = list(bottomdf['code'])
     # 3.ma data
     madf = maup.get_ma(codes)
-    # print(madf)
+    # logger.info(madf)
     result = pd.merge(bottomdf, madf[['code', 'isup', 'ma5', 'ma10', 'ma20', 'ma30', 'ma60', 'ma30std', 'ma10_space']], on='code', how='left')
     result = result.sort_values(['space', 'lmtuplow'], axis=0, ascending=[True, True], inplace=False, kind='quicksort',
                                 na_position='last')
@@ -424,7 +426,7 @@ def select_s2():
         wave.plot_wave(listdf, filename='./wave/' + code + '.png')
 
 def selecttest():
-    print(select_result('603083'))
+    logger.info(select_result('603083'))
 
 if __name__ == '__main__':
     if len(argv) < 2:

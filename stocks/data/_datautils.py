@@ -193,12 +193,6 @@ def get_data(filepath=None, encoding='gbk', sep=','):
     data['code'] = data['code'].astype('str').str.zfill(6)
     return data
 
-def get_basics(code=None):
-    data = pd.read_csv("../data/basics.csv", encoding="utf-8")
-    data['code'] = data['code'].astype('str').str.zfill(6)
-    if code != None:
-        data = data[data.code == code]
-    return data
 
 def get_basics_fromh5(code=None, excludeCyb=False):
     fundamental = pd.HDFStore('../data/fundamental.h5')
@@ -213,14 +207,15 @@ def get_basics_fromh5(code=None, excludeCyb=False):
 """
 index: code
 """
-def get_basics(code=None, excludeCyb=False, index=False):
+def get_basics(code=None, excludeCyb=False, index=False, before=None):
     if index == True:
         return INDEX_DICT[code]
 
     data = pd.read_csv("../data/basics.csv", encoding="utf-8")
     data['code'] = data['code'].astype('str').str.zfill(6)
-    if excludeCyb:
-        data = data[data['code'].str.get(0) != '3']
+
+    data = filter_basic(basics=data, excludeCyb=excludeCyb, before=before)
+
     if code != None:
         data = data[data.code == code]
     data.index = list(data['code'])
@@ -272,15 +267,16 @@ def filter_cyb(datadf):
     return datadf
 
 ##
-def filter_basic(basics, cyb = False, before = 20170701):
+def filter_basic(basics, excludeCyb = False, before = 20170701):
     # filter unused code
-    if cyb is False :
+    if excludeCyb is True :
         basics = basics[basics['code'].str.get(0) != '3']
     if before is not None:
         basics = basics[(basics['timeToMarket'] > 0) & (basics['timeToMarket'] <= before)]
     return basics
 
-##
+
+
 def get_stock_data(type='i', filename=None, encoding='gbk', sep='\t', excludeCyb=True):
     path = ''
     if type == 'i':
