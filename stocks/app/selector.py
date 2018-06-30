@@ -35,30 +35,52 @@ QUATO_WEIGHT = {
 }
 
 
+
+def select_from_all(excludeCyb=True, fname='all'):
+    """
+    select all stocks 
+    :param excludeCyb: True
+    :param fname: 
+    :return: 
+    """
+    basics = _datautils.get_basics(excludeCyb=excludeCyb)
+    codes = list(basics['code'])
+    print('total %d to process...' %len(codes))
+    result = select_result(codes, filename=fname)
+    print('total %d to result...' %len(result.index.get_values()))
+    # print(result)
+
+
 """
 return specific subnew code list
 fromTime: yyyymmdd
 """
-def select_subnew(fromTime=None, fname=''):
+def select_subnew(fromTime=None, fname='subnew'):
     subnewbasic = _datautils.get_subnew(marketTimeFrom=fromTime)
     codes = list(subnewbasic['code'])
+    print('total %d to process...' % len(codes))
     result = select_result(codes, filename=fname)
+    print('total %d to result...' % len(result.index.get_values()))
     # print(result)
 
-def select_concepts(name, fname=''):
+def select_concepts(name, fname='concept'):
     data = _datautils.get_stock_data(type='c', filename=name)
     codes = list(data['code'])
+    print('total %d to process...' % len(codes))
     result = select_result(codes, filename=fname)
+    print('total %d to result...' % len(result.index.get_values()))
     # print(result)
 
-def select_industry(name, fname=''):
+def select_industry(name, fname='industry'):
     data = _datautils.get_stock_data(type='i', filename=name)
     codes = list(data['code'])
+    print('total %d to process...' % len(codes))
     result = select_result(codes, filename=fname)
+    print('total %d to result...' % len(result.index.get_values()))
     # print(result)
 
 
-def select_xxx(fname=''):
+def select_xxx(fname='xxx'):
     codes = _datautils.get_app_codes()
     result = select_result(codes, filename=fname)
 
@@ -66,120 +88,129 @@ def select_xxx(fname=''):
 """
 latest select info 
 """
-def select_result(codes, filename=''):
-    df = ts.get_realtime_quotes(codes)
+def select_result(codeset, filename=''):
     data_list = []
-    wavedfset = pd.DataFrame(columns=['code', 'begin', 'end', 'status', 'begin_price', 'end_price', 'days', 'change'])
+    size = len(codeset)
+    limit = 500
+    beginIndex = 0
+    endIndex = beginIndex + limit if size > limit else size
 
-    # l1 = pd.DataFrame()
-    # l2 = pd.DataFrame()
-    for index, row in df.iterrows():
-        code = row['code']
-        open = float(row['open'])
-        current_price = float(row['price'])
-        # maybe in trading halt or others situation, ignore this code
-        if open <= 0 or current_price <= 0:
-            continue;
+    while endIndex <= size:
+        print('total %d, begin from %d' %size %beginIndex)
+        codes = codeset[beginIndex : endIndex]
+        df = ts.get_realtime_quotes(codes)
+        wavedfset = pd.DataFrame(columns=['code', 'begin', 'end', 'status', 'begin_price', 'end_price', 'days', 'change'])
+        for index, row in df.iterrows():
+            code = row['code']
+            open = float(row['open'])
+            current_price = float(row['price'])
+            # maybe in trading halt or others situation, ignore this code
+            if open <= 0 or current_price <= 0:
+                continue;
 
-        basic = _datautils.get_basics(code)
-        curt_data = []
-        curt_data.append(code)
-        curt_data.append(row['name'])
-        curt_data.append(basic.ix[code, 'industry'])
-        curt_data.append(basic.ix[code, 'area'])
-        curt_data.append(basic.ix[code, 'timeToMarket'])
-        curt_data.append(basic.ix[code, 'pe'])
-        curt_data.append(current_price)
+            basic = _datautils.get_basics(code)
+            curt_data = []
+            curt_data.append(code)
+            curt_data.append(row['name'])
+            curt_data.append(basic.ix[code, 'industry'])
+            curt_data.append(basic.ix[code, 'area'])
+            curt_data.append(basic.ix[code, 'timeToMarket'])
+            curt_data.append(basic.ix[code, 'pe'])
+            curt_data.append(current_price)
 
-        # get wave data and bottom top
-        wavedf = wave.get_wave(code) # need to save
-        wavestr = wave.wave_to_str(wavedf, size=10)
-        wavedfset = wavedfset.append(wavedf)
-        bottomdf = wave.get_bottom(wavedf)
-        bottom = bottomdf.ix[0, 'bottom']
-        top = bottomdf.ix[0, 'top']
-        uspace = (current_price - bottom) / bottom * 100
-        dspace = (current_price - top) / top * 100
-        position = (current_price - bottom) / (top - bottom) * 100
+            # get wave data and bottom top
+            wavedf = wave.get_wave(code) # need to save
+            wavestr = wave.wave_to_str(wavedf, size=10)
+            wavedfset = wavedfset.append(wavedf)
+            bottomdf = wave.get_bottom(wavedf)
+            bottom = bottomdf.ix[0, 'bottom']
+            top = bottomdf.ix[0, 'top']
+            uspace = (current_price - bottom) / bottom * 100
+            dspace = (current_price - top) / top * 100
+            position = (current_price - bottom) / (top - bottom) * 100
 
-        curt_data.append(wavestr)
-        curt_data.append(bottom)
-        curt_data.append(round(uspace, 2))
-        curt_data.append(round(dspace, 2))
-        curt_data.append(round(top, 2))
+            curt_data.append(wavestr)
+            curt_data.append(bottom)
+            curt_data.append(round(uspace, 2))
+            curt_data.append(round(dspace, 2))
+            curt_data.append(round(top, 2))
 
-        curt_data.append(round(position, 2))
-        curt_data.append(round(bottomdf.ix[0, 'buy1'], 2))
-        curt_data.append(round(bottomdf.ix[0, 'buy2'], 2))
-        curt_data.append(round(bottomdf.ix[0, 'buy3'], 2))
+            curt_data.append(round(position, 2))
+            curt_data.append(round(bottomdf.ix[0, 'buy1'], 2))
+            curt_data.append(round(bottomdf.ix[0, 'buy2'], 2))
+            curt_data.append(round(bottomdf.ix[0, 'buy3'], 2))
 
-        # limit up data
-        limitupdf = limitup.get_limitup_from_hist_k(code)
-        limitupdf = limitup.get_limitup_from_hist_trade(code) if limitupdf.empty == True else limitupdf
+            # limit up data
+            limitupdf = limitup.get_limitup_from_hist_k(code)
+            limitupdf = limitup.get_limitup_from_hist_trade(code) if limitupdf.empty == True else limitupdf
 
-        # l1 = l1.append(lupdf, ignore_index=True)
-        # l2 = l2.append(limitupdf, ignore_index=True)
+            # l1 = l1.append(lupdf, ignore_index=True)
+            # l2 = l2.append(limitupdf, ignore_index=True)
 
-        lupcount = 0
-        lupcount30 = 0
-        lupcountq1 = 0
-        lupcountq2 = 0
-        lupcountq3 = 0
-        lupcountq4 = 0
-        lup_lastday = "-"
-        luplow = 0
-        luphigh = 0
-        lupcountdf = limitup.count(limitupdf)
-        if lupcountdf.empty == False:
-            lupcount = lupcountdf.ix[0, 'count']
-            lupcount30 = lupcountdf.ix[0, 'count_30d']
-            lupcountq1 = lupcountdf.ix[0, 'count_q1']
-            lupcountq2 = lupcountdf.ix[0, 'count_q2']
-            lupcountq3 = lupcountdf.ix[0, 'count_q3']
-            lupcountq4 = lupcountdf.ix[0, 'count_q4']
-            lup_lastday = lupcountdf.ix[0, 'maxdate']
-            luplow = lupcountdf.ix[0, 'lup_low']
-            luphigh = lupcountdf.ix[0, 'lup_high']
+            lupcount = 0
+            lupcount30 = 0
+            lupcountq1 = 0
+            lupcountq2 = 0
+            lupcountq3 = 0
+            lupcountq4 = 0
+            lup_lastday = "-"
+            luplow = 0
+            luphigh = 0
+            lupcountdf = limitup.count(limitupdf)
+            if lupcountdf.empty == False:
+                lupcount = lupcountdf.ix[0, 'count']
+                lupcount30 = lupcountdf.ix[0, 'count_30d']
+                lupcountq1 = lupcountdf.ix[0, 'count_q1']
+                lupcountq2 = lupcountdf.ix[0, 'count_q2']
+                lupcountq3 = lupcountdf.ix[0, 'count_q3']
+                lupcountq4 = lupcountdf.ix[0, 'count_q4']
+                lup_lastday = lupcountdf.ix[0, 'maxdate']
+                luplow = lupcountdf.ix[0, 'lup_low']
+                luphigh = lupcountdf.ix[0, 'lup_high']
 
-        curt_data.append(lupcount)
-        curt_data.append(lupcount30)
-        curt_data.append(lupcountq1)
-        curt_data.append(lupcountq2)
-        curt_data.append(lupcountq3)
-        curt_data.append(lupcountq4)
-        curt_data.append(lup_lastday)
-        curt_data.append(luplow)
-        curt_data.append(luphigh)
+            curt_data.append(lupcount)
+            curt_data.append(lupcount30)
+            curt_data.append(lupcountq1)
+            curt_data.append(lupcountq2)
+            curt_data.append(lupcountq3)
+            curt_data.append(lupcountq4)
+            curt_data.append(lup_lastday)
+            curt_data.append(luplow)
+            curt_data.append(luphigh)
 
-        # up n day data
-        upndaydf = upnday.get_upnday(code)
-        updays = 0
-        sumup = 0
-        ismulti = False
-        vol_rate = 0
-        if upndaydf.empty == False:
-            updays = upndaydf.ix[0, 'updays']
-            sumup = upndaydf.ix[0, 'sumup']
-            ismulti = upndaydf.ix[0, 'multi_vol']
-            vol_rate = upndaydf.ix[0, 'vol_rate']
-        curt_data.append(updays)
-        curt_data.append(sumup)
-        curt_data.append(ismulti)
-        curt_data.append(vol_rate)
+            # up n day data
+            upndaydf = upnday.get_upnday(code)
+            updays = 0
+            sumup = 0
+            ismulti = False
+            vol_rate = 0
+            if upndaydf.empty == False:
+                updays = upndaydf.ix[0, 'updays']
+                sumup = upndaydf.ix[0, 'sumup']
+                ismulti = upndaydf.ix[0, 'multi_vol']
+                vol_rate = upndaydf.ix[0, 'vol_rate']
+            curt_data.append(updays)
+            curt_data.append(sumup)
+            curt_data.append(ismulti)
+            curt_data.append(vol_rate)
 
-        # get maup data
-        maupdf = maup.get_ma(code)
-        curt_data.append(maupdf.ix[0, 'isup'])
-        curt_data.append(maupdf.ix[0, 'ma5'])
-        curt_data.append(maupdf.ix[0, 'ma10'])
-        curt_data.append(maupdf.ix[0, 'ma20'])
-        curt_data.append(maupdf.ix[0, 'ma30'])
-        curt_data.append(maupdf.ix[0, 'ma60'])
-        curt_data.append(maupdf.ix[0, 'ma90'])
-        curt_data.append(maupdf.ix[0, 'ma120'])
-        curt_data.append(maupdf.ix[0, 'ma250'])
+            # get maup data
+            maupdf = maup.get_ma(code)
+            curt_data.append(maupdf.ix[0, 'isup'] if maupdf.empty == False else 0)
+            curt_data.append(maupdf.ix[0, 'ma5'] if maupdf.empty == False else 0)
+            curt_data.append(maupdf.ix[0, 'ma10'] if maupdf.empty == False else 0)
+            curt_data.append(maupdf.ix[0, 'ma20'] if maupdf.empty == False else 0)
+            curt_data.append(maupdf.ix[0, 'ma30'] if maupdf.empty == False else 0)
+            curt_data.append(maupdf.ix[0, 'ma60'] if maupdf.empty == False else 0)
+            curt_data.append(maupdf.ix[0, 'ma90'] if maupdf.empty == False else 0)
+            curt_data.append(maupdf.ix[0, 'ma120'] if maupdf.empty == False else 0)
+            curt_data.append(maupdf.ix[0, 'ma250'] if maupdf.empty == False else 0)
 
-        data_list.append(curt_data)
+            data_list.append(curt_data)
+
+        beginIndex = endIndex
+        endIndex = endIndex + limit
+
     columns = ['code', 'name', 'industry', 'area', 'market_time', 'pe', 'price', 'wave', 'bottom', 'uspace%','dspace%', 'top', 'position%', 'buy1', 'buy2', 'buy3',
                'count', 'count_30d', 'count_q1', 'count_q2', 'count_q3', 'count_q4', 'maxdate', 'lup_low', 'lup_high',
                'updays', 'sumup%', 'multi_vol', 'vol_rate', 'isup', 'ma5', 'ma10', 'ma20', 'ma30', 'ma60', 'ma90', 'ma120', 'ma250']
@@ -189,7 +220,7 @@ def select_result(codes, filename=''):
     # _datautils.to_db(l1, 'limitup_hist')
     # _datautils.to_db(l2, 'limitup_quota')
     resultdf = resultdf[['code', 'name', 'industry', 'area', 'market_time', 'pe', 'price', 'wave', 'bottom', 'uspace%','dspace%', 'top', 'position%', 'buy1', 'buy2', 'buy3',
-               'count', 'count_30d', 'updays', 'sumup%', 'vol_rate', 'multi_vol', 'isup', 'count_q1', 'count_q2', 'count_q3', 'count_q4', 'maxdate', 'lup_low', 'lup_high',
+               'count', 'count_30d', 'count_q1', 'updays', 'sumup%', 'vol_rate', 'multi_vol', 'isup', 'count_q2', 'count_q3', 'count_q4', 'maxdate', 'lup_low', 'lup_high',
                'ma5', 'ma10', 'ma20', 'ma30', 'ma60', 'ma90', 'ma120', 'ma250']]
     result_name = 'select_result_' + filename
     _datautils.to_db(resultdf, result_name)

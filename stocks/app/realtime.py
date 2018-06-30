@@ -73,7 +73,7 @@ def get_realtime(file, sortby=None):
         cost = cost if cost > 1 else price
         share = hddf.ix[index, 'share']
         wavedf = wave.get_wave(code)
-        wavestr = wave.wave_to_str(wavedf)
+        wavestr = wave.wave_to_str(wavedf,size=3)
         bdf = wave.get_bottom(wavedf)
         bottom = hddf.ix[index, 'bottom']
         bottom_auto = bdf.ix[0, 'bottom']

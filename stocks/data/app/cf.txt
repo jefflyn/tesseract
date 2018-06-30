@@ -1,4 +1,5 @@
 name code cost share bottom
+yaxia 002607 8.98 0 3.83
 shujug 603881 40 0 39.59
 beirui 000710 53.433 0 52.33
 yilite 600197 20 0 17.45

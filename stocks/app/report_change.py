@@ -87,6 +87,9 @@ def period_statis(period=-4, ktype=None, db_name='change_week_statis'):
 
         for targetdate in date_pairs:
             kdata = target_k_data[(target_k_data.date >= targetdate[0]) & (target_k_data.date <= targetdate[1])]
+            if kdata is None or len(kdata) < 5:
+                kdata = ts.get_k_data(index, start=last_2month_start, end=today, ktype=ktype)
+                kdata = kdata[(kdata.date >= targetdate[0]) & (kdata.date <= targetdate[1])]
             change = get_period_change(kdata)
             rec_list.append(change[0])
             rec_list.append(change[1])
@@ -163,9 +166,9 @@ def period_statis_from_hist():
 
 
 if __name__ == '__main__':
-    period_statis_from_hist()
+    # period_statis_from_hist()
     # period_statis(ktype='M', db_name='change_statis_month')
-    # period_statis(period=-4, ktype='W', db_name='change_statis_week')
+    period_statis(period=-1, ktype='W', db_name='change_statis_week')
     # period_statis(period=-5, ktype='D', db_name='change_statis_day')
-    # multi_volume_appear()
+    multi_volume_appear()
 
