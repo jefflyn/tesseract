@@ -8,9 +8,9 @@ if __name__ == '__main__':
     content = 'Please find the attaches for the selection report details.'
 
     # index.get_status()
-    selector.select_concepts(CCONTS.JYYC, 'jyyc')
-    selector.select_concepts(CCONTS.RGZN, 'rgzn')
-    selector.select_industry(ICONTS.JSJYY, 'jsjyy')
+    selector.select_from_concepts(CCONTS.JYYC, 'jyyc')
+    selector.select_from_concepts(CCONTS.RGZN, 'rgzn')
+    selector.select_from_industry(ICONTS.JSJYY, 'jsjyy')
     # selector.select_subnew()
 
     attaches = []

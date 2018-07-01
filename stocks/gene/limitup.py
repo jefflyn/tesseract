@@ -80,35 +80,39 @@ def get_limitup_from_hist_k(codes = None, start = None, end = None):
     return result
 
 
-"""
-get limit up times by default 2 times in 90 days
-"""
+
 def count(df=None):
+    """
+    count the specific periods limitup 
+    :param df: limit data frame
+    :return: latest 30 days, last 4 quarters, total 11 months' limitup count
+    """
     if df.empty:
         return df
 
+    backward_days = -30
     count_data_list = []
     # group by data
     dfgroup = df.groupby('code')
     for name, group in dfgroup:
         count_data = []
         starttime = datetime.datetime.now()
-        days = datetime.timedelta(-30)
+        days = datetime.timedelta(backward_days)
         start30 = datetime.datetime.strftime(starttime + days, '%Y-%m-%d')
         lupdf = group[group.date >= start30]
         count_30d = lupdf.iloc[:, 0].size
 
-        days = datetime.timedelta(-90)
+        days = datetime.timedelta(backward_days*3-backward_days)
         qrt1st = datetime.datetime.strftime(starttime + days, '%Y-%m-%d')
         lupdf = group[group.date >= qrt1st]
         count_qrt1st = lupdf.iloc[:, 0].size
 
-        days = datetime.timedelta(-180)
+        days = datetime.timedelta(backward_days*6-backward_days)
         qrt2nd = datetime.datetime.strftime(starttime + days, '%Y-%m-%d')
         lupdf = group[(group.date >= qrt2nd) & (group.date < qrt1st)]
         count_qrt2nd = lupdf.iloc[:, 0].size
 
-        days = datetime.timedelta(-270)
+        days = datetime.timedelta(backward_days*9-backward_days)
         qrt3rd = datetime.datetime.strftime(starttime + days, '%Y-%m-%d')
         lupdf = group[(group.date >= qrt3rd) & (group.date < qrt2nd)]
         count_qrt3rd = lupdf.iloc[:, 0].size

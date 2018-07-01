@@ -48,9 +48,9 @@ def select_from_all(excludeCyb=True, fname='all'):
     """
     basics = _datautils.get_basics(excludeCyb=excludeCyb, before=20170901)
     codes = list(basics['code'])
-    logger.info('total %d to process...' %len(codes))
+    logger.info('select_from_all start to process... total size: %d' %len(codes))
     result = select_result(codes, filename=fname)
-    logger.info('total %d to result...' %len(result.index.get_values()))
+    logger.info('select_from_all finished! result size: %d' %len(result.index.get_values()))
     # logger.info(result)
 
 
@@ -58,28 +58,28 @@ def select_from_all(excludeCyb=True, fname='all'):
 return specific subnew code list
 fromTime: yyyymmdd
 """
-def select_subnew(fromTime=None, fname='subnew'):
+def select_from_subnew(fromTime=None, fname='subnew'):
     subnewbasic = _datautils.get_subnew(marketTimeFrom=fromTime)
     codes = list(subnewbasic['code'])
-    logger.info('total %d to process...' % len(codes))
+    logger.info('select_from_subnew start to process... total size: %d' % len(codes))
     result = select_result(codes, filename=fname)
-    logger.info('total %d to result...' % len(result.index.get_values()))
+    logger.info('select_from_subnew finished! result size: %d' % len(result.index.get_values()))
     # logger.info(result)
 
-def select_concepts(name, fname='concept'):
+def select_from_concepts(name, fname='concept'):
     data = _datautils.get_stock_data(type='c', filename=name)
     codes = list(data['code'])
-    logger.info('total %d to process...' % len(codes))
+    logger.info('select_from_concepts start to process... total size: %d' % len(codes))
     result = select_result(codes, filename=fname)
-    logger.info('total %d to result...' % len(result.index.get_values()))
+    logger.info('select_from_concepts finished! result size: %d' % len(result.index.get_values()))
     # logger.info(result)
 
-def select_industry(name, fname='industry'):
+def select_from_industry(name, fname='industry'):
     data = _datautils.get_stock_data(type='i', filename=name)
     codes = list(data['code'])
-    logger.info('total %d to process...' % len(codes))
+    logger.info('select_from_industry start to process... total size: %d' % len(codes))
     result = select_result(codes, filename=fname)
-    logger.info('total %d to result...' % len(result.index.get_values()))
+    logger.info('select_from_industry finished! result size: %d' % len(result.index.get_values()))
     # logger.info(result)
 
 
@@ -123,7 +123,7 @@ def select_result(codeset, filename=''):
 
             # get wave data and bottom top
             wavedf = wave.get_wave(code) # need to save
-            wavestr = wave.wave_to_str(wavedf, size=10)
+            wavestr = wave.wave_to_str(wavedf, size=3)
             wavedfset = wavedfset.append(wavedf)
             bottomdf = wave.get_bottom(wavedf)
             bottom = bottomdf.ix[0, 'bottom']
