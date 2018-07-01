@@ -3,10 +3,13 @@ import datetime
 
 import numpy as np
 import pandas as pd
-
 import tushare as ts
 
 from stocks.data import  _datautils
+from stocks.base.logging import Logger
+
+logger = Logger(logname='log.txt', loglevel=1, logger="selector").getlog()
+
 
 trade = pd.HDFStore('../data/trade.h5', complevel=9, complib='blosc')
 histlimitup = trade.get('k_limitup_hist')
@@ -99,21 +102,25 @@ def count(df=None):
         starttime = datetime.datetime.now()
         days = datetime.timedelta(backward_days)
         start30 = datetime.datetime.strftime(starttime + days, '%Y-%m-%d')
+        logger.info('latest 30 days limitup from %s' %start30)
         lupdf = group[group.date >= start30]
         count_30d = lupdf.iloc[:, 0].size
 
-        days = datetime.timedelta(backward_days*3-backward_days)
+        days = datetime.timedelta(backward_days*3+backward_days)
         qrt1st = datetime.datetime.strftime(starttime + days, '%Y-%m-%d')
-        lupdf = group[group.date >= qrt1st]
+        logger.info('latest 1 quarter limitup from %s' % qrt1st)
+        lupdf = group[(group.date >= qrt1st) & (group.date < start30)]
         count_qrt1st = lupdf.iloc[:, 0].size
 
-        days = datetime.timedelta(backward_days*6-backward_days)
+        days = datetime.timedelta(backward_days*6+backward_days)
         qrt2nd = datetime.datetime.strftime(starttime + days, '%Y-%m-%d')
+        logger.info('latest 2 quarter limitup from %s' % qrt2nd)
         lupdf = group[(group.date >= qrt2nd) & (group.date < qrt1st)]
         count_qrt2nd = lupdf.iloc[:, 0].size
 
-        days = datetime.timedelta(backward_days*9-backward_days)
+        days = datetime.timedelta(backward_days*9+backward_days)
         qrt3rd = datetime.datetime.strftime(starttime + days, '%Y-%m-%d')
+        logger.info('latest 3 quarter limitup from %s' % qrt3rd)
         lupdf = group[(group.date >= qrt3rd) & (group.date < qrt2nd)]
         count_qrt3rd = lupdf.iloc[:, 0].size
 
@@ -147,10 +154,10 @@ def count(df=None):
     return count_result
 
 if __name__ == '__main__':
-    lpdf = get_limitup_from_hist_k(['000507'])
+    lpdf = get_limitup_from_hist_k(['002813'])
     print(lpdf)
 
-    df = get_limitup_from_hist_trade(['000507'])
+    df = get_limitup_from_hist_trade(['002813'])
     print(df)
     dfcount = count(df)
     print(dfcount)
