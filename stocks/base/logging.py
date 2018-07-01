@@ -23,11 +23,11 @@ class Logger():
 
         # 创建一个handler，用于写入日志文件
         fh = logging.FileHandler(logname)
-        fh.setLevel(logging.DEBUG)
+        fh.setLevel(logging.INFO)
 
         # 再创建一个handler，用于输出到控制台
         ch = logging.StreamHandler()
-        ch.setLevel(logging.DEBUG)
+        ch.setLevel(logging.INFO)
 
         # 定义handler的输出格式
         # formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')

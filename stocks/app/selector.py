@@ -218,7 +218,7 @@ def select_result(codeset, filename=''):
                'count', 'count_30d', 'count_q1', 'count_q2', 'count_q3', 'count_q4', 'maxdate', 'lup_low', 'lup_high',
                'updays', 'sumup%', 'multi_vol', 'vol_rate', 'isup', 'ma5', 'ma10', 'ma20', 'ma30', 'ma60', 'ma90', 'ma120', 'ma250']
     resultdf = pd.DataFrame(data_list, columns=columns)
-    resultdf = resultdf.sort_values('uspace%', axis=0, ascending=True, inplace=False, kind='quicksort', na_position='last')
+    resultdf = resultdf.sort_values('count_q1', axis=0, ascending=False, inplace=False, kind='quicksort', na_position='last')
 
     # _datautils.to_db(l1, 'limitup_hist')
     # _datautils.to_db(l2, 'limitup_quota')
@@ -233,14 +233,18 @@ def select_result(codeset, filename=''):
     logger.info("stocks select finished!")
     return resultdf
 
+
 def score_limitup():
     return QUATO_WEIGHT.get('limiup')
+
 
 def score_bottom(bspace):
     return 5
 
+
 def score_upndays(days):
     return 5
+
 
 def score_maup(malist):
     return 0
@@ -366,6 +370,7 @@ def get_limitup_space(df):
     low = float(df[1])
     return (price - low) / low * 100
 
+
 def get_warn_space(df):
     price = float(df[0])
     low = float(df[1])
@@ -425,8 +430,10 @@ def select_s2():
         listdf.append(wave.format_wave_data(wdf))
         wave.plot_wave(listdf, filename='./wave/' + code + '.png')
 
+
 def selecttest():
     logger.info(select_result('603083'))
+
 
 if __name__ == '__main__':
     if len(argv) < 2:
