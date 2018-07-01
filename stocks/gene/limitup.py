@@ -102,25 +102,25 @@ def count(df=None):
         starttime = datetime.datetime.now()
         days = datetime.timedelta(backward_days)
         start30 = datetime.datetime.strftime(starttime + days, '%Y-%m-%d')
-        logger.info('latest 30 days limitup from %s' %start30)
+        logger.debug('latest 30 days limitup from %s' %start30)
         lupdf = group[group.date >= start30]
         count_30d = lupdf.iloc[:, 0].size
 
         days = datetime.timedelta(backward_days*3+backward_days)
         qrt1st = datetime.datetime.strftime(starttime + days, '%Y-%m-%d')
-        logger.info('latest 1 quarter limitup from %s' % qrt1st)
+        logger.debug('latest 1 quarter limitup from %s' % qrt1st)
         lupdf = group[(group.date >= qrt1st) & (group.date < start30)]
         count_qrt1st = lupdf.iloc[:, 0].size
 
         days = datetime.timedelta(backward_days*6+backward_days)
         qrt2nd = datetime.datetime.strftime(starttime + days, '%Y-%m-%d')
-        logger.info('latest 2 quarter limitup from %s' % qrt2nd)
+        logger.debug('latest 2 quarter limitup from %s' % qrt2nd)
         lupdf = group[(group.date >= qrt2nd) & (group.date < qrt1st)]
         count_qrt2nd = lupdf.iloc[:, 0].size
 
         days = datetime.timedelta(backward_days*9+backward_days)
         qrt3rd = datetime.datetime.strftime(starttime + days, '%Y-%m-%d')
-        logger.info('latest 3 quarter limitup from %s' % qrt3rd)
+        logger.debug('latest 3 quarter limitup from %s' % qrt3rd)
         lupdf = group[(group.date >= qrt3rd) & (group.date < qrt2nd)]
         count_qrt3rd = lupdf.iloc[:, 0].size
 
