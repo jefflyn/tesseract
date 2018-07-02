@@ -47,7 +47,7 @@ def get_period_change(period_k=None):
 """
 get last 8 statistics by default
 """
-def period_statis(period=-4, ktype=None, db_name='change_week_statis'):
+def period_statis(period=-6, ktype=None, db_name='change_week_statis'):
     logger.info('start period statistics...')
     result_list = []
     date_pairs = _dateutil.get_trade_day(period)
@@ -164,8 +164,8 @@ def period_statis_from_hist():
 
 if __name__ == '__main__':
     # period_statis_from_hist()
-    # period_statis(ktype='M', db_name='change_statis_month')
-    period_statis(period=-4, ktype='W', db_name='change_statis_week')
+    period_statis(ktype='M', db_name='change_statis_month')
+    # period_statis(period=-4, ktype='W', db_name='change_statis_week')
     # period_statis(period=-5, ktype='D', db_name='change_statis_day')
     multi_volume_appear()
 
