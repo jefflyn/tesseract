@@ -46,7 +46,8 @@ def select_from_all(excludeCyb=True, fname='all'):
     :param fname: 
     :return: 
     """
-    basics = _datautils.get_basics(excludeCyb=excludeCyb, before=20170901)
+    oneyear = int(_datautils.oneyearago)
+    basics = _datautils.get_basics(excludeCyb=excludeCyb, before=oneyear)
     codes = list(basics['code'])
     logger.info('select_from_all start to process... total size: %d' %len(codes))
     result = select_result(codes, filename=fname)

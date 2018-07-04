@@ -87,12 +87,12 @@ def get_realtime(file, sortby=None):
         position = (price - bottom) / (top - bottom) * 100
 
         cost_diff = price - cost
-        profit = (cost_diff) * share
+        profit = (cost_diff) * share if share > 0 else 0
 
         if profit < 0 and price > 0:
             profit_perc = (cost / price - 1) * -100.0
         else:
-            profit_perc = cost_diff / cost * 100.0
+            profit_perc = cost_diff / cost * 100.0 if profit > 0 else 0
 
         ##calculate the bottom, the smaller the possibility of bounce is bigger.
         ##if negative, that means the bottom is broken, pay much attention if get out or wait for the escape line

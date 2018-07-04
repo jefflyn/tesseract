@@ -15,7 +15,7 @@ pd.set_option('max_rows', 300)
 
 if __name__ == '__main__':
     selector.select_from_all()
-    selector.select_from_subnew(fromTime='20170901', fname='subnew')
+    selector.select_from_subnew(fname='subnew')
     # selector.select_from_concepts(CCONTS.XAXQ, 'xaxq')
     # selector.select_from_industry(ICONTS.YLZZ, 'ylzz')
     # selector.select_from_result(_dt.get_ot_codes(), 'ot')
