@@ -284,6 +284,7 @@ def get_stock_data(type='i', filename=None, encoding='gbk', sep='\t', excludeCyb
 
     data['code'] = data['code'].apply(lambda code : code[2:])
 
+    # data['code'] = data['code'].astype('str').str.zfill(6)
     if excludeCyb:
         data = data[data['code'].str.get(0) != '3']
     return data
