@@ -6,9 +6,7 @@ import pandas as pd
 import tushare as ts
 
 from stocks.data import  _datautils
-from stocks.base.logging import Logger
-
-logger = Logger(logname='log.txt', loglevel=1, logger="selector").getlog()
+from stocks.base.logging import logger
 
 
 trade = pd.HDFStore('../data/trade.h5', complevel=9, complib='blosc')

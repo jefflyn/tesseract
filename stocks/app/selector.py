@@ -17,9 +17,7 @@ from stocks.gene import maup
 from stocks.gene import upnday
 from stocks.data.concept import constants as CCONTS
 from stocks.data.industry import constants as ICONTS
-from stocks.base.logging import Logger
-
-logger = Logger(logname='log.txt', loglevel=1, logger="selector").getlog()
+from stocks.base.logging import logger
 
 pd.set_option('display.width', 2000)
 pd.set_option('max_columns', 50)

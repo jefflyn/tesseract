@@ -1,43 +1,23 @@
 import logging
+import os.path
+import time
 
-# 用字典保存日志级别
-format_dict = {
-    1: logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'),
-    2: logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'),
-    3: logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'),
-    4: logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'),
-    5: logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-}
+# logging.basicConfig函数对日志的输出格式及方式做相关配置
+logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(filename)s[line:%(lineno)d] - %(levelname)s: %(message)s')
 
-# 开发一个日志系统， 既要把日志输出到控制台， 还要写入日志文件
-class Logger():
-    def __init__(self, logname, loglevel, logger):
-        '''
-           指定保存日志的文件路径，日志级别，以及调用文件
-           将日志存入到指定的文件中
-        '''
 
-        # 创建一个logger
-        self.logger = logging.getLogger(logger)
-        self.logger.setLevel(logging.INFO)
-
-        # 创建一个handler，用于写入日志文件
-        fh = logging.FileHandler(logname)
-        fh.setLevel(logging.INFO)
-
-        # 再创建一个handler，用于输出到控制台
-        ch = logging.StreamHandler()
-        ch.setLevel(logging.INFO)
-
-        # 定义handler的输出格式
-        # formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-        formatter = format_dict[int(loglevel)]
-        fh.setFormatter(formatter)
-        ch.setFormatter(formatter)
-
-        # 给logger添加handler
-        self.logger.addHandler(fh)
-        self.logger.addHandler(ch)
-
-    def getlog(self):
-        return self.logger
+# 第一步，创建一个logger
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)  # Log等级总开关
+# 第二步，创建一个handler，用于写入日志文件
+rq = time.strftime('%Y%m%d%', time.localtime(time.time()))
+log_path = os.path.dirname(os.getcwd()) + '/logs/'
+log_name = log_path + rq + '.log'
+logfile = log_name
+fh = logging.FileHandler(logfile, mode='w')
+fh.setLevel(logging.DEBUG)  # 输出到file的log等级的开关
+# 第三步，定义handler的输出格式
+formatter = logging.Formatter("%(asctime)s - %(filename)s[line:%(lineno)d] - %(levelname)s: %(message)s")
+fh.setFormatter(formatter)
+# 第四步，将logger添加到handler里面
+logger.addHandler(fh)

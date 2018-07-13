@@ -267,6 +267,27 @@ def filter_basic(basics, excludeCyb = False, before = 20170701):
     return basics
 
 
+def get_stock_data(type='i', filename=None, encoding='gbk', sep='\t', excludeCyb=True):
+    path = ''
+    if type == 'i':
+        path = '../data/industry/' + filename
+    else:
+        path = '../data/concept/' + filename
+    data = None
+    try:
+        # file = open(path)
+        data = pd.read_csv(path, sep=sep, encoding=encoding)
+    except:
+        file = open(path)
+        data = pd.read_csv(file, sep=sep, encoding='utf-8')
+
+    data['code'] = data['code'].apply(lambda code : code[2:])
+
+    # data['code'] = data['code'].astype('str').str.zfill(6)
+    if excludeCyb:
+        data = data[data['code'].str.get(0) != '3']
+    return data
+
 
 def get_stock_data(type='i', filename=None, encoding='gbk', sep='\t', excludeCyb=True):
     path = ''

@@ -7,6 +7,7 @@ import pandas as pd
 import tushare as ts
 
 from stocks.data import _datautils as _dt
+from stocks.base.logging import logger
 
 trade = pd.HDFStore('../data/trade.h5', complevel=9, complib='blosc')
 
@@ -14,7 +15,7 @@ trade = pd.HDFStore('../data/trade.h5', complevel=9, complib='blosc')
 def get_hist_limitup_data():
     # trade.remove('k_limitup_hist') # for reset
 
-    print('【get_hist_limitup_data start】...')
+    logger.info('【get_hist_limitup_data start】...')
     histdf = None
     keys = trade.keys()
     if '/k_limitup_hist' in keys:
@@ -36,7 +37,7 @@ def get_hist_limitup_data():
             if histdf is not None:
                 targetdf = histdf[histdf.date == todaystr]
                 if targetdf.empty == False:
-                    print('    limitup hist k data existed already')
+                    logger.info('    limitup hist k data existed already')
                     break
 
             todaydf = todaydf[todaydf.p_change > 9.9]
@@ -62,12 +63,12 @@ def get_hist_limitup_data():
                 except Exception as le:
                     quotadata = {'date': todaystr, 'open':open, 'close':close, 'high':high, 'low': low, 'volume':volume, 'code': code, 'p_change':change}
                     limitupdf = limitupdf.append(pd.DataFrame(quotadata), ignore_index=True)
-                    print('    ' + str(le) + ', use today quota data')
+                    logger.info('    ' + str(le) + ', use today quota data')
 
             trade.append('k_limitup_hist', limitupdf)
-            print('    append limitup hist k data successfully, total size: ' + str(len(limitupdf.index.values)))
+            logger.info('    append limitup hist k data successfully, total size: ' + str(len(limitupdf.index.values)))
         except Exception as e:
-            print('    ' + str(e))
+            logger.info('    ' + str(e))
 
         today = today + oneday
         todaystr = datetime.strftime(today, '%Y-%m-%d')
@@ -77,7 +78,7 @@ def get_hist_limitup_data():
 append the latest trade data every trade date
 """
 def append_latest_trade():
-    print('【append_latest_trade start】...')
+    logger.info('【append_latest_trade start】...')
     # trade.remove('latest')
     today = datetime.today()
     todaystr = datetime.strftime(today, '%Y-%m-%d')
@@ -86,7 +87,7 @@ def append_latest_trade():
     oneday = dt.timedelta(-1)
     targetdatestr = todaystr
     while True:
-        print(targetdatestr + ' get trade data >>>')
+        logger.info(targetdatestr + ' get trade data >>>')
         try:
             todaydf = _dt.get_totay_quotations(targetdatestr)
             size = len(todaydf.index.get_values())
@@ -99,21 +100,21 @@ def append_latest_trade():
                 latestdate = latestdf.at[0, 'date']
                 if latestdate < targetdatestr:
                     trade.put('latest', todaydf)
-                    print('    latest trade data update')
+                    logger.info('    latest trade data update')
                 else:
-                    print('    latest trade data existed already')
+                    logger.info('    latest trade data existed already')
             else:
                 trade.put('latest', todaydf)
 
             targetdf = histdf[histdf.date == targetdatestr]
             if targetdf.empty == False:
-                print('    hist trade data existed already')
+                logger.info('    hist trade data existed already')
                 break
 
             trade.append('hist', todaydf)
-            print('    insert successfully, total size: ' + str(size))
+            logger.info('    insert successfully, total size: ' + str(size))
         except Exception as e:
-            print('    ' + str(e))
+            logger.info('    ' + str(e))
 
         today = today + oneday
         targetdatestr = datetime.strftime(today, '%Y-%m-%d')
@@ -127,11 +128,11 @@ def get_hist_trade(startdate=None):
     todaystr = datetime.strftime(today, '%Y-%m-%d') if startdate == None else startdate
     while todaystr > '2017-06-13':
         try:
-            print(todaystr + ' get trade data >>>')
+            logger.info(todaystr + ' get trade data >>>')
             i = i + 1
             todaydf = _dt.get_totay_quotations(todaystr)
             size = len(todaydf.index.get_values())
-            print('    total size: ' + str(size))
+            logger.info('    total size: ' + str(size))
             #add date col
             dates = [todaystr] * size
             todaydf.insert(0, 'date', dates)
@@ -140,9 +141,9 @@ def get_hist_trade(startdate=None):
             keys = trade.keys()
             if '/latest' not in keys:
                 trade.append('latest', todaydf)
-                print('    insert latest trade data')
+                logger.info('    insert latest trade data')
         except Exception as e:
-            print('    ' + str(e))
+            logger.info('    ' + str(e))
         today = today + oneday
         todaystr = datetime.strftime(today, '%Y-%m-%d')
 
