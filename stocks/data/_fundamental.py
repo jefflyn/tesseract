@@ -4,6 +4,7 @@ import numpy as np
 import pandas as pd
 
 import tushare as ts
+from stocks.base.logging import logger
 from stocks.data import _datautils
 from stocks.app import _dateutil
 
@@ -54,8 +55,8 @@ def hist_volume_to_csv():
 
 
 if __name__ == '__main__':
-    print('get basic data start', datetime.datetime.now())
+    logger.info('get basic data start')
     basics_to_csv()
     basics_to_hdf5()
     hist_volume_to_csv()
-    print('etl basic data successfully', datetime.datetime.now())
+    logger.info('etl basic data successfully')

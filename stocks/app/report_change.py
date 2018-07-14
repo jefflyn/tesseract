@@ -4,9 +4,8 @@ import datetime
 import tushare as ts
 from stocks.data import _datautils
 from stocks.app import _dateutil
-from stocks.base.logging import Logger
+from stocks.base.logging import logger
 
-logger = Logger(logname='log.txt', loglevel=1, logger="report_change").getlog()
 basics = _datautils.get_basics(excludeCyb=False)
 today = _dateutil.get_today()
 this_week_start = _dateutil.get_this_week_start()

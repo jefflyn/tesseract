@@ -9,6 +9,8 @@ import tushare as ts
 from stocks.data import _datautils as _dt
 from stocks.base.logging import logger
 
+pd.set_option('display.width', 800)
+
 
 def view_concept_classified():
     df = ts.get_concept_classified()
@@ -52,7 +54,8 @@ def view_notices():
 
 
 def view_notices_content():
-    notice_content = ts.notice_content(url='http://vip.stock.finance.sina.com.cn/corp/view/vCB_AllBulletinDetail.php?CompanyCode=10000930&gather=1&id=4574299')
+    notice_content = ts.notice_content(
+        url='http://vip.stock.finance.sina.com.cn/corp/view/vCB_AllBulletinDetail.php?CompanyCode=10000930&gather=1&id=4574299')
     logger.info(notice_content)
 
 
