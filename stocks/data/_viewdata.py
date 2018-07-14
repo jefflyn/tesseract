@@ -5,8 +5,7 @@ import numpy as np
 import pandas as pd
 
 import tushare as ts
-
-from stocks.data import _datautils as _dt
+import stocks.base.dbutils as _dt
 from stocks.base.logging import logger
 
 pd.set_option('display.width', 800)

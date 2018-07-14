@@ -5,7 +5,7 @@ import pandas as pd
 
 import tushare as ts
 from stocks.base.logging import logger
-from stocks.data import _datautils
+import stocks.base.dbutils as _dt
 from stocks.app import _dateutil
 
 
@@ -19,7 +19,7 @@ def basics_to_csv():
     basics = ts.get_stock_basics()
     basics['code'] = basics.index
     basics.to_csv('../data/basics.csv', encoding='utf-8')
-    _datautils.to_db(basics, tbname='basics')
+    _dt.to_db(basics, tbname='basics')
 
 
 def basics_to_hdf5():
@@ -31,7 +31,7 @@ def basics_to_hdf5():
 
 
 def hist_volume_to_csv():
-    basics = _datautils.get_basics(excludeCyb=False)
+    basics = _dt.get_basics(excludeCyb=False)
     day_df = pd.DataFrame(columns=['code', 'date', 'open', 'high', 'low', 'close', 'volume'])
     week_df = pd.DataFrame(columns=['code', 'date', 'open', 'high', 'low', 'close', 'volume'])
     month_df = pd.DataFrame(columns=['code', 'date', 'open', 'high', 'low', 'close', 'volume'])
@@ -47,11 +47,11 @@ def hist_volume_to_csv():
             month_df = month_df.append(k_data_month[['code', 'date', 'open', 'high', 'low', 'close', 'volume']], ignore_index=True)
 
     day_df.to_csv('../data/hist_k_day.csv', encoding='utf-8')
-    _datautils.to_db(day_df, tbname='hist_k_day')
+    _dt.to_db(day_df, tbname='hist_k_day')
     week_df.to_csv('../data/hist_k_week.csv', encoding='utf-8')
-    _datautils.to_db(week_df, tbname='hist_k_week')
+    _dt.to_db(week_df, tbname='hist_k_week')
     month_df.to_csv('../data/hist_k_month.csv', encoding='utf-8')
-    _datautils.to_db(month_df, tbname='hist_k_month')
+    _dt.to_db(month_df, tbname='hist_k_month')
 
 
 if __name__ == '__main__':

@@ -11,6 +11,7 @@ from stocks.app import falco
 from stocks.app import _utils
 from stocks.app import report
 from stocks.data import _datautils
+import stocks.base.dbutils as _dt
 from stocks.gene import limitup
 from stocks.gene import wave
 from stocks.gene import maup
@@ -225,9 +226,9 @@ def select_result(codeset, filename=''):
                'count', 'count_30d', 'count_q1', 'updays', 'sumup%', 'vol_rate', 'multi_vol', 'isup', 'count_q2', 'count_q3', 'count_q4', 'maxdate', 'lup_low', 'lup_high',
                'ma5', 'ma10', 'ma20', 'ma30', 'ma60', 'ma90', 'ma120', 'ma250']]
     result_name = 'select_result_' + filename
-    _datautils.to_db(resultdf, result_name)
+    _dt.to_db(resultdf, result_name)
     resultdf.to_csv(result_name + '.csv')
-    _datautils.to_db(wavedfset, 'select_wave_' + filename)
+    _dt.to_db(wavedfset, 'select_wave_' + filename)
     # wavedfset.to_csv('select_wave.csv')
     logger.info("stocks select finished!")
     return resultdf
@@ -310,14 +311,14 @@ def select_subnew_issue_space():
 
     resultdf = resultdf.sort_values('issue_space', axis=0, ascending=True, inplace=False, kind='quicksort', na_position='last')
     resultdf['rank'] = [i+1 for i in range(resultdf.index.size)]
-    _datautils.to_db(resultdf, 'select_subnew_issue_space' + startstr)
+    _dt.to_db(resultdf, 'select_subnew_issue_space' + startstr)
     resultdf['issue_space'] = resultdf['issue_space'].apply(lambda x: str(round(x, 2)) + '%')
     # resultdf['varrate'] = resultdf['varrate'].apply(lambda x: str(round(x, 2)) + '%')
     resultdf['stdrate'] = resultdf['stdrate'].apply(lambda x: str(round(x, 2)) + '%')
     resultdf.to_csv('select_subnew_issue_space.csv')
 
     wavedf = wave.get_wave(list(resultdf['code']))
-    _datautils.to_db(wavedf, 'wave_subnew')
+    _dt.to_db(wavedf, 'wave_subnew')
 
 
 
@@ -328,7 +329,7 @@ def select_s1(type='', classname=''):
     data = _datautils.get_stock_data(type=type, filename=classname)
     codes = list(data['code'])
     limitupdf = limitup.get_limitup_from_hist_k(codes)
-    _datautils.to_db(limitupdf, 'limitupx')
+    _dt.to_db(limitupdf, 'limitupx')
     # 1.choose the active codes from the limitups which limitup at lease more than n
     limitupcount = limitup.count(limitupdf, times=0, condition=[90,0])
     # logger.info(limitupcount)
@@ -345,7 +346,7 @@ def select_s1(type='', classname=''):
     result = pd.merge(bottomdf, madf[['code', 'isup', 'ma5', 'ma10', 'ma20', 'ma30', 'ma60', 'ma30std', 'ma10_space']],
                       on='code', how='left')
     result.to_csv('select1.csv')
-    _datautils.to_db(result, 'select1')
+    _dt.to_db(result, 'select1')
     # exit()
 
     #########
@@ -385,7 +386,7 @@ def select_s2():
     limitupdf = df[(df['code'].str.get(0) != '3')][['code', 'p_change', 'date', 'low']]
     # limitupdf = df[(df.code == '603533') & (df.p_change > 9.9)][['code','p_change','date','low']]
     limitupdf = limitupdf.sort_values('date', ascending=True)
-    _datautils.to_db(limitupdf, 'select2_limitup')
+    _dt.to_db(limitupdf, 'select2_limitup')
     # 1.choose the active codes from the limitups which limitup at lease more than n
     limitupcount = limitup.count(limitupdf, times=3, condition=[180, 1])
     logger.info('limitupcount size: ' + str(len(limitupcount)))
@@ -413,13 +414,13 @@ def select_s2():
 
     # save
     result.to_csv('select2.csv')
-    _datautils.to_db(result, 'select2')
+    _dt.to_db(result, 'select2')
 
     wavecodes = list(result['code'])
     # # get wave data
     # wavedf = wave.get_wave(wavecodes[len(wavecodes) - 20 :]) #get 20
     wavedf = wave.get_wave(wavecodes)  # get all
-    _datautils.to_db(wavedf, 'select2_wave')
+    _dt.to_db(wavedf, 'select2_wave')
 
     # # figure display
     # listdf = []

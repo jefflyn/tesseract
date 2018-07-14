@@ -5,8 +5,7 @@ import numpy as np
 import pandas as pd
 
 import tushare as ts
-
-from stocks.data import _datautils as _dt
+import stocks.base.dbutils as _dt
 from stocks.base.logging import logger
 
 trade = pd.HDFStore('../data/trade.h5', complevel=9, complib='blosc')

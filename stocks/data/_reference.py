@@ -3,7 +3,7 @@ import pandas as pd
 
 import tushare as ts
 
-from stocks.data import _datautils
+import stocks.base.dbutils as _dt
 from stocks.app import _utils
 from stocks.base.logging import logger
 
@@ -48,7 +48,7 @@ def get_forecast(year=2017, season=4, excludeCyb=True, startdate=None):
     forecast['range_from'] = forecast['range_from'].astype('float32')
     forecast['range_to'] = forecast['range_to'].astype('float32')
     forecast = forecast.sort_values(by='range_to', ascending=False)
-    _datautils.to_db(forecast, 'profit_forecast')
+    _dt.to_db(forecast, 'profit_forecast')
     return forecast
 
 if __name__ == '__main__':

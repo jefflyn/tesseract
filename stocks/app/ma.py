@@ -6,8 +6,7 @@ import pandas as pd
 
 import pymysql
 from sqlalchemy import create_engine
-
-from stocks.data import _datautils
+import stocks.base.dbutils as _dt
 from stocks.gene import limitup
 from stocks.gene import maup
 
@@ -33,4 +32,4 @@ if len(argv) == 3:
     print(data)
 else:
     data.to_csv("../data/madata.csv", encoding='utf-8')
-    _datautils.to_db(data, tbname='ma_data')
+    _dt.to_db(data, tbname='ma_data')

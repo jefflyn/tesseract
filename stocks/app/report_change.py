@@ -2,11 +2,11 @@ import pandas as pd
 from datetime import timedelta
 import datetime
 import tushare as ts
-from stocks.data import _datautils
+import stocks.base.dbutils as _dt
 from stocks.app import _dateutil
 from stocks.base.logging import logger
 
-basics = _datautils.get_basics(excludeCyb=False)
+basics = _dt.get_basics(excludeCyb=False)
 today = _dateutil.get_today()
 this_week_start = _dateutil.get_this_week_start()
 last_month_start = _dateutil.get_last_month_start()
@@ -98,7 +98,7 @@ def period_statis(period=-6, ktype=None, db_name='change_week_statis'):
     logger.info(len(result_list))
     result_df = pd.DataFrame(result_list, columns=columns)
     result_df = result_df.sort_values(columns[-1], ascending=False)
-    _datautils.to_db(result_df, db_name)
+    _dt.to_db(result_df, db_name)
     logger.info('period statistics finished!')
 
 
@@ -144,7 +144,7 @@ def multi_volume_appear():
     result_df = pd.DataFrame(result_list, columns=['code', 'name', 'industry', 'area', 'market_time', 'vol_rate', 'change'])
 
     result_df = result_df.sort_values('vol_rate', ascending=False)
-    _datautils.to_db(result_df, 'change_statis_volume')
+    _dt.to_db(result_df, 'change_statis_volume')
     logger.info('multi_volume_appear end!')
 
 

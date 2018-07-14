@@ -247,10 +247,6 @@ def get_bottom():
         print('bottom file not found, return empty code list.')
         return pd.DataFrame(columns=['code'])
 
-#save to db
-def to_db(data, tbname=None):
-    engine = create_engine("mysql+pymysql://linjingu:linjingu@127.0.0.1:3306/stocks?charset=utf8")
-    data.to_sql(name=tbname, con=engine, if_exists='replace', index=False, index_label=False)
 
 #filter cyb
 def filter_cyb(datadf):

@@ -8,7 +8,7 @@ import tushare as ts
 
 import stocks.base.dateutils as dateutil
 from stocks.base.logging import logger
-from stocks.data import _datautils as _dt
+import stocks.base.dbutils as _dt
 import stocks.base.dateconst as dconst
 
 pd.set_option('display.width', 800)
