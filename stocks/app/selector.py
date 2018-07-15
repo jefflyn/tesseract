@@ -41,8 +41,6 @@ def select_from_change_month():
     change_df = _dt.read_query('select * from hist_change_statis')
     columns = change_df.columns
     for col in columns[1::]:
-        if col != '2018-07':
-            continue
         logger.info('hist_change_statis sorted by column %s' % col)
         change_df = change_df.sort_values(by=col, ascending=False)
         target_change = change_df[change_df[col] >= 25.0]
@@ -135,6 +133,8 @@ def select_result(codeset, filename=''):
                 continue;
 
             basic = _datautils.get_basics(code)
+            if basic is None or basic.empty is True:
+                continue
             curt_data = []
             curt_data.append(code)
             curt_data.append(row['name'])
@@ -150,6 +150,8 @@ def select_result(codeset, filename=''):
             wavestr = wave.wave_to_str(wavedf, size=3)
             wavedfset = wavedfset.append(wavedf)
             bottomdf = wave.get_bottom(wavedf)
+            if bottomdf is None or bottomdf.empty is True:
+                continue
             bottom = bottomdf.ix[0, 'bottom']
             top = bottomdf.ix[0, 'top']
             uspace = (current_price - bottom) / bottom * 100
