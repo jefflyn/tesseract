@@ -4,6 +4,7 @@ from stocks.base.logging import logger
 utc = arrow.utcnow()
 local = utc.to('local')
 
+DATE_FORMAT_MONTH = 'YYYY-MM'
 DATE_FORMAT_SIMPLE = 'YYYYMMDD'
 DATE_FORMAT_DEFAULT = 'YYYY-MM-DD'
 DATE_FORMAT_FULL = 'YYYY-MM-DD HH:mm:ss'
@@ -13,6 +14,7 @@ DATE_FORMAT_FULL = 'YYYY-MM-DD HH:mm:ss'
 天
 """
 #今天
+NOW = local.format(DATE_FORMAT_FULL)
 TODAY = local.format(DATE_FORMAT_DEFAULT)
 #昨天
 YESTERDAY = local.shift(days=-1).format(DATE_FORMAT_DEFAULT)
@@ -74,11 +76,14 @@ FIRST_DAY_LAST_YEAR = local.floor('year').shift(years=-1).format(DATE_FORMAT_DEF
 LAST_DAY_LAST_YEAR = local.ceil('year').shift(years=-1).format(DATE_FORMAT_DEFAULT)
 
 
-def parse_datestr(datestr=TODAY, format=DATE_FORMAT_DEFAULT):
-    return arrow.get(datestr, DATE_FORMAT_DEFAULT)
+def parse_datestr(datestr=NOW, format=None):
+    if format is None:
+        return arrow.get(datestr)
+    else:
+        return arrow.get(datestr).format(format)
 
 
-def shift_date(target=local, shiftType='d', n=-1):
+def shift_date(target=local, shiftType='d', n=-1, format=DATE_FORMAT_DEFAULT):
     """
 
     :param target: arrow
@@ -96,11 +101,13 @@ def shift_date(target=local, shiftType='d', n=-1):
         target = target.shift(years=n)
     else:
         logger.error('shift type not found: %s' % shiftType)
-    return target.format(DATE_FORMAT_DEFAULT)
+    return target.format(format)
 
 
 if __name__ == '__main__':
     print(THIRD_Q_THIS_YEAR)
     print(FOUR_Q_THIS_YEAR)
     print(parse_datestr())
+    print(parse_datestr(format=DATE_FORMAT_DEFAULT))
     print(shift_date(target=parse_datestr(), shiftType='w'))
+    print([shift_date(target=parse_datestr(LAST_DAY_6_MONTH), shiftType='m', n=n, format=DATE_FORMAT_MONTH) for n in range(6)])

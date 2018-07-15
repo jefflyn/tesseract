@@ -3,6 +3,7 @@ from datetime import timedelta
 import datetime
 import tushare as ts
 import stocks.base.dbutils as _dt
+from stocks.data import _datautils
 from stocks.app import _dateutil
 from stocks.base.logging import logger
 

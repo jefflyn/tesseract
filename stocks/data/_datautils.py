@@ -90,11 +90,12 @@ def get_letter(string, upper=True):
         return charstr
 
 
-
 """
 marketTimeFrom: yyyymmdd
 """
-def get_subnew(cyb = False, marketTimeFrom = None):
+
+
+def get_subnew(cyb=False, marketTimeFrom=None):
     if marketTimeFrom == None:
         marketTimeFrom = oneyearago
     basics = get_basics_fromh5(excludeCyb=cyb)
@@ -114,6 +115,8 @@ def format_percent(df=None, columns=[], precision=2):
 
 """
 """
+
+
 def get_latest_h5(code=None, excludeCyb=False):
     trade = pd.HDFStore('../data/trade.h5')
     data = trade['latest']
@@ -137,9 +140,10 @@ def get_totay_quotations(datestr=None):
 def get_app_codes():
     pa = get_data('../data/app/pa.txt', sep=' ')['code'].astype('str').str.zfill(6)
     cf = get_data('../data/app/cf.txt', sep=' ')['code'].astype('str').str.zfill(6)
-    ot =[] #get_data('../data/app/other.txt', sep=' ')['code'].astype('str').str.zfill(6)
+    ot = []  # get_data('../data/app/other.txt', sep=' ')['code'].astype('str').str.zfill(6)
     codes = list(pa) + list(cf) + list(ot)
     return codes
+
 
 def get_ot_codes():
     ot = get_data('../data/app/other.txt', sep=' ')['code'].astype('str').str.zfill(6)
@@ -161,6 +165,11 @@ def get_monitor_codes(flag=None):
     return codes
 
 
+def get_all_codes(excludeCyb=False):
+    basics = get_basics(excludeCyb=excludeCyb)
+    return list(basics['code'])
+
+
 def get_k_data(code=None, start=None, end=None):
     hist_data = ts.get_k_data(code, start, end)  # one day delay issue, use realtime interface solved
     if hist_data is None or len(hist_data) == 0:
@@ -177,9 +186,10 @@ def get_k_data(code=None, start=None, end=None):
             # ridx = realtime.index.get_values()[0]
             todaylow = float(realtime.at[0, 'low'])
             if todaylow > 0:
-                newone = {'date': todaystr, 'open': float(realtime.at[0, 'open']), 'close': float(realtime.at[0, 'price']),
-                              'high': float(realtime.at[0, 'high']), 'low': todaylow,
-                              'volume': int(float(realtime.at[0, 'volume']) / 100), 'code': code}
+                newone = {'date': todaystr, 'open': float(realtime.at[0, 'open']),
+                          'close': float(realtime.at[0, 'price']),
+                          'high': float(realtime.at[0, 'high']), 'low': todaylow,
+                          'volume': int(float(realtime.at[0, 'volume']) / 100), 'code': code}
                 newdf = pd.DataFrame(newone, index=[0])
                 hist_data = hist_data.append(newdf, ignore_index=True)
         return hist_data
@@ -204,9 +214,12 @@ def get_basics_fromh5(code=None, excludeCyb=False):
     fundamental.close()
     return data
 
+
 """
 index: code
 """
+
+
 def get_basics(code=None, excludeCyb=False, index=False, before=None):
     if index == True:
         return INDEX_DICT[code]
@@ -248,15 +261,16 @@ def get_bottom():
         return pd.DataFrame(columns=['code'])
 
 
-#filter cyb
+# filter cyb
 def filter_cyb(datadf):
     datadf = datadf[datadf['code'].str.get(0) != '3']
     return datadf
 
+
 ##
-def filter_basic(basics, excludeCyb = False, before = 20170701):
+def filter_basic(basics, excludeCyb=False, before=20170701):
     # filter unused code
-    if excludeCyb is True :
+    if excludeCyb is True:
         basics = basics[basics['code'].str.get(0) != '3']
     if before is not None:
         basics = basics[(basics['timeToMarket'] > 0) & (basics['timeToMarket'] <= before)]
@@ -277,7 +291,7 @@ def get_stock_data(type='i', filename=None, encoding='gbk', sep='\t', excludeCyb
         file = open(path)
         data = pd.read_csv(file, sep=sep, encoding='utf-8')
 
-    data['code'] = data['code'].apply(lambda code : code[2:])
+    data['code'] = data['code'].apply(lambda code: code[2:])
 
     # data['code'] = data['code'].astype('str').str.zfill(6)
     if excludeCyb:
@@ -299,7 +313,7 @@ def get_stock_data(type='i', filename=None, encoding='gbk', sep='\t', excludeCyb
         file = open(path)
         data = pd.read_csv(file, sep=sep, encoding='utf-8')
 
-    data['code'] = data['code'].apply(lambda code : code[2:])
+    data['code'] = data['code'].apply(lambda code: code[2:])
 
     # data['code'] = data['code'].astype('str').str.zfill(6)
     if excludeCyb:
@@ -329,12 +343,12 @@ def format_amount(amount=None):
         result = round(amount / 10000, 1)
         return str(result) + '万'
     else:
-        result = round(amount / (10000*10000), 1)
+        result = round(amount / (10000 * 10000), 1)
         return str(result) + '亿'
 
 
 if __name__ == '__main__':
-    k_data = ts.get_k_data('000836',ktype='W')
+    k_data = ts.get_k_data('000836', ktype='W')
     print(k_data)
     print(format_amount(''))
     print(format_amount(None))
