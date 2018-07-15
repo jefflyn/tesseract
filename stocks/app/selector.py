@@ -47,23 +47,23 @@ def select_from_change_week():
         if target_change is None or target_change.empty is True:
             continue
         codes = list(target_change['code'])
-        select_result(codes, filename=col)
+        select_result(codes, filename='week_'+col)
     logger.info('finished!')
 
 
 def select_from_change_month():
-    change_df = _dt.read_query('select * from hist_change_statis')
+    change_df = _dt.read_query('select * from hist_change_statis_month')
     columns = change_df.columns
     for col in columns[1::]:
         if col != '2018-07':
             continue
         logger.info('hist_change_statis sorted by column %s' % col)
         change_df = change_df.sort_values(by=col, ascending=False)
-        target_change = change_df[change_df[col] >= 15.0]
+        target_change = change_df[change_df[col] >= 20.0]
         if target_change is None or target_change.empty is True:
             continue
         codes = list(target_change['code'])
-        select_result(codes, filename=col)
+        select_result(codes, filename='month_'+col)
     logger.info('finished!')
 
 

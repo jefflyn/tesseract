@@ -173,7 +173,7 @@ def change_statis_month():
     change_statis.insert(0, 'code', change_statis.index)
     columns = change_statis.columns
     change_statis = change_statis.sort_values(by=columns[-1], ascending=False)
-    _dt.to_db(change_statis, 'hist_change_statis')
+    _dt.to_db(change_statis, 'hist_change_statis_month')
     logger.info('finished!')
 
 
