@@ -17,7 +17,7 @@ pd.set_option('display.width', 800)
 
 def hist_data_month_extract(n=6):
     """
-    use for getting 6 months' change data
+    get_hist_data func use for getting 6 months' change data
     t+0, none type price and faster than get_h_data
     :return: date open high close low volume price_change p_change ma5 ma10 ma20 v_ma5 v_ma10 v_ma20
     """
@@ -29,7 +29,7 @@ def hist_data_month_extract(n=6):
     date_lists = [dconst.shift_date(target=dconst.parse_datestr(dconst.LAST_DAY_6_MONTH), shiftType='m', n=x, format=dconst.DATE_FORMAT_MONTH) for x in range(n+1)]
     for code in codes:
         histdf = ts.get_hist_data(code=code, ktype='M', start=dconst.LAST_DAY_6_MONTH)
-        if histdf.empty == False:
+        if histdf is not None and histdf.empty is False:
             total_size += 1
             histdf['date'] = histdf.index
             histdf['code'] = code
@@ -49,6 +49,7 @@ def hist_data_month_extract(n=6):
 
     logger.info('final extract size %d' %total_size)
     _dt.to_db(hist_results, 'hist_data_month')
+    _dt.to_db(change_results, 'hist_change_month')
 
 
 if __name__ == '__main__':

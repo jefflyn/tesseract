@@ -1,12 +1,10 @@
-from datetime import date
 import datetime
 import numpy as np
 import pandas as pd
 
 import tushare as ts
+import stocks.base.dateconst as _dt
 
-import pymysql
-from sqlalchemy import create_engine
 
 todaystr = datetime.datetime.now().strftime('%Y-%m-%d')
 yeardays = datetime.timedelta(days=-365)
@@ -268,12 +266,15 @@ def filter_cyb(datadf):
 
 
 ##
-def filter_basic(basics, excludeCyb=False, before=20170701):
+def filter_basic(basics, excludeCyb=False, before=None):
     # filter unused code
     if excludeCyb is True:
         basics = basics[basics['code'].str.get(0) != '3']
     if before is not None:
         basics = basics[(basics['timeToMarket'] > 0) & (basics['timeToMarket'] <= before)]
+    else:
+        before = _dt.DATE_BEFORE_7_DAYS_SIMP
+        basics = basics[(basics['timeToMarket'] > 0) & (basics['timeToMarket'] <= int(before))]
     return basics
 
 

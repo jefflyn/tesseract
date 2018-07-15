@@ -32,9 +32,25 @@ MAUP = 'maup'
 QUATO_WEIGHT = {
     LIMITUP: 0.4,
     BOTTOM: 0.3,
-    UPNDAY : 0.2,
-    MAUP : 0.1
+    UPNDAY: 0.2,
+    MAUP: 0.1
 }
+
+
+def select_from_change_month():
+    change_df = _dt.read_query('select * from hist_change_statis')
+    columns = change_df.columns
+    for col in columns[1::]:
+        if col != '2018-07':
+            continue
+        logger.info('hist_change_statis sorted by column %s' % col)
+        change_df = change_df.sort_values(by=col, ascending=False)
+        target_change = change_df[change_df[col] >= 25.0]
+        if target_change is None or target_change.empty is True:
+            continue
+        codes = list(target_change['code'])
+        select_result(codes, filename=col)
+    logger.info('select from month change finished!')
 
 
 
@@ -48,9 +64,9 @@ def select_from_all(excludeCyb=True, fname='all'):
     oneyear = int(_datautils.oneyearago)
     basics = _datautils.get_basics(excludeCyb=excludeCyb, before=oneyear)
     codes = list(basics['code'])
-    logger.info('select_from_all start to process... total size: %d' %len(codes))
+    logger.info('select_from_all start to process... total size: %d' % len(codes))
     result = select_result(codes, filename=fname)
-    logger.info('select_from_all finished! result size: %d' %len(result.index.get_values()))
+    logger.info('select_from_all finished! result size: %d' % len(result.index.get_values()))
     # logger.info(result)
 
 
@@ -58,6 +74,8 @@ def select_from_all(excludeCyb=True, fname='all'):
 return specific subnew code list
 fromTime: yyyymmdd
 """
+
+
 def select_from_subnew(fromTime=None, fname='subnew'):
     subnewbasic = _datautils.get_subnew(marketTimeFrom=fromTime)
     codes = list(subnewbasic['code'])
@@ -66,6 +84,7 @@ def select_from_subnew(fromTime=None, fname='subnew'):
     logger.info('select_from_subnew finished! result size: %d' % len(result.index.get_values()))
     # logger.info(result)
 
+
 def select_from_concepts(name, fname='concept'):
     data = _datautils.get_stock_data(type='c', filename=name)
     codes = list(data['code'])
@@ -73,6 +92,7 @@ def select_from_concepts(name, fname='concept'):
     result = select_result(codes, filename=fname)
     logger.info('select_from_concepts finished! result size: %d' % len(result.index.get_values()))
     # logger.info(result)
+
 
 def select_from_industry(name, fname='industry'):
     data = _datautils.get_stock_data(type='i', filename=name)
@@ -91,6 +111,8 @@ def select_xxx(fname='xxx'):
 """
 latest select info 
 """
+
+
 def select_result(codeset, filename=''):
     data_list = []
     size = len(codeset)
@@ -99,10 +121,11 @@ def select_result(codeset, filename=''):
     endIndex = beginIndex + limit if size > limit else size
 
     while endIndex <= size:
-        logger.info('process from %d' %beginIndex)
-        codes = codeset[beginIndex : endIndex]
+        logger.info('process from %d' % beginIndex)
+        codes = codeset[beginIndex: endIndex]
         df = ts.get_realtime_quotes(codes)
-        wavedfset = pd.DataFrame(columns=['code', 'begin', 'end', 'status', 'begin_price', 'end_price', 'days', 'change'])
+        wavedfset = pd.DataFrame(
+            columns=['code', 'begin', 'end', 'status', 'begin_price', 'end_price', 'days', 'change'])
         for index, row in df.iterrows():
             code = row['code']
             open = float(row['open'])
@@ -122,7 +145,8 @@ def select_result(codeset, filename=''):
             curt_data.append(current_price)
 
             # get wave data and bottom top
-            wavedf = wave.get_wave(code) # need to save
+            wavedf = wave.get_wave(code)  # need to save
+            # logger.debug(code)
             wavestr = wave.wave_to_str(wavedf, size=3)
             wavedfset = wavedfset.append(wavedf)
             bottomdf = wave.get_bottom(wavedf)
@@ -214,17 +238,23 @@ def select_result(codeset, filename=''):
         beginIndex = endIndex
         endIndex = endIndex + limit
 
-    columns = ['code', 'name', 'industry', 'area', 'market_time', 'pe', 'price', 'wave', 'bottom', 'uspace%','dspace%', 'top', 'position%', 'buy1', 'buy2', 'buy3',
+    columns = ['code', 'name', 'industry', 'area', 'market_time', 'pe', 'price', 'wave', 'bottom', 'uspace%', 'dspace%',
+               'top', 'position%', 'buy1', 'buy2', 'buy3',
                'count', 'count_30d', 'count_q1', 'count_q2', 'count_q3', 'count_q4', 'maxdate', 'lup_low', 'lup_high',
-               'updays', 'sumup%', 'multi_vol', 'vol_rate', 'isup', 'ma5', 'ma10', 'ma20', 'ma30', 'ma60', 'ma90', 'ma120', 'ma250']
+               'updays', 'sumup%', 'multi_vol', 'vol_rate', 'isup', 'ma5', 'ma10', 'ma20', 'ma30', 'ma60', 'ma90',
+               'ma120', 'ma250']
     resultdf = pd.DataFrame(data_list, columns=columns)
-    resultdf = resultdf.sort_values('count_q1', axis=0, ascending=False, inplace=False, kind='quicksort', na_position='last')
+    resultdf = resultdf.sort_values('count_q1', axis=0, ascending=False, inplace=False, kind='quicksort',
+                                    na_position='last')
 
     # _datautils.to_db(l1, 'limitup_hist')
     # _datautils.to_db(l2, 'limitup_quota')
-    resultdf = resultdf[['code', 'name', 'industry', 'area', 'market_time', 'pe', 'price', 'wave', 'bottom', 'uspace%','dspace%', 'top', 'position%', 'buy1', 'buy2', 'buy3',
-               'count', 'count_30d', 'count_q1', 'updays', 'sumup%', 'vol_rate', 'multi_vol', 'isup', 'count_q2', 'count_q3', 'count_q4', 'maxdate', 'lup_low', 'lup_high',
-               'ma5', 'ma10', 'ma20', 'ma30', 'ma60', 'ma90', 'ma120', 'ma250']]
+    resultdf = resultdf[
+        ['code', 'name', 'industry', 'area', 'market_time', 'pe', 'price', 'wave', 'bottom', 'uspace%', 'dspace%',
+         'top', 'position%', 'buy1', 'buy2', 'buy3',
+         'count', 'count_30d', 'count_q1', 'updays', 'sumup%', 'vol_rate', 'multi_vol', 'isup', 'count_q2', 'count_q3',
+         'count_q4', 'maxdate', 'lup_low', 'lup_high',
+         'ma5', 'ma10', 'ma20', 'ma30', 'ma60', 'ma90', 'ma120', 'ma250']]
     result_name = 'select_result_' + filename
     _dt.to_db(resultdf, result_name)
     resultdf.to_csv(result_name + '.csv')
@@ -306,11 +336,13 @@ def select_subnew_issue_space():
         curt_data.append(round(stdrate, 2))
 
         data_list.append(curt_data)
-    columns = ['code', 'name','industry','area','pe','liquid_assets','total_assets', 'issue_days', 'issue_price', 'current_price', 'issue_space', 'avg_99', 'std_99', 'stdrate']
+    columns = ['code', 'name', 'industry', 'area', 'pe', 'liquid_assets', 'total_assets', 'issue_days', 'issue_price',
+               'current_price', 'issue_space', 'avg_99', 'std_99', 'stdrate']
     resultdf = pd.DataFrame(data_list, columns=columns)
 
-    resultdf = resultdf.sort_values('issue_space', axis=0, ascending=True, inplace=False, kind='quicksort', na_position='last')
-    resultdf['rank'] = [i+1 for i in range(resultdf.index.size)]
+    resultdf = resultdf.sort_values('issue_space', axis=0, ascending=True, inplace=False, kind='quicksort',
+                                    na_position='last')
+    resultdf['rank'] = [i + 1 for i in range(resultdf.index.size)]
     _dt.to_db(resultdf, 'select_subnew_issue_space' + startstr)
     resultdf['issue_space'] = resultdf['issue_space'].apply(lambda x: str(round(x, 2)) + '%')
     # resultdf['varrate'] = resultdf['varrate'].apply(lambda x: str(round(x, 2)) + '%')
@@ -321,17 +353,18 @@ def select_subnew_issue_space():
     _dt.to_db(wavedf, 'wave_subnew')
 
 
-
 """
 select from industry or concept
 """
+
+
 def select_s1(type='', classname=''):
     data = _datautils.get_stock_data(type=type, filename=classname)
     codes = list(data['code'])
     limitupdf = limitup.get_limitup_from_hist_k(codes)
     _dt.to_db(limitupdf, 'limitupx')
     # 1.choose the active codes from the limitups which limitup at lease more than n
-    limitupcount = limitup.count(limitupdf, times=0, condition=[90,0])
+    limitupcount = limitup.count(limitupdf, times=0, condition=[90, 0])
     # logger.info(limitupcount)
 
     codes = list(limitupcount.index.get_values())
@@ -380,6 +413,8 @@ def get_warn_space(df):
 """
 select from limitup
 """
+
+
 def select_s2():
     trade = pd.HDFStore('../data/trade.h5')
     df = trade.select('k_limitup_hist')
@@ -403,11 +438,12 @@ def select_s2():
     # 3.ma data
     madf = maup.get_ma(codes)
     # logger.info(madf)
-    result = pd.merge(bottomdf, madf[['code', 'isup', 'ma5', 'ma10', 'ma20', 'ma30', 'ma60', 'ma30std', 'ma10_space']], on='code', how='left')
+    result = pd.merge(bottomdf, madf[['code', 'isup', 'ma5', 'ma10', 'ma20', 'ma30', 'ma60', 'ma30std', 'ma10_space']],
+                      on='code', how='left')
     result = result.sort_values(['space', 'lmtuplow'], axis=0, ascending=[True, True], inplace=False, kind='quicksort',
                                 na_position='last')
 
-    #format
+    # format
     result['change'] = result['change'].apply(lambda n: str(round(n, 2)) + '%')
     # result['space'] = result['space'].apply(lambda n: str(round(n, 2)) + '%')
     # result['lmtspace'] = result['lmtspace'].apply(lambda n: str(round(n, 2)) + '%')
@@ -443,10 +479,3 @@ if __name__ == '__main__':
 
     result = select_result(codes)
     print(result)
-
-
-
-
-
-
-

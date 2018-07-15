@@ -13,8 +13,8 @@ engine = create_engine("mysql+pymysql://linjingu:linjingu@127.0.0.1:3306/stocks?
 
 # save to db
 def to_db(data=None, tbname=None, if_exists='replace'):
-    data.to_db(name=tbname, con=engine, if_exists=if_exists, index=False, index_label=False)
-    logger.info('save to db successfully.')
+    data.to_sql(name=tbname, con=engine, if_exists=if_exists, index=False, index_label=None)
+    logger.info('%s save to db successfully.' % tbname)
 
 
 def read_table(tbname):

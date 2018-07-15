@@ -18,6 +18,9 @@ NOW = local.format(DATE_FORMAT_FULL)
 TODAY = local.format(DATE_FORMAT_DEFAULT)
 #昨天
 YESTERDAY = local.shift(days=-1).format(DATE_FORMAT_DEFAULT)
+#7天前
+DATE_BEFORE_7_DAYS = local.shift(days=-7).format(DATE_FORMAT_DEFAULT)
+DATE_BEFORE_7_DAYS_SIMP = local.shift(days=-7).format(DATE_FORMAT_SIMPLE)
 #30天前
 DATE_BEFORE_30_DAYS = local.shift(days=-30).format(DATE_FORMAT_DEFAULT)
 #60天前

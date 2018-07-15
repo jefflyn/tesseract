@@ -7,7 +7,7 @@ from stocks.data import _datautils
 from stocks.app import _dateutil
 from stocks.base.logging import logger
 
-basics = _dt.get_basics(excludeCyb=False)
+basics = _datautils.get_basics(excludeCyb=False)
 today = _dateutil.get_today()
 this_week_start = _dateutil.get_this_week_start()
 last_month_start = _dateutil.get_last_month_start()
@@ -47,6 +47,8 @@ def get_period_change(period_k=None):
 """
 get last 8 statistics by default
 """
+
+
 def period_statis(period=-6, ktype=None, db_name='change_week_statis'):
     logger.info('start period statistics...')
     result_list = []
@@ -103,10 +105,11 @@ def period_statis(period=-6, ktype=None, db_name='change_week_statis'):
     logger.info('period statistics finished!')
 
 
-
 """
 get daily multi volume stocks
 """
+
+
 def multi_volume_appear():
     start_time = datetime.datetime.now()
     logger.info('multi_volume_appear start...')
@@ -139,10 +142,11 @@ def multi_volume_appear():
 
         pre_close = target_k_data.ix[index_list[-2], 'close']
         nxt_close = target_k_data.ix[index_list[-1], 'close']
-        rec_list.append(round((nxt_close-pre_close)/pre_close*100, 2))
+        rec_list.append(round((nxt_close - pre_close) / pre_close * 100, 2))
         result_list.append(rec_list)
     logger.info(len(result_list))
-    result_df = pd.DataFrame(result_list, columns=['code', 'name', 'industry', 'area', 'market_time', 'vol_rate', 'change'])
+    result_df = pd.DataFrame(result_list,
+                             columns=['code', 'name', 'industry', 'area', 'market_time', 'vol_rate', 'change'])
 
     result_df = result_df.sort_values('vol_rate', ascending=False)
     _dt.to_db(result_df, 'change_statis_volume')
@@ -162,10 +166,22 @@ def period_statis_from_hist():
     logger.info('period_statis_from_hist end!')
 
 
+def change_statis_month():
+    df = _dt.read_query('select code, date, p_change from hist_change_month')
+    change_statis = df.pivot(index='code', columns='date', values='p_change')
+    # change_statis['code'] = change_statis.index
+    change_statis.insert(0, 'code', change_statis.index)
+    columns = change_statis.columns
+    change_statis = change_statis.sort_values(by=columns[-1], ascending=False)
+    _dt.to_db(change_statis, 'hist_change_statis')
+    logger.info(change_statis)
+
+
 if __name__ == '__main__':
+    logger.info('start main')
+    change_statis_month()
     # period_statis_from_hist()
-    period_statis(ktype='M', db_name='change_statis_month')
+    # period_statis(ktype='M', db_name='change_statis_month')
     # period_statis(period=-4, ktype='W', db_name='change_statis_week')
     # period_statis(period=-5, ktype='D', db_name='change_statis_day')
-    multi_volume_appear()
-
+    # multi_volume_appear()
