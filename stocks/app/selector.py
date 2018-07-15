@@ -37,18 +37,34 @@ QUATO_WEIGHT = {
 }
 
 
-def select_from_change_month():
-    change_df = _dt.read_query('select * from hist_change_statis')
+def select_from_change_week():
+    change_df = _dt.read_query('select * from hist_change_statis_week')
     columns = change_df.columns
     for col in columns[1::]:
-        logger.info('hist_change_statis sorted by column %s' % col)
+        logger.info('hist_change_statis_week sorted by column %s' % col)
         change_df = change_df.sort_values(by=col, ascending=False)
-        target_change = change_df[change_df[col] >= 25.0]
+        target_change = change_df[change_df[col] >= 15.0]
         if target_change is None or target_change.empty is True:
             continue
         codes = list(target_change['code'])
         select_result(codes, filename=col)
-    logger.info('select from month change finished!')
+    logger.info('finished!')
+
+
+def select_from_change_month():
+    change_df = _dt.read_query('select * from hist_change_statis')
+    columns = change_df.columns
+    for col in columns[1::]:
+        if col != '2018-07':
+            continue
+        logger.info('hist_change_statis sorted by column %s' % col)
+        change_df = change_df.sort_values(by=col, ascending=False)
+        target_change = change_df[change_df[col] >= 15.0]
+        if target_change is None or target_change.empty is True:
+            continue
+        codes = list(target_change['code'])
+        select_result(codes, filename=col)
+    logger.info('finished!')
 
 
 

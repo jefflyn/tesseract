@@ -39,6 +39,8 @@ LAST_DAY_THIS_WEEK = local.ceil('week').shift(days=-2).format(DATE_FORMAT_DEFAUL
 FIRST_DAY_LAST_WEEK = local.floor('week').shift(weeks=-1).format(DATE_FORMAT_DEFAULT)
 #上周最后一天
 LAST_DAY_LAST_WEEK = local.ceil('week').shift(weeks=-1).shift(days=-2).format(DATE_FORMAT_DEFAULT)
+#6周前第一天
+FIRST_DAY_6_WEEK = local.ceil('week').shift(weeks=-8).shift(days=-2).format(DATE_FORMAT_DEFAULT)
 
 """
 月
