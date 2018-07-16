@@ -1,3 +1,9 @@
+"""
+历史交易数据
+Created on 2018/07/14
+@author: linjingu
+@group : guru.com
+"""
 import datetime as dt
 from datetime import datetime
 

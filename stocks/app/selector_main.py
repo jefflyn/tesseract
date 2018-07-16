@@ -16,7 +16,7 @@ pd.set_option('max_rows', 300)
 
 if __name__ == '__main__':
     logger.info('start main')
-    selector.select_from_change_week()
+    # selector.select_from_change_week()
     # selector.select_from_change_month()
     # selector.select_from_all()
     # selector.select_from_subnew(fname='subnew')

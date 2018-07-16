@@ -15,6 +15,9 @@ weekago = (datetime.datetime.now() + oneweek).strftime('%Y%m%d')
 INDEX_DICT = {'000001': '上证指数', '000016': '上证50', '000300': '沪深300',
               '399001': '深证成指', '399005': '中小板指', '399006': '创业板指'}
 
+basics = pd.read_csv("../data/basics.csv", encoding="utf-8")
+basics['code'] = basics['code'].astype('str').str.zfill(6)
+
 
 def single_get_first(unicode1):
     str1 = unicode1.encode('gbk')
@@ -88,20 +91,19 @@ def get_letter(string, upper=True):
         return charstr
 
 
-"""
-marketTimeFrom: yyyymmdd
-"""
-
 
 def get_subnew(cyb=False, marketTimeFrom=None):
+    """
+    marketTimeFrom: yyyymmdd
+    """
     if marketTimeFrom == None:
         marketTimeFrom = oneyearago
-    basics = get_basics_fromh5(excludeCyb=cyb)
+
     # filter unused code
     if cyb is False:
-        basics = basics[basics['code'].str.get(0) != '3']
-    basics = basics[(basics.timeToMarket >= int(marketTimeFrom)) & (basics.timeToMarket < int(weekago))]
-    return basics
+        _bsc = basics[basics['code'].str.get(0) != '3']
+        _bsc = _bsc[(_bsc.timeToMarket >= int(marketTimeFrom)) & (_bsc.timeToMarket < int(weekago))]
+    return _bsc
 
 
 def format_percent(df=None, columns=[], precision=2):
@@ -110,9 +112,6 @@ def format_percent(df=None, columns=[], precision=2):
     for columm in columns:
         df[columm] = df[columm].apply(lambda x: str(round(x, precision)) + '%')
 
-
-"""
-"""
 
 
 def get_latest_h5(code=None, excludeCyb=False):
@@ -164,8 +163,8 @@ def get_monitor_codes(flag=None):
 
 
 def get_all_codes(excludeCyb=False):
-    basics = get_basics(excludeCyb=excludeCyb)
-    return list(basics['code'])
+    _bsc = get_basics(excludeCyb=excludeCyb)
+    return list(_bsc['code'])
 
 
 def get_k_data(code=None, start=None, end=None):
@@ -221,11 +220,7 @@ index: code
 def get_basics(code=None, excludeCyb=False, index=False, before=None):
     if index == True:
         return INDEX_DICT[code]
-
-    data = pd.read_csv("../data/basics.csv", encoding="utf-8")
-    data['code'] = data['code'].astype('str').str.zfill(6)
-
-    data = filter_basic(basics=data, excludeCyb=excludeCyb, before=before)
+    data = filter_basic(_basics=basics, excludeCyb=excludeCyb, before=before)
 
     if code != None:
         data = data[data.code == code]
@@ -266,16 +261,16 @@ def filter_cyb(datadf):
 
 
 ##
-def filter_basic(basics, excludeCyb=False, before=None):
+def filter_basic(_basics=None, excludeCyb=False, before=None):
     # filter unused code
     if excludeCyb is True:
-        basics = basics[basics['code'].str.get(0) != '3']
+        _basics = _basics[_basics['code'].str.get(0) != '3']
     if before is not None:
-        basics = basics[(basics['timeToMarket'] > 0) & (basics['timeToMarket'] <= before)]
+        _basics = _basics[(_basics['timeToMarket'] > 0) & (_basics['timeToMarket'] <= before)]
     else:
         before = _dt.DATE_BEFORE_7_DAYS_SIMP
-        basics = basics[(basics['timeToMarket'] > 0) & (basics['timeToMarket'] <= int(before))]
-    return basics
+        _basics = _basics[(_basics['timeToMarket'] > 0) & (_basics['timeToMarket'] <= int(before))]
+    return _basics
 
 
 def get_stock_data(type='i', filename=None, encoding='gbk', sep='\t', excludeCyb=True):
