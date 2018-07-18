@@ -1,24 +1,18 @@
-import sys
-from sys import argv
-import numpy as np
-import pandas as pd
 import datetime
+import sys
 from datetime import datetime as dt
-import tushare as ts
+from sys import argv
 
-from stocks.app import realtime
-from stocks.app import falco
-from stocks.app import _utils
-from stocks.app import report
-from stocks.data import _datautils
+import pandas as pd
 import stocks.base.dbutils as _dt
+import tushare as ts
+from stocks.app import falco
+from stocks.base.logging import logger
+from stocks.data import _datautils
 from stocks.gene import limitup
-from stocks.gene import wave
 from stocks.gene import maup
 from stocks.gene import upnday
-from stocks.data.concept import constants as CCONTS
-from stocks.data.industry import constants as ICONTS
-from stocks.base.logging import logger
+from stocks.gene import wave
 
 pd.set_option('display.width', 2000)
 pd.set_option('max_columns', 50)
@@ -84,13 +78,13 @@ def select_from_all(excludeCyb=True, fname='all'):
     # logger.info(result)
 
 
-"""
-return specific subnew code list
-fromTime: yyyymmdd
-"""
 
 
 def select_from_subnew(fromTime=None, fname='subnew'):
+    """
+    return specific subnew code list
+    fromTime: yyyymmdd
+    """
     subnewbasic = _datautils.get_subnew(marketTimeFrom=fromTime)
     codes = list(subnewbasic['code'])
     logger.info('select_from_subnew start to process... total size: %d' % len(codes))
@@ -116,15 +110,6 @@ def select_from_industry(name, fname='industry'):
     logger.info('select_from_industry finished! result size: %d' % len(result.index.get_values()))
     # logger.info(result)
 
-
-def select_xxx(fname='xxx'):
-    codes = _datautils.get_app_codes()
-    result = select_result(codes, filename=fname)
-
-
-"""
-latest select info 
-"""
 
 
 def select_result(codeset, filename=''):

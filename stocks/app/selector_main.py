@@ -4,6 +4,7 @@ from stocks.data import _datautils as _dt
 from stocks.data.concept import constants as CCONTS
 from stocks.data.industry import constants as ICONTS
 from stocks.base.logging import logger
+import stocks.data.etl.notices as notice
 
 """
 don't commit this file
@@ -22,9 +23,12 @@ if __name__ == '__main__':
     # selector.select_from_subnew(fname='subnew')
     # selector.select_from_concepts(CCONTS.TSL, 'tsl')
     # selector.select_from_industry(ICONTS.SPYL, 'spyl')
-    # selector.select_from_result(_dt.get_ot_codes(), 'ot')
-    # selector.select_from_result(_dt.get_app_codes(), 'app')
-    # selector.select_from_result(_dt.get_monitor_codes('my'), 'my')
+    # selector.select_result(_dt.get_ot_codes(), 'ot')
+    # selector.select_result(_dt.get_app_codes(), 'app')
+    # selector.select_result(_dt.get_monitor_codes('my'), 'my')
+    selector.select_result(notice.get_notices_code('股权转让'), 'notice_stock_transfer')
+    selector.select_result(notice.get_notices_code('重大资产重组'), 'notice_asset_reorg')
+
 
 
 

@@ -212,12 +212,11 @@ def get_basics_fromh5(code=None, excludeCyb=False):
     return data
 
 
-"""
-index: code
-"""
-
 
 def get_basics(code=None, excludeCyb=False, index=False, before=None):
+    """
+    index: code
+    """
     if index == True:
         return INDEX_DICT[code]
     data = filter_basic(_basics=basics, excludeCyb=excludeCyb, before=before)
