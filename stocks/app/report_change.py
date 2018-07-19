@@ -169,22 +169,20 @@ def period_statis_from_hist():
 def change_statis_month():
     df = _dt.read_query('select code, date, p_change from hist_change_month')
     change_statis = df.pivot(index='code', columns='date', values='p_change')
-    # change_statis['code'] = change_statis.index
     change_statis.insert(0, 'code', change_statis.index)
     columns = change_statis.columns
     change_statis = change_statis.sort_values(by=columns[-1], ascending=False)
-    _dt.to_db(change_statis, 'hist_change_statis_month')
+    _dt.to_db(change_statis, 'hist_change_month_statis')
     logger.info('finished!')
 
 
 def change_statis_week():
     df = _dt.read_query('select code, date, p_change from hist_change_week')
     change_statis = df.pivot(index='code', columns='date', values='p_change')
-    # change_statis['code'] = change_statis.index
     change_statis.insert(0, 'code', change_statis.index)
     columns = change_statis.columns
     change_statis = change_statis.sort_values(by=columns[-1], ascending=False)
-    _dt.to_db(change_statis, 'hist_change_statis_week')
+    _dt.to_db(change_statis, 'hist_change_week_statis')
     logger.info('finished!')
 
 
