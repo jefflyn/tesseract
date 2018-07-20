@@ -19,6 +19,15 @@ basics = pd.read_csv("../data/basics.csv", encoding="utf-8")
 basics['code'] = basics['code'].astype('str').str.zfill(6)
 
 
+"""
+get codes
+"""
+def get_code_by_industry(industry=None):
+    if industry != None:
+        data = basics[basics.industry == industry]
+    return list(data['code'])
+
+
 def single_get_first(unicode1):
     str1 = unicode1.encode('gbk')
     try:

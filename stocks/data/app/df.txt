@@ -1,5 +1,6 @@
 name code cost share bottom
 shenwu 000820 16.586 100 6.86
 weixink 603676 17.675 1000 15.53
+fenglong 002931 45.65 200 43.46
 
 

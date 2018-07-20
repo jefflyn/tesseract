@@ -32,8 +32,8 @@ def view_hist_data():
     t+0, none type price and faster than get_h_data
     :return: date open high close low volume price_change p_change ma5 ma10 ma20 v_ma5 v_ma10 v_ma20
     """
-    histdf = ts.get_hist_data(code='603676', ktype='M')
-    logger.info(histdf)
+    histdf = ts.get_hist_data(code='603676', ktype='w')
+    print(histdf)
 
 
 def view_k_data():
@@ -60,5 +60,5 @@ def view_notices_content():
 
 if __name__ == '__main__':
     logger.info('__main__')
-    view_notices()
+    view_hist_data()
     # view_notices_content()

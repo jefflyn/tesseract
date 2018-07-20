@@ -189,6 +189,7 @@ def change_statis_week():
 if __name__ == '__main__':
     logger.info('start main')
     change_statis_week()
+    change_statis_month
     # period_statis_from_hist()
     # period_statis(ktype='M', db_name='change_statis_month')
     # period_statis(period=-4, ktype='W', db_name='change_statis_week')

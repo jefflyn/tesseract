@@ -100,4 +100,4 @@ def hist_data_month_extract(n=6):
 if __name__ == '__main__':
     logger.info('__main__')
     hist_data_week_extract()
-    # hist_data_month_extract()
+    hist_data_month_extract()
