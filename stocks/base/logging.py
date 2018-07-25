@@ -1,4 +1,5 @@
 import logging
+import os
 import os.path
 import time
 
@@ -11,9 +12,8 @@ logger = logging.getLogger()
 logger.setLevel(logging.INFO)  # Log等级总开关
 # 第二步，创建一个handler，用于写入日志文件
 rq = time.strftime('%Y%m%d', time.localtime(time.time()))
-os.chdir('/Users/linjingu/work/machine-learning/stocks/base')
-log_path = os.path.dirname(os.getcwd()) + '/logs/'
-log_name = log_path + rq + '.log'
+logpath = os.getenv('STOCKS_HOME') + 'logs/'
+log_name = logpath + rq + '.log'
 logfile = log_name
 fh = logging.FileHandler(logfile, mode='w')
 fh.setLevel(logging.DEBUG)  # 输出到file的log等级的开关

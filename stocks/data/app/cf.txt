@@ -1,5 +1,5 @@
 name code cost share bottom
-shujug 603881 40 0 35
+shuju 603881 40 0 35
 yilite 600197 20 0 17.45
 zhongwen 600373 14.69 1000 11.3
 qingang 601326 5.259 8200 3.65
