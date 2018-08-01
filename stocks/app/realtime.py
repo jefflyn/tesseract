@@ -7,7 +7,7 @@ import pandas as pd
 import time
 from tkinter import *
 
-pd.set_option('display.width',800)
+pd.set_option('display.width', 1000)
 
 include_files = {
     'pa': '../data/app/pa.txt',

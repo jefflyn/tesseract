@@ -6,6 +6,7 @@ import pandas as pd
 import tushare as ts
 from stocks.base.logging import logger
 import stocks.base.dbutils as _dt
+from stocks.data import _datautils
 from stocks.app import _dateutil
 
 
@@ -31,7 +32,7 @@ def basics_to_hdf5():
 
 
 def hist_volume_to_csv():
-    basics = _dt.get_basics(excludeCyb=False)
+    basics = _datautils.get_basics(excludeCyb=False)
     day_df = pd.DataFrame(columns=['code', 'date', 'open', 'high', 'low', 'close', 'volume'])
     week_df = pd.DataFrame(columns=['code', 'date', 'open', 'high', 'low', 'close', 'volume'])
     month_df = pd.DataFrame(columns=['code', 'date', 'open', 'high', 'low', 'close', 'volume'])
