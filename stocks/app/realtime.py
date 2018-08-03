@@ -31,13 +31,17 @@ def format_realtime(df):
     df['high'] = df['high'].apply(lambda x: '^' + str(round(float(x), 2)))
     df['bottom'] = df['bottom'].apply(lambda x: '[' + str(x) )
     df['top'] = df['top'].apply(lambda x: str(x) + ']')
-    df['cost'] = df['cost'].apply(lambda x: '<' + str(round(x, 2)))
+    df['cost'] = df['cost'].apply(lambda x: '<' + str(round(x, 2)) + ', ')
     df['share'] = df['share'].apply(lambda x: str(round(x, 2)) + '>')
+    df.insert(15, 'cost-share', df['cost'] + df['share'])
     df['change'] = df['change'].apply(lambda x: str(round(x, 2)) + '%')
     df['profit_perc'] = df['profit_perc'].apply(lambda x: str(round(x, 2)) + '%')
     df['uspace'] = df['uspace'].apply(lambda x: str(round(x, 2)) + '%')
     df['dspace'] = df['dspace'].apply(lambda x: str(round(x, 2)) + '%')
     df['position'] = df['position'].apply(lambda x: str(round(x, 2)) + '%')
+
+    df = df.drop('cost', 1)
+    df = df.drop('share', 1)
     return df
 
 def re_exe(file=None, inc=3, sortby=None):

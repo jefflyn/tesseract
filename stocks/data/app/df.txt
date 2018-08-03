@@ -1,6 +1,6 @@
 name code cost share bottom
 shenwu 000820 16.586 100 6.86
-weixin 603676 16.635 1600 15.53
+weixin 603676 16.047 2200 15.53
 
 
 
