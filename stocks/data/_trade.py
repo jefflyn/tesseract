@@ -166,6 +166,6 @@ if __name__ == '__main__':
     # get_hist_trade()
 
     # view_hist_data()
-    view_limitup_hist()
+    # view_limitup_hist()
 
     trade.close()

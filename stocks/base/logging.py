@@ -12,7 +12,7 @@ logger = logging.getLogger()
 logger.setLevel(logging.INFO)  # Log等级总开关
 # 第二步，创建一个handler，用于写入日志文件
 rq = time.strftime('%Y%m%d', time.localtime(time.time()))
-logpath = os.getenv('STOCKS_HOME') + 'logs/'
+logpath = os.getenv('STOCKS_HOME') + '/logs/'
 log_name = logpath + rq + '.log'
 logfile = log_name
 fh = logging.FileHandler(logfile, mode='w')

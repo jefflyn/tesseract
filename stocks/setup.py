@@ -1,5 +1,7 @@
 from setuptools import setup
 
+##pip install --index https://mirrors.ustc.edu.cn/pypi/web/simple/ virtualenv
+
 setup(
    name='guru',
    version='0.1',

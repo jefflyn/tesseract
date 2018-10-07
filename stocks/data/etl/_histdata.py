@@ -4,19 +4,14 @@ Created on 2018/07/14
 @author: linjingu
 @group : guru.com
 """
-import datetime as dt
-from datetime import datetime
 
-import numpy as np
 import pandas as pd
-
 import tushare as ts
 
-import stocks.base.dateutils as dateutil
+import stocks.base.dateconst as dconst
+import stocks.base.dbutils as _dt
 from stocks.base.logging import logger
 from stocks.data import _datautils
-import stocks.base.dbutils as _dt
-import stocks.base.dateconst as dconst
 
 pd.set_option('display.width', 800)
 
