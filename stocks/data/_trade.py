@@ -5,7 +5,8 @@ import numpy as np
 import pandas as pd
 
 import tushare as ts
-import stocks.base.dbutils as _dt
+import stocks.base.dbutils as dbutils
+import stocks.data._datautils as _dt
 from stocks.base.logging import logger
 
 trade = pd.HDFStore('../data/trade.h5', complevel=9, complib='blosc')
@@ -155,15 +156,13 @@ def view_hist_data():
 
 def view_limitup_hist():
     histdf = trade.get('k_limitup_hist')
-    _dt.to_db(histdf, 'hist_limitup')
+    dbutils.to_db(histdf, 'hist_limitup')
 
 
 if __name__ == '__main__':
-
+    get_hist_trade()
     append_latest_trade()
     get_hist_limitup_data()
-
-    # get_hist_trade()
 
     # view_hist_data()
     # view_limitup_hist()

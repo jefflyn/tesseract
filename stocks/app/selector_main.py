@@ -20,7 +20,7 @@ if __name__ == '__main__':
     # selector.select_from_change_week()
     # selector.select_from_change_month()
     selector.select_from_subnew(fname='subnew')
-    selector.select_from_all()
+    # selector.select_from_all()
     # selector.select_from_concepts(CCONTS.RGZN, 'rgzn')
     # selector.select_from_industry(ICONTS.YS, 'ysjs')
     # selector.select_result(_dt.get_ot_codes(), 'ot')
