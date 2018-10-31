@@ -8,6 +8,7 @@ import time
 from tkinter import *
 
 pd.set_option('display.width', 1000)
+pd.set_option('display.max_columns', 100)
 
 include_files = {
     'pa': '../data/app/pa.txt',

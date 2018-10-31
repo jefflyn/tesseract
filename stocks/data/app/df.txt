@@ -1,6 +1,6 @@
 name code cost share bottom
-shenwu 000820 7.169 3700 6.09
-chuanheng 002895 52.891 100 8.393
+chuanheng 002895 52.891 100 8.4
+shenwu 000820 7.169 3700 5.76
 
 
 
