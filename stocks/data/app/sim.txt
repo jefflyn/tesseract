@@ -1,3 +1,4 @@
 name code cost share bottom
 huiwei 002888 18.433 400 18.2
 shangfeng 000672 8.824 1400 8
+shenwu 000820 7.05 1900 5.85
