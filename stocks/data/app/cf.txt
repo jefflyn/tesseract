@@ -1,5 +1,5 @@
 name code cost share bottom
-datagang 603881 31.198 300 21.52
+datagang 603881 29.482 700 21.52
 sanqi 002555 15.787 100 9.21
 shibao 002703 6.48 11100 3.15
 xujiahui 002561 9.931 5400 7.09
