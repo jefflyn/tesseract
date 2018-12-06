@@ -1,2 +1,2 @@
 name code cost share bottom
-chuanheng 002895 14.851 1200 10.76
+chuanheng 002895 14.413 1300 10.76
