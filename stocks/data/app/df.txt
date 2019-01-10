@@ -1,2 +1,8 @@
 name code cost share bottom
 chuanheng 002895 14.413 1300 10.76
+junzheng 601216 4.544 10200 2.46
+luchang 002813 25.47 500 22.52
+qingang 601326 5.259 8200 2.81
+tongling 000630 2.595 9600 1.91
+yin-ge 600069 3.3 0 2.64
+yinglite 000635 8.94 0 7.46
