@@ -1,4 +1,3 @@
-from datetime import date
 from datetime import datetime
 import datetime as dt
 import numpy as np
@@ -14,8 +13,8 @@ import matplotlib.dates as mdates
 import tushare as ts
 
 from stocks.data import _datautils
+import stocks.base.display
 
-pd.set_option('display.width', 600)
 
 todaystr = datetime.now().strftime('%Y-%m-%d')
 
@@ -39,6 +38,7 @@ def get_bottom(df=None, limit=20):
         idx = lastestrec.index.get_values()[0]
         status = lastestrec.at[idx, 'status']
         bottom = lastestrec.at[idx, 'begin_price'] if status == 'up' else lastestrec.at[idx, 'end_price']
+        bottom_price = bottom
         top = lastestrec.at[idx, 'end_price'] if status == 'up' else lastestrec.at[idx, 'begin_price']
 
         reclist = []
@@ -53,7 +53,7 @@ def get_bottom(df=None, limit=20):
             if abs(float(lastp)) < limit:
                 continue
             else:
-                bottom = lastrec.at[lastidx, 'begin_price'] if laststatus == 'up' else lastrec.at[lastidx, 'end_price']
+                bottom_price = lastrec.at[lastidx, 'begin_price'] if laststatus == 'up' else lastrec.at[lastidx, 'end_price']
                 if size == 1:
                     top = lastrec.at[lastidx, 'end_price'] if laststatus == 'up' else lastrec.at[lastidx, 'begin_price']
                 else:
@@ -69,7 +69,7 @@ def get_bottom(df=None, limit=20):
 
                 break
         reclist.append(code)
-        reclist.append(bottom)
+        reclist.append(bottom if bottom < bottom_price else bottom_price)
         reclist.append(top)
         # add three buy positions for wave periods
         reclist.append(top * 0.66)
@@ -403,7 +403,7 @@ def wave_to_str(wavedf=None, size=4, change=10):
 
 def tryBottom():
     # df = get_wave('399005', index=True)
-    df = get_wave('000663')
+    df = get_wave('300156')
     wave_to_str(df, size=10)
     print(df)
     bottom_def = get_bottom(df)
@@ -415,16 +415,16 @@ def tryBottom():
 if __name__ == '__main__':
     tryBottom()
     # get_wave()
-    filePath = "../data/app/pa.txt"
-    mystk = pd.read_csv(filePath, sep=' ')
-    mystk['code'] = mystk['code'].astype('str').str.zfill(6)
-    codes = list(mystk['code'])
-    codes = ['000710']
-    wavedflist = []
-    for code in codes:
-        wavedata = get_wave(code, start='2016-01-04')
-        result = format_wave_data(wavedata)
-        wavedflist.append(result)
-        print(wavedata)
-
-    plot_wave(wavedflist, 'wave.png')
+    # filePath = "../data/app/pa.txt"
+    # mystk = pd.read_csv(filePath, sep=' ')
+    # mystk['code'] = mystk['code'].astype('str').str.zfill(6)
+    # codes = list(mystk['code'])
+    # codes = ['000710']
+    # wavedflist = []
+    # for code in codes:
+    #     wavedata = get_wave(code, start='2016-01-04')
+    #     result = format_wave_data(wavedata)
+    #     wavedflist.append(result)
+    #     print(wavedata)
+    #
+    # plot_wave(wavedflist, 'wave.png')

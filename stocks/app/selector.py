@@ -62,7 +62,7 @@ def select_from_change_month():
 
 
 
-def select_from_all(excludeCyb=True, fname='all'):
+def select_from_all(excludeCyb=False, fname='all'):
     """
     select all stocks 
     :param excludeCyb: True

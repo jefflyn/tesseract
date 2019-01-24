@@ -101,17 +101,20 @@ def get_letter(string, upper=True):
 
 
 
-def get_subnew(cyb=False, marketTimeFrom=None):
+def get_subnew(cyb=True, marketTimeFrom=None):
     """
     marketTimeFrom: yyyymmdd
     """
     if marketTimeFrom == None:
         marketTimeFrom = oneyearago
 
+    """& (_bsc.timeToMarket < int(weekago))]
+    """
+    _bsc = basics[(basics.timeToMarket >= int(marketTimeFrom))]
     # filter unused code
     if cyb is False:
-        _bsc = basics[basics['code'].str.get(0) != '3']
-        _bsc = _bsc[(_bsc.timeToMarket >= int(marketTimeFrom)) & (_bsc.timeToMarket < int(weekago))]
+        _bsc = _bsc[_bsc['code'].str.get(0) != '3']
+
     return _bsc
 
 

@@ -4,11 +4,9 @@ import datetime
 import numpy as np
 import pandas as pd
 
-import tushare as ts
-
-from stocks.data import _datautils as dt
-
-pd.set_option('display.width', 600)
+from stocks.data import _datautils
+import stocks.base.dbutils as _dt
+import stocks.base.display
 
 histnum = 30
 lastmonthstr = (dtime.now() + datetime.timedelta(days=-histnum)).strftime('%Y-%m-%d')
@@ -26,7 +24,7 @@ def get_upnday(codes=None, n=0, change=None):
 
     upndata = []
     for code in code_list:
-        hist_data = dt.get_k_data(code, start=lastmonthstr)
+        hist_data = _datautils.get_k_data(code, start=lastmonthstr)
         if hist_data is None or len(hist_data) < 5:
             continue
         latest = hist_data.tail(1)
@@ -47,8 +45,15 @@ def get_upnday(codes=None, n=0, change=None):
         endp = 0.0
         ndays = 0.0
         volumes = [row[1]['volume'] for row in histndf.iterrows()]
-        vol_rate = volumes[0] / volumes[1]
-        is_multi_vol = True if (volumes[0] > volumes[1] * 2.1 or volumes[1] > volumes[2] * 2.1) else False
+        week_vol = []
+        n_vol = 5
+        for i in range(n_vol):
+            sub_vol = volumes[i + 1:i + 1 + n_vol]
+            week_vol.append(volumes[i] / np.mean(sub_vol))
+        max_v = np.max(week_vol[:2])
+        min_v = np.min(week_vol[2:n_vol])
+        is_multi_vol = round(max_v / min_v)
+
         for index, row in histndf.iterrows():
             open = float(row['open'])
             close = float(row['close'])
@@ -65,14 +70,14 @@ def get_upnday(codes=None, n=0, change=None):
             else:
                 ndays += 1
         # not matche the n-days-up rule
-        if (isndayup == False and ndays < n) or ndays < n:
+        if (isndayup is False and ndays < n) or ndays < n:
             continue
         else:
             if beginp == 0.0:
                 continue
             sumup = (endp - beginp) / beginp * 100
 
-        item = dt.get_basics(code)
+        item = _datautils.get_basics(code)
         idx = item.index.get_values()[0]
         nlist = []
         nlist.append(code)
@@ -81,12 +86,13 @@ def get_upnday(codes=None, n=0, change=None):
         nlist.append(item.at[idx, 'area'])
         nlist.append(item.at[idx, 'pe'])
         nlist.append(ndays)
-        nlist.append(round(sumup,2))
+        nlist.append(round(sumup, 2))
         nlist.append(is_multi_vol)
-        nlist.append(round(vol_rate, 2))
+        nlist.append(str(np.round(week_vol, 2)))
         upndata.append(nlist)
 
-    upndf = pd.DataFrame(upndata, columns=['code', 'name', 'industry', 'area', 'pe', 'updays', 'sumup', 'multi_vol', 'vol_rate'])
+    upndf = pd.DataFrame(upndata,
+                         columns=['code', 'name', 'industry', 'area', 'pe', 'updays', 'sumup', 'multi_vol', 'vol_rate'])
     upndf = upndf.sort_values(['updays', 'sumup'], ascending=[False, True])
     endtime = dtime.now()
     # print("process upnday data finish at [%s], total time: %ds" % (endtime, (endtime - starttime).seconds))
@@ -94,5 +100,9 @@ def get_upnday(codes=None, n=0, change=None):
 
 
 if __name__ == '__main__':
-    df = get_upnday('002902')
+    # basics = _datautils.get_basics()
+    # codes = list(basics['code'])
+    codes = ['300156']
+    df = get_upnday(codes)
     print(df)
+    # _dt.to_db(df, 'up_volume')

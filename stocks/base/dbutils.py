@@ -1,11 +1,7 @@
-import numpy as np
 import pandas as pd
-
-import tushare as ts
-
-import pymysql
-from sqlalchemy import create_engine
 import sqlalchemy as sa
+from sqlalchemy import create_engine
+
 from stocks.base.logging import logger
 
 engine = create_engine("mysql+pymysql://linjingu:linjingu@127.0.0.1:3306/stocks?charset=utf8")
