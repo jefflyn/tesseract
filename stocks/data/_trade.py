@@ -27,7 +27,7 @@ def get_hist_limitup_data():
     todaystr = datetime.strftime(today, '%Y-%m-%d') if startdate == None else startdate
 
     while todaystr > '2017-06-13':
-        limitupdf = pd.DataFrame(columns=['date','open','close','high','low','volume','code','p_change'])
+        limitupdf = pd.DataFrame(columns=['date', 'open', 'close', 'high', 'low', 'volume', 'code', 'p_change'])
         # limitupdf = pd.DataFrame()
         try:
             print(todaystr + ' get trade data >>>')
@@ -61,7 +61,8 @@ def get_hist_limitup_data():
                         hist_k = quotadata
                     limitupdf = limitupdf.append(hist_k, ignore_index=True)
                 except Exception as le:
-                    quotadata = {'date': todaystr, 'open':open, 'close':close, 'high':high, 'low': low, 'volume':volume, 'code': code, 'p_change':change}
+                    quotadata = {'date': todaystr, 'open': open, 'close': close, 'high': high, 'low': low,
+                                 'volume': volume, 'code': code, 'p_change': change}
                     limitupdf = limitupdf.append(pd.DataFrame(quotadata), ignore_index=True)
                     logger.info('    ' + str(le) + ', use today quota data')
 
@@ -77,6 +78,8 @@ def get_hist_limitup_data():
 """
 append the latest trade data every trade date
 """
+
+
 def append_latest_trade():
     logger.info('【append_latest_trade start】...')
     # trade.remove('latest')
@@ -120,7 +123,6 @@ def append_latest_trade():
         targetdatestr = datetime.strftime(today, '%Y-%m-%d')
 
 
-
 def get_hist_trade(startdate=None):
     oneday = dt.timedelta(-1)
     i = 0
@@ -133,7 +135,7 @@ def get_hist_trade(startdate=None):
             todaydf = _dt.get_totay_quotations(todaystr)
             size = len(todaydf.index.get_values())
             logger.info('    total size: ' + str(size))
-            #add date col
+            # add date col
             dates = [todaystr] * size
             todaydf.insert(0, 'date', dates)
 
@@ -150,8 +152,8 @@ def get_hist_trade(startdate=None):
 
 def view_hist_data():
     histdf = trade.get('hist')
-    #histdf.to_csv('hist_trade')
-    #_dt.to_db(histdf, 'hist_data')
+    # histdf.to_csv('hist_trade')
+    # _dt.to_db(histdf, 'hist_data')
 
 
 def view_limitup_hist():

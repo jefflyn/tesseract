@@ -52,7 +52,7 @@ def get_upnday(codes=None, n=0, change=None):
             week_vol.append(volumes[i] / np.mean(sub_vol))
         max_v = np.max(week_vol[:2])
         min_v = np.min(week_vol[2:n_vol])
-        is_multi_vol = round(max_v / min_v)
+        is_multi_vol = round(max_v / min_v, 2)
 
         for index, row in histndf.iterrows():
             open = float(row['open'])
