@@ -1,11 +1,15 @@
 import pandas as pd
 import sqlalchemy as sa
 from sqlalchemy import create_engine
-
+import pymysql
 from stocks.base.logging import logger
 
 engine = create_engine("mysql+pymysql://linjingu:linjingu@127.0.0.1:3306/stocks?charset=utf8")
 
+
+def get_db():
+    db = pymysql.connect(host='127.0.0.1', user='linjingu', passwd='linjingu', db='stocks', charset='utf8')
+    return db
 
 # save to db
 def to_db(data=None, tbname=None, if_exists='replace'):

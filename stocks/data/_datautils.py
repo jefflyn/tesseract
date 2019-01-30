@@ -1,10 +1,9 @@
 import datetime
-import numpy as np
 import pandas as pd
 
 import tushare as ts
 import stocks.base.dateconst as _dt
-
+from stocks.base.dbutils import read_sql
 
 todaystr = datetime.datetime.now().strftime('%Y-%m-%d')
 yeardays = datetime.timedelta(days=-365)
@@ -14,14 +13,11 @@ weekago = (datetime.datetime.now() + oneweek).strftime('%Y%m%d')
 
 INDEX_DICT = {'000001': '上证指数', '000016': '上证50', '000300': '沪深300',
               '399001': '深证成指', '399005': '中小板指', '399006': '创业板指'}
+INDEX_LIST = ['000001.SH', '000300.SH', '000016.SH', '000905.SH', '399001.SZ', '399005.SZ', '399006.SZ', '399008.SZ']
 
-basics = pd.read_csv("../data/basics.csv", encoding="utf-8")
-basics['code'] = basics['code'].astype('str').str.zfill(6)
+basics = read_sql("select * from basics", params=None)
 
 
-"""
-get codes
-"""
 def get_code_by_industry(industry=None):
     if industry != None:
         data = basics[basics.industry == industry]
@@ -100,7 +96,6 @@ def get_letter(string, upper=True):
         return charstr
 
 
-
 def get_subnew(cyb=True, marketTimeFrom=None):
     """
     marketTimeFrom: yyyymmdd
@@ -108,9 +103,9 @@ def get_subnew(cyb=True, marketTimeFrom=None):
     if marketTimeFrom == None:
         marketTimeFrom = oneyearago
 
-    """& (_bsc.timeToMarket < int(weekago))]
+    """& (_bsc.list_date < int(weekago))]
     """
-    _bsc = basics[(basics.timeToMarket >= int(marketTimeFrom))]
+    _bsc = basics[(basics.list_date >= int(marketTimeFrom))]
     # filter unused code
     if cyb is False:
         _bsc = _bsc[_bsc['code'].str.get(0) != '3']
@@ -123,18 +118,6 @@ def format_percent(df=None, columns=[], precision=2):
         return None
     for columm in columns:
         df[columm] = df[columm].apply(lambda x: str(round(x, precision)) + '%')
-
-
-
-def get_latest_h5(code=None, excludeCyb=False):
-    trade = pd.HDFStore('../data/trade.h5')
-    data = trade['latest']
-    if excludeCyb:
-        data = data[data['code'].str.get(0) != '3']
-    if code != None:
-        data = data[data.code == code]
-    trade.close()
-    return data
 
 
 def get_sz50():
@@ -213,18 +196,6 @@ def get_data(filepath=None, encoding='gbk', sep=','):
     return data
 
 
-def get_basics_fromh5(code=None, excludeCyb=False):
-    fundamental = pd.HDFStore('../data/fundamental.h5')
-    data = fundamental['basics']
-    if excludeCyb:
-        data = data[data['code'].str.get(0) != '3']
-    if code != None:
-        data = data[data.code == code]
-    fundamental.close()
-    return data
-
-
-
 def get_basics(code=None, excludeCyb=False, index=False, before=None):
     """
     index: code
@@ -236,22 +207,6 @@ def get_basics(code=None, excludeCyb=False, index=False, before=None):
     if code != None:
         data = data[data.code == code]
     data.index = list(data['code'])
-    return data
-
-
-def get_hist_k(ktype=None):
-    """
-    hist k data
-    :return: 
-    """
-    data = None
-    if ktype == 'W':
-        data = pd.read_csv("../data/hist_k_week.csv", encoding="utf-8")
-    elif ktype == 'M':
-        data = pd.read_csv("../data/hist_k_month.csv", encoding="utf-8")
-    else:
-        data = pd.read_csv("../data/hist_k_day.csv", encoding="utf-8")
-    data['code'] = data['code'].astype('str').str.zfill(6)
     return data
 
 
@@ -277,10 +232,10 @@ def filter_basic(_basics=None, excludeCyb=False, before=None):
     if excludeCyb is True:
         _basics = _basics[_basics['code'].str.get(0) != '3']
     if before is not None:
-        _basics = _basics[(_basics['timeToMarket'] > 0) & (_basics['timeToMarket'] <= before)]
+        _basics = _basics[(_basics['list_date'] > 0) & (_basics['list_date'] <= before)]
     else:
         before = _dt.DATE_BEFORE_7_DAYS_SIMP
-        _basics = _basics[(_basics['timeToMarket'] > 0) & (_basics['timeToMarket'] <= int(before))]
+        _basics = _basics[(_basics['list_date'] > 0) & (_basics['list_date'] <= int(before))]
     return _basics
 
 

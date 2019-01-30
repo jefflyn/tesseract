@@ -43,7 +43,7 @@ def file_name(file_dir):
                 continue
             filename = str.split('.')[0]
             nameletter = dt.get_letter(filename)
-            print("%s = '%s'" %(nameletter, str))  # 当前路径下所有非目录子文件
+            print("%s = '%s'" % (nameletter, str))  # 当前路径下所有非目录子文件
         break
 
 if __name__ == '__main__':

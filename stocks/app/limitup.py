@@ -1,12 +1,6 @@
 import sys
 from sys import argv
-
-import numpy as np
 import pandas as pd
-
-import pymysql
-from sqlalchemy import create_engine
-
 from stocks.gene import limitup
 
 pd.set_option('display.width', 600)

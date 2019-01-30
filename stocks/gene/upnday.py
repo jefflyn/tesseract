@@ -84,7 +84,6 @@ def get_upnday(codes=None, n=0, change=None):
         nlist.append(item.at[idx, 'name'])
         nlist.append(item.at[idx, 'industry'])
         nlist.append(item.at[idx, 'area'])
-        nlist.append(item.at[idx, 'pe'])
         nlist.append(ndays)
         nlist.append(round(sumup, 2))
         nlist.append(is_multi_vol)
@@ -92,7 +91,7 @@ def get_upnday(codes=None, n=0, change=None):
         upndata.append(nlist)
 
     upndf = pd.DataFrame(upndata,
-                         columns=['code', 'name', 'industry', 'area', 'pe', 'updays', 'sumup', 'multi_vol', 'vol_rate'])
+                         columns=['code', 'name', 'industry', 'area', 'updays', 'sumup', 'multi_vol', 'vol_rate'])
     upndf = upndf.sort_values(['updays', 'sumup'], ascending=[False, True])
     endtime = dtime.now()
     # print("process upnday data finish at [%s], total time: %ds" % (endtime, (endtime - starttime).seconds))

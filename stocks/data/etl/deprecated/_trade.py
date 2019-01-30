@@ -9,7 +9,7 @@ import stocks.base.dbutils as dbutils
 import stocks.data._datautils as _dt
 from stocks.base.logging import logger
 
-trade = pd.HDFStore('../data/trade.h5', complevel=9, complib='blosc')
+# trade = pd.HDFStore('../data/trade.h5', complevel=9, complib='blosc')
 
 
 def get_hist_limitup_data():

@@ -9,21 +9,20 @@ matplotlib.rcParams['font.sans-serif'] = 'SimHei'
 import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
 import matplotlib.dates as mdates
-
+import stocks.base.dateutils as _dateutil
 import tushare as ts
 
 from stocks.data import _datautils
 import stocks.base.display
 
 
-todaystr = datetime.now().strftime('%Y-%m-%d')
-
-"""
-take the bottom price when droped more than 20% by default
-"""
+todaystr = _dateutil.get_today()
 
 
 def get_bottom(df=None, limit=20):
+    """
+    take the bottom price when droped more than 20% by default
+    """
     starttime = datetime.now()
     if df is None:
         return df
@@ -202,12 +201,10 @@ def format_wave_data(wavedf=None, index=False):
     return newwavedf
 
 
-"""
-default get the recent one year data
-"""
-
-
 def get_wave(codes=None, index=False, start=None, end=None, beginlow=True, duration=0, pchange=0):
+    """
+    default get the recent one year data
+    """
     starttime = datetime.now()
     if start == None:
         bwdays = dt.timedelta(-730)
@@ -428,3 +425,9 @@ if __name__ == '__main__':
     #     print(wavedata)
     #
     # plot_wave(wavedflist, 'wave.png')
+
+    code_list = ['601216']
+    result = get_wave(code_list, index=False, start='2015-01-01')
+    bottom = get_bottom(result, 15)
+    print(result)
+    print(bottom)

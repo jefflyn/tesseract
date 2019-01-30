@@ -413,63 +413,6 @@ def get_warn_space(df):
     return (price - low)
 
 
-"""
-select from limitup
-"""
-
-
-def select_s2():
-    trade = pd.HDFStore('../data/trade.h5')
-    df = trade.select('k_limitup_hist')
-    limitupdf = df[(df['code'].str.get(0) != '3')][['code', 'p_change', 'date', 'low']]
-    # limitupdf = df[(df.code == '603533') & (df.p_change > 9.9)][['code','p_change','date','low']]
-    limitupdf = limitupdf.sort_values('date', ascending=True)
-    _dt.to_db(limitupdf, 'select2_limitup')
-    # 1.choose the active codes from the limitups which limitup at lease more than n
-    limitupcount = limitup.count(limitupdf, times=3, condition=[180, 1])
-    logger.info('limitupcount size: ' + str(len(limitupcount)))
-
-    codes = list(limitupcount['code'])
-    # 2.get the bottom price data
-    bottomdf = falco.get_monitor(codes)
-    bottomdf = pd.merge(bottomdf, limitupcount, on='code', how='left')
-    bottomdf['lmtspace'] = bottomdf[['price', 'lmtuplow']].apply(get_limitup_space, axis=1)
-    bottomdf['warn'] = bottomdf[['lmtspace', 'space']].apply(get_warn_space, axis=1)
-    logger.info('bottomdf size: ' + str(len(bottomdf)))
-
-    codes = list(bottomdf['code'])
-    # 3.ma data
-    madf = maup.get_ma(codes)
-    # logger.info(madf)
-    result = pd.merge(bottomdf, madf[['code', 'isup', 'ma5', 'ma10', 'ma20', 'ma30', 'ma60', 'ma30std', 'ma10_space']],
-                      on='code', how='left')
-    result = result.sort_values(['space', 'lmtuplow'], axis=0, ascending=[True, True], inplace=False, kind='quicksort',
-                                na_position='last')
-
-    # format
-    result['change'] = result['change'].apply(lambda n: str(round(n, 2)) + '%')
-    # result['space'] = result['space'].apply(lambda n: str(round(n, 2)) + '%')
-    # result['lmtspace'] = result['lmtspace'].apply(lambda n: str(round(n, 2)) + '%')
-
-    # save
-    result.to_csv('select2.csv')
-    _dt.to_db(result, 'select2')
-
-    wavecodes = list(result['code'])
-    # # get wave data
-    # wavedf = wave.get_wave(wavecodes[len(wavecodes) - 20 :]) #get 20
-    wavedf = wave.get_wave(wavecodes)  # get all
-    _dt.to_db(wavedf, 'select2_wave')
-
-    # # figure display
-    # listdf = []
-    for code in wavecodes:
-        listdf = []
-        wdf = wavedf[wavedf.code == code]
-        listdf.append(wave.format_wave_data(wdf))
-        wave.plot_wave(listdf, filename='./wave/' + code + '.png')
-
-
 def selecttest():
     logger.info(select_result('603083'))
 

@@ -13,9 +13,6 @@ import stocks.base.dbutils as _dt
 from stocks.base.logging import logger
 from stocks.data import _datautils
 
-pd.set_option('display.width', 800)
-
-
 
 def hist_data_week_extract(n=8):
     """

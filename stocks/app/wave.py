@@ -1,16 +1,7 @@
 import sys
 from sys import argv
 
-import numpy as np
-import pandas as pd
-
-import pymysql
-from sqlalchemy import create_engine
-
-from stocks.gene import limitup
 from stocks.gene import wave
-
-pd.set_option('display.width', 600)
 
 if __name__ == '__main__':
     if len(argv) < 2:

@@ -1,10 +1,4 @@
 from stocks.app import report
-from stocks.app import _utils
-from stocks.data import _datautils
-from stocks.data import _reference
-from stocks.gene import maup
-from stocks.gene import upnday
-
 
 if __name__ == '__main__':
     content = """  <html>  <head>  <meta name="pdfkit-page-size" content="Legal"/>  <meta name="pdfkit-orientation" content="Landscape"/> </head><body>"""

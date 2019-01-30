@@ -1,16 +1,15 @@
 import os
 import platform
-import sqlite3
 from datetime import datetime
+
 import pdfkit
 
-conn = sqlite3.connect('../data/trade.db')
 
-"""
-include begin
-exclude end
-"""
 def is_inrange(num=None, begin=None, end=None):
+    """
+     begin: include
+     end: exclude
+    """
     if num is None or begin is None:
         return False
     if end is None:
@@ -24,7 +23,7 @@ def is_halting(code, latest_date_str=None):
     latest_date = datetime.strptime(latest_date_str, '%Y-%m-%d')
     delta = starttime - latest_date
     # excluding halting
-    if (delta.days > 3):
+    if delta.days > 3:
         print(code + ' halting...')
         return True
     else:
@@ -45,21 +44,9 @@ def chdir(path=None):
     os.chdir(path)
 
 
-def get_connection():
-    return conn
-
-
-def get_cursor():
-    return conn.cursor()
-
-
-def get_cursor():
-    return conn.cursor()
-
-
 def save_to_pdf(htmlstr=None, desc=None):
     options = {
-        'page-size': 'A4', # Letter
+        'page-size': 'A4',  # Letter
         'minimum-font-size': 33,
         'margin-top': '0.75in',
         'margin-right': '0.75in',
@@ -72,10 +59,10 @@ def save_to_pdf(htmlstr=None, desc=None):
         'no-outline': None,
     }
     sysstr = platform.system()
-    if (sysstr == "Windows"):
-        config=pdfkit.configuration(wkhtmltopdf=r'D:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe')
+    if sysstr == "Windows":
+        config = pdfkit.configuration(wkhtmltopdf=r'D:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe')
         pdfkit.from_string(htmlstr, desc, options=options, configuration=config)
-    elif (sysstr == "Linux"):
+    elif sysstr == "Linux":
         print("Call Linux tasks")
     else:
         pdfkit.from_string(htmlstr, desc, options=options)

@@ -1,10 +1,6 @@
 import pandas as pd
 from stocks.app import selector
-from stocks.data import _datautils as _dt
-from stocks.data.concept import constants as CCONTS
-from stocks.data.industry import constants as ICONTS
 from stocks.base.logging import logger
-import stocks.data.etl.notices as notice
 
 """
 don't commit this file

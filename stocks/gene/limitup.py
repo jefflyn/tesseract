@@ -9,9 +9,6 @@ from stocks.data import  _datautils
 from stocks.base.logging import logger
 
 
-trade = pd.HDFStore('../data/trade.h5', complevel=9, complib='blosc')
-histlimitup = trade.get('k_limitup_hist')
-
 LIMITUP_MIN = 9.9
 LIMITUP_MAX = 10.9
 LIMITUP_FROM_DAYS = -365
@@ -151,11 +148,14 @@ def count(df=None):
 
     return count_result
 
-if __name__ == '__main__':
-    lpdf = get_limitup_from_hist_k(['002813'])
-    print(lpdf)
 
-    df = get_limitup_from_hist_trade(['002813'])
-    print(df)
-    dfcount = count(df)
-    print(dfcount)
+if __name__ == '__main__':
+    print(get_today_limitup())
+
+    # lpdf = get_limitup_from_hist_k(['002813'])
+    # print(lpdf)
+    #
+    # df = get_limitup_from_hist_trade(['002813'])
+    # print(df)
+    # dfcount = count(df)
+    # print(dfcount)

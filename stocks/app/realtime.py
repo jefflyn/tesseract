@@ -6,9 +6,7 @@ from stocks.gene import wave
 import pandas as pd
 import time
 from tkinter import *
-
-pd.set_option('display.width', 1000)
-pd.set_option('display.max_columns', 100)
+import stocks.base.display
 
 include_files = {
     'pa': '../data/app/pa.txt',
@@ -30,7 +28,7 @@ def format_realtime(df):
     df['ask'] = df['ask'].apply(lambda x: str(round(float(x), 2)))
     df['low'] = df['low'].apply(lambda x: '_' + str(round(float(x), 2)))
     df['high'] = df['high'].apply(lambda x: '^' + str(round(float(x), 2)))
-    df['bottom'] = df['bottom'].apply(lambda x: '[' + str(x) )
+    df['bottom'] = df['bottom'].apply(lambda x: '[' + str(x))
     df['top'] = df['top'].apply(lambda x: str(x) + ']')
     df['cost'] = df['cost'].apply(lambda x: '<' + str(round(x, 2)) + ', ')
     df['share'] = df['share'].apply(lambda x: str(round(x, 2)) + '>')
@@ -45,6 +43,7 @@ def format_realtime(df):
     df = df.drop('share', 1)
     return df
 
+
 def re_exe(file=None, inc=3, sortby=None):
     while True:
         try:
@@ -56,6 +55,7 @@ def re_exe(file=None, inc=3, sortby=None):
         except Exception as e:
             print('excpetion: ' + str(e))
         time.sleep(inc)
+
 
 def get_realtime(file, sortby=None):
     filePath = include_files[file]
@@ -79,12 +79,12 @@ def get_realtime(file, sortby=None):
         cost = cost if cost > 1 else price
         share = hddf.ix[index, 'share']
         wavedf = wave.get_wave(code)
-        wavestr = wave.wave_to_str(wavedf,size=3)
+        wavestr = wave.wave_to_str(wavedf, size=3)
         bdf = wave.get_bottom(wavedf)
         bottom = hddf.ix[index, 'bottom']
         bottom_auto = bdf.ix[0, 'bottom']
         bottom_auto_flag = ''
-        if bottom is None or bottom_auto < bottom :
+        if bottom is None or bottom_auto < bottom:
             bottom = bottom_auto
             bottom_auto_flag = 'A'
 
@@ -130,14 +130,17 @@ def get_realtime(file, sortby=None):
         curt_data.append(price * share)
         data_list.append(curt_data)
 
-    df_append = pd.DataFrame(data_list, columns=['warn', 'change', 'cost', 'profit_amt', 'profit_perc', 'wave', 'bottom', 'uspace', 'dspace', 'top', 'position', 'share', 'total_amt'])
+    df_append = pd.DataFrame(data_list,
+                             columns=['warn', 'change', 'cost', 'profit_amt', 'profit_perc', 'wave', 'bottom', 'uspace',
+                                      'dspace', 'top', 'position', 'share', 'total_amt'])
     df = df.join(df_append)
 
     df = df[df.price > '1']
     # df['change'] = df['change'].astype('float32')
     # df['profit_perc'] = df['profit_perc'].astype('float32')
     if sortby == 'p':
-        df = df.sort_values(['profit_perc'], axis=0, ascending=True, inplace=False, kind='quicksort', na_position='last')
+        df = df.sort_values(['profit_perc'], axis=0, ascending=True, inplace=False, kind='quicksort',
+                            na_position='last')
     elif sortby == 'b':
         df = df.sort_values(['uspace'], axis=0, ascending=False, inplace=False, kind='quicksort', na_position='last')
     elif sortby == 't':
@@ -145,7 +148,10 @@ def get_realtime(file, sortby=None):
     else:
         df = df.sort_values(['change'], axis=0, ascending=True, inplace=False, kind='quicksort', na_position='last')
 
-    return df[['warn', 'code', 'name', 'price', 'change', 'bid', 'ask', 'low', 'high', 'wave', 'bottom', 'uspace', 'dspace', 'top', 'position', 'cost', 'share', 'total_amt','profit_amt', 'profit_perc']]
+    return df[
+        ['warn', 'code', 'name', 'price', 'change', 'bid', 'ask', 'low', 'high', 'wave', 'bottom', 'uspace', 'dspace',
+         'top', 'position', 'cost', 'share', 'total_amt', 'profit_amt', 'profit_perc']]
+
 
 if __name__ == '__main__':
     if len(argv) < 2:
@@ -157,13 +163,3 @@ if __name__ == '__main__':
     if file not in keys:
         print("File name NOT found. Try the followings: " + str(keys))
         sys.exit(0)
-
-
-
-
-
-
-
-
-
-

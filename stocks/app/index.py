@@ -73,8 +73,6 @@ def get_status():
 
     resultdf = resultdf.sort_values('position', axis=0, ascending=False, inplace=False, kind='quicksort', na_position='last')
 
-    # _datautils.to_db(resultdf, 'index_status')
-    resultdf.to_csv('index_status.csv')
     print("get index status finish...")
     return resultdf
 

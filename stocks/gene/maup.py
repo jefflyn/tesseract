@@ -1,15 +1,11 @@
-from datetime import date
 import datetime
 
 import numpy as np
 import pandas as pd
 
-import tushare as ts
-
-from stocks.data import _datautils as dt
 from stocks.app import _utils
+from stocks.data import _datautils as dt
 
-pd.set_option('display.width', 600)
 
 def get_ma(codes=None, start='2017-01-04', end=None):
     starttime = datetime.datetime.now()

@@ -65,7 +65,7 @@ def report_to_kk():
     attaches.append(att3)
 
     subj = "Stocks Report " + report.todaystr
-    to_users = ['649054380@qq.com','1677258052@qq.com']
+    to_users = ['649054380@qq.com', '1677258052@qq.com']
     ret = report.mail_with_attch(to_users, subject=subj, content=content, attaches=attaches)
     if ret:
         todaystr = datetime.now().strftime('%Y-%m-%d %H:%M:%S')

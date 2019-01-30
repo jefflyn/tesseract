@@ -47,9 +47,9 @@ def hist_volume_to_csv():
         if k_data_month is not None and len(k_data_month) > 0:
             month_df = month_df.append(k_data_month[['code', 'date', 'open', 'high', 'low', 'close', 'volume']], ignore_index=True)
 
-    _dt.to_db(day_df, tbname='hist_k_day')
-    _dt.to_db(week_df, tbname='hist_k_week')
-    _dt.to_db(month_df, tbname='hist_k_month')
+    # _dt.to_db(day_df, tbname='hist_k_day')
+    # _dt.to_db(week_df, tbname='hist_k_week')
+    # _dt.to_db(month_df, tbname='hist_k_month')
 
 
 if __name__ == '__main__':

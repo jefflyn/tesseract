@@ -12,7 +12,7 @@ class DataCollect(object):
         # 建立数据库连接，获取日线基础行情(开盘价，收盘价，最高价，最低价，成交量，成交额)
         db = pymysql.connect(host='127.0.0.1', user='linjingu', passwd='linjingu', db='stocks', charset='utf8')
         cursor = db.cursor()
-        sql_done_set = "SELECT * FROM stock_hist_day a where stock_code = '%s' and state_dt >= '%s' and state_dt <= '%s' order by state_dt asc" % (
+        sql_done_set = "SELECT * FROM hist_data_day a where ts_code = '%s' and trade_date >= '%s' and trade_date <= '%s' order by trade_date asc" % (
             in_code, start_dt, end_dt)
         cursor.execute(sql_done_set)
         done_set = cursor.fetchall()
@@ -27,12 +27,12 @@ class DataCollect(object):
         self.amount_list = []
         for i in range(len(done_set)):
             self.date_seq.append(done_set[i][0])
-            self.open_list.append(float(done_set[i][2]))
-            self.close_list.append(float(done_set[i][3]))
-            self.high_list.append(float(done_set[i][4]))
-            self.low_list.append(float(done_set[i][5]))
-            self.vol_list.append(float(done_set[i][6]))
-            self.amount_list.append(float(done_set[i][7]))
+            self.open_list.append(float(done_set[i][3]))
+            self.close_list.append(float(done_set[i][4]))
+            self.high_list.append(float(done_set[i][5]))
+            self.low_list.append(float(done_set[i][6]))
+            self.vol_list.append(float(done_set[i][7]))
+            self.amount_list.append(float(done_set[i][8]))
         cursor.close()
         db.close()
         # 将日线行情整合为训练集(其中self.train是输入集，self.target是输出集，self.test_case是end_dt那天的单条测试输入)

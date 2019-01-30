@@ -1,11 +1,7 @@
-import datetime as dt
-import time
-from datetime import datetime
 import pandas as pd
 import tushare as ts
 
 from stocks.data import _datautils
-from stocks.app import _utils
 from stocks.gene import wave
 
 

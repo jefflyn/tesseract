@@ -5,13 +5,10 @@ import numpy as np
 import tushare as ts
 import stocks.base.dbutils as _dt
 
-pd.set_option('display.width', 600)
-
-TRUMP_GENERAL='G'
-TRUMP_GOLDEN='GG'
-TRUMP_MARSHAL='M'
+TRUMP_GENERAL = 'GENERAL'
+TRUMP_GOLDEN = 'GOLD'
+TRUMP_MARSHAL = 'MARSHAL'
 todaystr = datetime.now().strftime('%Y-%m-%d')
-
 
 
 def get_trump(codes=None, start=None, end=None):
@@ -22,7 +19,8 @@ def get_trump(codes=None, start=None, end=None):
     code_list = []
     if isinstance(codes, str):
         code_list.append(codes)
-    else: code_list = codes
+    else:
+        code_list = codes
 
     trumpdf_list = []
     for code in code_list:
@@ -44,7 +42,7 @@ def get_trump(codes=None, start=None, end=None):
         start_idx = 1
         trump_lists = []
         while start_idx <= last_idx:
-            pre_k = hist_k[start_idx-1:start_idx]
+            pre_k = hist_k[start_idx - 1:start_idx]
             next4k = hist_k[start_idx:start_idx + 4]
             curtk = next4k.head(1)
             next3k = next4k.tail(3)
@@ -71,8 +69,8 @@ def get_trump(codes=None, start=None, end=None):
             mean_cls_n3k = np.mean(next3k.close)
 
             start_idx += 1
-            #multi volume appear, price raise and the next 3days min price higher than the bottom price, checkout
-            if curtvol > prevol * 1.8 and curtcls > precls and curtbtm < min_cls_n3k :
+            # multi volume appear, price raise and the next 3days min price higher than the bottom price, checkout
+            if curtvol > prevol * 1.8 and curtcls > precls and curtbtm < min_cls_n3k:
                 trump_list = []
                 trump_price = curttop
                 trump_grade = TRUMP_GENERAL
