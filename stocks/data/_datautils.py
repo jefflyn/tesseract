@@ -114,7 +114,7 @@ def get_subnew(cyb=True, marketTimeFrom=None):
 
 
 def format_percent(df=None, columns=[], precision=2):
-    if df == None:
+    if df is None:
         return None
     for columm in columns:
         df[columm] = df[columm].apply(lambda x: str(round(x, precision)) + '%')

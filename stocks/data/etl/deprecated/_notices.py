@@ -15,11 +15,10 @@ from stocks.data import _datautils
 pd.set_option('display.width', 800)
 
 
-
 def notices_extract():
     notices_extract_result = pd.DataFrame()
     codes = _datautils.get_all_codes(excludeCyb=True)
-    logger.info('total size %d' %len(codes))
+    logger.info('total size %d' % len(codes))
     total_size = 0
     for code in codes:
         notices = ts.get_notices(code=code, date=dconst.TODAY)
@@ -29,10 +28,9 @@ def notices_extract():
         notices.insert(0, 'code', code)
         notices_extract_result = notices_extract_result.append(notices, ignore_index=True)
 
-    logger.info('final extract size %d' %total_size)
+    logger.info('final extract size %d' % total_size)
     if notices_extract_result.empty is False:
         _dt.to_db(notices_extract_result, 'notices', if_exists='append')
-
 
 
 if __name__ == '__main__':

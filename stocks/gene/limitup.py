@@ -5,13 +5,19 @@ import numpy as np
 import pandas as pd
 import tushare as ts
 
-from stocks.data import  _datautils
+from stocks.data import _datautils
+from stocks.base import dbutils
 from stocks.base.logging import logger
 
 
 LIMITUP_MIN = 9.9
-LIMITUP_MAX = 10.9
 LIMITUP_FROM_DAYS = -365
+
+
+sql = "select h.trade_date, b.code, h.close, h.open, h.high, h.low, h.pct_change " \
+      "from hist_trade_day h inner join basics b on h.ts_code = b.ts_code " \
+          "where h.trade_date >='2018-01-01' and h.close = round(h.pre_close * 1.1, 2)"
+histlimitup = dbutils.read_query(sql)
 
 
 def get_today_limitup():
@@ -27,7 +33,7 @@ start: YYYY-MM-DD
 """
 def get_limitup_from_hist_trade(codes = None, isNature = True, start = None, end = None):
     starttime = datetime.datetime.now()
-    if start == None:
+    if start is None:
         days = datetime.timedelta(LIMITUP_FROM_DAYS)
         start = datetime.datetime.strftime(starttime + days, '%Y-%m-%d')
 
@@ -36,47 +42,17 @@ def get_limitup_from_hist_trade(codes = None, isNature = True, start = None, end
         code_list.append(codes)
     else:
         code_list = codes
-
     limitupdf = histlimitup[histlimitup.code.isin(code_list)]
-    limitupdf = limitupdf[limitupdf.date >= start]
+    limitupdf = limitupdf[limitupdf.trade_date >= start]
+    if limitupdf.empty is True:
+        return limitupdf
     if end is not None:
-        limitupdf = limitupdf[limitupdf.date <= end]
+        limitupdf = limitupdf[limitupdf.trade_date <= end]
     if isNature:
-        limitupdf = limitupdf[(limitupdf.p_change <= LIMITUP_MAX) & (limitupdf.high > limitupdf.low)]
+        print(limitupdf.pct_change)
+        limitupdf = limitupdf[limitupdf.high > limitupdf.low]
 
     return limitupdf
-
-"""
-from hist k data
-limitup default in one year 
-start: YYYY-MM-DD
-"""
-def get_limitup_from_hist_k(codes = None, start = None, end = None):
-    # print("get limitups... ")
-    starttime = datetime.datetime.now()
-    if start == None:
-        days = datetime.timedelta(LIMITUP_FROM_DAYS)
-        start = datetime.datetime.strftime(starttime + days, '%Y-%m-%d')
-    code_list = []
-    if isinstance(codes, str):
-        code_list.append(codes)
-    else:
-        code_list = codes
-
-    result = pd.DataFrame()
-    for code in code_list:
-        hist_data = ts.get_hist_data(code, start, end)
-        if hist_data is None or len(hist_data) == 0:
-            continue
-        hist_data.insert(0, 'date', hist_data.index)
-        hist_data.insert(1, 'code', code)
-        hist_data = hist_data[['code', 'date', 'close', 'p_change', 'low', 'high']]
-        hist_data = hist_data[(hist_data.p_change >= LIMITUP_MIN) & (hist_data.p_change <= LIMITUP_MAX) & (hist_data.high > hist_data.low)]
-        result = result.append(hist_data, ignore_index=True)
-    endtime = datetime.datetime.now()
-    # print("total time: %ds" % (endtime - starttime).seconds)
-    return result
-
 
 
 def count(df=None):
@@ -98,33 +74,33 @@ def count(df=None):
         days = datetime.timedelta(backward_days)
         start30 = datetime.datetime.strftime(starttime + days, '%Y-%m-%d')
         logger.debug('latest 30 days limitup from %s' %start30)
-        lupdf = group[group.date >= start30]
+        lupdf = group[group.trade_date >= start30]
         count_30d = lupdf.iloc[:, 0].size
 
         days = datetime.timedelta(backward_days*3+backward_days)
         qrt1st = datetime.datetime.strftime(starttime + days, '%Y-%m-%d')
         logger.debug('latest 1 quarter limitup from %s' % qrt1st)
-        lupdf = group[(group.date >= qrt1st) & (group.date < start30)]
+        lupdf = group[(group.trade_date >= qrt1st) & (group.trade_date < start30)]
         count_qrt1st = lupdf.iloc[:, 0].size
 
         days = datetime.timedelta(backward_days*6+backward_days)
         qrt2nd = datetime.datetime.strftime(starttime + days, '%Y-%m-%d')
         logger.debug('latest 2 quarter limitup from %s' % qrt2nd)
-        lupdf = group[(group.date >= qrt2nd) & (group.date < qrt1st)]
+        lupdf = group[(group.trade_date >= qrt2nd) & (group.trade_date < qrt1st)]
         count_qrt2nd = lupdf.iloc[:, 0].size
 
         days = datetime.timedelta(backward_days*9+backward_days)
         qrt3rd = datetime.datetime.strftime(starttime + days, '%Y-%m-%d')
         logger.debug('latest 3 quarter limitup from %s' % qrt3rd)
-        lupdf = group[(group.date >= qrt3rd) & (group.date < qrt2nd)]
+        lupdf = group[(group.trade_date >= qrt3rd) & (group.trade_date < qrt2nd)]
         count_qrt3rd = lupdf.iloc[:, 0].size
 
-        lupdf = group[group.date < qrt3rd]
+        lupdf = group[group.trade_date < qrt3rd]
         count_qrt4th = lupdf.iloc[:, 0].size
 
-        size = group.p_change.count()
-        mindate = group.date.min()
-        maxdate = group.date.max()
+        size = group.trade_date.count()
+        mindate = group.trade_date.min()
+        maxdate = group.trade_date.max()
         low = group.low.min() #the low in time limitup time zone
         high = group.high.max()
 

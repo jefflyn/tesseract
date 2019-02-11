@@ -1,6 +1,4 @@
-import numpy as np
 import pandas as pd
-
 import tushare as ts
 
 import stocks.base.dbutils as _dt
@@ -8,7 +6,7 @@ from stocks.app import _utils
 from stocks.base.logging import logger
 
 
-def get_forecast(year=2017, season=4, excludeCyb=True, startdate=None):
+def get_forecast(year=2019, season=4, excludeCyb=True, startdate=None):
     forecast = ts.forecast_data(year, season)
     if excludeCyb:
         forecast = forecast[forecast['code'].str.get(0) != '3']
@@ -18,11 +16,11 @@ def get_forecast(year=2017, season=4, excludeCyb=True, startdate=None):
     ranges = list(forecast['range'])
 
     rangefrom = []
-    rangeto =[]
+    rangeto = []
 
     for i in range(len(ranges)):
         rangestr = ranges[i]
-        logger.info('forecast range: %s' %rangestr)
+        logger.info('forecast range: %s' % rangestr)
         if _utils.isnumber(rangestr):
             rangefrom.append(rangestr)
             rangeto.append(rangestr)
@@ -51,7 +49,8 @@ def get_forecast(year=2017, season=4, excludeCyb=True, startdate=None):
     _dt.to_db(forecast, 'profit_forecast')
     return forecast
 
+
 if __name__ == '__main__':
-    pd.set_option('display.width', 800)
-    forecast = get_forecast(2018, 2, startdate='2018-06-01')
+    pd.set_option('display.width', 2000)
+    forecast = get_forecast(2018, 4, startdate='2019-01-01')
     logger.info(forecast)

@@ -39,9 +39,9 @@ def get_ma(codes=None, start='2017-01-04', end=None):
         ma250 = hist_data.tail(250).mean()['close']
 
         ma30ls = [ma5, ma10, ma20, ma30]
-        ma60ls = [ma5,ma10,ma20,ma30,ma60]
-        ma120ls = [ma5,ma10,ma20,ma30,ma60,ma90,ma120]
-        ma250ls = [ma5,ma10,ma20,ma30,ma60,ma90,ma120,ma250]
+        ma60ls = [ma5, ma10, ma20, ma30, ma60]
+        ma120ls = [ma5, ma10, ma20, ma30, ma60, ma90, ma120]
+        ma250ls = [ma5, ma10, ma20, ma30, ma60, ma90, ma120, ma250]
 
         ma30std = np.std(np.array(ma30ls))
         ma60std = np.std(np.array(ma60ls))
@@ -57,18 +57,17 @@ def get_ma(codes=None, start='2017-01-04', end=None):
         malist.append(row.at[idx, 'name'])
         malist.append(row.at[idx, 'industry'])
         malist.append(row.at[idx, 'area'])
-        malist.append(row.at[idx, 'pe'])
         malist.append(isup)
         malist.append(price)
-        malist.append(round(ma5,2))
-        malist.append(round(ma10,2))
-        malist.append(round(ma20,2))
-        malist.append(round(ma30,2))
-        malist.append(round(ma60,2))
-        malist.append(round(ma90,2))
-        malist.append(round(ma120,2))
-        malist.append(round(ma250,2))
-        malist.append(round(ma30std,3))
+        malist.append(round(ma5, 2))
+        malist.append(round(ma10, 2))
+        malist.append(round(ma20, 2))
+        malist.append(round(ma30, 2))
+        malist.append(round(ma60, 2))
+        malist.append(round(ma90, 2))
+        malist.append(round(ma120, 2))
+        malist.append(round(ma250, 2))
+        malist.append(round(ma30std, 3))
         malist.append(round((price - ma10) / ma10 * 100, 3))
         # malist.append(ma60std)
         # malist.append(ma120std)
@@ -76,8 +75,9 @@ def get_ma(codes=None, start='2017-01-04', end=None):
 
         madfdata.append(malist)
 
-    ma_df = pd.DataFrame(madfdata, columns=['code', 'name', 'industry', 'area', 'pe', 'isup', 'price', \
-                                      'ma5', 'ma10', 'ma20', 'ma30', 'ma60', 'ma90', 'ma120', 'ma250', 'ma30std', 'ma10_space'])#,'ma60std','ma120std','ma250std'])
+    ma_df = pd.DataFrame(madfdata, columns=['code', 'name', 'industry', 'area', 'isup', 'price', \
+                                            'ma5', 'ma10', 'ma20', 'ma30', 'ma60', 'ma90', 'ma120', 'ma250', 'ma30std',
+                                            'ma10_space'])  # ,'ma60std','ma120std','ma250std'])
     ma_df = ma_df.sort_values(by=['isup', 'ma10_space'], ascending=[False, True])
     endtime = datetime.datetime.now()
     # print("process ma data finish at [%s], total time: %ds" % (endtime, (endtime - starttime).seconds))
@@ -85,12 +85,11 @@ def get_ma(codes=None, start='2017-01-04', end=None):
 
 
 # filter ma data
-def get_ma_up(madf = None):
+def get_ma_up(madf=None):
     if madf is None:
         return madf
     result = madf[(madf.ma5 >= madf.ma10) & (madf.ma10 >= madf.ma20) & (madf.ma20 >= madf.ma30)]
     return result
-
 
 
 if __name__ == '__main__':

@@ -29,7 +29,7 @@ if __name__ == '__main__':
             df = ts.pro_bar(pro_api=pro, ts_code=stock_pool[i], asset='I', start_date=start_dt, end_date=end_dt)
             c_len = df.shape[0]
         except Exception as e:
-            print(e)
+            # print(e)
             logger.info('No DATA Code: ' + str(i))
             time.sleep(60)
             df = ts.pro_bar(pro_api=pro, ts_code=stock_pool[i], asset='I', start_date=start_dt, end_date=end_dt)

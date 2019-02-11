@@ -141,8 +141,6 @@ def select_result(codeset, filename=''):
             curt_data.append(row['name'])
             curt_data.append(basic.ix[code, 'industry'])
             curt_data.append(basic.ix[code, 'area'])
-            curt_data.append(basic.ix[code, 'timeToMarket'])
-            curt_data.append(basic.ix[code, 'pe'])
             curt_data.append(current_price)
 
             # get wave data and bottom top
@@ -171,8 +169,7 @@ def select_result(codeset, filename=''):
             curt_data.append(round(bottomdf.ix[0, 'buy3'], 2))
 
             # limit up data
-            limitupdf = limitup.get_limitup_from_hist_k(code)
-            limitupdf = limitup.get_limitup_from_hist_trade(code) if limitupdf.empty == True else limitupdf
+            limitupdf = limitup.get_limitup_from_hist_trade(code)
 
             # l1 = l1.append(lupdf, ignore_index=True)
             # l2 = l2.append(limitupdf, ignore_index=True)
@@ -241,7 +238,7 @@ def select_result(codeset, filename=''):
         beginIndex = endIndex
         endIndex = endIndex + limit
 
-    columns = ['code', 'name', 'industry', 'area', 'market_time', 'pe', 'price', 'wave', 'bottom', 'uspace%', 'dspace%',
+    columns = ['code', 'name', 'industry', 'area', 'price', 'wave', 'bottom', 'uspace%', 'dspace%',
                'top', 'position%', 'buy1', 'buy2', 'buy3',
                'count', 'count_30d', 'count_q1', 'count_q2', 'count_q3', 'count_q4', 'maxdate', 'lup_low', 'lup_high',
                'updays', 'sumup%', 'multi_vol', 'vol_rate', 'isup', 'ma5', 'ma10', 'ma20', 'ma30', 'ma60', 'ma90',
@@ -253,16 +250,14 @@ def select_result(codeset, filename=''):
     # _datautils.to_db(l1, 'limitup_hist')
     # _datautils.to_db(l2, 'limitup_quota')
     resultdf = resultdf[
-        ['code', 'name', 'industry', 'area', 'market_time', 'pe', 'price', 'wave', 'bottom', 'uspace%', 'dspace%',
+        ['code', 'name', 'industry', 'area', 'price', 'wave', 'bottom', 'uspace%', 'dspace%',
          'top', 'position%', 'buy1', 'buy2', 'buy3',
          'count', 'count_30d', 'count_q1', 'updays', 'sumup%', 'vol_rate', 'multi_vol', 'isup', 'count_q2', 'count_q3',
          'count_q4', 'maxdate', 'lup_low', 'lup_high',
          'ma5', 'ma10', 'ma20', 'ma30', 'ma60', 'ma90', 'ma120', 'ma250']]
     result_name = 'select_result_' + filename
     _dt.to_db(resultdf, result_name)
-    resultdf.to_csv(result_name + '.csv')
     _dt.to_db(wavedfset, 'select_wave_' + filename)
-    # wavedfset.to_csv('select_wave.csv')
     logger.info("stocks select finished!")
     return resultdf
 
