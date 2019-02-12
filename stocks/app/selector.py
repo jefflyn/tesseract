@@ -419,4 +419,4 @@ if __name__ == '__main__':
     codes = argv[1]
 
     result = select_result(codes)
-    print(result)
+    # print(result)

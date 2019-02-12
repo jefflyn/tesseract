@@ -1,17 +1,7 @@
-import pandas as pd
+from stocks.data import _datautils
 from stocks.app import selector
 from stocks.base.logging import logger
-import stocks.data._datautils as _dt
-
-
-"""
-don't commit this file
-"""
-
-pd.set_option('display.width', 2000)
-pd.set_option('max_columns', 50)
-pd.set_option('max_rows', 300)
-
+import stocks.base.display
 
 if __name__ == '__main__':
     logger.info('start main')
@@ -21,8 +11,9 @@ if __name__ == '__main__':
     # selector.select_from_all()
     # selector.select_from_concepts(CCONTS.RGZN, 'rgzn')
     # selector.select_from_industry(ICONTS.HXZY, 'hxzy')
-    selector.select_result(_dt.get_ot_codes(), 'ot')
-    # selector.select_result(_dt.get_app_codes(), 'app')
+    code_df = _datautils.get_ma_code('d')
+    codes = list(code_df['code'])
+    selector.select_result(codes, 'ma_d')
     # selector.select_result(_dt.get_monitor_codes('x'), 'x')
     # selector.select_result(notice.get_notices_code('股权转让'), 'notice_stock_transfer')
     # selector.select_result(notice.get_notices_code('重大资产重组'), 'notice_asset_reorg')

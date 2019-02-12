@@ -18,6 +18,13 @@ INDEX_LIST = ['000001.SH', '000300.SH', '000016.SH', '000905.SH', '399001.SZ', '
 basics = read_sql("select * from basics", params=None)
 
 
+def get_ma_code(grade='a'):
+    ma_sql = 'select distinct b.code from hist_ma_day m join basics b on m.ts_code = b.ts_code where up=:grade'
+    params = {'grade': grade}
+    df = read_sql(ma_sql, params=params)
+    return df
+
+
 def get_hold_trade(type=None, hold=1):
     hold_trace_sql = 'select * from hold_trace where 1=1 and hold=:hold'
     params = {'hold': hold}
@@ -110,7 +117,7 @@ def get_subnew(cyb=True, marketTimeFrom=None):
     """
     marketTimeFrom: yyyymmdd
     """
-    if marketTimeFrom == None:
+    if marketTimeFrom is None:
         marketTimeFrom = oneyearago
 
     """& (_bsc.list_date < int(weekago))]
@@ -147,28 +154,8 @@ def get_app_codes():
     return codes
 
 
-def get_ot_codes():
-    ot = get_data('../data/app/other.txt', sep=' ')['code'].astype('str').str.zfill(6)
-    codes = list(ot)
-    return codes
-
-
-def get_monitor_codes(flag=None):
-    codes = None
-    if flag == 'ot':
-        ot = get_data('../data/app/monitorot.txt', sep=' ')['code'].astype('str').str.zfill(6)
-        codes = list(ot)
-    elif flag == 'my':
-        my = get_data('../data/app/monitormy.txt', sep=' ')['code'].astype('str').str.zfill(6)
-        codes = list(my)
-    elif flag == 'x':
-        my = get_data('../data/app/monitorx.txt', sep=' ')['code'].astype('str').str.zfill(6)
-        codes = list(my)
-    return codes
-
-
-def get_all_codes(excludeCyb=False):
-    _bsc = get_basics(excludeCyb=excludeCyb)
+def get_all_codes(cyb=False):
+    _bsc = get_basics(excludeCyb=cyb)
     return list(_bsc['code'])
 
 
@@ -206,15 +193,15 @@ def get_data(filepath=None, encoding='gbk', sep=','):
     return data
 
 
-def get_basics(code=None, excludeCyb=False, index=False, before=None):
+def get_basics(code=None, cyb=False, index=False, before=None):
     """
     index: code
     """
-    if index == True:
+    if index:
         return INDEX_DICT[code]
-    data = filter_basic(_basics=basics, excludeCyb=excludeCyb, before=before)
+    data = filter_basic(_basics=basics, cyb=cyb, before=before)
 
-    if code != None:
+    if code is not None:
         data = data[data.code == code]
     data.index = list(data['code'])
     return data
@@ -237,9 +224,9 @@ def filter_cyb(datadf):
 
 
 ##
-def filter_basic(_basics=None, excludeCyb=False, before=None):
+def filter_basic(_basics=None, cyb=False, before=None):
     # filter unused code
-    if excludeCyb is True:
+    if cyb is True:
         _basics = _basics[_basics['code'].str.get(0) != '3']
     if before is not None:
         _basics = _basics[(_basics['list_date'] > 0) & (_basics['list_date'] <= before)]
@@ -297,12 +284,12 @@ def isnumber(a):
     try:
         float(a)
         return True
-    except:
+    except Exception as e:
         return False
 
 
 def format_amount(amount=None):
-    if isnumber(amount) == False:
+    if isnumber(amount) is False:
         return amount
     amtstr = str(amount)
     length = len(amtstr)
