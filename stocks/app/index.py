@@ -10,11 +10,12 @@ from stocks.data import _datautils
 
 pd.set_option('display.width', 600)
 
-INDEX_SH = ['000001', '000016', '000300']
+INDEX_SH = ['000001', '000016']
 INDEX_SZ = ['399001', '399005']
 INDEX_CYB = ['399006']
 
-target = ['000001', '000016', '000300', '399001', '399005', '399006']
+###'000300',
+target = ['000001', '000016', '399001', '399005', '399006']
 
 def format_index(df):
     # format data
@@ -71,7 +72,7 @@ def get_status():
     columns = ['code', 'name', 'change', 'close', 'low', 'high', 'volume', 'amount', 'bottom', 'uspace', 'dspace', 'top', 'position', 'suggest']
     resultdf = pd.DataFrame(result_data, columns=columns)
 
-    resultdf = resultdf.sort_values('position', axis=0, ascending=False, inplace=False, kind='quicksort', na_position='last')
+    resultdf = resultdf.sort_values('change', axis=0, ascending=True, inplace=False, kind='quicksort', na_position='last')
 
     print("get index status finish...")
     return resultdf
@@ -119,7 +120,7 @@ def suggest_by_position(code, position):
 if __name__ == '__main__':
     if len(argv) > 1:
         while True:
-            print(format_index(get_status()))
+            print(format_index(get_status()), end='')
             time.sleep(5)
     else:
         format_index(get_status())

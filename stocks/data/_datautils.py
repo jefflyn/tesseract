@@ -18,8 +18,18 @@ INDEX_LIST = ['000001.SH', '000300.SH', '000016.SH', '000905.SH', '399001.SZ', '
 basics = read_sql("select * from basics", params=None)
 
 
+def get_hold_trade(type=None, hold=1):
+    hold_trace_sql = 'select * from hold_trace where 1=1 and hold=:hold'
+    params = {'hold': hold}
+    if type is not None:
+        params['type'] = type
+        hold_trace_sql = hold_trace_sql + ' and type=:type'
+    df = read_sql(hold_trace_sql, params=params)
+    return df
+
+
 def get_code_by_industry(industry=None):
-    if industry != None:
+    if industry is not None:
         data = basics[basics.industry == industry]
     return list(data['code'])
 

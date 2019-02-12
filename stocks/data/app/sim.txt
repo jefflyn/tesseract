@@ -1,6 +1,0 @@
-name code cost share bottom
-huasen 002907 18.28 900 17.49
-rundu 002923 22.777 700 21.60
-sailong 002898 15.46 1000 14.62
-yiming 002826 10.33 1500 9.8
-weixink 603676 11.56 1400 10.7

@@ -1,22 +1,14 @@
-import sys
 from sys import argv
 import tushare as ts
 from tushare.stock import cons as ct
 from stocks.gene import wave
+from stocks.data import _datautils as _dt
 import pandas as pd
 import time
 from tkinter import *
 import stocks.base.display
 
-include_files = {
-    'pa': '../data/app/pa.txt',
-    'cf': '../data/app/cf.txt',
-    'df': '../data/app/df.txt',
-    'sim': '../data/app/sim.txt',
-    'mo': '../data/app/monitormy.txt',
-    'ot': '../data/app/other.txt'
-}
-keys = list(include_files.keys())
+keys = ['pa', 'cf', 'df', 'sim']
 
 INDEX_LIST_NEW = dict(zip(list(x[2:] for x in ct.INDEX_LIST.values()), ct.INDEX_LIST.keys()))
 
@@ -31,7 +23,7 @@ def format_realtime(df):
     df['bottom'] = df['bottom'].apply(lambda x: '[' + str(x))
     df['top'] = df['top'].apply(lambda x: str(x) + ']')
     df['cost'] = df['cost'].apply(lambda x: '<' + str(round(x, 2)) + ', ')
-    df['share'] = df['share'].apply(lambda x: str(round(x, 2)) + '>')
+    df['share'] = df['share'].apply(lambda x: str(x) + '>')
     df.insert(15, 'cost-share', df['cost'] + df['share'])
     df['change'] = df['change'].apply(lambda x: str(round(x, 2)) + '%')
     df['profit_perc'] = df['profit_perc'].apply(lambda x: str(round(x, 2)) + '%')
@@ -44,23 +36,17 @@ def format_realtime(df):
     return df
 
 
-def re_exe(file=None, inc=3, sortby=None):
+def re_exe(hold_df=None, inc=3, sortby=None):
     while True:
-        try:
-            df = get_realtime(file=file, sortby=sortby)
-            # filter
-            df = df[df.bid > '0.01']
-            df = format_realtime(df)
-            print(df)
-        except Exception as e:
-            print('excpetion: ' + str(e))
+        real_df = get_realtime(hddf=hold_df, sortby=sortby)
+        # filter
+        real_df = real_df[real_df.bid > '0.01']
+        finaldf = format_realtime(real_df)
+        print(finaldf, end='')
         time.sleep(inc)
 
 
-def get_realtime(file, sortby=None):
-    filePath = include_files[file]
-    hddf = pd.read_csv(filePath, sep=' ')
-    hddf['code'] = hddf['code'].astype('str').str.zfill(6)
+def get_realtime(hddf=None, sortby=None):
     codes = list(hddf['code'])
     df = ts.get_realtime_quotes(codes)
     data_list = []
@@ -76,7 +62,7 @@ def get_realtime(file, sortby=None):
 
         index = list(hddf['code']).index(code)
         cost = hddf.ix[index, 'cost']
-        cost = cost if cost > 1 else price
+        # cost = cost if cost > 1 else price
         share = hddf.ix[index, 'share']
         wavedf = wave.get_wave(code)
         wavestr = wave.wave_to_str(wavedf, size=3)
@@ -157,9 +143,15 @@ if __name__ == '__main__':
     if len(argv) < 2:
         print("Invalid args! At least 2 args like: python xxx.py arg1 ...")
         sys.exit(0)
-    file = argv[1]
-    sort = argv[2] if len(argv) > 2 else None
-    re_exe(file, 3, sort)
-    if file not in keys:
+    type = argv[1]
+    if type not in keys:
         print("File name NOT found. Try the followings: " + str(keys))
         sys.exit(0)
+    hold = argv[2] if len(argv) > 2 else 1
+    sort = argv[3] if len(argv) > 2 else None
+    hold_df = _dt.get_hold_trade(type, hold)
+    if hold_df.empty:
+        print("Stock NOT hold! Auto change to default mode.")
+        hold_df = _dt.get_hold_trade(type, 0)
+    re_exe(hold_df, 3, sort)
+

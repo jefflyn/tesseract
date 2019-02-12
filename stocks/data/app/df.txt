@@ -1,6 +1,0 @@
-name code cost share bottom
-chuanheng 002895 14.413 100 10.76
-luchang 002813 25.47 100 22.52
-rundu 002923 22.634 600 21.60
-shenwu 000820 5.392 100 5.12
-hangyang 002430 9.99 100 9.2
