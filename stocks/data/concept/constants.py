@@ -1,5 +1,5 @@
 import os
-from stocks.data import _datautils as dt
+from stocks.data import data_util as dt
 
 WUG = '5G.txt'
 BMG = '白马股.txt'

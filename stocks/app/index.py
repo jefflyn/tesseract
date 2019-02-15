@@ -6,7 +6,7 @@ import tushare as ts
 
 from stocks.gene import wave
 from stocks.app import _utils
-from stocks.data import _datautils
+from stocks.data import data_util
 
 pd.set_option('display.width', 600)
 
@@ -51,6 +51,7 @@ def get_status():
 
         # get wave data and bottom top
         wavedf = wave.get_wave(code, index=True)
+        wavestr = wave.wave_to_str(wavedf, size=3)
         bottomdf = wave.get_bottom(wavedf, limit=8)
         bottom = bottomdf.ix[0, 'bottom']
         top = bottomdf.ix[0, 'top']
@@ -58,6 +59,7 @@ def get_status():
         uspace = (current_point - bottom) / bottom * 100
         dspace = (current_point - top) / top * 100
 
+        row_data.append(wavestr)
         row_data.append(bottom)
         row_data.append(round(uspace, 2))
         row_data.append(round(dspace, 2))
@@ -69,7 +71,8 @@ def get_status():
 
         result_data.append(row_data)
 
-    columns = ['code', 'name', 'change', 'close', 'low', 'high', 'volume', 'amount', 'bottom', 'uspace', 'dspace', 'top', 'position', 'suggest']
+    columns = ['code', 'name', 'change', 'close', 'low', 'high', 'volume', 'amount', 'wave', 'bottom', 'uspace',
+               'dspace', 'top', 'position', 'suggest']
     resultdf = pd.DataFrame(result_data, columns=columns)
 
     resultdf = resultdf.sort_values('change', axis=0, ascending=True, inplace=False, kind='quicksort', na_position='last')

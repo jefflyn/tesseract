@@ -3,7 +3,7 @@ from sys import argv
 import pandas as pd
 
 import tushare as ts
-from stocks.data import _datautils
+from stocks.data import data_util
 
 pd.set_option('display.width', 800)
 pd.set_option('precision', 3)
@@ -14,6 +14,6 @@ if len(argv) < 2:
 codes = argv[1]
 
 codelist = codes.split(',')
-df = _datautils.get_basics()
+df = data_util.get_basics()
 df = df[df.code.isin(codelist)]
 print(df)

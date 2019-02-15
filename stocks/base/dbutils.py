@@ -11,6 +11,7 @@ def get_db():
     db = pymysql.connect(host='127.0.0.1', user='linjingu', passwd='linjingu', db='stocks', charset='utf8')
     return db
 
+
 # save to db
 def to_db(data=None, tbname=None, if_exists='replace'):
     data.to_sql(name=tbname, con=engine, if_exists=if_exists, index=False, index_label=None)

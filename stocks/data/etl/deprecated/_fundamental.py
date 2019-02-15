@@ -31,8 +31,8 @@ def basics_to_hdf5():
 
 
 def hist_volume_to_csv():
-    from stocks.data import _datautils
-    basics = _datautils.get_basics(excludeCyb=False)
+    from stocks.data import data_util
+    basics = data_util.get_basics(excludeCyb=False)
     day_df = pd.DataFrame(columns=['code', 'date', 'open', 'high', 'low', 'close', 'volume'])
     week_df = pd.DataFrame(columns=['code', 'date', 'open', 'high', 'low', 'close', 'volume'])
     month_df = pd.DataFrame(columns=['code', 'date', 'open', 'high', 'low', 'close', 'volume'])

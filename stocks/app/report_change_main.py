@@ -3,20 +3,20 @@ from datetime import timedelta
 import datetime
 import tushare as ts
 import stocks.base.dbutils as _dt
-from stocks.data import _datautils
+from stocks.data import data_util
 from stocks.app import _dateutil
 from stocks.base.logging import logger
 
-basics = _datautils.get_basics(excludeCyb=False)
+basics = data_util.get_basics(excludeCyb=False)
 today = _dateutil.get_today()
 this_week_start = _dateutil.get_this_week_start()
 last_month_start = _dateutil.get_last_month_start()
 last_2month_start = _dateutil.get_last_2month_start()
 last_year_start = _dateutil.get_last_year_start()
 
-hist_k_day = _datautils.get_hist_k()
-hist_k_week = _datautils.get_hist_k('W')
-hist_k_month = _datautils.get_hist_k('M')
+hist_k_day = data_util.get_hist_k()
+hist_k_week = data_util.get_hist_k('W')
+hist_k_month = data_util.get_hist_k('M')
 
 
 def get_period_change(period_k=None):
@@ -115,7 +115,7 @@ def multi_volume_appear():
     logger.info('multi_volume_appear start...')
     result_list = []
 
-    hist_vol = _datautils.get_hist_k()
+    hist_vol = data_util.get_hist_k()
     for index, row in basics.iterrows():
         markettime = str(row['timeToMarket'])  # exclude new stock
         lastmonth = _dateutil.get_last_month_start('%Y%m%d')

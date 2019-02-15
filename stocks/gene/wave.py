@@ -12,7 +12,7 @@ import matplotlib.dates as mdates
 import stocks.base.dateutils as _dateutil
 import tushare as ts
 
-from stocks.data import _datautils
+from stocks.data import data_util
 import stocks.base.display
 
 
@@ -185,7 +185,7 @@ def format_wave_data(wavedf=None, index=False):
         return None
     i = latestone.index.get_values()[0]
     code = latestone.at[i, 'code']
-    stock = _datautils.get_basics(code, index=index)
+    stock = data_util.get_basics(code, index=index)
     name = stock if isinstance(stock, str) else stock.at[stock.index.get_values()[0], 'name']
     enddate = latestone.at[latestone.index.get_values()[0], 'end']
     endprice = latestone.at[latestone.index.get_values()[0], 'end_price']

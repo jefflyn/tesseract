@@ -1,5 +1,5 @@
 import os
-from stocks.data import _datautils as dt
+from stocks.data import data_util as dt
 
 BDTYJ = '半导体元件.txt'
 BSJD = '白色家电.txt'

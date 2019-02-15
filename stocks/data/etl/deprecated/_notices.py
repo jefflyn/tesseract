@@ -10,14 +10,14 @@ import stocks.base.dateconst as dconst
 import stocks.base.dbutils as _dt
 import tushare as ts
 from stocks.base.logging import logger
-from stocks.data import _datautils
+from stocks.data import data_util
 
 pd.set_option('display.width', 800)
 
 
 def notices_extract():
     notices_extract_result = pd.DataFrame()
-    codes = _datautils.get_all_codes(excludeCyb=True)
+    codes = data_util.get_all_codes(excludeCyb=True)
     logger.info('total size %d' % len(codes))
     total_size = 0
     for code in codes:

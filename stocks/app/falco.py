@@ -1,12 +1,12 @@
 import pandas as pd
 import tushare as ts
 
-from stocks.data import _datautils
+from stocks.data import data_util
 from stocks.gene import wave
 
 
 def get_monitor(codes, limit=10):
-    basics = _datautils.get_basics()
+    basics = data_util.get_basics()
     df = ts.get_realtime_quotes(codes)
     #filter halting code
     df = df[df.low > '0.000']
@@ -30,11 +30,11 @@ def get_monitor(codes, limit=10):
         price_diff = price - pre_close
         change = price_diff / pre_close * 100
 
-        codelist = list(_datautils.get_bottom()['code'])
+        codelist = list(data_util.get_bottom()['code'])
         bottom = 0
         if code in codelist:
             index = codelist.index(code)
-            bottom = _datautils.get_bottom().ix[index, 'bottom']
+            bottom = data_util.get_bottom().ix[index, 'bottom']
         else:
             wavedf = wave.get_wave(code)
             bottomdf = wave.get_bottom(wavedf, limit=limit)

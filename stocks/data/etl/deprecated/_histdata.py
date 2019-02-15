@@ -11,7 +11,7 @@ import tushare as ts
 import stocks.base.dateconst as dconst
 import stocks.base.dbutils as _dt
 from stocks.base.logging import logger
-from stocks.data import _datautils
+from stocks.data import data_util
 
 
 def hist_data_week_extract(n=8):
@@ -23,7 +23,7 @@ def hist_data_week_extract(n=8):
     """
     hist_results = pd.DataFrame()
     change_results = pd.DataFrame()
-    codes = _datautils.get_all_codes(excludeCyb=True)
+    codes = data_util.get_all_codes(excludeCyb=True)
     logger.info('total size %d' %len(codes))
     total_size = 0
     date_lists = [dconst.shift_date(target=dconst.parse_datestr(dconst.FIRST_DAY_6_WEEK), shiftType='d', n=x, format=dconst.DATE_FORMAT_DEFAULT) for x in range(7, 7*n+1, 7)]
@@ -60,7 +60,7 @@ def hist_data_month_extract(n=6):
     """
     hist_results = pd.DataFrame()
     change_results = pd.DataFrame()
-    codes = _datautils.get_all_codes(excludeCyb=True)
+    codes = data_util.get_all_codes(excludeCyb=True)
     logger.info('total size %d' %len(codes))
     total_size = 0
     date_lists = [dconst.shift_date(target=dconst.parse_datestr(dconst.LAST_DAY_6_MONTH), shiftType='m', n=x, format=dconst.DATE_FORMAT_MONTH) for x in range(n+1)]

@@ -11,6 +11,7 @@ import pymysql
 
 from stocks.base.pro_util import pro
 from stocks.base.logging import logger
+from stocks.base.dbutils import get_db
 
 if __name__ == '__main__':
     # 查询当前所有正常上市交易的股票列表
@@ -19,7 +20,7 @@ if __name__ == '__main__':
     data = pro.query('stock_basic', exchange='', list_status='',
                      fields='ts_code,symbol,name,area,industry,fullname,market,exchange,curr_type,list_status,list_date,delist_date,is_hs')
     # 建立数据库连接
-    db = pymysql.connect(host='127.0.0.1', user='linjingu', passwd='linjingu', db='stocks', charset='utf8')
+    db = get_db()
     # 使用cursor()方法创建一个游标对象
     cursor = db.cursor()
     total_size = data.shape[0]
@@ -29,9 +30,9 @@ if __name__ == '__main__':
             sql_insert = "INSERT INTO basics(ts_code,code,name,area,industry,fullname,market,exchange,curr_type,list_status,list_date,delist_date,is_hs) " \
                          "VALUES ('%s', '%s', '%s', '%s','%s','%s', '%s', '%s', '%s','%s','%s','%s','%s')" % \
                          tuple(row)
-            cursor.execute(sql_insert)
+            result = cursor.execute(sql_insert)
             db.commit()
-            insert_count += index
+            insert_count += result
         except Exception as err:
             logger.error(err)
             continue

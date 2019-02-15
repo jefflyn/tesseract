@@ -1,6 +1,6 @@
 from datetime import datetime
 from stocks.app import report
-from stocks.data import _datautils
+from stocks.data import data_util
 from stocks.data.etl.deprecated import _reference
 from stocks.gene import maup
 from stocks.gene import upnday
@@ -15,7 +15,7 @@ if __name__ == '__main__':
     content = content + content1 + content2 + '</body></html>'
     # content = content + content12 + '</body></html>'
 
-    selector.select_result(_datautils.get_app_codes(), filename='my')
+    selector.select_result(data_util.get_app_codes(), filename='my')
 
     attaches = []
     att1 = report.create_attach('select_result_my.csv', 'select_result_my.csv')
@@ -41,7 +41,7 @@ if __name__ == '__main__':
 
 def generate_all(attaches):
     #maup
-    basics = _datautils.get_basics(excludeCyb=True)
+    basics = data_util.get_basics(excludeCyb=True)
     codes = basics['code'].values
     maupdata = maup.get_ma(codes)
     maupdf = maup.get_ma_up(maupdata)

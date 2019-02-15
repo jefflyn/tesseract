@@ -18,8 +18,15 @@ INDEX_LIST = ['000001.SH', '000300.SH', '000016.SH', '000905.SH', '399001.SZ', '
 basics = read_sql("select * from basics", params=None)
 
 
+def get_limitup_code(period_type='m', period='2019-01', times=3):
+    ma_sql = 'select code from limitup_stat where period_type=:type and period=:period and times>=:times'
+    params = {'type': period_type, 'period': period, 'times': times}
+    df = read_sql(ma_sql, params=params)
+    return df
+
+
 def get_ma_code(grade='a'):
-    ma_sql = 'select distinct b.code from hist_ma_day m join basics b on m.ts_code = b.ts_code where up=:grade'
+    ma_sql = 'select distinct b.code from hist_ma_day m join basics b on m.ts_code = b.ts_code where rank=:grade'
     params = {'grade': grade}
     df = read_sql(ma_sql, params=params)
     return df
@@ -193,7 +200,7 @@ def get_data(filepath=None, encoding='gbk', sep=','):
     return data
 
 
-def get_basics(code=None, cyb=False, index=False, before=None):
+def get_basics(code=None, cyb=True, index=False, before=None):
     """
     index: code
     """
@@ -224,9 +231,9 @@ def filter_cyb(datadf):
 
 
 ##
-def filter_basic(_basics=None, cyb=False, before=None):
+def filter_basic(_basics=None, cyb=True, before=None):
     # filter unused code
-    if cyb is True:
+    if cyb is False:
         _basics = _basics[_basics['code'].str.get(0) != '3']
     if before is not None:
         _basics = _basics[(_basics['list_date'] > 0) & (_basics['list_date'] <= before)]

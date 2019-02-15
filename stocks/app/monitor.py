@@ -3,14 +3,14 @@ import pandas as pd
 
 import tushare as ts
 from stocks.app import falco
-from stocks.data import _datautils
+from stocks.data import data_util
 
 pd.set_option('display.width', 600)
 pd.set_option('precision', 3)
 
 # df = _datautils.get_subnew()
 # df = _datautils.filter_cyb(df)
-df = _datautils.get_data('../data/app/monitormy.txt', sep=' ')
+df = data_util.get_data('../data/app/monitormy.txt', sep=' ')
 codes = list(df['code'])
 
 if __name__ == '__main__':

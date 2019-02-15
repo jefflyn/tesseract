@@ -4,7 +4,7 @@ import datetime
 import numpy as np
 import pandas as pd
 
-from stocks.data import _datautils
+from stocks.data import data_util
 import stocks.base.dbutils as _dt
 import stocks.base.display
 
@@ -24,7 +24,7 @@ def get_upnday(codes=None, n=0, change=None):
 
     upndata = []
     for code in code_list:
-        hist_data = _datautils.get_k_data(code, start=lastmonthstr)
+        hist_data = data_util.get_k_data(code, start=lastmonthstr)
         if hist_data is None or len(hist_data) < 5:
             continue
         latest = hist_data.tail(1)
@@ -33,7 +33,7 @@ def get_upnday(codes=None, n=0, change=None):
         latest_date = dtime.strptime(latest_date_str, '%Y-%m-%d')
         delta = starttime - latest_date
         # excluding halting
-        if (delta.days > 3):
+        if delta.days > 3:
             print(code + ' halting...')
             continue
 
@@ -52,7 +52,7 @@ def get_upnday(codes=None, n=0, change=None):
             week_vol.append(volumes[i] / np.mean(sub_vol))
         max_v = np.max(week_vol[:2])
         min_v = np.min(week_vol[2:n_vol])
-        is_multi_vol = round(max_v / min_v, 2)
+        multi_vol_rate = round(max_v / min_v, 2)
 
         for index, row in histndf.iterrows():
             open = float(row['open'])
@@ -77,7 +77,7 @@ def get_upnday(codes=None, n=0, change=None):
                 continue
             sumup = (endp - beginp) / beginp * 100
 
-        item = _datautils.get_basics(code)
+        item = data_util.get_basics(code)
         idx = item.index.get_values()[0]
         nlist = []
         nlist.append(code)
@@ -86,8 +86,8 @@ def get_upnday(codes=None, n=0, change=None):
         nlist.append(item.at[idx, 'area'])
         nlist.append(ndays)
         nlist.append(round(sumup, 2))
-        nlist.append(is_multi_vol)
         nlist.append(str(np.round(week_vol, 2)))
+        nlist.append(multi_vol_rate)
         upndata.append(nlist)
 
     upndf = pd.DataFrame(upndata,

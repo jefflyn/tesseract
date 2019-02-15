@@ -21,6 +21,7 @@ if __name__ == '__main__':
     if total == 0:
         logger.info("no stock found, process end!")
         exit(0)
+    cursor.execute("delete from hist_ma_day")
     stock_pool = [ts_code_tuple[0] for ts_code_tuple in cursor.fetchall()]
     # 循环获取单个股票的日线行情
     # 1分钟不超过200次调用
@@ -61,21 +62,21 @@ if __name__ == '__main__':
                 ma90 = float(resu[21])
                 ma120 = float(resu[23])
                 ma250 = float(resu[25])
-                up = ''
+                rank = ''
                 if price - ma5 > 0 and ma5 - ma10 > 0 and ma10 - ma20 > 0 and ma20 - ma30 > 0 and ma30 - ma60 > 0:
-                    up = 'a'
+                    rank = 'a'
                 elif ma5 - ma10 > 0 and ma10 - ma20 > 0 and ma20 - ma30 > 0 and ma30 - ma60 > 0 and ma60 - ma90 > 0:
-                    up = 'b'
+                    rank = 'b'
                 elif ma10 - ma20 > 0 and ma20 - ma30 > 0 and ma30 - ma60 > 0 and ma60 - ma90 > 0 and ma90 - ma120 > 0:
-                    up = 'c'
+                    rank = 'c'
                 elif ma20 - ma30 > 0 and ma30 - ma60 > 0 and ma60 - ma90 > 0 and ma90 - ma120 > 0 and ma120 - ma250 > 0:
-                    up = 'd'
-                if up == '':
+                    rank = 'd'
+                if rank == '':
                     continue
-                logger.info('found up up up! insert to db...')
-                sql_insert = "INSERT INTO hist_ma_day(trade_date,ts_code,up,price,ma5,ma10,ma20,ma30,ma60,ma90,ma120,ma250) " \
+                logger.info('found up up up! insert to hist_ma_day >>>')
+                sql_insert = "INSERT INTO hist_ma_day(trade_date,ts_code,rank,price,ma5,ma10,ma20,ma30,ma60,ma90,ma120,ma250) " \
                              "VALUES ('%s', '%s', '%s', '%.2f', '%.2f', '%.2f','%.2f','%.2f','%.2f','%.2f','%.2f','%.2f')" % (
-                                 trade_date, str(resu[0]), up, price, ma5, ma10, ma20, ma30, ma60, ma90, ma120, ma250)
+                                 trade_date, str(resu[0]), rank, price, ma5, ma10, ma20, ma30, ma60, ma90, ma120, ma250)
                 cursor.execute(sql_insert)
                 db.commit()
             except Exception as err:

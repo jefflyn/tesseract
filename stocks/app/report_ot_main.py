@@ -3,7 +3,7 @@ from datetime import datetime
 from stocks.app import _utils
 from stocks.app import report
 from stocks.app import selector
-from stocks.data import _datautils
+from stocks.data import data_util
 
 
 
@@ -54,7 +54,7 @@ def report_to_kk():
     content1 = 'Please check the attaches for more details.'
     content = content + content1 + '</body></html>'
 
-    selector.select_result(_datautils.get_monitor_codes('ot'), 'ot')
+    selector.select_result(data_util.get_monitor_codes('ot'), 'ot')
 
     attaches = []
     att1 = report.create_attach('select_result_ot.csv', 'select_result_ot.csv')

@@ -13,7 +13,7 @@ import pandas as pd
 from stocks.app import _utils
 from stocks.app import falco
 from stocks.app import realtime
-from stocks.data import _datautils
+from stocks.data import data_util
 from stocks.gene import limitup
 from stocks.gene import maup
 from stocks.gene import wave
@@ -52,7 +52,7 @@ def generate_report2(title=None, filename=None, monitor=False):
             columns={'uspace': 'space', 'profit_amt': 'profit', 'profit_perc': 'percent', 'total_amt': 'amount'}, inplace=True)
     else:
         savefilename = 'report_trace.png'
-        df = _datautils.get_data('../data/' + filename, sep=' ')
+        df = data_util.get_data('../data/' + filename, sep=' ')
         codes = list(df['code'])
         rtdf = falco.get_monitor(codes)
         rtdf = rtdf[['warn', 'code', 'name', 'change', 'price', 'low', 'bottom', 'space', 'industry', 'area', 'pe']]
@@ -153,7 +153,7 @@ def generate_report(title=None, filename=None, monitor=False, uad=False, ma=Fals
             columns={'btm_space': 'space', 'profit_amt': 'profit', 'profit_perc': 'percent', 'total_amt': 'amount'}, inplace=True)
     else:
         savefilename = 'report_trace.png'
-        df = _datautils.get_data('../data/' + filename, sep=' ')
+        df = data_util.get_data('../data/' + filename, sep=' ')
         codes = list(df['code'])
         rtdf = falco.get_monitor(codes)
         rtdf = rtdf[['warn','code','name','change','price','low','bottom','space','industry','area','pe']]

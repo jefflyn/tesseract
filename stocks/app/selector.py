@@ -8,7 +8,7 @@ import stocks.base.dbutils as _dt
 import tushare as ts
 from stocks.app import falco
 from stocks.base.logging import logger
-from stocks.data import _datautils
+from stocks.data import data_util
 from stocks.gene import limitup
 from stocks.gene import maup
 from stocks.gene import upnday
@@ -41,7 +41,7 @@ def select_from_change_week():
         if target_change is None or target_change.empty is True:
             continue
         codes = list(target_change['code'])
-        select_result(codes, filename='week_'+col)
+        select_result(codes, filename='week_' + col)
     logger.info('finished!')
 
 
@@ -57,27 +57,25 @@ def select_from_change_month():
         if target_change is None or target_change.empty is True:
             continue
         codes = list(target_change['code'])
-        select_result(codes, filename='month_'+col)
+        select_result(codes, filename='month_' + col)
     logger.info('finished!')
 
 
-
-def select_from_all(excludeCyb=False, fname='all'):
+def select_from_all(cyb=True, fname='all'):
     """
     select all stocks 
     :param excludeCyb: True
     :param fname: 
     :return: 
     """
-    oneyear = int(_datautils.oneyearago)
-    basics = _datautils.get_basics(excludeCyb=excludeCyb, before=oneyear)
+    oneyear = int(data_util.oneyearago)
+    basics = data_util.get_basics(cyb=cyb, before=oneyear)
     codes = list(basics['code'])
+
     logger.info('select_from_all start to process... total size: %d' % len(codes))
     result = select_result(codes, filename=fname)
     logger.info('select_from_all finished! result size: %d' % len(result.index.get_values()))
     # logger.info(result)
-
-
 
 
 def select_from_subnew(fromTime=None, fname='subnew'):
@@ -85,7 +83,7 @@ def select_from_subnew(fromTime=None, fname='subnew'):
     return specific subnew code list
     fromTime: yyyymmdd
     """
-    subnewbasic = _datautils.get_subnew(marketTimeFrom=fromTime)
+    subnewbasic = data_util.get_subnew(marketTimeFrom=fromTime)
     codes = list(subnewbasic['code'])
     logger.info('select_from_subnew start to process... total size: %d' % len(codes))
     result = select_result(codes, filename=fname)
@@ -94,7 +92,7 @@ def select_from_subnew(fromTime=None, fname='subnew'):
 
 
 def select_from_concepts(name, fname='concept'):
-    data = _datautils.get_stock_data(type='c', filename=name)
+    data = data_util.get_stock_data(type='c', filename=name)
     codes = list(data['code'])
     logger.info('select_from_concepts start to process... total size: %d' % len(codes))
     result = select_result(codes, filename=fname)
@@ -103,13 +101,12 @@ def select_from_concepts(name, fname='concept'):
 
 
 def select_from_industry(name, fname='industry'):
-    data = _datautils.get_stock_data(type='i', filename=name)
+    data = data_util.get_stock_data(type='i', filename=name)
     codes = list(data['code'])
     logger.info('select_from_industry start to process... total size: %d' % len(codes))
     result = select_result(codes, filename=fname)
     logger.info('select_from_industry finished! result size: %d' % len(result.index.get_values()))
     # logger.info(result)
-
 
 
 def select_result(codeset, filename=''):
@@ -133,7 +130,7 @@ def select_result(codeset, filename=''):
             if open <= 0 or current_price <= 0:
                 continue;
 
-            basic = _datautils.get_basics(code)
+            basic = data_util.get_basics(code)
             if basic is None or basic.empty is True:
                 continue
             curt_data = []
@@ -184,7 +181,7 @@ def select_result(codeset, filename=''):
             luplow = 0
             luphigh = 0
             lupcountdf = limitup.count(limitupdf)
-            if lupcountdf.empty == False:
+            if lupcountdf.empty is False:
                 lupcount = lupcountdf.ix[0, 'count']
                 lupcount30 = lupcountdf.ix[0, 'count_30d']
                 lupcountq1 = lupcountdf.ix[0, 'count_q1']
@@ -209,32 +206,31 @@ def select_result(codeset, filename=''):
             upndaydf = upnday.get_upnday(code)
             updays = 0
             sumup = 0
-            ismulti = False
+            multi_vol_rate = 1
             vol_rate = 0
-            if upndaydf.empty == False:
+            if upndaydf.empty is False:
                 updays = upndaydf.ix[0, 'updays']
                 sumup = upndaydf.ix[0, 'sumup']
-                ismulti = upndaydf.ix[0, 'multi_vol']
+                multi_vol_rate = upndaydf.ix[0, 'multi_vol']
                 vol_rate = upndaydf.ix[0, 'vol_rate']
             curt_data.append(updays)
             curt_data.append(sumup)
-            curt_data.append(ismulti)
+            curt_data.append(multi_vol_rate)
             curt_data.append(vol_rate)
 
             # get maup data
             maupdf = maup.get_ma(code)
-            curt_data.append(maupdf.ix[0, 'isup'] if maupdf.empty == False else 0)
-            curt_data.append(maupdf.ix[0, 'ma5'] if maupdf.empty == False else 0)
-            curt_data.append(maupdf.ix[0, 'ma10'] if maupdf.empty == False else 0)
-            curt_data.append(maupdf.ix[0, 'ma20'] if maupdf.empty == False else 0)
-            curt_data.append(maupdf.ix[0, 'ma30'] if maupdf.empty == False else 0)
-            curt_data.append(maupdf.ix[0, 'ma60'] if maupdf.empty == False else 0)
-            curt_data.append(maupdf.ix[0, 'ma90'] if maupdf.empty == False else 0)
-            curt_data.append(maupdf.ix[0, 'ma120'] if maupdf.empty == False else 0)
-            curt_data.append(maupdf.ix[0, 'ma250'] if maupdf.empty == False else 0)
+            curt_data.append(maupdf.ix[0, 'isup'] if maupdf.empty is False else 0)
+            curt_data.append(maupdf.ix[0, 'ma5'] if maupdf.empty is False else 0)
+            curt_data.append(maupdf.ix[0, 'ma10'] if maupdf.empty is False else 0)
+            curt_data.append(maupdf.ix[0, 'ma20'] if maupdf.empty is False else 0)
+            curt_data.append(maupdf.ix[0, 'ma30'] if maupdf.empty is False else 0)
+            curt_data.append(maupdf.ix[0, 'ma60'] if maupdf.empty is False else 0)
+            curt_data.append(maupdf.ix[0, 'ma90'] if maupdf.empty is False else 0)
+            curt_data.append(maupdf.ix[0, 'ma120'] if maupdf.empty is False else 0)
+            curt_data.append(maupdf.ix[0, 'ma250'] if maupdf.empty is False else 0)
 
             data_list.append(curt_data)
-
         beginIndex = endIndex
         endIndex = endIndex + limit
 
@@ -283,7 +279,7 @@ def select_subnew_issue_space():
     days = datetime.timedelta(-99)
     startstr = dt.strftime(starttime + days, '%Y-%m-%d')
 
-    subnewbasic = _datautils.get_subnew()
+    subnewbasic = data_util.get_subnew()
     codes = list(subnewbasic['code'])
     # codes = ['601108']
     # get the bottom price data
@@ -303,11 +299,11 @@ def select_subnew_issue_space():
         timeToMarket = timeToMarket[0:4] + '-' + timeToMarket[4:6] + '-' + timeToMarket[6:8]
         issuedays = (starttime - dt.strptime(timeToMarket, '%Y-%m-%d')).days
 
-        firstData = _datautils.get_k_data(code, start=timeToMarket, end=timeToMarket)
+        firstData = data_util.get_k_data(code, start=timeToMarket, end=timeToMarket)
         issue_close_price = float(firstData.ix[0, 'close'])
         issue_space = (current_price - issue_close_price) / issue_close_price * 100
 
-        hist99 = _datautils.get_k_data(code, start=startstr)
+        hist99 = data_util.get_k_data(code, start=startstr)
         if hist99 is None:
             continue
         # var = hist99.var()['close']
@@ -357,7 +353,7 @@ select from industry or concept
 
 
 def select_s1(type='', classname=''):
-    data = _datautils.get_stock_data(type=type, filename=classname)
+    data = data_util.get_stock_data(type=type, filename=classname)
     codes = list(data['code'])
     limitupdf = limitup.get_limitup_from_hist_k(codes)
     _dt.to_db(limitupdf, 'limitupx')

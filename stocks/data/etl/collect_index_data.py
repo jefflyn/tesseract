@@ -4,7 +4,7 @@ import tushare as ts
 from stocks.base.dbutils import get_db
 from stocks.base.logging import logger
 from stocks.base.pro_util import pro
-from stocks.data._datautils import INDEX_LIST
+from stocks.data.data_util import INDEX_LIST
 
 if __name__ == '__main__':
     # 设定获取日线行情的初始日期和终止日期，其中终止日期设定为当天
