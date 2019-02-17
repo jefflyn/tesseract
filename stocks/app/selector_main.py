@@ -15,7 +15,7 @@ if __name__ == '__main__':
 
     # limitup
     type = 'm'
-    period = '2019-01'
+    period = '2018-11'
     code_df = data_util.get_limitup_code(period_type=type, period=period, times=3)
     codes = list(code_df['code'])
     selector.select_result(codes, 'limitup_' + period)
