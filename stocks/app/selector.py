@@ -78,35 +78,14 @@ def select_from_all(cyb=True, fname='all'):
     # logger.info(result)
 
 
-def select_from_subnew(fromTime=None, fname='subnew'):
+def select_from_subnew(from_date=None, fname='subnew'):
     """
     return specific subnew code list
     fromTime: yyyymmdd
     """
-    subnewbasic = data_util.get_subnew(marketTimeFrom=fromTime)
-    codes = list(subnewbasic['code'])
-    logger.info('select_from_subnew start to process... total size: %d' % len(codes))
-    result = select_result(codes, filename=fname)
-    logger.info('select_from_subnew finished! result size: %d' % len(result.index.get_values()))
-    # logger.info(result)
-
-
-def select_from_concepts(name, fname='concept'):
-    data = data_util.get_stock_data(type='c', filename=name)
-    codes = list(data['code'])
-    logger.info('select_from_concepts start to process... total size: %d' % len(codes))
-    result = select_result(codes, filename=fname)
-    logger.info('select_from_concepts finished! result size: %d' % len(result.index.get_values()))
-    # logger.info(result)
-
-
-def select_from_industry(name, fname='industry'):
-    data = data_util.get_stock_data(type='i', filename=name)
-    codes = list(data['code'])
-    logger.info('select_from_industry start to process... total size: %d' % len(codes))
-    result = select_result(codes, filename=fname)
-    logger.info('select_from_industry finished! result size: %d' % len(result.index.get_values()))
-    # logger.info(result)
+    subnew = data_util.get_subnew(list_date=from_date)
+    codes = list(subnew['code'])
+    select_result(codes, filename=fname)
 
 
 def select_result(codeset, filename=''):
@@ -115,9 +94,9 @@ def select_result(codeset, filename=''):
     limit = 500
     beginIndex = 0
     endIndex = beginIndex + limit if size > limit else size
-
+    logger.info('select from %s, total: %i' % (filename, size))
     while endIndex <= size:
-        logger.info('process from %d' % beginIndex)
+        logger.info('process from %d to %d' % (beginIndex, endIndex))
         codes = codeset[beginIndex: endIndex]
         df = ts.get_realtime_quotes(codes)
         wavedfset = pd.DataFrame(
@@ -254,7 +233,7 @@ def select_result(codeset, filename=''):
     result_name = 'select_result_' + filename
     _dt.to_db(resultdf, result_name)
     _dt.to_db(wavedfset, 'select_wave_' + filename)
-    logger.info("stocks select finished!")
+    logger.info('stocks select finished! result size: %d\n' % len(resultdf.index.get_values()))
     return resultdf
 
 
