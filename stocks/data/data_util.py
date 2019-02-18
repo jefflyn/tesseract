@@ -4,6 +4,7 @@ import pandas as pd
 import tushare as ts
 import stocks.base.dateconst as _dt
 from stocks.base.dbutils import read_sql
+from stocks.base.dbutils import read_query
 
 todaystr = datetime.datetime.now().strftime('%Y-%m-%d')
 yeardays = datetime.timedelta(days=-365)
@@ -40,6 +41,18 @@ def get_hold_trade(type=None, hold=1):
         hold_trace_sql = hold_trace_sql + ' and type=:type'
     df = read_sql(hold_trace_sql, params=params)
     return df
+
+
+def get_code_by_concept(name=''):
+    name_str = '%' + name + '%'
+    params = {'name': name_str}
+    sql = 'select distinct b.code, b.name from concept c ' \
+          'inner join concept_detail d on c.code = d.concept_code ' \
+          'inner join basics b on d.ts_code = b.ts_code ' \
+          'where c.name like :name'
+    df = read_sql(sql, params=params)
+    codes = list(df['code'])
+    return codes
 
 
 def get_code_by_industry(industry=None):
