@@ -16,7 +16,7 @@ if __name__ == '__main__':
     # 建立数据库连接
     db = get_db()
     cursor = db.cursor()
-    total = cursor.execute("select ts_code from basics")
+    total = cursor.execute("select ts_code from basic")
     if total == 0:
         logger.info("no stock found, process end!")
         exit(0)

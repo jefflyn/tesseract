@@ -13,7 +13,7 @@ LIMITUP_MIN = 9.9
 LIMITUP_FROM_DAYS = -365
 
 sql = "select h.trade_date, b.code, h.close, h.open, h.high, h.low, h.pct_change " \
-      "from hist_trade_day h inner join basics b on h.ts_code = b.ts_code " \
+      "from hist_trade_day h inner join basic b on h.ts_code = b.ts_code " \
       "where h.trade_date >='2018-01-01' and h.close = round(h.pre_close * 1.1, 2)"
 histlimitup = db_util.read_query(sql)
 

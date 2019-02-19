@@ -16,7 +16,7 @@ INDEX_DICT = {'000001': '上证指数', '000016': '上证50', '000300': '沪深3
               '399001': '深证成指', '399005': '中小板指', '399006': '创业板指'}
 INDEX_LIST = ['000001.SH', '000300.SH', '000016.SH', '000905.SH', '399001.SZ', '399005.SZ', '399006.SZ', '399008.SZ']
 
-basics = read_sql("select * from basics", params=None)
+basics = read_sql("select * from basic", params=None)
 
 
 def get_limitup_code(period_type='m', period='2019-01', times=3):
@@ -27,7 +27,7 @@ def get_limitup_code(period_type='m', period='2019-01', times=3):
 
 
 def get_ma_code(grade='a'):
-    ma_sql = 'select distinct b.code from hist_ma_day m join basics b on m.ts_code = b.ts_code where rank=:grade'
+    ma_sql = 'select distinct b.code from hist_ma_day m join basic b on m.ts_code = b.ts_code where rank=:grade'
     params = {'grade': grade}
     df = read_sql(ma_sql, params=params)
     return df
@@ -48,7 +48,7 @@ def get_code_by_concept(name=''):
     params = {'name': name_str}
     sql = 'select distinct b.code, b.name from concept c ' \
           'inner join concept_detail d on c.code = d.concept_code ' \
-          'inner join basics b on d.ts_code = b.ts_code ' \
+          'inner join basic b on d.ts_code = b.ts_code ' \
           'where c.name like :name'
     df = read_sql(sql, params=params)
     codes = list(df['code'])
@@ -174,7 +174,7 @@ def get_app_codes():
 
 
 def get_all_codes(cyb=False):
-    _bsc = get_basics(excludeCyb=cyb)
+    _bsc = get_basics(cyb=cyb)
     return list(_bsc['code'])
 
 
@@ -242,7 +242,6 @@ def filter_cyb(datadf):
     return datadf
 
 
-##
 def filter_basic(_basics=None, cyb=True, before=None):
     # filter unused code
     if cyb is False:
@@ -253,50 +252,6 @@ def filter_basic(_basics=None, cyb=True, before=None):
         before = _dt.DATE_BEFORE_7_DAYS_SIMP
         _basics = _basics[(_basics['list_date'] > 0) & (_basics['list_date'] <= int(before))]
     return _basics
-
-
-def get_stock_data(type='i', filename=None, encoding='gbk', sep='\t', excludeCyb=True):
-    path = ''
-    if type == 'i':
-        path = '../data/industry/' + filename
-    else:
-        path = '../data/concept/' + filename
-    data = None
-    try:
-        # file = open(path)
-        data = pd.read_csv(path, sep=sep, encoding=encoding)
-    except:
-        file = open(path)
-        data = pd.read_csv(file, sep=sep, encoding='utf-8')
-
-    data['code'] = data['code'].apply(lambda code: code[2:])
-
-    # data['code'] = data['code'].astype('str').str.zfill(6)
-    if excludeCyb:
-        data = data[data['code'].str.get(0) != '3']
-    return data
-
-
-def get_stock_data(type='i', filename=None, encoding='gbk', sep='\t', excludeCyb=True):
-    path = ''
-    if type == 'i':
-        path = '../data/industry/' + filename
-    else:
-        path = '../data/concept/' + filename
-    data = None
-    try:
-        # file = open(path)
-        data = pd.read_csv(path, sep=sep, encoding=encoding)
-    except:
-        file = open(path)
-        data = pd.read_csv(file, sep=sep, encoding='utf-8')
-
-    data['code'] = data['code'].apply(lambda code: code[2:])
-
-    # data['code'] = data['code'].astype('str').str.zfill(6)
-    if excludeCyb:
-        data = data[data['code'].str.get(0) != '3']
-    return data
 
 
 def isnumber(a):

@@ -1,4 +1,4 @@
-create table if not exists basics
+create table if not exists basic
 (
   ts_code     varchar(10)  not null
   comment 'TS代码'

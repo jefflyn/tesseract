@@ -64,34 +64,34 @@ date_format = '%Y%m%d'
 
 # 本周第一天和最后一天
 def get_today(format=default_format):
-    return today.strftime(default_format)
+    return today.strftime(format)
 
 
 # 本周第一天和最后一天
 def get_this_week_start(format=default_format):
-    return this_week_start.strftime(default_format)
+    return this_week_start.strftime(format)
 
 
 def get_this_week_end(format=default_format):
-    return this_week_end.strftime(default_format)
+    return this_week_end.strftime(format)
 
 
 # 上周第一天和最后一天
 def get_last_week_start(format=default_format):
-    return last_week_start.strftime(default_format)
+    return last_week_start.strftime(format)
 
 
 def get_last_week_end(format=default_format):
-    return last_week_end.strftime(default_format)
+    return last_week_end.strftime(format)
 
 
 # 本月第一天和最后一天
 def get_this_month_start(format=default_format):
-    return this_month_start.strftime(default_format)
+    return this_month_start.strftime(format)
 
 
 def get_this_month_end(format=default_format):
-    return this_month_end.strftime(default_format)
+    return this_month_end.strftime(format)
 
 
 # 上月第一天和最后一天

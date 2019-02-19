@@ -27,7 +27,7 @@ if __name__ == '__main__':
     insert_count = 0
     for index, row in data.iterrows():
         try:
-            sql_insert = "INSERT INTO basics(ts_code,code,name,area,industry,fullname,market,exchange,curr_type,list_status,list_date,delist_date,is_hs) " \
+            sql_insert = "INSERT INTO basic(ts_code,code,name,area,industry,fullname,market,exchange,curr_type,list_status,list_date,delist_date,is_hs) " \
                          "VALUES ('%s', '%s', '%s', '%s','%s','%s', '%s', '%s', '%s','%s','%s','%s','%s')" % \
                          tuple(row)
             result = cursor.execute(sql_insert)
