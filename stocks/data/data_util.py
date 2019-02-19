@@ -3,8 +3,8 @@ import pandas as pd
 
 import tushare as ts
 import stocks.base.dateconst as _dt
-from stocks.base.dbutils import read_sql
-from stocks.base.dbutils import read_query
+from stocks.base.db_util import read_sql
+from stocks.base.db_util import read_query
 
 todaystr = datetime.datetime.now().strftime('%Y-%m-%d')
 yeardays = datetime.timedelta(days=-365)

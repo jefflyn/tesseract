@@ -4,7 +4,7 @@ from datetime import datetime as dt
 from sys import argv
 
 import pandas as pd
-import stocks.base.dbutils as _dt
+import stocks.base.db_util as _dt
 import tushare as ts
 from stocks.app import falco
 from stocks.base.logging import logger
@@ -68,8 +68,7 @@ def select_from_all(cyb=True, fname='all'):
     :param fname: 
     :return: 
     """
-    oneyear = int(data_util.oneyearago)
-    basics = data_util.get_basics(cyb=cyb, before=oneyear)
+    basics = data_util.get_basics()
     codes = list(basics['code'])
 
     logger.info('select_from_all start to process... total size: %d' % len(codes))

@@ -1,7 +1,7 @@
 import datetime
 import time
 import tushare as ts
-from stocks.base.dbutils import get_db
+from stocks.base.db_util import get_db
 from stocks.base.logging import logger
 from stocks.base.pro_util import pro
 from stocks.data.data_util import INDEX_LIST

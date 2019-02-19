@@ -3,7 +3,7 @@ from datetime import datetime
 import pandas as pd
 import numpy as np
 import tushare as ts
-import stocks.base.dbutils as _dt
+import stocks.base.db_util as _dt
 
 TRUMP_GENERAL = 'GENERAL'
 TRUMP_GOLDEN = 'GOLD'

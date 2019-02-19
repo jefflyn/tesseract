@@ -9,7 +9,7 @@ import pandas as pd
 import tushare as ts
 
 import stocks.base.dateconst as dconst
-import stocks.base.dbutils as _dt
+import stocks.base.db_util as _dt
 from stocks.base.logging import logger
 from stocks.data import data_util
 

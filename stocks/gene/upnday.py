@@ -5,7 +5,7 @@ import numpy as np
 import pandas as pd
 
 from stocks.data import data_util
-import stocks.base.dbutils as _dt
+import stocks.base.db_util as _dt
 import stocks.base.display
 
 histnum = 30

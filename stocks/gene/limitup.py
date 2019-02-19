@@ -6,7 +6,7 @@ import pandas as pd
 import tushare as ts
 
 from stocks.data import data_util
-from stocks.base import dbutils
+from stocks.base import db_util
 from stocks.base.logging import logger
 
 LIMITUP_MIN = 9.9
@@ -15,7 +15,7 @@ LIMITUP_FROM_DAYS = -365
 sql = "select h.trade_date, b.code, h.close, h.open, h.high, h.low, h.pct_change " \
       "from hist_trade_day h inner join basics b on h.ts_code = b.ts_code " \
       "where h.trade_date >='2018-01-01' and h.close = round(h.pre_close * 1.1, 2)"
-histlimitup = dbutils.read_query(sql)
+histlimitup = db_util.read_query(sql)
 
 
 def get_today_limitup():

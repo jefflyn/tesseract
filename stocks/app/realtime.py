@@ -1,3 +1,4 @@
+import stocks.base.display
 from sys import argv
 import tushare as ts
 from tushare.stock import cons as ct
@@ -6,7 +7,7 @@ from stocks.data import data_util as _dt
 import pandas as pd
 import time
 from tkinter import *
-import stocks.base.display
+import stocks.base.sms_util as sms
 
 keys = ['pa', 'cf', 'df', 'sim']
 
@@ -99,6 +100,12 @@ def get_realtime(hddf=None, sortby=None):
             warn_sign = '$$$'
         elif btm_diff <= 0 or low < bottom or bottom_auto_flag == 'A':
             warn_sign = '!!!'
+
+        # 告警短信:价格、涨跌幅、止损、止盈等
+        if low < bottom or btm_space < 5 or change > 6:
+            name_format = '：' + code + ' ' + row['name']
+            price_format = str(round(price, 2)) + '(' + str(round(change, 2)) + '%)'
+            sms.send_msg(code, name_format, price_format)
 
         curt_data = []
         curt_data.append(warn_sign)

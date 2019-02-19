@@ -9,7 +9,7 @@ matplotlib.rcParams['font.sans-serif'] = 'SimHei'
 import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
 import matplotlib.dates as mdates
-import stocks.base.dateutils as _dateutil
+import stocks.base.date_util as _dateutil
 import tushare as ts
 
 from stocks.data import data_util

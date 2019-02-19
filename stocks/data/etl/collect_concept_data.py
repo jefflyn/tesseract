@@ -1,8 +1,8 @@
-import stocks.base.dbutils as _dt
+import stocks.base.db_util as _dt
 import time
 from stocks.base.pro_util import pro
 import tushare as ts
-from stocks.base.dbutils import get_db
+from stocks.base.db_util import get_db
 from stocks.base.logging import logger
 
 if __name__ == '__main__':

@@ -5,7 +5,7 @@ import pandas as pd
 
 import tushare as ts
 from stocks.base.logging import logger
-import stocks.base.dbutils as _dt
+import stocks.base.db_util as _dt
 from stocks.app import _dateutil
 
 

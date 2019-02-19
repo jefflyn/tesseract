@@ -6,7 +6,7 @@ import pandas as pd
 
 import pymysql
 from sqlalchemy import create_engine
-import stocks.base.dbutils as _dt
+import stocks.base.db_util as _dt
 from stocks.gene import limitup
 from stocks.gene import maup
 

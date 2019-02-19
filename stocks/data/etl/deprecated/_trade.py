@@ -5,7 +5,7 @@ import numpy as np
 import pandas as pd
 
 import tushare as ts
-import stocks.base.dbutils as dbutils
+import stocks.base.db_util as dbutils
 import stocks.data.data_util as _dt
 from stocks.base.logging import logger
 
