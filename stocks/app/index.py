@@ -6,7 +6,7 @@ import tushare as ts
 
 from stocks.gene import wave
 from stocks.app import _utils
-from stocks.data import data_util
+import stocks.base.sms_util as sms
 
 pd.set_option('display.width', 600)
 
@@ -68,8 +68,13 @@ def get_status():
 
         suggest = suggest_by_position(code, positon)
         row_data.append(suggest)
-
         result_data.append(row_data)
+
+        # 告警短信:价格、涨跌幅等
+        if float(row['change']) < -1:
+            name_format = '：' + code + ' ' + row['name']
+            price_format = str(round(current_point, 2)) + '(' + str(round(float(row['change']), 2)) + '%)'
+            sms.send_msg(code, name_format, price_format)
 
     columns = ['code', 'name', 'change', 'close', 'low', 'high', 'volume', 'amount', 'wave', 'bottom', 'uspace',
                'dspace', 'top', 'position', 'suggest']

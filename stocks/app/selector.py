@@ -102,11 +102,13 @@ def select_result(codeset, filename=''):
             columns=['code', 'begin', 'end', 'status', 'begin_price', 'end_price', 'days', 'change'])
         for index, row in df.iterrows():
             code = row['code']
+            if code == '000007':
+                print('')
             open = float(row['open'])
             current_price = float(row['price'])
             # maybe in trading halt or others situation, ignore this code
             if open <= 0 or current_price <= 0:
-                continue;
+                continue
 
             basic = data_util.get_basics(code)
             if basic is None or basic.empty is True:

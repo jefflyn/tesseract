@@ -93,15 +93,14 @@ from StringIO import StringIO
 try:
     from elementtree.ElementTree import parse as parse_xml
 except ImportError:
-    from  xml.etree.ElementTree import parse as parse_xml
+    from xml.etree.ElementTree import parse as parse_xml
 
 import feedparser
-
 
 ### Static config
 
 __version__ = '0.5.0'
-__author__ = 'Frank Timmermann <regenkind_at_gmx_dot_de>' # GP: does not respond to emails
+__author__ = 'Frank Timmermann <regenkind_at_gmx_dot_de>'  # GP: does not respond to emails
 __contributors__ = [
     'Greg Pinero',
     'Berend van Berkum <berend+pydelicious@dotmpe.com>']
@@ -112,10 +111,10 @@ __author_email__ = ""
 __description__ = '''pydelicious.py allows you to access the web service of del.icio.us via it's API through python.'''
 __long_description__ = '''the goal is to design an easy to use and fully functional python interface to del.icio.us. '''
 
-DLCS_OK_MESSAGES = ('done', 'ok') # Known text values of positive del.icio.us <result> answers
+DLCS_OK_MESSAGES = ('done', 'ok')  # Known text values of positive del.icio.us <result> answers
 DLCS_WAIT_TIME = 4
-DLCS_REQUEST_TIMEOUT = 444 # Seconds before socket triggers timeout
-#DLCS_API_REALM = 'del.icio.us API'
+DLCS_REQUEST_TIMEOUT = 444  # Seconds before socket triggers timeout
+# DLCS_API_REALM = 'del.icio.us API'
 DLCS_API_HOST = 'https://api.del.icio.us'
 DLCS_API_PATH = 'v1'
 DLCS_API = "%s/%s" % (DLCS_API_HOST, DLCS_API_PATH)
@@ -129,19 +128,20 @@ DEBUG = 0
 if 'DLCS_DEBUG' in os.environ:
     DEBUG = int(os.environ['DLCS_DEBUG'])
 
-
 # Taken from FeedParser.py
 # timeoutsocket allows feedparser to time out rather than hang forever on ultra-slow servers.
 # Python 2.3 now has this functionality available in the standard socket library, so under
 # 2.3 you don't need to install anything.  But you probably should anyway, because the socket
 # module is buggy and timeoutsocket is better.
 try:
-    import timeoutsocket # http://www.timo-tasi.org/python/timeoutsocket.py
+    import timeoutsocket  # http://www.timo-tasi.org/python/timeoutsocket.py
+
     timeoutsocket.setDefaultSocketTimeout(DLCS_REQUEST_TIMEOUT)
 except ImportError:
     import socket
+
     if hasattr(socket, 'setdefaulttimeout'): socket.setdefaulttimeout(DLCS_REQUEST_TIMEOUT)
-if DEBUG: print >>sys.stderr, "Set socket timeout to %s seconds" % DLCS_REQUEST_TIMEOUT
+if DEBUG: print >> sys.stderr, "Set socket timeout to %s seconds" % DLCS_REQUEST_TIMEOUT
 
 
 ### Utility classes
@@ -157,6 +157,7 @@ class _Waiter:
 
     pydelicious.Waiter is an instance created when the module is loaded.
     """
+
     def __init__(self, wait):
         self.wait = wait
         self.waited = 0
@@ -167,25 +168,28 @@ class _Waiter:
 
         timeago = tt - self.lastcall
 
-        if self.lastcall and DEBUG>2:
-            print >>sys.stderr, "Lastcall: %s seconds ago." % lastcall
+        if self.lastcall and DEBUG > 2:
+            print >> sys.stderr, "Lastcall: %s seconds ago." % lastcall
 
         if timeago <= self.wait:
-            if DEBUG>0: print >>sys.stderr, "Waiting %s seconds." % self.wait
+            if DEBUG > 0: print >> sys.stderr, "Waiting %s seconds." % self.wait
             time.sleep(self.wait)
             self.waited += 1
             self.lastcall = tt + self.wait
         else:
             self.lastcall = tt
 
+
 Waiter = _Waiter(DLCS_WAIT_TIME)
+
 
 class PyDeliciousException(Exception):
     '''Std. pydelicious error'''
     pass
 
+
 class DeliciousError(Exception):
-	"""Raised when the server responds with a negative answer"""
+    """Raised when the server responds with a negative answer"""
 
 
 class DefaultErrorHandler(urllib2.HTTPDefaultErrorHandler):
@@ -193,6 +197,7 @@ class DefaultErrorHandler(urllib2.HTTPDefaultErrorHandler):
 
     Handles HTTP Error, currently only 503.
     '''
+
     def http_error_503(self, req, fp, code, msg, headers):
         raise urllib2.HTTPError(req, code, throttled_message, headers, fp)
 
@@ -203,8 +208,9 @@ class post(dict):
 
     @xxx:bvb: Is this needed? Right now this is superfluous,
     """
-    def __init__(self, href = "", description = "", hash = "", time = "", tag = "", extended = "", user = "", count = "",
-                 tags = "", url = "", dt = ""): # tags or tag?
+
+    def __init__(self, href="", description="", hash="", time="", tag="", extended="", user="", count="",
+                 tags="", url="", dt=""):  # tags or tag?
         self["href"] = href
         if url != "": self["href"] = url
         self["description"] = description
@@ -212,26 +218,32 @@ class post(dict):
         self["dt"] = dt
         if time != "": self["dt"] = time
         self["tags"] = tags
-        if tag != "":  self["tags"] = tag     # tag or tags? # !! tags
+        if tag != "":  self["tags"] = tag  # tag or tags? # !! tags
         self["extended"] = extended
         self["user"] = user
         self["count"] = count
 
     def __getattr__(self, name):
-        try: return self[name]
-        except: object.__getattribute__(self, name)
+        try:
+            return self[name]
+        except:
+            object.__getattribute__(self, name)
 
 
 class posts(list):
     """@xxx:bvb: idem as class post, python structures (dict/list) might
     suffice or a more generic solution is needed.
     """
+
     def __init__(self, *args):
         for i in args: self.append(i)
 
     def __getattr__(self, attr):
-        try: return [p[attr] for p in self]
-        except: object.__getattribute__(self, attr)
+        try:
+            return [p[attr] for p in self]
+        except:
+            object.__getattribute__(self, attr)
+
 
 ### Utility functions
 
@@ -240,33 +252,38 @@ def str2uni(s):
     # type(out) unicode
     return ("".join([unichr(ord(i)) for i in s]))
 
+
 def str2utf8(s):
     # type(in) str or unicode
     # type(out) str
     return ("".join([unichr(ord(i)).encode("utf-8") for i in s]))
 
+
 def str2quote(s):
     return urllib.quote_plus("".join([unichr(ord(i)).encode("utf-8") for i in s]))
+
 
 def dict0(d):
     # Trims empty dict entries
     # {'a':'a', 'b':'', 'c': 'c'} => {'a': 'a', 'c': 'c'}
     dd = dict()
     for i in d:
-            if d[i] != "": dd[i] = d[i]
+        if d[i] != "": dd[i] = d[i]
     return dd
+
 
 def delicious_datetime(str):
     """Parse a ISO 8601 formatted string to a Python datetime ...
     """
     return datetime.datetime(*time.strptime(str, ISO_8601_DATETIME)[0:6])
 
+
 def http_request(url, user_agent=USER_AGENT, retry=4):
     """Retrieve the contents referenced by the URL using urllib2.
 
     Retries up to four times (default) on exceptions.
     """
-    request = urllib2.Request(url, headers={'User-Agent':user_agent})
+    request = urllib2.Request(url, headers={'User-Agent': user_agent})
 
     # Remember last error
     e = None
@@ -277,21 +294,22 @@ def http_request(url, user_agent=USER_AGENT, retry=4):
         try:
             return urllib2.urlopen(request)
 
-        except urllib2.HTTPError, e: # protocol errors,
+        except urllib2.HTTPError, e:  # protocol errors,
             raise PyDeliciousException, "%s" % e
 
         except urllib2.URLError, e:
             # @xxx: Ugly check for time-out errors
-			#if len(e)>0 and 'timed out' in arg[0]:
-			print >> sys.stderr, "%s, %s tries left." % (e, tries)
-			Waiter()
-			tries = tries - 1
-			#else:
-			#	tries = None
+            # if len(e)>0 and 'timed out' in arg[0]:
+            print >> sys.stderr, "%s, %s tries left." % (e, tries)
+            Waiter()
+            tries = tries - 1
+        # else:
+    #	tries = None
 
     # Give up
     raise PyDeliciousException, \
-            "Unable to retrieve data at '%s', %s" % (url, e)
+        "Unable to retrieve data at '%s', %s" % (url, e)
+
 
 def http_auth_request(url, host, user, passwd, user_agent=USER_AGENT):
     """Call an HTTP server with authorization credentials using urllib2.
@@ -306,6 +324,7 @@ def http_auth_request(url, host, user, passwd, user_agent=USER_AGENT):
     urllib2.install_opener(opener)
 
     return http_request(url, user_agent)
+
 
 def dlcs_api_request(path, params='', user='', passwd='', throttle=True):
     """Retrieve/query a path within the del.icio.us API.
@@ -329,14 +348,15 @@ def dlcs_api_request(path, params='', user='', passwd='', throttle=True):
     else:
         url = "%s/%s" % (DLCS_API, path)
 
-    if DEBUG: print >>sys.stderr, "dlcs_api_request: %s" % url
+    if DEBUG: print >> sys.stderr, "dlcs_api_request: %s" % url
 
     try:
         return http_auth_request(url, DLCS_API_HOST, user, passwd, USER_AGENT)
 
     # @bvb: Is this ever raised? When?
-    except DefaultErrorHandler, e:
-        print >>sys.stderr, "%s" % e
+    except DefaultErrorHandler as e:
+        print(e)
+
 
 def dlcs_parse_xml(data, split_tags=False):
     """Parse any del.icio.us XML document and return Python data structure.
@@ -353,7 +373,7 @@ def dlcs_parse_xml(data, split_tags=False):
      # etcetera.
     """
 
-    if DEBUG>3: print >>sys.stderr, "dlcs_parse_xml: parsing from ", data
+    if DEBUG > 3: print >> sys.stderr, "dlcs_parse_xml: parsing from ", data
 
     if not hasattr(data, 'read'):
         data = StringIO(data)
@@ -362,7 +382,7 @@ def dlcs_parse_xml(data, split_tags=False):
     root = doc.getroot()
     fmt = root.tag
 
-	# Split up into three cases: Data, Result or Update
+    # Split up into three cases: Data, Result or Update
     if fmt in ('tags', 'posts', 'dates', 'bundles'):
 
         # Data: expect a list of data elements, 'resources'.
@@ -387,7 +407,7 @@ def dlcs_parse_xml(data, split_tags=False):
         else:
             msg = root.text
 
-		# Return {'result':(True, msg)} for /known/ O.K. messages,
+        # Return {'result':(True, msg)} for /known/ O.K. messages,
         # use (False, msg) otherwise
         v = msg in DLCS_OK_MESSAGES
         return {fmt: (v, msg)}
@@ -395,13 +415,14 @@ def dlcs_parse_xml(data, split_tags=False):
     elif fmt == 'update':
 
         # Update: "time"
-        #return {fmt: root.attrib}
-		return {fmt: {'time':time.strptime(root.attrib['time'], ISO_8601_DATETIME)}}
+        # return {fmt: root.attrib}
+        return {fmt: {'time': time.strptime(root.attrib['time'], ISO_8601_DATETIME)}}
 
     else:
         raise PyDeliciousException, "Unknown XML document format '%s'" % fmt
 
-def dlcs_rss_request(tag = "", popular = 0, user = "", url = ''):
+
+def dlcs_rss_request(tag="", popular=0, user="", url=''):
     """Handle a request for RSS
 
     @todo: translate from German
@@ -415,29 +436,29 @@ def dlcs_rss_request(tag = "", popular = 0, user = "", url = ''):
     user = str2quote(user)
     if url != '':
         # http://del.icio.us/rss/url/efbfb246d886393d48065551434dab54
-        url = DLCS_RSS + '''url/%s'''%md5.new(url).hexdigest()
+        url = DLCS_RSS + '''url/%s''' % md5.new(url).hexdigest()
     elif user != '' and tag != '':
-        url = DLCS_RSS + '''%(user)s/%(tag)s'''%dict(user=user, tag=tag)
+        url = DLCS_RSS + '''%(user)s/%(tag)s''' % dict(user=user, tag=tag)
     elif user != '' and tag == '':
         # http://del.icio.us/rss/delpy
-        url = DLCS_RSS + '''%s'''%user
+        url = DLCS_RSS + '''%s''' % user
     elif popular == 0 and tag == '':
         url = DLCS_RSS
     elif popular == 0 and tag != '':
         # http://del.icio.us/rss/tag/apple
         # http://del.icio.us/rss/tag/web2.0
-        url = DLCS_RSS + "tag/%s"%tag
+        url = DLCS_RSS + "tag/%s" % tag
     elif popular == 1 and tag == '':
         url = DLCS_RSS + '''popular/'''
     elif popular == 1 and tag != '':
-        url = DLCS_RSS + '''popular/%s'''%tag
+        url = DLCS_RSS + '''popular/%s''' % tag
     rss = http_request(url).read()
     rss = feedparser.parse(rss)
     # print rss
-#     for e in rss.entries: print e;print
+    #     for e in rss.entries: print e;print
     l = posts()
     for e in rss.entries:
-        if e.has_key("links") and e["links"]!=[] and e["links"][0].has_key("href"):
+        if e.has_key("links") and e["links"] != [] and e["links"][0].has_key("href"):
             url = e["links"][0]["href"]
         elif e.has_key("link"):
             url = e["link"]
@@ -451,10 +472,13 @@ def dlcs_rss_request(tag = "", popular = 0, user = "", url = ''):
             description = e["title_detail"]['value']
         else:
             description = ''
-        try: tags = e['categories'][0][1]
+        try:
+            tags = e['categories'][0][1]
         except:
-            try: tags = e["category"]
-            except: tags = ""
+            try:
+                tags = e["category"]
+            except:
+                tags = ""
         if e.has_key("modified"):
             dt = e['modified']
         else:
@@ -469,11 +493,11 @@ def dlcs_rss_request(tag = "", popular = 0, user = "", url = ''):
             user = e['author']
         else:
             user = ""
-#  time = dt ist weist auf ein problem hin
-# die benennung der variablen ist nicht einheitlich
-#  api senden und
-#  xml bekommen sind zwei verschiedene schuhe :(
-        l.append(post(url = url, description = description, tags = tags, dt = dt, extended = extended, user = user))
+        #  time = dt ist weist auf ein problem hin
+        # die benennung der variablen ist nicht einheitlich
+        #  api senden und
+        #  xml bekommen sind zwei verschiedene schuhe :(
+        l.append(post(url=url, description=description, tags=tags, dt=dt, extended=extended, user=user))
     return l
 
 
@@ -519,7 +543,6 @@ class DeliciousAPI:
         # see __init__ for _api_request()
         return self._api_request(path, params, self.user, self.passwd)
 
-
     ### Core functionality
 
     def request(self, path, _raw=False, **params):
@@ -552,10 +575,10 @@ class DeliciousAPI:
             fl = self._call_server(path, **params)
             rs = self._parse_response(fl)
 
-			# Raise an error for negative 'result' answers
+            # Raise an error for negative 'result' answers
             if type(rs) == dict and rs == 'result' and not rs['result'][0]:
                 errmsg = ""
-                if len(rs['result'])>0:
+                if len(rs['result']) > 0:
                     errmsg = rs['result'][1:]
                 raise DeliciousError, errmsg
 
@@ -660,7 +683,7 @@ class DeliciousAPI:
         return self.request("posts/all", tag=tag, **kwds)
 
     def posts_add(self, url, description, extended="", tags="", dt="",
-            replace="no", shared="yes", **kwds):
+                  replace="no", shared="yes", **kwds):
         """Add a post to del.icio.us. Returns a `result` message or raises an
         ``DeliciousError``. See ``self.request()``.
 
@@ -680,8 +703,8 @@ class DeliciousAPI:
         &shared=no (optional) - make the item private
         """
         return self.request("posts/add", url=url, description=description,
-                extended=extended, tags=tags, dt=dt,
-                replace=replace, shared=shared, **kwds)
+                            extended=extended, tags=tags, dt=dt,
+                            replace=replace, shared=shared, **kwds)
 
     def posts_delete(self, url, **kwds):
         """Delete a post from del.icio.us. Returns a `result` message or
@@ -712,10 +735,10 @@ class DeliciousAPI:
         &tags (required)
             list of tags (space seperated).
         """
-        if type(tags)==list:
+        if type(tags) == list:
             tags = " ".join(tags)
         return self.request("tags/bundles/set", bundle=bundle, tags=tags,
-                **kwds)
+                            **kwds)
 
     def bundles_delete(self, bundle, **kwds):
         """Delete a bundle from del.icio.us. Returns a `result` message or
@@ -759,22 +782,29 @@ def apiNew(user, passwd):
 	"""
     return DeliciousAPI(user=user, passwd=passwd)
 
-def add(user, passwd, url, description, tags="", extended="", dt="", replace="no"):
-    return apiNew(user, passwd).posts_add(url=url, description=description, extended=extended, tags=tags, dt=dt, replace=replace)
 
-def get(user, passwd, tag="", dt="",  count = 0):
-    posts = apiNew(user, passwd).posts_get(tag=tag,dt=dt)
+def add(user, passwd, url, description, tags="", extended="", dt="", replace="no"):
+    return apiNew(user, passwd).posts_add(url=url, description=description, extended=extended, tags=tags, dt=dt,
+                                          replace=replace)
+
+
+def get(user, passwd, tag="", dt="", count=0):
+    posts = apiNew(user, passwd).posts_get(tag=tag, dt=dt)
     if count != 0: posts = posts[0:count]
     return posts
+
 
 def get_all(user, passwd, tag=""):
     return apiNew(user, passwd).posts_all(tag=tag)
 
+
 def delete(user, passwd, url):
     return apiNew(user, passwd).posts_delete(url=url)
 
+
 def rename_tag(user, passwd, oldtag, newtag):
     return apiNew(user=user, passwd=passwd).tags_rename(old=oldtag, new=newtag)
+
 
 def get_tags(user, passwd):
     return apiNew(user=user, passwd=passwd).tags_get()
@@ -793,17 +823,21 @@ def getrss(tag="", popular=0, url='', user=""):
 	"""
     return dlcs_rss_request(tag=tag, popular=popular, user=user, url=url)
 
+
 def get_userposts(user):
-    return getrss(user = user)
+    return getrss(user=user)
+
 
 def get_tagposts(tag):
-    return getrss(tag = tag)
+    return getrss(tag=tag)
+
 
 def get_urlposts(url):
-    return getrss(url = url)
+    return getrss(url=url)
 
-def get_popular(tag = ""):
-    return getrss(tag = tag, popular = 1)
+
+def get_popular(tag=""):
+    return getrss(tag=tag, popular=1)
 
 
 ### @TODO: implement JSON fetching
@@ -814,6 +848,7 @@ def json_posts(user, count=15):
     raw         a raw JSON object is returned, instead of an object named Delicious.posts
     """
 
+
 def json_tags(user, atleast, count, sort='alpha'):
     """http://del.icio.us/feeds/json/tags/mpe
     atleast=###         include only tags for which there are at least ### number of posts
@@ -823,15 +858,16 @@ def json_tags(user, atleast, count, sort='alpha'):
     raw                 a pure JSON object is returned, instead of code that will construct an object named Delicious.tags
     """
 
+
 def json_network(user):
     """http://del.icio.us/feeds/json/network/mpe
     callback=NAME       wrap the object definition in a function call NAME(...)
     ?raw         a raw JSON object is returned, instead of an object named Delicious.posts
     """
 
+
 def json_fans(user):
     """http://del.icio.us/feeds/json/fans/mpe
     callback=NAME       wrap the object definition in a function call NAME(...)
     ?raw         a pure JSON object is returned, instead of an object named Delicious.
     """
-
