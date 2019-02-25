@@ -11,11 +11,13 @@ def isvalidprice(price):
         return False
     return True
 
+
 def isvalidshare(share):
     if str(share).isdecimal() == False or float(share) < 0:
         print('share must be numeric and not negative')
         return False
     return True
+
 
 if len(argv) < 5:
     print("Invalid args! At least 5 args like: python cost.py [cost,share,price,share]")
@@ -51,7 +53,8 @@ stransferfee = totalamt * dealer.transferrate
 safeamt = totalamt + scommision + stransferfee + tax
 balanceprice = safeamt / (ownshare + buyshare)
 
-print("(%.3f*%d+%.3f*%d+%.3f+%.3f) / (%d+%d)" % (origincost, ownshare, buyprice, buyshare, commision, transferfee, ownshare, buyshare))
+print("(%.3f*%d+%.3f*%d+%.3f+%.3f) / (%d+%d)" % (
+origincost, ownshare, buyprice, buyshare, commision, transferfee, ownshare, buyshare))
 print("need: %.3f" % dealamt)
 print("new cost: %.3f" % cost)
 print("balance price: %.3f" % balanceprice)

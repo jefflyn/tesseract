@@ -8,10 +8,14 @@ import pandas as pd
 import time
 from tkinter import *
 import stocks.base.sms_util as sms
+from stocks.base.redis_util import redis_client
+from stocks.base import date_const
 
 keys = ['pa', 'cf', 'df', 'sim']
 
 INDEX_LIST_NEW = dict(zip(list(x[2:] for x in ct.INDEX_LIST.values()), ct.INDEX_LIST.keys()))
+
+pre_key_today = date_const.TODAY + '_'
 
 
 def format_realtime(df):
@@ -102,10 +106,14 @@ def get_realtime(hddf=None, sortby=None):
             warn_sign = '!!!'
 
         # 告警短信:价格、涨跌幅、止损、止盈等
-        if low < bottom or btm_space < 5 or change > 6:
+        if low < bottom or btm_space < 5 or change > 7 or change < -6:
             name_format = '：' + code + ' ' + row['name']
             price_format = str(round(price, 2)) + '(' + str(round(change, 2)) + '%)'
-            sms.send_msg(code, name_format, price_format)
+            warn_times = redis_client.get(pre_key_today + code)
+            warn_times = 0 if warn_times is None else warn_times
+            if int(warn_times) < 2:
+                sms.send_msg(code, name_format, price_format)
+                redis_client.set(pre_key_today + code, int(warn_times) + 1, date_const.EIGHT_HOURS)
 
         curt_data = []
         curt_data.append(warn_sign)

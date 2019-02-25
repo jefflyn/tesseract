@@ -3,19 +3,17 @@
 
 from stocks.base import date_util
 from stocks.base import db_util
-
-"""
-获取全部股票每日重要的基本面指标
-Created on 2019/02/01
-@author: guru
-"""
-
-import pymysql
 from stocks.base.pro_util import pro
 from stocks.base.logging import logger
 from stocks.base.db_util import get_db
+import sys
 
 if __name__ == '__main__':
+    """
+    获取全部股票每日重要的基本面指标
+    Created on 2019/02/01
+    @author: guru
+    """
     '''
         ts_code	str	TS股票代码
         trade_date	str	交易日期
@@ -34,8 +32,13 @@ if __name__ == '__main__':
         total_mv	float	总市值 （万元）
         circ_mv	float	流通市值（万元）
     '''
+    hour = date_util.now.hour
+    if hour < 16:
+        sys.exit(0)
     trade_date = date_util.get_today(format=date_util.date_format)
     df = pro.daily_basic(ts_code='', trade_date=trade_date,
                          fields='ts_code,trade_date,close,turnover_rate,turnover_rate_f,volume_ratio,pe,pe_ttm,pb,ps,ps_ttm,total_share,float_share,free_share,total_mv,circ_mv')
+
+    df['code'] = df['ts_code'].apply(lambda x: x[0:6])
     db_util.to_db(df, 'basic_daily')
     logger.info('All Finished!')

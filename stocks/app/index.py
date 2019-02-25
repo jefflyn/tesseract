@@ -7,6 +7,9 @@ import tushare as ts
 from stocks.gene import wave
 from stocks.app import _utils
 import stocks.base.sms_util as sms
+from stocks.base.redis_util import redis_client
+from stocks.base import date_const
+
 
 pd.set_option('display.width', 600)
 
@@ -74,7 +77,10 @@ def get_status():
         if float(row['change']) < -1:
             name_format = '：' + code + ' ' + row['name']
             price_format = str(round(current_point, 2)) + '(' + str(round(float(row['change']), 2)) + '%)'
-            sms.send_msg(code, name_format, price_format)
+            warn_times = redis_client.get(date_const.TODAY + code)
+            if warn_times is None:
+                sms.send_msg(code, name_format, price_format)
+                redis_client.set(date_const.TODAY + '_' + code, True, date_const.EIGHT_HOURS)
 
     columns = ['code', 'name', 'change', 'close', 'low', 'high', 'volume', 'amount', 'wave', 'bottom', 'uspace',
                'dspace', 'top', 'position', 'suggest']

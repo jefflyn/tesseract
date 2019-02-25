@@ -2,7 +2,7 @@ import datetime
 import pandas as pd
 
 import tushare as ts
-import stocks.base.dateconst as _dt
+import stocks.base.date_const as _dt
 from stocks.base.db_util import read_sql
 from stocks.base.db_util import read_query
 
