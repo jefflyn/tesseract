@@ -15,7 +15,6 @@ import tushare as ts
 from stocks.data import data_util
 import stocks.base.display
 
-
 todaystr = _dateutil.get_today()
 
 
@@ -52,7 +51,8 @@ def get_bottom(df=None, limit=20):
             if abs(float(lastp)) < limit:
                 continue
             else:
-                bottom_price = lastrec.at[lastidx, 'begin_price'] if laststatus == 'up' else lastrec.at[lastidx, 'end_price']
+                bottom_price = lastrec.at[lastidx, 'begin_price'] if laststatus == 'up' else lastrec.at[
+                    lastidx, 'end_price']
                 if size == 1:
                     top = lastrec.at[lastidx, 'end_price'] if laststatus == 'up' else lastrec.at[lastidx, 'begin_price']
                 else:
@@ -130,7 +130,7 @@ def plot_wave(dflist=None, filename='wave.png', title='', columns=1):
                 begindate = labels[n]
                 enddate = labels[n + 1]
                 daymap[dayx[n]] = (
-                    datetime.strptime(enddate, '%Y-%m-%d') - datetime.strptime(begindate, '%Y-%m-%d')).days
+                        datetime.strptime(enddate, '%Y-%m-%d') - datetime.strptime(begindate, '%Y-%m-%d')).days
 
         # 配置横坐标
         ax = plt.gca()
@@ -206,7 +206,7 @@ def get_wave(codes=None, index=False, start=None, end=None, beginlow=True, durat
     default get the recent 3 year data
     """
     starttime = datetime.now()
-    if start == None:
+    if start is None:
         bwdays = dt.timedelta(-1000)
         start = (starttime + bwdays).strftime("%Y-%m-%d")
     # print("get wave start at [%s]" % starttime)
@@ -217,7 +217,7 @@ def get_wave(codes=None, index=False, start=None, end=None, beginlow=True, durat
         code_list = codes
 
     index_realtime = []
-    if index == True:
+    if index is True:
         index_realtime = ts.get_index()
     perioddf_list = []
     for code in code_list:
@@ -229,10 +229,10 @@ def get_wave(codes=None, index=False, start=None, end=None, beginlow=True, durat
             continue
         latestdate = hist_data.tail(1).at[hist_data.tail(1).index.get_values()[0], 'date']
         if todaystr != latestdate:  # not the latest record
-            if index == False:
+            if index is False:
                 # get today data from [get_realtime_quotes(code)]
                 realtime = ts.get_realtime_quotes(code)
-                if realtime is None or realtime.empty == True:
+                if realtime is None or realtime.empty is True:
                     continue
                 todaylow = float(realtime.at[0, 'low'])
                 if todaylow > 0:
@@ -243,7 +243,7 @@ def get_wave(codes=None, index=False, start=None, end=None, beginlow=True, durat
                     hist_data = hist_data.append(newdf, ignore_index=True)
             else:
                 indexdf = index_realtime[index_realtime['code'] == code]
-                if indexdf is None or indexdf.empty == True:
+                if indexdf is None or indexdf.empty is True:
                     continue
                 index = indexdf.index.values[0]
                 todaylow = float(indexdf.at[index, 'low'])
@@ -353,18 +353,6 @@ def wavefrom(code, df, beginlow, direction='left', duration=0, pchange=0):
     return period_data
 
 
-def etl():
-    from stocks.gene import limitup
-    from stocks.gene import wave
-
-    filePath = "../data/app/pa.txt"
-    mystk = pd.read_csv(filePath, sep=' ')
-    mystk['code'] = mystk['code'].astype('str').str.zfill(6)
-    codes = list(mystk['code'])
-    mywavedata = wave.get_wave(codes, start='2016-01-04')
-    mywavedata.to_csv("../data/wavemy.csv", encoding='utf-8')
-
-
 def wave_to_str(wavedf=None, size=4, change=10):
     if wavedf is None or size < 1:
         return ''
@@ -372,9 +360,17 @@ def wave_to_str(wavedf=None, size=4, change=10):
     # changelist = changelist[::-1]
     str_list = []
     sum_last = 0
-    for i in range(0, len(changelist)):
-        lastone = changelist[i]
+    price_wave = ''
+    for index, row in wavedf.iterrows():
+        # for i in range(0, len(changelist)):
+        #     lastone = changelist[i]
+        lastone = row['change']
+        flag = row['status']
         if abs(lastone) >= change:
+            if 'up' == flag:
+                price_wave += str(row['end_price']) + '\\'
+            else:
+                price_wave += str(row['end_price']) + '/'
             if sum_last != 0:
                 str_list.append(sum_last)
                 sum_last = 0
@@ -387,7 +383,7 @@ def wave_to_str(wavedf=None, size=4, change=10):
                 sum_last = 0
                 continue
             else:
-                if i == len(changelist) - 1:
+                if index == len(changelist) - 1:
                     str_list.append(sum_last)
                     sum_last = 0
     takes = len(str_list) - size if len(str_list) - size > 0 else 0
@@ -395,7 +391,7 @@ def wave_to_str(wavedf=None, size=4, change=10):
     wavestr = ''
     for k in range(0, len(str_list)):
         wavestr += ('|' + str(round(str_list[k], 2)))
-    return wavestr
+    return wavestr + ' $ ' + price_wave
 
 
 def tryBottom():
@@ -410,24 +406,10 @@ def tryBottom():
 
 
 if __name__ == '__main__':
-    tryBottom()
-    # get_wave()
-    # filePath = "../data/app/pa.txt"
-    # mystk = pd.read_csv(filePath, sep=' ')
-    # mystk['code'] = mystk['code'].astype('str').str.zfill(6)
-    # codes = list(mystk['code'])
-    # codes = ['000710']
-    # wavedflist = []
-    # for code in codes:
-    #     wavedata = get_wave(code, start='2016-01-04')
-    #     result = format_wave_data(wavedata)
-    #     wavedflist.append(result)
-    #     print(wavedata)
-    #
-    # plot_wave(wavedflist, 'wave.png')
-
-    code_list = ['601216']
+    # tryBottom()
+    code_list = ['600655']
     result = get_wave(code_list, index=False, start='2015-01-01')
     bottom = get_bottom(result, 15)
+    print(wave_to_str(result))
     print(result)
     print(bottom)
