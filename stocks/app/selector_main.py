@@ -6,7 +6,7 @@ import stocks.base.display
 if __name__ == '__main__':
     logger.info('start selector main ...')
     # >>> select from all
-    selector.select_from_all()
+    # selector.select_from_all()
 
     # >>> select from ma
     # code_df = data_util.get_ma_code('d')
@@ -21,8 +21,8 @@ if __name__ == '__main__':
     # selector.select_result(codes, 'limitup_' + period)
 
     # >>> select from concepts
-    # concept_codes = data_util.get_code_by_concept('白马')
-    # selector.select_result(concept_codes, 'concept')
+    concept_codes = data_util.get_code_by_concept('海南')
+    selector.select_result(concept_codes, 'concept')
 
     # >>> select by new
     # selector.select_from_subnew(fname='new')

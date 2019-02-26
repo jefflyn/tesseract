@@ -74,7 +74,7 @@ def get_status():
         result_data.append(row_data)
 
         # 告警短信:价格、涨跌幅等
-        if float(row['change']) < -1:
+        if float(row['change']) < -2:
             name_format = '：' + code + ' ' + row['name']
             price_format = str(round(current_point, 2)) + '(' + str(round(float(row['change']), 2)) + '%)'
             warn_times = redis_client.get(date_const.TODAY + code)

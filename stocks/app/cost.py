@@ -1,19 +1,23 @@
 import sys
 from sys import argv
 
-from stocks.app.trade import dealer
 from stocks.app import _utils
 
+default_commision = 5.0
+commision_rate = 0.00025
+transfer_rate = 0.00002
+tax_rate = 0.001
 
-def isvalidprice(price):
-    if _utils.isnumber(price) == False or float(price) < 0:
+
+def is_valid_price(price):
+    if _utils.isnumber(price) is False or float(price) < 0:
         print('price must be numeric and not negative')
         return False
     return True
 
 
-def isvalidshare(share):
-    if str(share).isdecimal() == False or float(share) < 0:
+def is_valid_share(share):
+    if str(share).isdecimal() is False or float(share) < 0:
         print('share must be numeric and not negative')
         return False
     return True
@@ -26,30 +30,30 @@ origincost = float(argv[1])
 ownshare = int(argv[2])
 buyprice = float(argv[3])
 buyshare = int(argv[4])
-if (isvalidprice(origincost) or isvalidprice(buyprice)) == False:
+if (is_valid_price(origincost) or is_valid_price(buyprice)) is False:
     sys.exit(-1)
-if (isvalidshare(ownshare) or isvalidshare(buyshare)) == False:
+if (is_valid_share(ownshare) or is_valid_share(buyshare)) is False:
     sys.exit(-1)
 
 # buy fee
 dealamt = buyprice * buyshare
-commision = dealamt * dealer.commisionrate
-if commision < dealer.defaultcommision:
-    commision = dealer.defaultcommision;
+commision = dealamt * commision_rate
+if commision < default_commision:
+    commision = default_commision;
 # SH & SZ same
-transferfee = dealamt * dealer.transferrate
+transferfee = dealamt * transfer_rate
 totalamt = dealamt + commision + transferfee
 
 totalamt = origincost * ownshare + buyprice * buyshare + commision + transferfee
 cost = totalamt / (ownshare + buyshare)
-tax = totalamt * dealer.taxrate
+tax = totalamt * tax_rate
 
 # sell fee
-scommision = totalamt * dealer.commisionrate
-if scommision < dealer.defaultcommision:
-    scommision = dealer.defaultcommision;
+scommision = totalamt * commision_rate
+if scommision < default_commision:
+    scommision = default_commision
 # SH & SZ same
-stransferfee = totalamt * dealer.transferrate
+stransferfee = totalamt * transfer_rate
 safeamt = totalamt + scommision + stransferfee + tax
 balanceprice = safeamt / (ownshare + buyshare)
 
