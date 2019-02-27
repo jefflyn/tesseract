@@ -9,9 +9,8 @@ from stocks.app import _utils
 import stocks.base.sms_util as sms
 from stocks.base.redis_util import redis_client
 from stocks.base import date_const
+from stocks.base import display
 
-
-pd.set_option('display.width', 600)
 
 INDEX_SH = ['000001', '000016']
 INDEX_SZ = ['399001', '399005']

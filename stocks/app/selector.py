@@ -13,12 +13,8 @@ from stocks.gene import limitup
 from stocks.gene import maup
 from stocks.gene import upnday
 from stocks.gene import wave
+from stocks.base import display
 
-pd.set_option('display.width', 2000)
-pd.set_option('max_columns', 50)
-pd.set_option('max_rows', 300)
-
-today = dt.now()
 LIMITUP = 'limitup'
 BOTTOM = 'bottom'
 UPNDAY = 'upnday'
@@ -229,6 +225,7 @@ def select_result(codeset, filename=''):
          'count', 'count_30d', 'count_q1', 'updays', 'sumup%', 'vol_rate', 'multi_vol', 'isup', 'count_q2', 'count_q3',
          'count_q4', 'maxdate', 'lup_low', 'lup_high',
          'ma5', 'ma10', 'ma20', 'ma30', 'ma60', 'ma90', 'ma120', 'ma250']]
+    resultdf['select_time'] = dt.now()
     result_name = 'select_result_' + filename
     _dt.to_db(resultdf, result_name)
     _dt.to_db(wavedfset, 'select_wave_' + filename)

@@ -31,11 +31,10 @@ def format_realtime(df):
     df['share'] = df['share'].apply(lambda x: str(x) + '>')
     df.insert(15, 'cost-share', df['cost'] + df['share'])
     df['change'] = df['change'].apply(lambda x: str(round(x, 2)) + '%')
-    df['profit_perc'] = df['profit_perc'].apply(lambda x: str(round(x, 2)) + '%')
+    # df['profit_perc'] = df['profit_perc'].apply(lambda x: str(round(x, 2)) + '%')
     df['uspace'] = df['uspace'].apply(lambda x: str(round(x, 2)) + '%')
     df['dspace'] = df['dspace'].apply(lambda x: str(round(x, 2)) + '%')
     df['position'] = df['position'].apply(lambda x: str(round(x, 2)) + '%')
-
     df = df.drop('cost', 1)
     df = df.drop('share', 1)
     return df
@@ -47,7 +46,8 @@ def re_exe(hold_df=None, inc=3, sortby=None):
         # filter
         real_df = real_df[real_df.bid > '0.01']
         finaldf = format_realtime(real_df)
-        print(finaldf, end='')
+        # print(finaldf, end='')
+        print(finaldf)
         time.sleep(inc)
 
 
@@ -84,15 +84,15 @@ def get_realtime(hddf=None, sortby=None):
         position = (price - bottom) / (top - bottom) * 100
 
         cost_diff = price - cost
-        profit = (cost_diff) * share if share > 0 else 0
+        profit = cost_diff * share if share > 0 else 0
 
         if profit < 0 and price > 0:
             profit_perc = (cost / price - 1) * -100.0
         else:
             profit_perc = cost_diff / cost * 100.0 if profit > 0 else 0
 
-        ##calculate the bottom, the smaller the possibility of bounce is bigger.
-        ##if negative, that means the bottom is broken, pay much attention if get out or wait for the escape line
+        # calculate the bottom, the smaller the possibility of bounce is bigger.
+        # if negative, that means the bottom is broken, pay much attention if get out or wait for the escape line
         btm_diff = price - bottom
         # esc_diff = (price - escape) if (btm_diff < 0) else (bottom - escape)
 
@@ -120,6 +120,8 @@ def get_realtime(hddf=None, sortby=None):
         curt_data.append(cost)
         curt_data.append(profit)
         curt_data.append(profit_perc)
+        profit_str = str(round(profit, 2)) + ', ' + str(round(profit_perc, 2)) + '%'
+        curt_data.append(profit_str)
         curt_data.append(wavestr)
         curt_data.append(str(bottom) + bottom_auto_flag)
         curt_data.append(btm_space)
@@ -131,7 +133,7 @@ def get_realtime(hddf=None, sortby=None):
         data_list.append(curt_data)
 
     df_append = pd.DataFrame(data_list,
-                             columns=['warn', 'change', 'cost', 'profit_amt', 'profit_perc', 'wave', 'bottom', 'uspace',
+                             columns=['warn', 'change', 'cost', 'profit_amt', 'profit_perc', 'profit', 'wave', 'bottom', 'uspace',
                                       'dspace', 'top', 'position', 'share', 'total_amt'])
     df = df.join(df_append)
 
@@ -150,7 +152,7 @@ def get_realtime(hddf=None, sortby=None):
 
     return df[
         ['warn', 'code', 'name', 'price', 'change', 'bid', 'ask', 'low', 'high', 'wave', 'bottom', 'uspace', 'dspace',
-         'top', 'position', 'cost', 'share', 'total_amt', 'profit_amt', 'profit_perc']]
+         'top', 'position', 'cost', 'share', 'total_amt', 'profit']]
 
 
 if __name__ == '__main__':
