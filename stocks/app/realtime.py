@@ -112,7 +112,7 @@ def get_realtime(hddf=None, sortby=None):
             warn_times = redis_client.get(pre_key_today + code)
             if warn_times is None:
                 sms.send_msg(code, name_format, price_format)
-                redis_client.set(pre_key_today + code, True, date_const.EIGHT_HOURS)
+                redis_client.set(pre_key_today + code, row['name'] + price_format)
 
         curt_data = []
         curt_data.append(warn_sign)

@@ -79,7 +79,7 @@ def get_status():
             warn_times = redis_client.get(date_const.TODAY + '_' + code)
             if warn_times is None:
                 sms.send_msg(code, name_format, price_format)
-                redis_client.set(date_const.TODAY + '_' + code, True, date_const.EIGHT_HOURS)
+                redis_client.set(date_const.TODAY + '_' + code, row['name'] + price_format)
 
     columns = ['code', 'name', 'change', 'close', 'low', 'high', 'volume', 'amount', 'wave', 'bottom', 'uspace',
                'dspace', 'top', 'position', 'suggest']
