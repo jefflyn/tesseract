@@ -29,7 +29,7 @@ def format_realtime(df):
     df['top'] = df['top'].apply(lambda x: str(x) + ']')
     df['cost'] = df['cost'].apply(lambda x: '<' + str(round(x, 2)) + ', ')
     df['share'] = df['share'].apply(lambda x: str(x) + '>')
-    df.insert(15, 'cost-share', df['cost'] + df['share'])
+    df.insert(15, 'cost, share', df['cost'] + df['share'])
     df['change'] = df['change'].apply(lambda x: str(round(x, 2)) + '%')
     # df['profit_perc'] = df['profit_perc'].apply(lambda x: str(round(x, 2)) + '%')
     df['uspace'] = df['uspace'].apply(lambda x: str(round(x, 2)) + '%')
@@ -133,8 +133,8 @@ def get_realtime(hddf=None, sortby=None):
         data_list.append(curt_data)
 
     df_append = pd.DataFrame(data_list,
-                             columns=['warn', 'change', 'cost', 'profit_amt', 'profit_perc', 'profit', 'wave', 'bottom', 'uspace',
-                                      'dspace', 'top', 'position', 'share', 'total_amt'])
+                             columns=['warn', 'change', 'cost', 'profit_amt', 'profit_perc', 'profit', 'wave', 'bottom',
+                                      'uspace', 'dspace', 'top', 'position', 'share', 'capital'])
     df = df.join(df_append)
 
     df = df[df.price > '1']
@@ -146,13 +146,13 @@ def get_realtime(hddf=None, sortby=None):
     elif sortby == 'b':
         df = df.sort_values(['uspace'], axis=0, ascending=False, inplace=False, kind='quicksort', na_position='last')
     elif sortby == 't':
-        df = df.sort_values(['total_amt'], axis=0, ascending=True, inplace=False, kind='quicksort', na_position='last')
+        df = df.sort_values(['capital'], axis=0, ascending=True, inplace=False, kind='quicksort', na_position='last')
     else:
         df = df.sort_values(['change'], axis=0, ascending=True, inplace=False, kind='quicksort', na_position='last')
 
     return df[
         ['warn', 'code', 'name', 'price', 'change', 'bid', 'ask', 'low', 'high', 'wave', 'bottom', 'uspace', 'dspace',
-         'top', 'position', 'cost', 'share', 'total_amt', 'profit']]
+         'top', 'position', 'cost', 'share', 'capital', 'profit']]
 
 
 if __name__ == '__main__':

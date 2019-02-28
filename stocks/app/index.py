@@ -75,8 +75,8 @@ def get_status():
         # 告警短信:价格、涨跌幅等
         if float(row['change']) < -2:
             name_format = '：' + code + ' ' + row['name']
-            price_format = str(round(current_point, 2)) + '(' + str(round(float(row['change']), 2)) + '%)'
-            warn_times = redis_client.get(date_const.TODAY + code)
+            price_format = str(round(float(row['change']), 2)) + '%'
+            warn_times = redis_client.get(date_const.TODAY + '_' + code)
             if warn_times is None:
                 sms.send_msg(code, name_format, price_format)
                 redis_client.set(date_const.TODAY + '_' + code, True, date_const.EIGHT_HOURS)
