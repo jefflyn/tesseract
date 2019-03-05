@@ -1,5 +1,7 @@
 from qcloudsms_py import SmsSingleSender
 from qcloudsms_py.httpclient import HTTPError
+from twilio.rest import Client
+
 
 # 短信应用SDK AppID
 appid = 1400185234  # SDK AppID是1400开头
@@ -14,6 +16,16 @@ sms_sign = "咕噜魔法阵"
 ssender = SmsSingleSender(appid, appkey)
 
 send_counter = {}
+
+# Your Account Sid and Auth Token from twilio.com/console
+account_sid = 'AC8128c48b3aa034887774f93bf31be8cc'
+auth_token = 'fffd970e7721acdf33d1c6567a1d927b'
+client = Client(account_sid, auth_token)
+
+
+def message_to(msg='', to=''):
+    message = client.messages.create(body=msg, from_='+15874176562', to=to)
+    print(message.sid)
 
 
 def send_msg(code=None, name='', price=''):
@@ -35,4 +47,6 @@ def send_msg(code=None, name='', price=''):
         print(e)
 
 
+if __name__ == '__main__':
+    message_to(msg='', to='')
 

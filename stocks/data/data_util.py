@@ -2,6 +2,7 @@ import datetime
 import pandas as pd
 
 import tushare as ts
+from stocks.base.logging import logger as log
 import stocks.base.date_const as _dt
 from stocks.base.db_util import read_sql
 from stocks.base.db_util import read_query
@@ -20,26 +21,29 @@ basics = read_sql("select * from basic", params=None)
 
 
 def get_limitup_code(period_type='m', period='2019-01', times=3):
-    ma_sql = 'select code from limitup_stat where period_type=:type and period=:period and times>=:times'
+    sql = 'select distinct code from limitup_stat where period_type=:type and period=:period and times>=:times'
     params = {'type': period_type, 'period': period, 'times': times}
-    df = read_sql(ma_sql, params=params)
+    log.info(sql + ' ' + str(params))
+    df = read_sql(sql, params=params)
     return df
 
 
 def get_ma_code(grade='a'):
-    ma_sql = 'select distinct b.code from hist_ma_day m join basic b on m.ts_code = b.ts_code where rank=:grade'
+    sql = 'select distinct b.code from hist_ma_day m join basic b on m.ts_code = b.ts_code where rank=:grade'
     params = {'grade': grade}
-    df = read_sql(ma_sql, params=params)
+    log.info(sql + ' ' + str(params))
+    df = read_sql(sql, params=params)
     return df
 
 
 def get_hold_trade(type=None, hold=1):
-    hold_trace_sql = 'select * from hold_trace where 1=1 and hold=:hold'
+    sql = 'select * from hold_trace where 1=1 and hold=:hold'
     params = {'hold': hold}
     if type is not None:
         params['type'] = type
-        hold_trace_sql = hold_trace_sql + ' and type=:type'
-    df = read_sql(hold_trace_sql, params=params)
+        sql = sql + ' and type=:type'
+    log.info(sql + ' ' + str(params))
+    df = read_sql(sql, params=params)
     return df
 
 
@@ -51,6 +55,7 @@ def get_code_by_concept(name=''):
           'inner join basic b on d.ts_code = b.ts_code ' \
           'where c.name like :name'
     df = read_sql(sql, params=params)
+    log.info(sql + ' ' + str(params))
     codes = list(df['code'])
     return codes
 

@@ -15,7 +15,7 @@ if __name__ == '__main__':
 
     # >>> select from limitup
     # type = 'm'
-    # period = '2018-11'
+    # period = '2019-02'
     # code_df = data_util.get_limitup_code(period_type=type, period=period, times=3)
     # codes = list(code_df['code'])
     # selector.select_result(codes, 'limitup_' + period)
@@ -25,13 +25,10 @@ if __name__ == '__main__':
     # selector.select_result(concept_codes, 'concept')
 
     # >>> select by new
-    selector.select_from_subnew(fname='new')
+    # selector.select_from_subnew(fname='new')
 
     # selector.select_from_change_week()
     # selector.select_from_change_month()
-
-
-
 
 
 

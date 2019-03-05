@@ -1,23 +1,28 @@
-from stocks.app import report
+from stocks.base import db_util
 
 if __name__ == '__main__':
-    content = """  <html>  <head>  <meta name="pdfkit-page-size" content="Legal"/>  <meta name="pdfkit-orientation" content="Landscape"/> </head><body>"""
-    data = report.generate_report2(title='Tracking stocks report', monitor=True, filename='app/sz50.txt')
-    content = content + data + '</body></html>'
+    df = db_util.read_table('uprising_daily')
+    industry_count = {}
+    concept_count = {}
+    for index, row in df.iterrows():
+        top_industry = row['industry']
+        top_concept = row['concepts']
+        industry_array = str.split(top_industry, '\n')
+        concept_array = str.split(top_concept, '\n')
+        for industry in industry_array:
+            if industry == '':
+                continue
+            if industry in industry_count.keys():
+                industry_count[industry] += 1
+            else:
+                industry_count[industry] = 1
+        for concept in concept_array:
+            if concept == '':
+                continue
+            if concept in concept_count.keys():
+                concept_count[concept] += 1
+            else:
+                concept_count[concept] = 1
 
-    # _utils.save_to_pdf(content, 'report_my.pdf')
-    attaches = []
-    # att1 = report.create_attach('report_my.pdf', 'daily_report.pdf')
-    # attaches.append(att1)
-
-    att = report.create_attach('report_trace.png', 'report_sz50.png')
-    attaches.append(att)
-    #attaches = generate_all(attaches)
-
-    subj = "My Stocks Report " + report.todaystr
-    to_users = ['649054380@qq.com']
-    ret = report.mail_with_attch(to_users, subject=subj, content=content, attaches=attaches)
-    if ret:
-        print("Email send successfully")
-    else:
-        print("Send failed")
+    print(sorted(industry_count.items(), key=lambda d: d[1]))
+    print(sorted(concept_count.items(), key=lambda d: d[1]))

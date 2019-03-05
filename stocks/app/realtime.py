@@ -108,7 +108,10 @@ def get_realtime(hddf=None, sortby=None):
         # 告警短信:价格、涨跌幅、止损、止盈等
         if low < bottom or btm_space < 5 or change > 7 or change < -6:
             name_format = '：' + code + ' ' + row['name']
-            price_format = str(round(price, 2)) + '(' + str(round(change, 2)) + '%)'
+            change_str = str(round(change, 2)) + '%' if change < 0 else '+' + str(round(change, 2)) + '%'
+            price_format = str(round(price, 2)) + change_str
+            if len(price_format) < 12:
+                price_format = str(round(price, 2)) + ' ' + change_str
             warn_times = redis_client.get(pre_key_today + code)
             if warn_times is None:
                 sms.send_msg(code, name_format, price_format)
