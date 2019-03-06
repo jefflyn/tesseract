@@ -20,8 +20,8 @@ from stocks.gene import wave
 
 sender = '649054380@qq.com'
 passw = 'pznntikuyzfvbchb'
-#to_users = '649054380@qq.com'
-#to_users = ['649054380@qq.com', '1677258052@qq.com','53985188@qq.com']
+# to_users = '649054380@qq.com'
+# to_users = ['649054380@qq.com', '1677258052@qq.com','53985188@qq.com']
 
 todaystr = datetime.datetime.now().strftime('%Y-%m-%d')
 
@@ -31,25 +31,31 @@ def get_limitup_space(df):
     low = float(df[1])
     return (price - low) / low * 100
 
+
 def get_warn_space(df):
     price = float(df[0])
     low = float(df[1])
     return (price - low)
 
+
 """
 return result with html style
 """
+
+
 def generate_report2(title=None, filename=None, monitor=False):
     # 1.realtime info
     html_content = '<i>' + title + '</i>'
-    savefilename = 'report_'+ filename + '.png'
+    savefilename = 'report_' + filename + '.png'
     rtdf = None
     if monitor == False:
         rtdf = realtime.get_realtime(filename, sortby='b')
         rtdf = rtdf[
-            ['warn', 'code', 'name', 'price', 'change', 'low', 'wave', 'bottom', 'uspace', 'cost', 'profit_amt', 'profit_perc', 'total_amt']]
+            ['warn', 'code', 'name', 'price', 'change', 'low', 'wave', 'bottom', 'uspace', 'cost', 'profit_amt',
+             'profit_perc', 'total_amt']]
         rtdf.rename(
-            columns={'uspace': 'space', 'profit_amt': 'profit', 'profit_perc': 'percent', 'total_amt': 'amount'}, inplace=True)
+            columns={'uspace': 'space', 'profit_amt': 'profit', 'profit_perc': 'percent', 'total_amt': 'amount'},
+            inplace=True)
     else:
         savefilename = 'report_trace.png'
         df = data_util.get_data('../data/' + filename, sep=' ')
@@ -82,7 +88,7 @@ def generate_report2(title=None, filename=None, monitor=False):
     result['ma10_space'] = result['ma10_space'].apply(lambda x: str(round(x, 2)) + '%')
     result['lmtspace'] = result['lmtspace'].apply(lambda x: str(round(x, 2)) + '%')
 
-    #style format
+    # style format
     # rtdf['code'] = rtdf['code'].apply(lambda x: str('<a href="http://m.10jqka.com.cn/stockpage/hs_' + x + '">' + x + '</a>'))
     rtdf_html = HTML_with_style(result)
     html_content += rtdf_html
@@ -125,10 +131,10 @@ def HTML_with_style(df, style=None, random_id=None):
         new_style = []
         s = re.sub(r'</?style>', '', style).strip()
         for line in s.split('\n'):
-                line = line.strip()
-                if not re.match(r'^table', line):
-                    line = re.sub(r'^', 'table ', line)
-                new_style.append(line)
+            line = line.strip()
+            if not re.match(r'^table', line):
+                line = re.sub(r'^', 'table ', line)
+            new_style.append(line)
         new_style = ['<style>'] + new_style + ['</style>']
 
         style = re.sub(r'table(#\S+)?', 'table#%s' % random_id, '\n'.join(new_style))
@@ -137,26 +143,29 @@ def HTML_with_style(df, style=None, random_id=None):
 
     return style + df_html
 
+
 def generate_report(title=None, filename=None, monitor=False, uad=False, ma=False, lup=False):
     html_content = '<h3>' + title + '</h3>'
     html_content += '<h4>1.realtime info:</h4>'
     # 1.realtime info
 
-    savefilename = 'report_'+ filename + '.png'
+    savefilename = 'report_' + filename + '.png'
     rtdf = None
     if monitor == False:
         rtdf = realtime.get_realtime(filename, sortby='b')
         rtdf = rtdf[
-            ['warn', 'code', 'name', 'price', 'change', 'low', 'bottom', 'btm_space', 'cost', 'profit_amt', 'profit_perc', 'total_amt']]
+            ['warn', 'code', 'name', 'price', 'change', 'low', 'bottom', 'btm_space', 'cost', 'profit_amt',
+             'profit_perc', 'total_amt']]
         # rtdf.columns = ['a', 'b', 'c']
         rtdf.rename(
-            columns={'btm_space': 'space', 'profit_amt': 'profit', 'profit_perc': 'percent', 'total_amt': 'amount'}, inplace=True)
+            columns={'btm_space': 'space', 'profit_amt': 'profit', 'profit_perc': 'percent', 'total_amt': 'amount'},
+            inplace=True)
     else:
         savefilename = 'report_trace.png'
         df = data_util.get_data('../data/' + filename, sep=' ')
         codes = list(df['code'])
         rtdf = falco.get_monitor(codes)
-        rtdf = rtdf[['warn','code','name','change','price','low','bottom','space','industry','area','pe']]
+        rtdf = rtdf[['warn', 'code', 'name', 'change', 'price', 'low', 'bottom', 'space', 'industry', 'area', 'pe']]
 
         rtdf['change'] = rtdf['change'].apply(lambda n: str(round(n, 3)) + '%')
         rtdf['space'] = rtdf['space'].apply(lambda n: str(round(n, 3)) + '%')
@@ -166,7 +175,7 @@ def generate_report(title=None, filename=None, monitor=False, uad=False, ma=Fals
     stkdict = dict(zip(codes, names))
     codes.reverse()
 
-    #style format
+    # style format
     # rtdf['code'] = rtdf['code'].apply(lambda x: str('<a href="http://m.10jqka.com.cn/stockpage/hs_' + x + '">' + x + '</a>'))
     rtdf_html = HTML_with_style(rtdf)
     html_content += rtdf_html
@@ -213,10 +222,10 @@ def mail(to_users=[], content=None):
     try:
         msg = MIMEText(content, 'html', 'utf-8')
         msg['From'] = formataddr(["Jefflyn", sender])  # sender nickname and account
-        #msg['To'] = formataddr(["FK", to_users])  # receiver nickname and account
+        # msg['To'] = formataddr(["FK", to_users])  # receiver nickname and account
         msg['Subject'] = todaystr + " Stocks Report"  # subject
 
-        server = smtplib.SMTP_SSL("smtp.qq.com", 465)  #SMTP server and port
+        server = smtplib.SMTP_SSL("smtp.qq.com", 465)  # SMTP server and port
         server.login(sender, passw)
         server.sendmail(sender, to_users, msg.as_string())
         server.quit()  # close connection
@@ -248,7 +257,7 @@ def mail_with_attch(to_users=[], subject=None, content=None, attaches=[]):
         message.attach(attaches[i])
 
     try:
-        server = smtplib.SMTP_SSL("smtp.qq.com", 465)  #SMTP server and port
+        server = smtplib.SMTP_SSL("smtp.qq.com", 465)  # SMTP server and port
         server.login(sender, passw)
         server.sendmail(sender, to_users, message.as_string())
         server.quit()  # close connection
@@ -257,13 +266,13 @@ def mail_with_attch(to_users=[], subject=None, content=None, attaches=[]):
     return ret
 
 
-
 if __name__ == '__main__':
     generate_report2(title='The holding stocks report', filename='pa')
 
     content1 = generate_report(title='The position stocks report', filename='ot', uad=True, ma=True, lup=True)
     _utils.save_to_pdf(content1, 'report_ot.pdf')
-    content2 = generate_report(title='The tracking stocks report', monitor=True, filename='app/monitorot.txt', uad=True, ma=True, lup=True)
+    content2 = generate_report(title='The tracking stocks report', monitor=True, filename='app/monitorot.txt', uad=True,
+                               ma=True, lup=True)
     _utils.save_to_pdf(content2, 'report_ot_trace.pdf')
 
     attaches = []
@@ -274,8 +283,8 @@ if __name__ == '__main__':
     # contenta = generate_report(title='The position stocks report', filename='pa', uad=True, ma=True, lup=True)
     # contentb = generate_report(title='The tracking stocks report', monitor=True, filename='app/monitormy.txt', uad=True, ma=True, lup=True)
     subj = "Stocks Report " + todaystr
-    to_users = ['649054380@qq.com']#, '1677258052@qq.com', '53985188@qq.com']
-    ret = mail_with_attch(to_users, subject=subj, content=content1+content2, attaches=attaches)
+    to_users = ['649054380@qq.com']  # , '1677258052@qq.com', '53985188@qq.com']
+    ret = mail_with_attch(to_users, subject=subj, content=content1 + content2, attaches=attaches)
     if ret:
         print("Email send successfully")
     else:

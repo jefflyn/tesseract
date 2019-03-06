@@ -20,6 +20,17 @@ INDEX_LIST = ['000001.SH', '000300.SH', '000016.SH', '000905.SH', '399001.SZ', '
 basics = read_sql("select * from basic", params=None)
 
 
+def get_monitor_stocks():
+    df = read_query('select * from monitor_trigger')
+    return df
+
+
+def get_app_codes():
+    df = get_my_stock_pool()
+    codes = list(df['code'])
+    return codes
+
+
 def get_limitup_code(period_type='m', period='2019-01', times=3):
     sql = 'select distinct code from limitup_stat where period_type=:type and period=:period and times>=:times'
     params = {'type': period_type, 'period': period, 'times': times}
@@ -36,12 +47,12 @@ def get_ma_code(grade='a'):
     return df
 
 
-def get_hold_trade(type=None, hold=1):
-    sql = 'select * from hold_trace where 1=1 and hold=:hold'
+def get_my_stock_pool(type=None, hold=1):
+    sql = 'select * from my_stock_pool where 1=1 and is_hold=:hold'
     params = {'hold': hold}
     if type is not None:
         params['type'] = type
-        sql = sql + ' and type=:type'
+        sql = sql + ' and platform=:type'
     log.info(sql + ' ' + str(params))
     df = read_sql(sql, params=params)
     return df
@@ -168,14 +179,6 @@ def get_sz50():
 
 def get_totay_quotations(datestr=None):
     return ts.get_day_all(date=datestr)
-
-
-def get_app_codes():
-    pa = get_data('../data/app/pa.txt', sep=' ')['code'].astype('str').str.zfill(6)
-    cf = get_data('../data/app/cf.txt', sep=' ')['code'].astype('str').str.zfill(6)
-    ot = []  # get_data('../data/app/other.txt', sep=' ')['code'].astype('str').str.zfill(6)
-    codes = list(pa) + list(cf) + list(ot)
-    return codes
 
 
 def get_all_codes(cyb=False):

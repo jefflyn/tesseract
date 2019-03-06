@@ -25,7 +25,7 @@ if __name__ == '__main__':
     # selector.select_result(concept_codes, 'concept')
 
     # >>> select by new
-    # selector.select_from_subnew(fname='new')
+    selector.select_from_subnew(fname='new')
 
     # selector.select_from_change_week()
     # selector.select_from_change_month()

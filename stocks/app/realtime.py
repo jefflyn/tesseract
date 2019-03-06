@@ -168,9 +168,9 @@ if __name__ == '__main__':
         sys.exit(0)
     hold = argv[2] if len(argv) > 2 else 1
     sort = argv[3] if len(argv) > 2 else None
-    hold_df = _dt.get_hold_trade(type, hold)
+    hold_df = _dt.get_my_stock_pool(type, hold)
     if hold_df.empty:
         print("Stock NOT hold! Auto change to default mode.")
-        hold_df = _dt.get_hold_trade(type, 0)
+        hold_df = _dt.get_my_stock_pool(type, 0)
     re_exe(hold_df, 3, sort)
 

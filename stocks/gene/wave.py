@@ -181,7 +181,7 @@ def plot_wave(dflist=None, filename='wave.png', title='', columns=1):
 
 def format_wave_data(wavedf=None, index=False):
     latestone = wavedf.tail(1)  # get the newest record
-    if latestone.empty == True:
+    if latestone.empty is True:
         return None
     i = latestone.index.get_values()[0]
     code = latestone.at[i, 'code']
@@ -368,9 +368,9 @@ def wave_to_str(wavedf=None, size=4, change=10):
         flag = row['status']
         if abs(lastone) >= change:
             if 'up' == flag:
-                price_wave += str(row['end_price']) + '\\'
+                price_wave += str(round(row['end_price'], 2)) + '\\'
             else:
-                price_wave += str(row['end_price']) + '/'
+                price_wave += str(round(row['end_price'], 2)) + '/'
             if sum_last != 0:
                 str_list.append(sum_last)
                 sum_last = 0
