@@ -12,9 +12,10 @@ pre_key_today = date_const.TODAY + '_'
 
 
 if __name__ == '__main__':
-    monitor_stocks = data_util.get_monitor_stocks()
-    codes = list(monitor_stocks['code'])
+
     while True:
+        monitor_stocks = data_util.get_monitor_stocks()
+        codes = list(monitor_stocks['code'])
         realtime_df = ts.get_realtime_quotes(codes)
         data_list = []
         for index, row in realtime_df.iterrows():
@@ -40,36 +41,49 @@ if __name__ == '__main__':
                     warn_times = redis_client.get(pre_key_today + code)
                     if warn_times is None:
                         content = alias + ': ' + code + ' up to ' + p + ', please check!'
-                        sms_util.message_to(msg=content, to='+8618507550586')
-                        redis_client.set(pre_key_today + code, alias + str(price))
-                        print(content)
+                        try:
+                            redis_client.set(pre_key_today + code, alias + str(price))
+                            sms_util.message_to(msg=content, to='+8618507550586')
+                            print(content)
+                        except Exception as e:
+                            print(e)
 
             for p in down_prices:
                 if price <= float(p):
                     warn_times = redis_client.get(pre_key_today + code)
                     if warn_times is None:
                         content = alias + ': ' + code + ' down to ' + p + ', please check!'
-                        sms_util.message_to(msg=content, to='+8618507550586')
-                        redis_client.set(pre_key_today + code, alias + str(price))
-                        print(content)
+                        try:
+                            redis_client.set(pre_key_today + code, alias + str(price))
+                            sms_util.message_to(msg=content, to='+8618507550586')
+                            print(content)
+                        except Exception as e:
+                            print(e)
 
             for p in changes:
                 if float(p) > 0 and realtime_change >= float(p):
                     warn_times = redis_client.get(pre_key_today + code + '_change')
                     if warn_times is None:
                         content = alias + ' ' + code + ' change to +' + p + '%, please check!'
-                        sms_util.message_to(msg=content, to='+8618507550586')
+
                         value = alias + ': ' + str(price) + ' +' + str(round(realtime_change, 2)) + '%'
-                        redis_client.set(pre_key_today + code + '_change', value)
-                        print(content)
+                        try:
+                            redis_client.set(pre_key_today + code + '_change', value)
+                            sms_util.message_to(msg=content, to='+8618507550586')
+                            print(content)
+                        except Exception as e:
+                            print(e)
 
                 if float(p) < 0 and realtime_change <= float(p):
                     warn_times = redis_client.get(pre_key_today + code + '_change')
                     if warn_times is None:
                         content = alias + ': ' + code + ' change to ' + p + '%, please check!'
-                        sms_util.message_to(msg=content, to='+8618507550586')
-                        value = alias + ' ' + str(price) + ' -' + str(round(realtime_change, 2)) + '%'
-                        redis_client.set(pre_key_today + code + '_change', value)
-                        print(content)
-        print(str(datetime.datetime.now()) + ' >>> keep eyes on ...')
+                        value = alias + ' ' + str(price) + ' ' + str(round(realtime_change, 2)) + '%'
+                        try:
+                            redis_client.set(pre_key_today + code + '_change', value)
+                            sms_util.message_to(msg=content, to='+8618507550586')
+                            print(content)
+                        except Exception as e:
+                            print(e)
+        print(str(datetime.datetime.now()) + ' >>> keep eyes on ... total: ' + str(len(codes)))
         time.sleep(3)
