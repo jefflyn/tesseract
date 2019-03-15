@@ -27,10 +27,11 @@ if __name__ == '__main__':
             realtime_change = price_diff / pre_close * 100
 
             index = list(monitor_stocks['code']).index(code)
-            alias = monitor_stocks.ix[index, 'alias']
+            name = monitor_stocks.ix[index, 'name']
             up_price_triggers = monitor_stocks.ix[index, 'price_up']
             down_price_triggers = monitor_stocks.ix[index, 'price_down']
             change_triggers = monitor_stocks.ix[index, 'change_percent']
+            receive_mobile = monitor_stocks.ix[index, 'receive_mobile']
 
             up_prices = str.split(up_price_triggers, ',')
             down_prices = str.split(down_price_triggers, ',')
@@ -38,50 +39,53 @@ if __name__ == '__main__':
 
             for p in up_prices:
                 if price >= float(p):
-                    warn_times = redis_client.get(pre_key_today + code)
+                    redis_key = pre_key_today + code + '_price_' + p
+                    warn_times = redis_client.get(redis_key)
                     if warn_times is None:
-                        content = alias + ': ' + code + ' up to ' + p + ', please check!'
+                        content = name + ': ' + code + ' up to ' + p + ', please check!'
                         try:
-                            redis_client.set(pre_key_today + code, alias + str(price))
-                            sms_util.message_to(msg=content, to='+8618507550586')
+                            redis_client.set(redis_key, name + str(price))
+                            sms_util.message_to(msg=content, to=receive_mobile)
                             print(content)
                         except Exception as e:
                             print(e)
 
             for p in down_prices:
                 if price <= float(p):
-                    warn_times = redis_client.get(pre_key_today + code)
+                    redis_key = pre_key_today + code + '_price_' + p
+                    warn_times = redis_client.get(redis_key)
                     if warn_times is None:
-                        content = alias + ': ' + code + ' down to ' + p + ', please check!'
+                        content = name + ': ' + code + ' down to ' + p + ', please check!'
                         try:
-                            redis_client.set(pre_key_today + code, alias + str(price))
-                            sms_util.message_to(msg=content, to='+8618507550586')
+                            redis_client.set(redis_key, name + str(price))
+                            sms_util.message_to(msg=content, to=receive_mobile)
                             print(content)
                         except Exception as e:
                             print(e)
 
             for p in changes:
                 if float(p) > 0 and realtime_change >= float(p):
-                    warn_times = redis_client.get(pre_key_today + code + '_change')
+                    redis_key = pre_key_today + code + '_change_' + p
+                    warn_times = redis_client.get(redis_key)
                     if warn_times is None:
-                        content = alias + ' ' + code + ' change to +' + p + '%, please check!'
-
-                        value = alias + ': ' + str(price) + ' +' + str(round(realtime_change, 2)) + '%'
+                        content = name + ' ' + code + ' change to +' + p + '%, please check!'
+                        value = name + ': ' + str(price) + ' +' + str(round(realtime_change, 2)) + '%'
                         try:
-                            redis_client.set(pre_key_today + code + '_change', value)
-                            sms_util.message_to(msg=content, to='+8618507550586')
+                            redis_client.set(redis_key, value)
+                            sms_util.message_to(msg=content, to=receive_mobile)
                             print(content)
                         except Exception as e:
                             print(e)
 
                 if float(p) < 0 and realtime_change <= float(p):
-                    warn_times = redis_client.get(pre_key_today + code + '_change')
+                    redis_key = pre_key_today + code + '_change_' + p
+                    warn_times = redis_client.get(redis_key)
                     if warn_times is None:
-                        content = alias + ': ' + code + ' change to ' + p + '%, please check!'
-                        value = alias + ' ' + str(price) + ' ' + str(round(realtime_change, 2)) + '%'
+                        content = name + ': ' + code + ' change to ' + p + '%, please check!'
+                        value = name + ' ' + str(price) + ' ' + str(round(realtime_change, 2)) + '%'
                         try:
-                            redis_client.set(pre_key_today + code + '_change', value)
-                            sms_util.message_to(msg=content, to='+8618507550586')
+                            redis_client.set(redis_key, value)
+                            sms_util.message_to(msg=content, to=receive_mobile)
                             print(content)
                         except Exception as e:
                             print(e)

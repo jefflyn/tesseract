@@ -209,7 +209,7 @@ def select_result(codeset, filename=''):
         beginIndex = endIndex
         endIndex = endIndex + limit
 
-    columns = ['code', 'name', 'industry', 'area', 'price', 'list_date', 'wave', 'bottom', 'uspace%', 'dspace%',
+    columns = ['code', 'name', 'industry', 'area', 'list_date', 'price', 'wave', 'bottom', 'uspace%', 'dspace%',
                'top', 'position%', 'buy1', 'buy2', 'buy3',
                'count', 'count_30d', 'count_q1', 'count_q2', 'count_q3', 'count_q4', 'maxdate', 'lup_low', 'lup_high',
                'updays', 'sumup%', 'multi_vol', 'vol_rate', 'isup', 'ma5', 'ma10', 'ma20', 'ma30', 'ma60', 'ma90',
@@ -221,7 +221,7 @@ def select_result(codeset, filename=''):
     # _datautils.to_db(l1, 'limitup_hist')
     # _datautils.to_db(l2, 'limitup_quota')
     resultdf = resultdf[
-        ['code', 'name', 'industry', 'area', 'price', 'list_date', 'wave', 'bottom', 'uspace%', 'dspace%',
+        ['code', 'name', 'industry', 'area', 'list_date', 'price', 'wave', 'bottom', 'uspace%', 'dspace%',
          'top', 'position%', 'buy1', 'buy2', 'buy3',
          'count', 'count_30d', 'count_q1', 'count_q2', 'count_q3', 'count_q4', 'maxdate', 'lup_low', 'lup_high',
          'updays', 'sumup%', 'vol_rate', 'multi_vol', 'isup', 'ma5', 'ma10', 'ma20', 'ma30', 'ma60', 'ma90', 'ma120', 'ma250']]
