@@ -42,7 +42,7 @@ if __name__ == '__main__':
                     redis_key = pre_key_today + code + '_price_' + p
                     warn_times = redis_client.get(redis_key)
                     if warn_times is None:
-                        content = name + ': ' + code + ' up to ' + p + ', please check!'
+                        content = name + ':' + code + ' up to ' + p + ', please check!'
                         try:
                             redis_client.set(redis_key, name + str(price))
                             sms_util.message_to(msg=content, to=receive_mobile)
@@ -55,7 +55,7 @@ if __name__ == '__main__':
                     redis_key = pre_key_today + code + '_price_' + p
                     warn_times = redis_client.get(redis_key)
                     if warn_times is None:
-                        content = name + ': ' + code + ' down to ' + p + ', please check!'
+                        content = name + ':' + code + ' down to ' + p + ', please check!'
                         try:
                             redis_client.set(redis_key, name + str(price))
                             sms_util.message_to(msg=content, to=receive_mobile)
@@ -69,7 +69,7 @@ if __name__ == '__main__':
                     warn_times = redis_client.get(redis_key)
                     if warn_times is None:
                         content = name + ' ' + code + ' change to +' + p + '%, please check!'
-                        value = name + ': ' + str(price) + ' +' + str(round(realtime_change, 2)) + '%'
+                        value = name + ':' + str(price) + ' +' + str(round(realtime_change, 2)) + '%'
                         try:
                             redis_client.set(redis_key, value)
                             sms_util.message_to(msg=content, to=receive_mobile)
@@ -81,7 +81,7 @@ if __name__ == '__main__':
                     redis_key = pre_key_today + code + '_change_' + p
                     warn_times = redis_client.get(redis_key)
                     if warn_times is None:
-                        content = name + ': ' + code + ' change to ' + p + '%, please check!'
+                        content = name + ':' + code + ' change to ' + p + '%, please check!'
                         value = name + ' ' + str(price) + ' ' + str(round(realtime_change, 2)) + '%'
                         try:
                             redis_client.set(redis_key, value)

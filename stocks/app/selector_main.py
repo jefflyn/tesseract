@@ -21,7 +21,7 @@ if __name__ == '__main__':
     # selector.select_result(codes, 'limitup_' + period)
 
     # >>> select from concepts -大基建、大消费、大金融、大健康、大科技、大军工
-    concept_codes = data_util.get_code_by_concept('大飞机')
+    concept_codes = data_util.get_code_by_concept('农机')
     selector.select_result(concept_codes, 'concept')
 
     # >>> select by new
