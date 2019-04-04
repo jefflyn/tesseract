@@ -183,11 +183,17 @@ def select_result(codeset, filename=''):
             sumup = 0
             multi_vol_rate = 1
             vol_rate = 0
+            change_7_days = ''
+            sum_30_days = 0
             if upndaydf.empty is False:
+                change_7_days = upndaydf.ix[0, 'change_7_days']
+                sum_30_days = upndaydf.ix[0, 'sum_30_days']
                 updays = upndaydf.ix[0, 'updays']
                 sumup = upndaydf.ix[0, 'sumup']
                 multi_vol_rate = upndaydf.ix[0, 'multi_vol']
                 vol_rate = upndaydf.ix[0, 'vol_rate']
+            curt_data.append(change_7_days)
+            curt_data.append(sum_30_days)
             curt_data.append(updays)
             curt_data.append(sumup)
             curt_data.append(multi_vol_rate)
@@ -212,7 +218,7 @@ def select_result(codeset, filename=''):
     columns = ['code', 'name', 'industry', 'area', 'list_date', 'price', 'wave', 'bottom', 'uspace%', 'dspace%',
                'top', 'position%', 'buy1', 'buy2', 'buy3',
                'count', 'count_30d', 'count_q1', 'count_q2', 'count_q3', 'count_q4', 'maxdate', 'lup_low', 'lup_high',
-               'updays', 'sumup%', 'multi_vol', 'vol_rate', 'isup', 'ma5', 'ma10', 'ma20', 'ma30', 'ma60', 'ma90',
+               'change_7_days', 'sum_30_days', 'updays', 'sumup%', 'multi_vol', 'vol_rate', 'isup', 'ma5', 'ma10', 'ma20', 'ma30', 'ma60', 'ma90',
                'ma120', 'ma250']
     resultdf = pd.DataFrame(data_list, columns=columns)
     resultdf = resultdf.sort_values('count_q1', axis=0, ascending=False, inplace=False, kind='quicksort',
@@ -223,7 +229,7 @@ def select_result(codeset, filename=''):
     resultdf = resultdf[
         ['code', 'name', 'industry', 'area', 'list_date', 'price', 'wave', 'bottom', 'uspace%', 'dspace%',
          'top', 'position%', 'buy1', 'buy2', 'buy3',
-         'count', 'count_30d', 'count_q1', 'count_q2', 'count_q3', 'count_q4', 'maxdate', 'lup_low', 'lup_high',
+         'count', 'count_30d', 'count_q1', 'count_q2', 'count_q3', 'count_q4', 'maxdate', 'lup_low', 'lup_high', 'change_7_days', 'sum_30_days',
          'updays', 'sumup%', 'vol_rate', 'multi_vol', 'isup', 'ma5', 'ma10', 'ma20', 'ma30', 'ma60', 'ma90', 'ma120', 'ma250']]
     resultdf['select_time'] = dt.now()
     result_name = 'select_result_' + filename

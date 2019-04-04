@@ -186,6 +186,20 @@ def get_all_codes(cyb=False):
     return list(_bsc['code'])
 
 
+def get_hist_trade(code=None, start=None, end=None):
+    sql = 'select * from hist_trade_day where 1=1 '
+    if code is not None:
+        sql += 'and code =:code '
+    if start is not None:
+        sql += 'and trade_date >=:start '
+    if end is not None:
+        sql += 'and trade_date <=:end '
+    params = {'code': code, 'start': start, 'end': end}
+    log.info(sql + ' ' + str(params))
+    df = read_sql(sql, params=params)
+    return df
+
+
 def get_k_data(code=None, start=None, end=None):
     hist_data = ts.get_k_data(code, start, end)  # one day delay issue, use realtime interface solved
     if hist_data is None or len(hist_data) == 0:

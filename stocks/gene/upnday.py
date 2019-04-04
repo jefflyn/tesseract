@@ -13,6 +13,13 @@ lastmonthstr = (dtime.now() + datetime.timedelta(days=-histnum)).strftime('%Y-%m
 
 
 def get_upnday(codes=None, n=0, change=None):
+    """
+    获取近7天涨跌情况，30天的涨幅
+    :param codes:
+    :param n:
+    :param change:
+    :return:
+    """
     starttime = dtime.now()
     # print("process upnday data start at [%s]" % starttime)
     # print("get k data from %s" % lastmonthstr)
@@ -24,12 +31,12 @@ def get_upnday(codes=None, n=0, change=None):
 
     upndata = []
     for code in code_list:
-        hist_data = data_util.get_k_data(code, start=lastmonthstr)
+        hist_data = data_util.get_hist_trade(code, start=lastmonthstr)
         if hist_data is None or len(hist_data) < 5:
             continue
         latest = hist_data.tail(1)
         idx = latest.index.get_values()[0]
-        latest_date_str = latest.at[idx, 'date']
+        latest_date_str = latest.at[idx, 'trade_date']
         latest_date = dtime.strptime(latest_date_str, '%Y-%m-%d')
         delta = starttime - latest_date
         # excluding halting
@@ -38,13 +45,13 @@ def get_upnday(codes=None, n=0, change=None):
             continue
 
         histndf = hist_data.tail(histnum)
-        histndf = histndf.sort_values('date', ascending=False)
+        histndf = histndf.sort_values('trade_date', ascending=False)
         sumup = 0.0
         isndayup = True
         beginp = 0.0
         endp = 0.0
         ndays = 0.0
-        volumes = [row[1]['volume'] for row in histndf.iterrows()]
+        volumes = [row[1]['vol'] for row in histndf.iterrows()]
         week_vol = []
         n_vol = 5
         for i in range(n_vol):
@@ -54,14 +61,16 @@ def get_upnday(codes=None, n=0, change=None):
         min_v = np.min(week_vol[2:n_vol])
         multi_vol_rate = round(max_v / min_v, 2)
 
+        change_list = ['0' if c < 0 else '1' for c in histndf[0:7]['pct_change']][::-1]
+        change_str = ''.join(change_list)
+        sum_30_days = np.sum(histndf['pct_change'])
         for index, row in histndf.iterrows():
-            open = float(row['open'])
+            change = float(row['pct_change'])
             close = float(row['close'])
 
             if endp == 0.0:
                 endp = close
-            diff = close - open
-            if diff < 0:
+            if change < 0:
                 if index == 0:
                     continue
                 isndayup = False
@@ -84,6 +93,8 @@ def get_upnday(codes=None, n=0, change=None):
         nlist.append(item.at[idx, 'name'])
         nlist.append(item.at[idx, 'industry'])
         nlist.append(item.at[idx, 'area'])
+        nlist.append(change_str)
+        nlist.append(round(sum_30_days, 2))
         nlist.append(ndays)
         nlist.append(round(sumup, 2))
         nlist.append(str(np.round(week_vol, 2)))
@@ -91,17 +102,15 @@ def get_upnday(codes=None, n=0, change=None):
         upndata.append(nlist)
 
     upndf = pd.DataFrame(upndata,
-                         columns=['code', 'name', 'industry', 'area', 'updays', 'sumup', 'multi_vol', 'vol_rate'])
+                         columns=['code', 'name', 'industry', 'area', 'change_7_days', 'sum_30_days', 'updays', 'sumup', 'multi_vol', 'vol_rate'])
     upndf = upndf.sort_values(['updays', 'sumup'], ascending=[False, True])
-    endtime = dtime.now()
-    # print("process upnday data finish at [%s], total time: %ds" % (endtime, (endtime - starttime).seconds))
     return upndf
 
 
 if __name__ == '__main__':
     # basics = _datautils.get_basics()
     # codes = list(basics['code'])
-    codes = ['300156']
+    codes = ['002430']
     df = get_upnday(codes)
     print(df)
     # _dt.to_db(df, 'up_volume')

@@ -57,9 +57,9 @@ if __name__ == '__main__':
                     resu.append(resu0[k])
             trade_date = (datetime.datetime.strptime(resu[1], "%Y%m%d")).strftime('%Y-%m-%d')
             try:
-                sql_insert = "INSERT INTO hist_trade_day(trade_date,ts_code,pre_close,open,close,high,low,vol,amount,amt_change,pct_change) " \
-                             "VALUES ('%s', '%s', '%.2f', '%.2f','%.2f','%.2f','%.2f','%i','%.4f','%.2f','%.4f')" % (
-                    trade_date, str(resu[0]), float(resu[6]), float(resu[2]), float(resu[5]), float(resu[3]), float(resu[4]),
+                sql_insert = "INSERT INTO hist_trade_day(trade_date,ts_code,code,pre_close,open,close,high,low,vol,amount,amt_change,pct_change) " \
+                             "VALUES ('%s', '%s', '%s', '%.2f', '%.2f','%.2f','%.2f','%.2f','%i','%.4f','%.2f','%.4f')" % (
+                    trade_date, str(resu[0]), str(resu[0])[0:6], float(resu[6]), float(resu[2]), float(resu[5]), float(resu[3]), float(resu[4]),
                     float(resu[9]), float(resu[10]),  float(resu[7]), float(resu[8]))
                 cursor.execute(sql_insert)
                 db.commit()
