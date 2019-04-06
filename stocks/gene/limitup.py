@@ -1,12 +1,8 @@
-from datetime import date
 import datetime
-
-import numpy as np
 import pandas as pd
-import tushare as ts
-
 from stocks.data import data_util
 from stocks.base import db_util
+from stocks.base import display
 from stocks.base.logging import logger
 
 LIMITUP_MIN = 9.9
@@ -124,8 +120,7 @@ if __name__ == '__main__':
 
     # lpdf = get_limitup_from_hist_k(['002813'])
     # print(lpdf)
-    #
-    # df = get_limitup_from_hist_trade(['002813'])
-    # print(df)
-    # dfcount = count(df)
-    # print(dfcount)
+    df = get_limitup_from_hist_trade(['002813'])
+    print(df)
+    dfcount = count(df)
+    print(dfcount)

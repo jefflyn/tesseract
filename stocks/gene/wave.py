@@ -391,7 +391,7 @@ def wave_to_str(wavedf=None, size=4, change=10):
     wavestr = ''
     for k in range(0, len(str_list)):
         wavestr += ('|' + str(round(str_list[k], 2)))
-    return wavestr + ' $' + price_wave
+    return wavestr + ' ￥' + price_wave
 
 
 def tryBottom():

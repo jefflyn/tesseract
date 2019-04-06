@@ -110,7 +110,7 @@ def get_upnday(codes=None, n=0, change=None):
 if __name__ == '__main__':
     # basics = _datautils.get_basics()
     # codes = list(basics['code'])
-    codes = ['002430']
+    codes = ['603106']
     df = get_upnday(codes)
     print(df)
     # _dt.to_db(df, 'up_volume')
