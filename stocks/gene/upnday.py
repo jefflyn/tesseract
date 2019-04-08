@@ -5,7 +5,7 @@ import numpy as np
 import pandas as pd
 
 from stocks.data import data_util
-import stocks.base.db_util as _dt
+from stocks.app import _utils
 import stocks.base.display
 
 histnum = 30
@@ -37,11 +37,8 @@ def get_upnday(codes=None, n=0, change=None):
         latest = hist_data.tail(1)
         idx = latest.index.get_values()[0]
         latest_date_str = latest.at[idx, 'trade_date']
-        latest_date = dtime.strptime(latest_date_str, '%Y-%m-%d')
-        delta = starttime - latest_date
         # excluding halting
-        if delta.days > 3:
-            print(code + ' halting...')
+        if _utils.is_halting(code, latest_date_str):
             continue
 
         histndf = hist_data.tail(histnum)

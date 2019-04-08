@@ -84,10 +84,8 @@ def get_status():
     columns = ['code', 'name', 'change', 'close', 'low', 'high', 'volume', 'amount', 'wave', 'bottom', 'uspace',
                'dspace', 'top', 'position', 'suggest']
     resultdf = pd.DataFrame(result_data, columns=columns)
-
     resultdf = resultdf.sort_values('change', axis=0, ascending=True, inplace=False, kind='quicksort', na_position='last')
 
-    print("get index status finish...")
     return resultdf
 
 
@@ -133,7 +131,7 @@ def suggest_by_position(code, position):
 if __name__ == '__main__':
     if len(argv) > 1:
         while True:
-            print(format_index(get_status()), end='')
+            print(format_index(get_status()))
             time.sleep(5)
     else:
         format_index(get_status())

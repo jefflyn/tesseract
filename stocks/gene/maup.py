@@ -26,7 +26,7 @@ def get_ma(codes=None, start='2017-01-04', end=None):
         price = latest.at[idx, 'close']
         latest_date_str = latest.at[idx, 'date']
         # excluding halting
-        if (_utils.is_halting(code, latest_date_str)):
+        if _utils.is_halting(code, latest_date_str):
             continue
 
         ma5 = hist_data.tail(5).mean()['close']

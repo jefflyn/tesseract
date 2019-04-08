@@ -195,7 +195,7 @@ def get_hist_trade(code=None, start=None, end=None):
     if end is not None:
         sql += 'and trade_date <=:end '
     params = {'code': code, 'start': start, 'end': end}
-    log.info(sql + ' ' + str(params))
+    # log.info(sql + ' ' + str(params))
     df = read_sql(sql, params=params)
     return df
 

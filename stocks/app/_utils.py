@@ -23,7 +23,7 @@ def is_halting(code, latest_date_str=None):
     latest_date = datetime.strptime(latest_date_str, '%Y-%m-%d')
     delta = starttime - latest_date
     # excluding halting
-    if delta.days > 3:
+    if delta.days > 4:
         print(code + ' halting...')
         return True
     else:

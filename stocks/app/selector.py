@@ -119,6 +119,9 @@ def select_result(codeset, filename=''):
             wavedf = wave.get_wave(code)  # need to save
             # logger.debug(code)
             wavestr = wave.wave_to_str(wavedf, size=3)
+            wavestr_ab = wavestr.split(' ')[0].split('|')
+            wave_a = wavestr_ab[-2]
+            wave_b = wavestr_ab[-1]
             wavedfset = wavedfset.append(wavedf)
             bottomdf = wave.get_bottom(wavedf)
             if bottomdf is None or bottomdf.empty is True:
@@ -130,6 +133,8 @@ def select_result(codeset, filename=''):
             position = (current_price - bottom) / (top - bottom) * 100
 
             curt_data.append(wavestr)
+            curt_data.append(wave_a)
+            curt_data.append(wave_b)
             curt_data.append(bottom)
             curt_data.append(round(uspace, 2))
             curt_data.append(round(dspace, 2))
@@ -215,7 +220,7 @@ def select_result(codeset, filename=''):
         beginIndex = endIndex
         endIndex = endIndex + limit
 
-    columns = ['code', 'name', 'industry', 'area', 'list_date', 'price', 'wave', 'bottom', 'uspace%', 'dspace%',
+    columns = ['code', 'name', 'industry', 'area', 'list_date', 'price', 'wave', 'wave_a', 'wave_b', 'bottom', 'uspace%', 'dspace%',
                'top', 'position%', 'buy1', 'buy2', 'buy3',
                'count', 'count_30d', 'count_q1', 'count_q2', 'count_q3', 'count_q4', 'maxdate', 'lup_low', 'lup_high',
                'change_7_days', 'sum_30_days', 'updays', 'sumup%', 'multi_vol', 'vol_rate', 'isup', 'ma5', 'ma10', 'ma20', 'ma30', 'ma60', 'ma90',
@@ -227,10 +232,10 @@ def select_result(codeset, filename=''):
     # _datautils.to_db(l1, 'limitup_hist')
     # _datautils.to_db(l2, 'limitup_quota')
     resultdf = resultdf[
-        ['code', 'name', 'industry', 'area', 'list_date', 'price', 'wave', 'bottom', 'uspace%', 'dspace%',
-         'top', 'position%', 'buy1', 'buy2', 'buy3',
-         'count', 'count_30d', 'count_q1', 'count_q2', 'count_q3', 'count_q4', 'maxdate', 'lup_low', 'lup_high', 'change_7_days', 'sum_30_days',
-         'updays', 'sumup%', 'vol_rate', 'multi_vol', 'isup', 'ma5', 'ma10', 'ma20', 'ma30', 'ma60', 'ma90', 'ma120', 'ma250']]
+        ['code', 'name', 'industry', 'area', 'list_date', 'price', 'wave', 'wave_a', 'wave_b', 'bottom', 'uspace%', 'dspace%',
+         'top', 'position%', 'count', 'count_30d', 'count_q1', 'count_q2', 'count_q3', 'count_q4', 'maxdate', 'lup_low', 'lup_high',
+         'buy1', 'buy2', 'buy3', 'change_7_days', 'sum_30_days', 'updays', 'sumup%', 'vol_rate', 'multi_vol',
+         'isup', 'ma5', 'ma10', 'ma20', 'ma30', 'ma60', 'ma90', 'ma120', 'ma250']]
     resultdf['select_time'] = dt.now()
     result_name = 'select_result_' + filename
     _dt.to_db(resultdf, result_name)
