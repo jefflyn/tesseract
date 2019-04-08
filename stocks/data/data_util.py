@@ -61,13 +61,14 @@ def get_my_stock_pool(type=None, hold=1):
 def get_code_by_concept(name=''):
     name_str = '%' + name + '%'
     params = {'name': name_str}
-    sql = 'select distinct b.code, b.name from concept c ' \
+    sql = 'select distinct d.code, c.name from concept c ' \
           'inner join concept_detail d on c.code = d.concept_code ' \
-          'inner join basic b on d.ts_code = b.ts_code ' \
           'where c.name like :name'
     df = read_sql(sql, params=params)
     log.info(sql + ' ' + str(params))
     codes = list(df['code'])
+    concepts = set(df['name'])
+    log.info('get codes from concept: ' + str(concepts))
     return codes
 
 

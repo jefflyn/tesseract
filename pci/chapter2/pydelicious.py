@@ -4,11 +4,11 @@
 
   Using the API class directly:
 
-  >>> a = pydelicious.apiNew('user', 'passwd')
-  >>> # or:
-  >>> a = DeliciousAPI('user', 'passwd')
-  >>> a.tags_get() # Same as:
-  >>> a.request('tags/get', )
+  # >>> a = pydelicious.apiNew('user', 'passwd')
+  # >>> # or:
+  # >>> a = DeliciousAPI('user', 'passwd')
+  # >>> a.tags_get() # Same as:
+  # >>> a.request('tags/get', )
 
   Or by calling the 'convenience' methods on the module.
 
@@ -19,27 +19,27 @@
   - def rename_tag(user, passwd, oldtag, newtag):
   - def get_tags(user, passwd):
 
-  >>> a = apiNew(user, passwd)
-  >>> a.posts_add(url="http://my.com/", desciption="my.com", extended="the url is my.moc", tags="my com")
-  True
-  >>> len(a.posts_all())
-  1
-  >>> get_all(user, passwd)
-  1
+  # >>> a = apiNew(user, passwd)
+  # >>> a.posts_add(url="http://my.com/", desciption="my.com", extended="the url is my.moc", tags="my com")
+  # True
+  # >>> len(a.posts_all())
+  # 1
+  # >>> get_all(user, passwd)
+  # 1
 
   This are short functions for getrss calls.
 
-  >>> rss_
+  # >>> rss_
 
 def get_userposts(user):
 def get_tagposts(tag):
 def get_urlposts(url):
 def get_popular(tag = ""):
 
-  >>> json_posts()
-  >>> json_tags()
-  >>> json_network()
-  >>> json_fans()
+  # >>> json_posts()
+  # >>> json_tags()
+  # >>> json_network()
+  # >>> json_fans()
 
 :License: pydelicious is released under the BSD license. See 'license.txt'
  for more informations.
@@ -71,7 +71,7 @@ def get_popular(tag = ""):
 :done:
  * Refactored the API class, much cleaner now and functions dlcs_api_request, dlcs_parse_xml are available for who wants them.
  * stimmt das so? muss eher noch t[a]g str2utf8 konvertieren
-   >>> pydelicious.getrss(tag="t[a]g")
+   # >>> pydelicious.getrss(tag="t[a]g")
    url: http://del.icio.us/rss/tag/t[a]g
  * requester muss eine sekunde warten
  * __init__.py gibt die funktionen weiter
@@ -84,11 +84,10 @@ def get_popular(tag = ""):
 """
 import sys
 import os
-import time
 import datetime
-import md5, httplib
-import urllib, urllib2, time
-from StringIO import StringIO
+import urllib, time
+import io
+import hashlib
 
 try:
     from elementtree.ElementTree import parse as parse_xml
@@ -141,7 +140,7 @@ except ImportError:
     import socket
 
     if hasattr(socket, 'setdefaulttimeout'): socket.setdefaulttimeout(DLCS_REQUEST_TIMEOUT)
-if DEBUG: print >> sys.stderr, "Set socket timeout to %s seconds" % DLCS_REQUEST_TIMEOUT
+# if DEBUG: print >> sys.stderr, "Set socket timeout to %s seconds" % DLCS_REQUEST_TIMEOUT
 
 
 ### Utility classes
@@ -169,10 +168,11 @@ class _Waiter:
         timeago = tt - self.lastcall
 
         if self.lastcall and DEBUG > 2:
-            print >> sys.stderr, "Lastcall: %s seconds ago." % lastcall
+            # print >> sys.stderr, "Lastcall: %s seconds ago." % lastcall
+            print()
 
         if timeago <= self.wait:
-            if DEBUG > 0: print >> sys.stderr, "Waiting %s seconds." % self.wait
+            # if DEBUG > 0: print >> sys.stderr, "Waiting %s seconds." % self.wait
             time.sleep(self.wait)
             self.waited += 1
             self.lastcall = tt + self.wait
@@ -192,14 +192,14 @@ class DeliciousError(Exception):
     """Raised when the server responds with a negative answer"""
 
 
-class DefaultErrorHandler(urllib2.HTTPDefaultErrorHandler):
+class DefaultErrorHandler(urllib):
     '''@xxx:bvb: Where is this used? should it be registered somewhere with urllib2?
 
     Handles HTTP Error, currently only 503.
     '''
 
-    def http_error_503(self, req, fp, code, msg, headers):
-        raise urllib2.HTTPError(req, code, throttled_message, headers, fp)
+    # def http_error_503(self, req, fp, code, msg, headers):
+    #     raise urllib(req, code, headers, fp)
 
 
 class post(dict):
@@ -250,17 +250,17 @@ class posts(list):
 def str2uni(s):
     # type(in) str or unicode
     # type(out) unicode
-    return ("".join([unichr(ord(i)) for i in s]))
+    return "".join([chr(ord(i)) for i in s])
 
 
 def str2utf8(s):
     # type(in) str or unicode
     # type(out) str
-    return ("".join([unichr(ord(i)).encode("utf-8") for i in s]))
+    return "".join([chr(ord(i)).encode("utf-8") for i in s])
 
 
 def str2quote(s):
-    return urllib.quote_plus("".join([unichr(ord(i)).encode("utf-8") for i in s]))
+    return urllib.quote_plus("".join([chr(ord(i)).encode("utf-8") for i in s]))
 
 
 def dict0(d):
@@ -283,7 +283,7 @@ def http_request(url, user_agent=USER_AGENT, retry=4):
 
     Retries up to four times (default) on exceptions.
     """
-    request = urllib2.Request(url, headers={'User-Agent': user_agent})
+    request = urllib.Request(url, headers={'User-Agent': user_agent})
 
     # Remember last error
     e = None
@@ -292,36 +292,34 @@ def http_request(url, user_agent=USER_AGENT, retry=4):
     tries = retry;
     while tries:
         try:
-            return urllib2.urlopen(request)
+            return urllib(request)
 
-        except urllib2.HTTPError, e:  # protocol errors,
-            raise PyDeliciousException, "%s" % e
+        # except urllib.HTTPError as e:  # protocol errors,
+        # raise PyDeliciousException, "%s" % e
 
-        except urllib2.URLError, e:
+        except Exception as e:
             # @xxx: Ugly check for time-out errors
             # if len(e)>0 and 'timed out' in arg[0]:
-            print >> sys.stderr, "%s, %s tries left." % (e, tries)
+            # print(sys.stderr, "%s, %s tries left." % (e, tries))
             Waiter()
             tries = tries - 1
         # else:
     #	tries = None
 
     # Give up
-    raise PyDeliciousException, \
-        "Unable to retrieve data at '%s', %s" % (url, e)
+    # raise PyDeliciousException, \
+    #     "Unable to retrieve data at '%s', %s" % (url, e)
 
 
 def http_auth_request(url, host, user, passwd, user_agent=USER_AGENT):
     """Call an HTTP server with authorization credentials using urllib2.
     """
-    if DEBUG: httplib.HTTPConnection.debuglevel = 1
-
     # Hook up handler/opener to urllib2
-    password_manager = urllib2.HTTPPasswordMgrWithDefaultRealm()
+    password_manager = urllib.HTTPPasswordMgrWithDefaultRealm()
     password_manager.add_password(None, host, user, passwd)
-    auth_handler = urllib2.HTTPBasicAuthHandler(password_manager)
-    opener = urllib2.build_opener(auth_handler)
-    urllib2.install_opener(opener)
+    auth_handler = urllib.HTTPBasicAuthHandler(password_manager)
+    opener = urllib.build_opener(auth_handler)
+    urllib.install_opener(opener)
 
     return http_request(url, user_agent)
 
@@ -376,7 +374,7 @@ def dlcs_parse_xml(data, split_tags=False):
     if DEBUG > 3: print >> sys.stderr, "dlcs_parse_xml: parsing from ", data
 
     if not hasattr(data, 'read'):
-        data = StringIO(data)
+        data = io(data)
 
     doc = parse_xml(data)
     root = doc.getroot()
@@ -417,9 +415,9 @@ def dlcs_parse_xml(data, split_tags=False):
         # Update: "time"
         # return {fmt: root.attrib}
         return {fmt: {'time': time.strptime(root.attrib['time'], ISO_8601_DATETIME)}}
-
     else:
-        raise PyDeliciousException, "Unknown XML document format '%s'" % fmt
+        print('')
+        # raise PyDeliciousException, "Unknown XML document format '%s'" % fmt
 
 
 def dlcs_rss_request(tag="", popular=0, user="", url=''):
@@ -436,7 +434,7 @@ def dlcs_rss_request(tag="", popular=0, user="", url=''):
     user = str2quote(user)
     if url != '':
         # http://del.icio.us/rss/url/efbfb246d886393d48065551434dab54
-        url = DLCS_RSS + '''url/%s''' % md5.new(url).hexdigest()
+        url = DLCS_RSS + '''url/%s''' % hashlib.md5.new(url).hexdigest()
     elif user != '' and tag != '':
         url = DLCS_RSS + '''%(user)s/%(tag)s''' % dict(user=user, tag=tag)
     elif user != '' and tag == '':
@@ -580,7 +578,7 @@ class DeliciousAPI:
                 errmsg = ""
                 if len(rs['result']) > 0:
                     errmsg = rs['result'][1:]
-                raise DeliciousError, errmsg
+                # raise DeliciousError, errmsg
 
             return rs
 

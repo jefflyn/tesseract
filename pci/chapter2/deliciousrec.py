@@ -20,7 +20,7 @@ def fillItems(user_dict):
         posts=get_userposts(user)
         break
       except:
-        print "Failed user "+user+", retrying"
+        print("Failed user "+user+", retrying")
         time.sleep(4)
     for post in posts:
       url=post['href']

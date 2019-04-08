@@ -16,7 +16,7 @@ if __name__ == '__main__':
     # 建立数据库连接
     db = get_db()
     cursor = db.cursor()
-    total = cursor.execute("select ts_code from basic")
+    total = cursor.execute('select ts_code from basic')
     if total == 0:
         logger.info("no stock found, process end!")
         exit(0)
@@ -24,16 +24,19 @@ if __name__ == '__main__':
     # stock_pool = ['002923.SZ']
     # 循环获取单个股票的日线行情
     # 1分钟不超过200次调用
+    begin_time = datetime.datetime.now()
     for i in range(len(stock_pool)):
         try:
             # 打印进度
             logger.info('Seq: ' + str(i + 1) + ' of ' + str(total) + '   Code: ' + str(stock_pool[i]))
-            # ts_code = stock_pool[i]
-            # query_sql = "select ts_code from hist_trade_day where ts_code='{0}' and trade_date='{1}'"\
-            #     .format(ts_code, time_temp.strftime('%Y-%m-%d'))
-            # is_existed = cursor.execute(query_sql)
-            # if is_existed > 0:
-            #     continue
+            if i > 0 and i % 200 == 0:
+                end_time = datetime.datetime.now()
+                time_diff = (end_time - begin_time).seconds
+                sleep_time = 60 - time_diff
+                if sleep_time > 0:
+                    logger.info('sleep for ' + str(sleep_time) + ' seconds ...')
+                    time.sleep(sleep_time)
+                begin_time = datetime.datetime.now()
             # 前复权行情
             df = ts.pro_bar(pro_api=pro, ts_code=stock_pool[i], adj='qfq', start_date=start_dt, end_date=end_dt)
             if df is None:

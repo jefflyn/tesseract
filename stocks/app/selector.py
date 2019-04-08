@@ -120,8 +120,8 @@ def select_result(codeset, filename=''):
             # logger.debug(code)
             wavestr = wave.wave_to_str(wavedf, size=3)
             wavestr_ab = wavestr.split(' ')[0].split('|')
-            wave_a = wavestr_ab[-2]
-            wave_b = wavestr_ab[-1]
+            wave_a = float(wavestr_ab[-2] if wavestr_ab[-2] != '' else '0')
+            wave_b = float(wavestr_ab[-1])
             wavedfset = wavedfset.append(wavedf)
             bottomdf = wave.get_bottom(wavedf)
             if bottomdf is None or bottomdf.empty is True:
@@ -133,8 +133,8 @@ def select_result(codeset, filename=''):
             position = (current_price - bottom) / (top - bottom) * 100
 
             curt_data.append(wavestr)
-            curt_data.append(wave_a)
-            curt_data.append(wave_b)
+            curt_data.append(round(wave_a, 2))
+            curt_data.append(round(wave_b, 2))
             curt_data.append(bottom)
             curt_data.append(round(uspace, 2))
             curt_data.append(round(dspace, 2))
