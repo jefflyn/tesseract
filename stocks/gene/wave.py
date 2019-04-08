@@ -368,8 +368,12 @@ def wave_to_str(wavedf=None, size=4, change=10):
         flag = row['status']
         if abs(lastone) >= change:
             if 'up' == flag:
+                if index == 0:
+                    price_wave = str(round(row['begin_price'], 2)) + '/'
                 price_wave += str(round(row['end_price'], 2)) + '\\'
             else:
+                if index == 0:
+                    price_wave = str(round(row['begin_price'], 2)) + '\\'
                 price_wave += str(round(row['end_price'], 2)) + '/'
             if sum_last != 0:
                 str_list.append(sum_last)
@@ -391,7 +395,7 @@ def wave_to_str(wavedf=None, size=4, change=10):
     wavestr = ''
     for k in range(0, len(str_list)):
         wavestr += ('|' + str(round(str_list[k], 2)))
-    return wavestr + ' ￥' + price_wave
+    return wavestr + '\n￥' + price_wave
 
 
 def tryBottom():

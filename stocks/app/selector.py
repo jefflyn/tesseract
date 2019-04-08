@@ -118,8 +118,11 @@ def select_result(codeset, filename=''):
             # get wave data and bottom top
             wavedf = wave.get_wave(code)  # need to save
             # logger.debug(code)
-            wavestr = wave.wave_to_str(wavedf, size=3)
-            wavestr_ab = wavestr.split(' ')[0].split('|')
+            wave_size = 5
+            if filename == 'subnew':
+                wave_size = 10
+            wavestr = wave.wave_to_str(wavedf, size)
+            wavestr_ab = wavestr.split('\n')[0].split('|')
             wave_a = float(wavestr_ab[-2] if wavestr_ab[-2] != '' else '0')
             wave_b = float(wavestr_ab[-1])
             wavedfset = wavedfset.append(wavedf)
