@@ -225,6 +225,7 @@ def get_wave(codes=None, index=False, start=None, end=None, beginlow=True, durat
         # hist_data = ts.get_h_data(code, start)  # network issue
         hist_data = ts.get_k_data(code=code, index=index,
                                   start=start)  # one day delay issue, use realtime interface solved
+
         if hist_data is None or len(hist_data) == 0:
             continue
         latestdate = hist_data.tail(1).at[hist_data.tail(1).index.get_values()[0], 'date']
@@ -411,7 +412,7 @@ def tryBottom():
 
 if __name__ == '__main__':
     # tryBottom()
-    code_list = ['600655']
+    code_list = ['002796']
     result = get_wave(code_list, index=False, start='2015-01-01')
     bottom = get_bottom(result, 15)
     print(wave_to_str(result))
