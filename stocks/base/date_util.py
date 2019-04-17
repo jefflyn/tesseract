@@ -158,6 +158,21 @@ def get_day_type(query_date):
         return -1
 
 
+def get_latest_trade_date(days=1, format=default_format):
+    if days <= 0:
+        days = 1
+    trade_date_list = list()
+    n = 0
+    while True:
+        target_date = (now - timedelta(days=n)).strftime(date_format)
+        if is_tradeday(target_date):
+            trade_date_list.append((now - timedelta(days=n)).strftime(format))
+        n += 1
+        if len(trade_date_list) == days:
+            break
+    return trade_date_list
+
+
 def is_tradeday(query_date):
     weekday = datetime.datetime.strptime(query_date, '%Y%m%d').isoweekday()
     if weekday <= 5 and get_day_type(query_date) == 0:
@@ -173,7 +188,7 @@ def today_is_tradeday():
 
 def get_trade_day(nday=-4):
     """
-
+    获取n对上两个交易日日期
     :param n:
     :return: [today, last n day ...]
     """
@@ -192,12 +207,17 @@ def get_trade_day(nday=-4):
                     break
             n_trade_day_pair.append([from_date, to_date])
         n += 1
-        if len(n_trade_day_pair) == abs(nday):
+        if len(n_trade_day_pair) == abs(nday) or nday == 0:
             break
     return n_trade_day_pair[::-1]
 
 
 def get_week_firstday_lastday(which=-1):
+    """
+    获取一周的周一和周五的日期
+    :param which:
+    :return:
+    """
     if which == 0:
         which = 1
     monday = today + relativedelta(weekday=MO(which))
@@ -241,13 +261,14 @@ def get_month_firstday_lastday(howmany=12):
 
 
 if __name__ == '__main__':
-    print(get_month_firstday_lastday(8))
-    print(this_month_start)
-    print(get_week_firstday_lastday(-8))
-    print(get_week_firstday_lastday(-7))
-    print(get_week_firstday_lastday(-6))
-    print(get_week_firstday_lastday(-5))
-    print(get_week_firstday_lastday(-4))
-    print(get_week_firstday_lastday(-3))
-    print(get_week_firstday_lastday(-2))
-    print(get_week_firstday_lastday(-1))
+    print(get_latest_trade_date(5))
+    # print(get_month_firstday_lastday(8))
+    # print(this_month_start)
+    # print(get_week_firstday_lastday(-8))
+    # print(get_week_firstday_lastday(-7))
+    # print(get_week_firstday_lastday(-6))
+    # print(get_week_firstday_lastday(-5))
+    # print(get_week_firstday_lastday(-4))
+    # print(get_week_firstday_lastday(-3))
+    # print(get_week_firstday_lastday(-2))
+    # print(get_week_firstday_lastday(-1))

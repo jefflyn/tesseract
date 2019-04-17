@@ -79,7 +79,7 @@ def get_ma(codes=None, start='2017-01-04', end=None):
                                             'ma5', 'ma10', 'ma20', 'ma30', 'ma60', 'ma90', 'ma120', 'ma250', 'ma30std',
                                             'ma10_space'])  # ,'ma60std','ma120std','ma250std'])
     ma_df = ma_df.sort_values(by=['isup', 'ma10_space'], ascending=[False, True])
-    endtime = datetime.datetime.now()
+    # endtime = datetime.datetime.now()
     # print("process ma data finish at [%s], total time: %ds" % (endtime, (endtime - starttime).seconds))
     return ma_df
 

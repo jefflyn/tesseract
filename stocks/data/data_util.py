@@ -20,6 +20,31 @@ INDEX_LIST = ['000001.SH', '000300.SH', '000016.SH', '000905.SH', '399001.SZ', '
 basics = read_sql("select * from basic", params=None)
 
 
+def get_hist_trade(code=None, start=None, end=None):
+    """
+    获取历史日k
+    :param code:
+    :param start:
+    :param end:
+    :return:
+    """
+    sql = 'select * from hist_trade_day where 1=1 '
+    if code is not None:
+        if isinstance(code, str):
+            codes = list()
+            codes.append(code)
+            code = codes
+        sql += 'and code in :code '
+    if start is not None:
+        sql += 'and trade_date >=:start '
+    if end is not None:
+        sql += 'and trade_date <=:end '
+    params = {'code': code, 'start': start, 'end': end}
+    # log.info(sql + ' ' + str(params))
+    df = read_sql(sql, params=params)
+    return df
+
+
 def get_monitor_stocks():
     df = read_query('select * from monitor_trigger')
     return df
@@ -185,20 +210,6 @@ def get_totay_quotations(datestr=None):
 def get_all_codes(cyb=False):
     _bsc = get_basics(cyb=cyb)
     return list(_bsc['code'])
-
-
-def get_hist_trade(code=None, start=None, end=None):
-    sql = 'select * from hist_trade_day where 1=1 '
-    if code is not None:
-        sql += 'and code =:code '
-    if start is not None:
-        sql += 'and trade_date >=:start '
-    if end is not None:
-        sql += 'and trade_date <=:end '
-    params = {'code': code, 'start': start, 'end': end}
-    # log.info(sql + ' ' + str(params))
-    df = read_sql(sql, params=params)
-    return df
 
 
 def get_k_data(code=None, start=None, end=None):

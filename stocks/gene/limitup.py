@@ -120,7 +120,7 @@ if __name__ == '__main__':
 
     # lpdf = get_limitup_from_hist_k(['002813'])
     # print(lpdf)
-    df = get_limitup_from_hist_trade(['002813'])
+    df = get_limitup_from_hist_trade(['600405'])
     print(df)
     dfcount = count(df)
     print(dfcount)

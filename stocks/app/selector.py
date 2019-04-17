@@ -9,6 +9,7 @@ import tushare as ts
 from stocks.app import falco
 from stocks.base.logging import logger
 from stocks.data import data_util
+from stocks.base import date_util
 from stocks.gene import limitup
 from stocks.gene import maup
 from stocks.gene import upnday
@@ -25,6 +26,8 @@ QUATO_WEIGHT = {
     UPNDAY: 0.2,
     MAUP: 0.1
 }
+
+latest_trade_date = date_util.get_latest_trade_date(1)[0]
 
 
 def select_from_change_week():
@@ -57,20 +60,13 @@ def select_from_change_month():
     logger.info('finished!')
 
 
-def select_from_all(cyb=True, fname='all'):
+def select_from_all(fname='all'):
     """
     select all stocks 
-    :param excludeCyb: True
-    :param fname: 
+    :param fname: all
     :return: 
     """
-    basics = data_util.get_basics()
-    codes = list(basics['code'])
-
-    logger.info('select_from_all start to process... total size: %d' % len(codes))
-    result = select_result(codes, filename=fname)
-    logger.info('select_from_all finished! result size: %d' % len(result.index.get_values()))
-    # logger.info(result)
+    select_result(filename=fname)
 
 
 def select_from_subnew(from_date=None, fname='subnew'):
@@ -83,167 +79,176 @@ def select_from_subnew(from_date=None, fname='subnew'):
     select_result(codes, filename=fname)
 
 
-def select_result(codeset, filename=''):
+def merge_select_result():
+    return None
+
+
+def select_result(codeset=None, filename=''):
+    hist_trade_df = data_util.get_hist_trade(code=codeset, start=latest_trade_date, end=latest_trade_date)
+    size = 0
+    if codeset is not None:
+        size = len(codeset)
+    else:
+        size = len(hist_trade_df.index.get_values())
+    logger.info('select stocks start! total size: %d\n' % size)
+    # limit = 500
+    # beginIndex = 0
+    # endIndex = beginIndex + limit if size > limit else size
+    # logger.info('select from %s, total: %i' % (filename, size))
     data_list = []
-    size = len(codeset)
-    limit = 500
-    beginIndex = 0
-    endIndex = beginIndex + limit if size > limit else size
-    logger.info('select from %s, total: %i' % (filename, size))
-    while endIndex <= size:
-        logger.info('process from %d to %d' % (beginIndex, endIndex))
-        codes = codeset[beginIndex: endIndex]
-        df = ts.get_realtime_quotes(codes)
-        wavedfset = pd.DataFrame(
-            columns=['code', 'begin', 'end', 'status', 'begin_price', 'end_price', 'days', 'change'])
-        for index, row in df.iterrows():
-            code = row['code']
-            open = float(row['open'])
-            current_price = float(row['price'])
-            # maybe in trading halt or others situation, ignore this code
-            if open <= 0 or current_price <= 0:
-                continue
 
-            basic = data_util.get_basics(code)
-            if basic is None or basic.empty is True:
-                continue
-            curt_data = []
-            curt_data.append(code)
-            curt_data.append(row['name'])
-            curt_data.append(basic.ix[code, 'industry'])
-            curt_data.append(basic.ix[code, 'area'])
-            curt_data.append(basic.ix[code, 'list_date'])
-            curt_data.append(current_price)
+    # while endIndex <= size:
+    #     logger.info('process from %d to %d' % (beginIndex, endIndex))
+    #     codes = codeset[beginIndex: endIndex]
+    #     df = ts.get_realtime_quotes(codes)
 
-            # get wave data and bottom top
-            wavedf = wave.get_wave(code)  # need to save
-            # logger.debug(code)
-            wave_size = 5
-            if filename == 'subnew':
-                wave_size = 10
-            wavestr = wave.wave_to_str(wavedf, size)
-            wavestr_ab = wavestr.split('\n')[0].split('|')
-            wave_a = float(wavestr_ab[-2] if wavestr_ab[-2] != '' else '0')
-            wave_b = float(wavestr_ab[-1])
-            wavedfset = wavedfset.append(wavedf)
-            bottomdf = wave.get_bottom(wavedf)
-            if bottomdf is None or bottomdf.empty is True:
-                continue
-            bottom = bottomdf.ix[0, 'bottom']
-            top = bottomdf.ix[0, 'top']
-            uspace = (current_price - bottom) / bottom * 100
-            dspace = (current_price - top) / top * 100
-            position = (current_price - bottom) / (top - bottom) * 100
+        # beginIndex = endIndex
+        # endIndex = endIndex + limit
+    wavedfset = pd.DataFrame(columns=['code', 'begin', 'end', 'status', 'begin_price', 'end_price', 'days', 'change'])
+    for index, row in hist_trade_df.iterrows():
+        code = row['code']
+        logger.info('count down ' + str(size) + ' >>> processing ' + code)
+        size -= 1
+        open = float(row['open'])
+        current_price = float(row['close'])
+        # maybe in trading halt or others situation, ignore this code
+        if open <= 0 or current_price <= 0:
+            continue
 
-            curt_data.append(wavestr)
-            curt_data.append(round(wave_a, 2))
-            curt_data.append(round(wave_b, 2))
-            curt_data.append(bottom)
-            curt_data.append(round(uspace, 2))
-            curt_data.append(round(dspace, 2))
-            curt_data.append(round(top, 2))
+        basic = data_util.get_basics(code)
+        if basic is None or basic.empty is True:
+            continue
+        curt_data = list()
+        curt_data.append(code)
+        curt_data.append(basic.ix[code, 'name'])
+        curt_data.append(basic.ix[code, 'industry'])
+        curt_data.append(basic.ix[code, 'area'])
+        curt_data.append(basic.ix[code, 'list_date'])
+        curt_data.append(current_price)
 
-            curt_data.append(round(position, 2))
-            curt_data.append(round(bottomdf.ix[0, 'buy1'], 2))
-            curt_data.append(round(bottomdf.ix[0, 'buy2'], 2))
-            curt_data.append(round(bottomdf.ix[0, 'buy3'], 2))
+        # get wave data and bottom top
+        wavedf = wave.get_wave(code)  # need to save
+        # logger.debug(code)
+        wave_size = 5
+        if filename == 'subnew':
+            wave_size = 10
+        wavestr = wave.wave_to_str(wavedf, size)
+        wavestr_ab = wavestr.split('\n')[0].split('|')
+        wave_a = float(wavestr_ab[-2] if wavestr_ab[-2] != '' else '0')
+        wave_b = float(wavestr_ab[-1])
+        wavedfset = wavedfset.append(wavedf)
+        bottomdf = wave.get_bottom(wavedf)
+        if bottomdf is None or bottomdf.empty is True:
+            continue
+        bottom = bottomdf.ix[0, 'bottom']
+        top = bottomdf.ix[0, 'top']
+        uspace = (current_price - bottom) / bottom * 100
+        dspace = (current_price - top) / top * 100
+        position = (current_price - bottom) / (top - bottom) * 100
 
-            # limit up data
-            limitupdf = limitup.get_limitup_from_hist_trade(code)
+        curt_data.append(wavestr)
+        curt_data.append(round(wave_a, 2))
+        curt_data.append(round(wave_b, 2))
+        curt_data.append(bottom)
+        curt_data.append(round(uspace, 2))
+        curt_data.append(round(dspace, 2))
+        curt_data.append(round(top, 2))
 
-            # l1 = l1.append(lupdf, ignore_index=True)
-            # l2 = l2.append(limitupdf, ignore_index=True)
+        curt_data.append(round(position, 2))
+        curt_data.append(round(bottomdf.ix[0, 'buy1'], 2))
+        curt_data.append(round(bottomdf.ix[0, 'buy2'], 2))
+        curt_data.append(round(bottomdf.ix[0, 'buy3'], 2))
 
-            lupcount = 0
-            lupcount30 = 0
-            lupcountq1 = 0
-            lupcountq2 = 0
-            lupcountq3 = 0
-            lupcountq4 = 0
-            lup_lastday = "-"
-            luplow = 0
-            luphigh = 0
-            lupcountdf = limitup.count(limitupdf)
-            if lupcountdf.empty is False:
-                lupcount = lupcountdf.ix[0, 'count']
-                lupcount30 = lupcountdf.ix[0, 'count_30d']
-                lupcountq1 = lupcountdf.ix[0, 'count_q1']
-                lupcountq2 = lupcountdf.ix[0, 'count_q2']
-                lupcountq3 = lupcountdf.ix[0, 'count_q3']
-                lupcountq4 = lupcountdf.ix[0, 'count_q4']
-                lup_lastday = lupcountdf.ix[0, 'maxdate']
-                luplow = lupcountdf.ix[0, 'lup_low']
-                luphigh = lupcountdf.ix[0, 'lup_high']
+        # limit up data
+        limitupdf = limitup.get_limitup_from_hist_trade(code)
 
-            curt_data.append(lupcount)
-            curt_data.append(lupcount30)
-            curt_data.append(lupcountq1)
-            curt_data.append(lupcountq2)
-            curt_data.append(lupcountq3)
-            curt_data.append(lupcountq4)
-            curt_data.append(lup_lastday)
-            curt_data.append(luplow)
-            curt_data.append(luphigh)
+        # l1 = l1.append(lupdf, ignore_index=True)
+        # l2 = l2.append(limitupdf, ignore_index=True)
 
-            # up n day data
-            upndaydf = upnday.get_upnday(code)
-            updays = 0
-            sumup = 0
-            multi_vol_rate = 1
-            vol_rate = 0
-            change_7_days = ''
-            sum_30_days = 0
-            if upndaydf.empty is False:
-                change_7_days = upndaydf.ix[0, 'change_7_days']
-                sum_30_days = upndaydf.ix[0, 'sum_30_days']
-                updays = upndaydf.ix[0, 'updays']
-                sumup = upndaydf.ix[0, 'sumup']
-                multi_vol_rate = upndaydf.ix[0, 'multi_vol']
-                vol_rate = upndaydf.ix[0, 'vol_rate']
-            curt_data.append(change_7_days)
-            curt_data.append(sum_30_days)
-            curt_data.append(updays)
-            curt_data.append(sumup)
-            curt_data.append(multi_vol_rate)
-            curt_data.append(vol_rate)
+        lupcount = 0
+        lupcount30 = 0
+        lupcountq1 = 0
+        lupcountq2 = 0
+        lupcountq3 = 0
+        lupcountq4 = 0
+        lup_lastday = "-"
+        luplow = 0
+        luphigh = 0
+        lupcountdf = limitup.count(limitupdf)
+        if lupcountdf.empty is False:
+            lupcount = lupcountdf.ix[0, 'count']
+            lupcount30 = lupcountdf.ix[0, 'count_30d']
+            lupcountq1 = lupcountdf.ix[0, 'count_q1']
+            lupcountq2 = lupcountdf.ix[0, 'count_q2']
+            lupcountq3 = lupcountdf.ix[0, 'count_q3']
+            lupcountq4 = lupcountdf.ix[0, 'count_q4']
+            lup_lastday = lupcountdf.ix[0, 'maxdate']
+            luplow = lupcountdf.ix[0, 'lup_low']
+            luphigh = lupcountdf.ix[0, 'lup_high']
 
-            # get maup data
-            maupdf = maup.get_ma(code)
-            curt_data.append(maupdf.ix[0, 'isup'] if maupdf.empty is False else 0)
-            curt_data.append(maupdf.ix[0, 'ma5'] if maupdf.empty is False else 0)
-            curt_data.append(maupdf.ix[0, 'ma10'] if maupdf.empty is False else 0)
-            curt_data.append(maupdf.ix[0, 'ma20'] if maupdf.empty is False else 0)
-            curt_data.append(maupdf.ix[0, 'ma30'] if maupdf.empty is False else 0)
-            curt_data.append(maupdf.ix[0, 'ma60'] if maupdf.empty is False else 0)
-            curt_data.append(maupdf.ix[0, 'ma90'] if maupdf.empty is False else 0)
-            curt_data.append(maupdf.ix[0, 'ma120'] if maupdf.empty is False else 0)
-            curt_data.append(maupdf.ix[0, 'ma250'] if maupdf.empty is False else 0)
+        curt_data.append(lupcount)
+        curt_data.append(lupcount30)
+        curt_data.append(lupcountq1)
+        curt_data.append(lupcountq2)
+        curt_data.append(lupcountq3)
+        curt_data.append(lupcountq4)
+        curt_data.append(lup_lastday)
+        curt_data.append(luplow)
+        curt_data.append(luphigh)
 
-            data_list.append(curt_data)
-        beginIndex = endIndex
-        endIndex = endIndex + limit
+        # up n day data
+        upndaydf = upnday.get_upnday(code)
+        updays = 0
+        sumup = 0
+        multi_vol_rate = 1
+        vol_rate = 0
+        change_7_days = ''
+        sum_30_days = 0
+        if upndaydf.empty is False:
+            change_7_days = upndaydf.ix[0, 'change_7_days']
+            sum_30_days = upndaydf.ix[0, 'sum_30_days']
+            updays = upndaydf.ix[0, 'updays']
+            sumup = upndaydf.ix[0, 'sumup']
+            multi_vol_rate = upndaydf.ix[0, 'multi_vol']
+            vol_rate = upndaydf.ix[0, 'vol_rate']
+        curt_data.append(change_7_days)
+        curt_data.append(sum_30_days)
+        curt_data.append(updays)
+        curt_data.append(sumup)
+        curt_data.append(multi_vol_rate)
+        curt_data.append(vol_rate)
 
+        # get maup data
+        maupdf = maup.get_ma(code)
+        curt_data.append(maupdf.ix[0, 'isup'] if maupdf.empty is False else 0)
+        curt_data.append(maupdf.ix[0, 'ma5'] if maupdf.empty is False else 0)
+        curt_data.append(maupdf.ix[0, 'ma10'] if maupdf.empty is False else 0)
+        curt_data.append(maupdf.ix[0, 'ma20'] if maupdf.empty is False else 0)
+        curt_data.append(maupdf.ix[0, 'ma30'] if maupdf.empty is False else 0)
+        curt_data.append(maupdf.ix[0, 'ma60'] if maupdf.empty is False else 0)
+        curt_data.append(maupdf.ix[0, 'ma90'] if maupdf.empty is False else 0)
+        curt_data.append(maupdf.ix[0, 'ma120'] if maupdf.empty is False else 0)
+        curt_data.append(maupdf.ix[0, 'ma250'] if maupdf.empty is False else 0)
+
+        data_list.append(curt_data)
     columns = ['code', 'name', 'industry', 'area', 'list_date', 'price', 'wave', 'wave_a', 'wave_b', 'bottom', 'uspace%', 'dspace%',
                'top', 'position%', 'buy1', 'buy2', 'buy3',
                'count', 'count_30d', 'count_q1', 'count_q2', 'count_q3', 'count_q4', 'maxdate', 'lup_low', 'lup_high',
                'change_7_days', 'sum_30_days', 'updays', 'sumup%', 'multi_vol', 'vol_rate', 'isup', 'ma5', 'ma10', 'ma20', 'ma30', 'ma60', 'ma90',
                'ma120', 'ma250']
     resultdf = pd.DataFrame(data_list, columns=columns)
-    resultdf = resultdf.sort_values('count_q1', axis=0, ascending=False, inplace=False, kind='quicksort',
-                                    na_position='last')
+    resultdf = resultdf.sort_values('count_30d', axis=0, ascending=False, inplace=False, kind='quicksort', na_position='last')
 
-    # _datautils.to_db(l1, 'limitup_hist')
-    # _datautils.to_db(l2, 'limitup_quota')
     resultdf = resultdf[
         ['code', 'name', 'industry', 'area', 'list_date', 'price', 'wave', 'wave_a', 'wave_b', 'bottom', 'uspace%', 'dspace%',
-         'top', 'position%', 'count', 'count_30d', 'count_q1', 'count_q2', 'count_q3', 'count_q4', 'maxdate', 'lup_low', 'lup_high',
-         'buy1', 'buy2', 'buy3', 'change_7_days', 'sum_30_days', 'updays', 'sumup%', 'vol_rate', 'multi_vol',
+         'top', 'position%', 'sum_30_days', 'count', 'count_30d', 'count_q1', 'count_q2', 'count_q3', 'count_q4', 'maxdate', 'lup_low', 'lup_high',
+         'buy1', 'buy2', 'buy3', 'change_7_days', 'updays', 'sumup%', 'vol_rate', 'multi_vol',
          'isup', 'ma5', 'ma10', 'ma20', 'ma30', 'ma60', 'ma90', 'ma120', 'ma250']]
     resultdf['select_time'] = dt.now()
     result_name = 'select_result_' + filename
     _dt.to_db(resultdf, result_name)
     _dt.to_db(wavedfset, 'select_wave_' + filename)
-    logger.info('stocks select finished! result size: %d\n' % len(resultdf.index.get_values()))
+    logger.info('select stocks finished! result size: %d\n' % len(resultdf.index.get_values()))
     return resultdf
 
 

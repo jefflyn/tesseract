@@ -47,7 +47,7 @@ def read_sql(sql, params):
 
 
 if __name__ == '__main__':
-    # df = read_table('hist_data_month')
-    # df = read_query('select code, date, p_change from hist_data_month')
-    df = read_sql('select code, date, p_change from hist_data_month where code=:code', params={'code': '600680'})
+    # df = read_table('hist_trade_day')
+    # df = read_query('select code, trade_date, close from hist_trade_day')
+    df = read_sql('select code, trade_date, close from hist_trade_day where code in :code', params={'code': ['600680', '600126']})
     print(df)
