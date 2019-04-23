@@ -84,7 +84,13 @@ def merge_select_result():
 
 
 def select_result(codeset=None, filename=''):
-    hist_trade_df = data_util.get_hist_trade(code=codeset, start=latest_trade_date, end=latest_trade_date)
+    trade_date_list = date_util.get_latest_trade_date(3)
+    hist_trade_df = None
+    for trade_date in trade_date_list:
+        hist_trade_df = data_util.get_hist_trade(code=codeset, start=trade_date, end=latest_trade_date)
+        if len(hist_trade_df) > 0:
+            logger.info('get latest trade: %s' % trade_date)
+            break
     size = 0
     if codeset is not None:
         size = len(codeset)
@@ -132,7 +138,7 @@ def select_result(codeset=None, filename=''):
         wave_size = 5
         if filename == 'subnew':
             wave_size = 10
-        wavestr = wave.wave_to_str(wavedf, size)
+        wavestr = wave.wave_to_str(wavedf, wave_size)
         wavestr_ab = wavestr.split('\n')[0].split('|')
         wave_a = float(wavestr_ab[-2] if wavestr_ab[-2] != '' else '0')
         wave_b = float(wavestr_ab[-1])
@@ -237,7 +243,7 @@ def select_result(codeset=None, filename=''):
                'change_7_days', 'sum_30_days', 'updays', 'sumup%', 'multi_vol', 'vol_rate', 'isup', 'ma5', 'ma10', 'ma20', 'ma30', 'ma60', 'ma90',
                'ma120', 'ma250']
     resultdf = pd.DataFrame(data_list, columns=columns)
-    resultdf = resultdf.sort_values('count_30d', axis=0, ascending=False, inplace=False, kind='quicksort', na_position='last')
+    resultdf = resultdf.sort_values('sum_30_days', axis=0, ascending=False, inplace=False, kind='quicksort', na_position='last')
 
     resultdf = resultdf[
         ['code', 'name', 'industry', 'area', 'list_date', 'price', 'wave', 'wave_a', 'wave_b', 'bottom', 'uspace%', 'dspace%',
