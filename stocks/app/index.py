@@ -30,6 +30,7 @@ def format_index(df):
     df['uspace'] = df['uspace'].apply(lambda x: '+' + str(round(x, 2)) + '%')
     df['dspace'] = df['dspace'].apply(lambda x: str(round(x, 2)) + '%')
     df['position'] = df['position'].apply(lambda x: str(round(x, 2)) + '%')
+    df['current'] = df['current'].apply(lambda x: str(round(x, 2)) + '%')
     return df
 
 
@@ -46,8 +47,10 @@ def get_status():
         row_data.append(row['change'])
         current_point = row['close']
         row_data.append(current_point)
-        row_data.append(row['low'])
-        row_data.append(row['high'])
+        low = row['low']
+        high = row['high']
+        row_data.append(low)
+        row_data.append(high)
         row_data.append(row['volume'])
         row_data.append(row['amount'])
 
@@ -57,18 +60,19 @@ def get_status():
         bottomdf = wave.get_bottom(wavedf, limit=8)
         bottom = bottomdf.ix[0, 'bottom']
         top = bottomdf.ix[0, 'top']
-        positon = (current_point - bottom) / (top - bottom) * 100
+        current = (current_point - low) / (high - low) * 100
+        position = (current_point - bottom) / (top - bottom) * 100
         uspace = (current_point - bottom) / bottom * 100
         dspace = (current_point - top) / top * 100
-
+        row_data.append(currtent)
         row_data.append(wavestr)
         row_data.append(bottom)
         row_data.append(round(uspace, 2))
         row_data.append(round(dspace, 2))
         row_data.append(top)
-        row_data.append(round(positon, 2))
+        row_data.append(round(position, 2))
 
-        suggest = suggest_by_position(code, positon)
+        suggest = suggest_by_position(code, position)
         row_data.append(suggest)
         result_data.append(row_data)
 
@@ -81,7 +85,7 @@ def get_status():
                 sms.send_msg(code, name_format, price_format)
                 redis_client.set(date_const.TODAY + '_' + code, row['name'] + price_format)
 
-    columns = ['code', 'name', 'change', 'close', 'low', 'high', 'volume', 'amount', 'wave', 'bottom', 'uspace',
+    columns = ['code', 'name', 'change', 'close', 'low', 'high', 'volume', 'amount', 'current', 'wave', 'bottom', 'uspace',
                'dspace', 'top', 'position', 'suggest']
     resultdf = pd.DataFrame(result_data, columns=columns)
     resultdf = resultdf.sort_values('change', axis=0, ascending=True, inplace=False, kind='quicksort', na_position='last')

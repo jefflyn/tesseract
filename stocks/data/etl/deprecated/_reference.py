@@ -52,5 +52,5 @@ def get_forecast(year=2019, season=4, excludeCyb=True, startdate=None):
 
 if __name__ == '__main__':
     pd.set_option('display.width', 2000)
-    forecast = get_forecast(2018, 4, startdate='2019-01-01')
+    forecast = get_forecast(2019, 1, startdate='2019-01-01')
     logger.info(forecast)

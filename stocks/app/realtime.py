@@ -27,26 +27,31 @@ def format_realtime(df):
     df['high'] = df['high'].apply(lambda x: '^' + str(round(float(x), 2)))
     df['bottom'] = df['bottom'].apply(lambda x: '[' + str(x))
     df['top'] = df['top'].apply(lambda x: str(x) + ']')
-    df['cost'] = df['cost'].apply(lambda x: '<' + str(round(x, 2)) + ', ')
+    df['cost'] = df['cost'].apply(lambda x: '<' + str(round(x, 3)) + ', ')
     df['share'] = df['share'].apply(lambda x: str(x) + '>')
     df.insert(15, 'cost, share', df['cost'] + df['share'])
     df['change'] = df['change'].apply(lambda x: str(round(x, 2)) + '%')
+    df['amp'] = df['amp'].apply(lambda x: str(round(x, 2)) + '%')
     # df['profit_perc'] = df['profit_perc'].apply(lambda x: str(round(x, 2)) + '%')
     df['uspace'] = df['uspace'].apply(lambda x: str(round(x, 2)) + '%')
     df['dspace'] = df['dspace'].apply(lambda x: str(round(x, 2)) + '%')
     df['position'] = df['position'].apply(lambda x: str(round(x, 2)) + '%')
+    df['current'] = df['current'].apply(lambda x: str(round(x, 2)) + '%')
+
     df = df.drop('cost', 1)
     df = df.drop('share', 1)
     return df
 
 
-def re_exe(hold_df=None, inc=3, sortby=None):
+def re_exe(hold_df=None, inc=3, show_wave=True, sortby=None):
     while True:
         real_df = get_realtime(hddf=hold_df, sortby=sortby)
         # filter
         real_df = real_df[real_df.bid > '0.01']
         finaldf = format_realtime(real_df)
         # print(finaldf, end='')
+        if show_wave is False:
+            del finaldf['wave']
         print(finaldf)
         time.sleep(inc)
 
@@ -60,6 +65,7 @@ def get_realtime(hddf=None, sortby=None):
         code = INDEX_LIST_NEW[code] if code in INDEX_LIST_NEW.keys() else code
         pre_close = float(row['pre_close'])
         price = float(row['price'])
+        high = float(row['high'])
         low = float(row['low'])
 
         price_diff = price - pre_close
@@ -81,6 +87,11 @@ def get_realtime(hddf=None, sortby=None):
 
         top = bdf.ix[0, 'top']
         dspace = (price - top) / top * 100
+        current = 0
+        amplitude = 0
+        if high != low:
+            current = (price - low) / (high - low) * 100
+            amplitude = (high - low) / low * 100
         position = (price - bottom) / (top - bottom) * 100
 
         cost_diff = price - cost
@@ -124,6 +135,7 @@ def get_realtime(hddf=None, sortby=None):
         curt_data = []
         curt_data.append(warn_sign)
         curt_data.append(change)
+        curt_data.append(amplitude)
         curt_data.append(cost)
         curt_data.append(profit)
         curt_data.append(profit_perc)
@@ -134,14 +146,15 @@ def get_realtime(hddf=None, sortby=None):
         curt_data.append(btm_space)
         curt_data.append(dspace)
         curt_data.append(top)
+        curt_data.append(current)
         curt_data.append(position)
         curt_data.append(share)
         curt_data.append(price * share)
         data_list.append(curt_data)
 
     df_append = pd.DataFrame(data_list,
-                             columns=['warn', 'change', 'cost', 'profit_amt', 'profit_perc', 'profit', 'wave', 'bottom',
-                                      'uspace', 'dspace', 'top', 'position', 'share', 'capital'])
+                             columns=['warn', 'change', 'amp', 'cost', 'profit_amt', 'profit_perc', 'profit', 'wave', 'bottom',
+                                      'uspace', 'dspace', 'top', 'current', 'position', 'share', 'capital'])
     df = df.join(df_append)
 
     df = df[df.price > '1']
@@ -158,23 +171,24 @@ def get_realtime(hddf=None, sortby=None):
         df = df.sort_values(['change'], axis=0, ascending=True, inplace=False, kind='quicksort', na_position='last')
 
     return df[
-        ['warn', 'code', 'name', 'price', 'change', 'bid', 'ask', 'low', 'high', 'wave', 'bottom', 'uspace', 'dspace',
+        ['warn', 'code', 'name', 'price', 'change', 'amp', 'bid', 'ask', 'low', 'high', 'current', 'wave', 'bottom', 'uspace', 'dspace',
          'top', 'position', 'cost', 'share', 'capital', 'profit']]
 
 
 if __name__ == '__main__':
     if len(argv) < 2:
-        print("Invalid args! At least 2 args like: python xxx.py arg1 ...")
+        print("Invalid args! At least 2 args like: python realtime.py df ...")
         sys.exit(0)
     type = argv[1]
     if type not in keys:
         print("File name NOT found. Try the followings: " + str(keys))
         sys.exit(0)
     hold = argv[2] if len(argv) > 2 else 1
-    sort = argv[3] if len(argv) > 2 else None
+    display = True if len(argv) > 3 and argv[3] == 'True' else False
+    sort = argv[4] if len(argv) > 4 else None
     hold_df = _dt.get_my_stock_pool(type, hold)
     if hold_df.empty:
         print("Stock NOT hold! Auto change to default mode.")
         hold_df = _dt.get_my_stock_pool(type, 0)
-    re_exe(hold_df, 3, sort)
+    re_exe(hold_df, 3, display, sort)
 

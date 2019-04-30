@@ -46,6 +46,11 @@ if __name__ == '__main__':
                         try:
                             redis_client.set(redis_key, name + str(price))
                             sms_util.message_to(msg=content, to=receive_mobile)
+                            name_format = '：' + code + ' ' + name
+                            change_str = str(round(realtime_change, 2)) + '%' if realtime_change < 0 else '+' + str(
+                                round(realtime_change, 2)) + '%'
+                            price_format = str(round(price, 2)) + change_str
+                            sms_util.send_msg(code, name_format, price_format)
                             print(content)
                         except Exception as e:
                             print(e)
@@ -59,6 +64,11 @@ if __name__ == '__main__':
                         try:
                             redis_client.set(redis_key, name + str(price))
                             sms_util.message_to(msg=content, to=receive_mobile)
+                            name_format = '：' + code + ' ' + name
+                            change_str = str(round(realtime_change, 2)) + '%' if realtime_change < 0 else '+' + str(
+                                round(realtime_change, 2)) + '%'
+                            price_format = str(round(price, 2)) + change_str
+                            sms_util.send_msg(code, name_format, price_format)
                             print(content)
                         except Exception as e:
                             print(e)
@@ -73,6 +83,11 @@ if __name__ == '__main__':
                         try:
                             redis_client.set(redis_key, value)
                             sms_util.message_to(msg=content, to=receive_mobile)
+                            name_format = '：' + code + ' ' + name
+                            change_str = str(round(realtime_change, 2)) + '%' if realtime_change < 0 else '+' + str(
+                                round(realtime_change, 2)) + '%'
+                            price_format = str(round(price, 2)) + change_str
+                            sms_util.send_msg(code, name_format, price_format)
                             print(content)
                         except Exception as e:
                             print(e)
@@ -86,6 +101,11 @@ if __name__ == '__main__':
                         try:
                             redis_client.set(redis_key, value)
                             sms_util.message_to(msg=content, to=receive_mobile)
+                            name_format = '：' + code + ' ' + name
+                            change_str = str(round(realtime_change, 2)) + '%' if realtime_change < 0 else '+' + str(
+                                round(realtime_change, 2)) + '%'
+                            price_format = str(round(price, 2)) + change_str
+                            sms_util.send_msg(code, name_format, price_format)
                             print(content)
                         except Exception as e:
                             print(e)
