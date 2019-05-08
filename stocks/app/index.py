@@ -59,7 +59,7 @@ def get_status():
         row_data.append(row['amount'])
 
         # get wave data and bottom top
-        wavedf = wave.get_wave(code, index=True)
+        wavedf = wave.get_wave(code, is_index=True)
         wavestr = wave.wave_to_str(wavedf, size=3)
         bottomdf = wave.get_bottom(wavedf, limit=8)
         bottom = bottomdf.ix[0, 'bottom']
