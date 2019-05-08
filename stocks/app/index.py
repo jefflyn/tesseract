@@ -12,15 +12,19 @@ from stocks.base import date_const
 from stocks.base import display
 
 
-INDEX_SH = ['000001', '000016']
+INDEX_SH = ['000001', '000016', '000300']
 INDEX_SZ = ['399001', '399005']
 INDEX_CYB = ['399006']
 
-###'000300',
-target = ['000001', '000016', '399001', '399005', '399006']
+target = ['000001', '000016', '000300', '399001', '399005', '399006']
+
 
 def format_index(df):
-    # format data
+    """
+    格式化数据
+    :param df:
+    :return:
+    """
     df['change'] = df['change'].apply(lambda x: str(round(x, 2)) + '%')
     df['close'] = df['close'].apply(lambda x: str(round(x, 2)))
     df['low'] = df['low'].apply(lambda x: '_' + str(round(x, 2)))
@@ -60,11 +64,13 @@ def get_status():
         bottomdf = wave.get_bottom(wavedf, limit=8)
         bottom = bottomdf.ix[0, 'bottom']
         top = bottomdf.ix[0, 'top']
-        current = (current_point - low) / (high - low) * 100
+        current = 0
+        if high > low:
+            current = (current_point - low) / (high - low) * 100
         position = (current_point - bottom) / (top - bottom) * 100
         uspace = (current_point - bottom) / bottom * 100
         dspace = (current_point - top) / top * 100
-        row_data.append(currtent)
+        row_data.append(current)
         row_data.append(wavestr)
         row_data.append(bottom)
         row_data.append(round(uspace, 2))
@@ -138,13 +144,13 @@ if __name__ == '__main__':
             print(format_index(get_status()))
             time.sleep(5)
     else:
-        format_index(get_status())
-        wavedf = wave.get_wave(codes=target, index=True)
+        # format_index(get_status())
+        wavedf = wave.get_wave(codes=target, start='2015-01-01', is_index=True)
         # plot figure
         listdf = []
         for code in target:
             wdf = wavedf[wavedf.code == code]
-            listdf.append(wave.format_wave_data(wdf, index=True))
+            listdf.append(wave.format_wave_data(wdf, is_index=True))
         # figure display
         wave.plot_wave(listdf, filename='wave_index.png', columns=3)
 

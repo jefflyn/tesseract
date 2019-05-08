@@ -20,6 +20,11 @@ INDEX_LIST = ['000001.SH', '000300.SH', '000016.SH', '000905.SH', '399001.SZ', '
 basics = read_sql("select * from basic", params=None)
 
 
+def get_codes_from_sql(sql=None):
+    df = read_sql(sql, params=None)
+    return list(df['code'])
+
+
 def get_hist_trade(code=None, start=None, end=None):
     """
     获取历史日k

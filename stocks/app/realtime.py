@@ -176,6 +176,10 @@ def get_realtime(hddf=None, sortby=None):
 
 
 if __name__ == '__main__':
+    """
+    python realtime.py df 1 false p
+
+    """
     if len(argv) < 2:
         print("Invalid args! At least 2 args like: python realtime.py df ...")
         sys.exit(0)
@@ -184,7 +188,7 @@ if __name__ == '__main__':
         print("File name NOT found. Try the followings: " + str(keys))
         sys.exit(0)
     hold = argv[2] if len(argv) > 2 else 1
-    display = True if len(argv) > 3 and argv[3] == 'True' else False
+    display = True if (len(argv) > 3 and str(argv[3]).upper() == 'TRUE') else False
     sort = argv[4] if len(argv) > 4 else None
     hold_df = _dt.get_my_stock_pool(type, hold)
     if hold_df.empty:

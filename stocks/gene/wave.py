@@ -171,7 +171,7 @@ def plot_wave(dflist=None, filename='wave.png', title='', columns=1):
 
         # Plot
         plt.plot(xs, ys, 'ko')
-        line = plt.plot(xs, ys, 'r:', label="price")
+        line = plt.plot(xs, ys, 'r:', label='price')
         # plt.gcf().autofmt_xdate()  # 自动旋转日期标记
         ax.legend(line, (code,))
 
@@ -179,13 +179,13 @@ def plot_wave(dflist=None, filename='wave.png', title='', columns=1):
     # plt.show()
 
 
-def format_wave_data(wavedf=None, index=False):
+def format_wave_data(wavedf=None, is_index=False):
     latestone = wavedf.tail(1)  # get the newest record
     if latestone.empty is True:
         return None
     i = latestone.index.get_values()[0]
     code = latestone.at[i, 'code']
-    stock = data_util.get_basics(code, index=index)
+    stock = data_util.get_basics(code, index=is_index)
     name = stock if isinstance(stock, str) else stock.at[stock.index.get_values()[0], 'name']
     enddate = latestone.at[latestone.index.get_values()[0], 'end']
     endprice = latestone.at[latestone.index.get_values()[0], 'end_price']
@@ -201,7 +201,7 @@ def format_wave_data(wavedf=None, index=False):
     return newwavedf
 
 
-def get_wave(codes=None, index=False, start=None, end=None, beginlow=True, duration=0, pchange=0):
+def get_wave(codes=None, is_index=False, start=None, end=None, beginlow=True, duration=0, pchange=0):
     """
     default get the recent 3 year data
     """
@@ -217,20 +217,20 @@ def get_wave(codes=None, index=False, start=None, end=None, beginlow=True, durat
         code_list = codes
 
     index_realtime = []
-    if index is True:
+    if is_index is True:
         index_realtime = ts.get_index()
     perioddf_list = []
     for code in code_list:
         # print("   >>> processing %s ..." % code)
         # hist_data = ts.get_h_data(code, start)  # network issue
-        hist_data = ts.get_k_data(code=code, index=index,
+        hist_data = ts.get_k_data(code=code, index=is_index,
                                   start=start)  # one day delay issue, use realtime interface solved
 
         if hist_data is None or len(hist_data) == 0:
             continue
         latestdate = hist_data.tail(1).at[hist_data.tail(1).index.get_values()[0], 'date']
         if todaystr != latestdate:  # not the latest record
-            if index is False:
+            if is_index is False:
                 # get today data from [get_realtime_quotes(code)]
                 realtime = ts.get_realtime_quotes(code)
                 if realtime is None or realtime.empty is True:
@@ -250,7 +250,8 @@ def get_wave(codes=None, index=False, start=None, end=None, beginlow=True, durat
                 todaylow = float(indexdf.at[index, 'low'])
                 if todaylow > 0:
                     newone = {'date': todaystr, 'open': float(indexdf.at[index, 'open']),
-                              'close': float(indexdf.at[index, 'close']), 'high': float(indexdf.at[index, 'high']),
+                              'close': round(float(indexdf.at[index, 'close']), 2),
+                              'high': round(float(indexdf.at[index, 'high']), 2),
                               'low': todaylow, 'volume': int(float(indexdf.at[index, 'volume'])), 'code': code}
                     newdf = pd.DataFrame(newone, index=[0])
                     hist_data = hist_data.append(newdf, ignore_index=True)
