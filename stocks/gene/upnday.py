@@ -43,6 +43,7 @@ def get_upnday(codes=None, n=0, change=None):
 
         histndf = hist_data.tail(histnum)
         histndf = histndf.sort_values('trade_date', ascending=False)
+
         sumup = 0.0
         isndayup = True
         beginp = 0.0
@@ -61,9 +62,30 @@ def get_upnday(codes=None, n=0, change=None):
         change_list = ['0' if c < 0 else '1' for c in histndf[0:7]['pct_change']][::-1]
         change_str = ''.join(change_list)
         sum_30_days = np.sum(histndf['pct_change'])
-        for index, row in histndf.iterrows():
-            change = float(row['pct_change'])
-            close = float(row['close'])
+
+        df_size = len(volumes)
+        pre_low_arr = []
+        next_low_arr = []
+        for index in range(df_size - 1):
+            pre_data = histndf.iloc[index + 1]
+            next_data = histndf.iloc[index]
+
+            pre_high = pre_data['high']
+            pre_low = pre_data['low']
+            pre_low_arr.append(pre_low)
+
+            next_high = next_data['high']
+            next_low = next_data['low']
+            next_low_arr.append(next_low)
+
+            gap_scale = 0
+            if next_high < min(pre_low_arr):
+                gap_scale = round((next_high - min(pre_low_arr)) / min(pre_low_arr) * 100, 2)
+            elif min(next_low_arr) > pre_high:
+                gap_scale = round((min(next_low_arr) - pre_high) / pre_high * 100, 2)
+
+            change = float(next_data['pct_change'])
+            close = float(next_data['close'])
 
             if endp == 0.0:
                 endp = close
@@ -75,7 +97,7 @@ def get_upnday(codes=None, n=0, change=None):
                 break
             else:
                 ndays += 1
-        # not matche the n-days-up rule
+        # not matched the n-days-up rule
         if (isndayup is False and ndays < n) or ndays < n:
             continue
         else:
@@ -91,6 +113,7 @@ def get_upnday(codes=None, n=0, change=None):
         nlist.append(item.at[idx, 'industry'])
         nlist.append(item.at[idx, 'area'])
         nlist.append(change_str)
+        nlist.append(gap_scale)
         nlist.append(round(sum_30_days, 2))
         nlist.append(ndays)
         nlist.append(round(sumup, 2))
@@ -99,7 +122,7 @@ def get_upnday(codes=None, n=0, change=None):
         upndata.append(nlist)
 
     upndf = pd.DataFrame(upndata,
-                         columns=['code', 'name', 'industry', 'area', 'change_7_days', 'sum_30_days', 'updays', 'sumup', 'multi_vol', 'vol_rate'])
+                         columns=['code', 'name', 'industry', 'area', 'change_7_days', 'gap', 'sum_30_days', 'updays', 'sumup', 'multi_vol', 'vol_rate'])
     upndf = upndf.sort_values(['updays', 'sumup'], ascending=[False, True])
     return upndf
 

@@ -17,5 +17,5 @@ if __name__ == '__main__':
     code_list = codes.split(',')
     # print(code_list)
 
-    result = wave.get_wave(code_list, index=index, start='2015-01-01')
+    result = wave.get_wave(code_list, is_index=index, start='2015-01-01')
     print(result)

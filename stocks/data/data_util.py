@@ -20,6 +20,47 @@ INDEX_LIST = ['000001.SH', '000300.SH', '000016.SH', '000905.SH', '399001.SZ', '
 basics = read_sql("select * from basic", params=None)
 
 
+def get_up_gap_codes(days=7):
+    """
+    获取时间范围内向上跳空的代码
+    :param days:
+    :return:
+    """
+    from_date = _dt.DATE_BEFORE_7_DAYS
+    sql = 'select * from hist_trade_day where trade_date >=:fdate'
+    params = {'fdate': from_date}
+    df = read_sql(sql, params=params)
+    group_df = df.groupby(df['code'])
+    result_codes = []
+    for code, group in group_df:
+        # if code == '000531':
+        #     print('')
+        group = group.sort_values(['trade_date'], ascending=False)
+        group_size = len(list(group['trade_date']))
+        pre_low_arr = []
+        next_low_arr = []
+        for index in range(group_size - 1):
+            pre_data = group.iloc[index + 1]
+            next_data = group.iloc[index]
+
+            pre_high = pre_data['high']
+            pre_low = pre_data['low']
+            pre_low_arr.append(pre_low)
+
+            next_high = next_data['high']
+            next_low = next_data['low']
+            next_low_arr.append(next_low)
+            if next_high < min(pre_low_arr):
+                continue
+            if min(next_low_arr) > pre_high:
+                # print(pre_data)
+                # print(next_data)
+                result_codes.append(code)
+    print('total size=' + str(len(result_codes)))
+    print(result_codes)
+    return result_codes
+
+
 def get_codes_from_sql(sql=None):
     df = read_sql(sql, params=None)
     return list(df['code'])
@@ -320,19 +361,20 @@ def format_amount(amount=None):
 
 
 if __name__ == '__main__':
-    k_data = ts.get_k_data('000836', ktype='W')
-    print(k_data)
-    print(format_amount(''))
-    print(format_amount(None))
-    print(format_amount(12.23))
-    print(format_amount(12.2389999989))
-    print(format_amount(1236))
-    print(format_amount(32589))
-    print(format_amount(325862))
-    print(format_amount(2369852))
-    print(format_amount(25896325))
-    print(format_amount(369852369))
-    print(format_amount(3628523869.9236))
+    get_up_gap_codes()
+    # k_data = ts.get_k_data('000836', ktype='W')
+    # print(k_data)
+    # print(format_amount(''))
+    # print(format_amount(None))
+    # print(format_amount(12.23))
+    # print(format_amount(12.2389999989))
+    # print(format_amount(1236))
+    # print(format_amount(32589))
+    # print(format_amount(325862))
+    # print(format_amount(2369852))
+    # print(format_amount(25896325))
+    # print(format_amount(369852369))
+    # print(format_amount(3628523869.9236))
     # data = get_stock_data(type='c', filename='小金属.txt')
     # trade = pd.HDFStore('trade.h5')
     # tradecomp = pd.HDFStore('trade_comp.h5')
