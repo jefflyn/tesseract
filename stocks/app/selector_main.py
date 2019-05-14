@@ -21,7 +21,7 @@ if __name__ == '__main__':
     # selector.select_result(codes, 'limitup_' + period)
 
     # >>> select from concepts -大基建、大消费、大金融、大健康、大科技、大军工
-    concept_codes = data_util.get_code_by_concept('券商')
+    concept_codes = data_util.get_code_by_concept('农业')
     selector.select_result(concept_codes, 'concept')
 
     # >>> select by new
@@ -30,7 +30,7 @@ if __name__ == '__main__':
     # selector.select_from_change_week()
     # selector.select_from_change_month()
 
-    # sql = 'select code from profit_forecast where range_from > 100'
+    # sql = "select code from profit_forecast where type in ('预增', '预盈') and range_from > 100"
     # codes = data_util.get_codes_from_sql(sql)
     # selector.select_result(codes, 'forecast')
 

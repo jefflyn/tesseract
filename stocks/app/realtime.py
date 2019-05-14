@@ -112,9 +112,9 @@ def get_realtime(hddf=None, sortby=None):
 
         warn_sign = ''
         if profit > 0:
-            warn_sign = '$$$'
+            warn_sign = '$'
         elif btm_diff <= 0 or low < bottom or bottom_auto_flag == 'A':
-            warn_sign = '!!!'
+            warn_sign = '!'
 
         # 告警短信:价格、涨跌幅、止损、止盈等
         if low < bottom or btm_space < 5 or change > 7 or change < -6:
@@ -153,7 +153,7 @@ def get_realtime(hddf=None, sortby=None):
         data_list.append(curt_data)
 
     df_append = pd.DataFrame(data_list,
-                             columns=['warn', 'change', 'amp', 'cost', 'profit_amt', 'profit_perc', 'profit', 'wave', 'bottom',
+                             columns=['Y', 'change', 'amp', 'cost', 'profit_amt', 'profit_perc', 'profit', 'wave', 'bottom',
                                       'uspace', 'dspace', 'top', 'current', 'position', 'share', 'capital'])
     df = df.join(df_append)
 
@@ -171,7 +171,7 @@ def get_realtime(hddf=None, sortby=None):
         df = df.sort_values(['change'], axis=0, ascending=True, inplace=False, kind='quicksort', na_position='last')
 
     return df[
-        ['warn', 'code', 'name', 'price', 'change', 'amp', 'bid', 'ask', 'low', 'high', 'current', 'wave', 'bottom', 'uspace', 'dspace',
+        ['Y', 'code', 'name', 'price', 'change', 'amp', 'bid', 'ask', 'low', 'high', 'current', 'wave', 'bottom', 'uspace', 'dspace',
          'top', 'position', 'cost', 'share', 'capital', 'profit']]
 
 
@@ -187,12 +187,12 @@ if __name__ == '__main__':
     if type not in keys:
         print("File name NOT found. Try the followings: " + str(keys))
         sys.exit(0)
-    hold = argv[2] if len(argv) > 2 else 1
-    display = True if (len(argv) > 3 and str(argv[3]).upper() == 'TRUE') else False
-    sort = argv[4] if len(argv) > 4 else None
-    hold_df = _dt.get_my_stock_pool(type, hold)
+    # hold = argv[2] if len(argv) > 2 else 1
+    # display = True if (len(argv) > 3 and str(argv[3]).upper() == 'TRUE') else False
+    # sort = argv[4] if len(argv) > 4 else None
+    hold_df = _dt.get_my_stock_pool(type)
     if hold_df.empty:
         print("Stock NOT hold! Auto change to default mode.")
         hold_df = _dt.get_my_stock_pool(type, 0)
-    re_exe(hold_df, 3, display, sort)
+    re_exe(hold_df, 3)
 
