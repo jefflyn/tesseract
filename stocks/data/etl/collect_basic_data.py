@@ -25,6 +25,7 @@ if __name__ == '__main__':
     cursor = db.cursor()
     total_size = data.shape[0]
     insert_count = 0
+    cursor.execute("delete from basic")
     for index, row in data.iterrows():
         try:
             sql_insert = "INSERT INTO basic(ts_code,code,name,area,industry,fullname,market,exchange,curr_type,list_status,list_date,delist_date,is_hs) " \

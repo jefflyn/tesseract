@@ -64,39 +64,40 @@ def get_upnday(codes=None, n=0, change=None):
         sum_30_days = np.sum(histndf['pct_change'])
 
         df_size = len(volumes)
-        pre_low_arr = []
+        next_high_arr = []
         next_low_arr = []
+        gap_scale = 0
         for index in range(df_size - 1):
             pre_data = histndf.iloc[index + 1]
             next_data = histndf.iloc[index]
 
             pre_high = pre_data['high']
             pre_low = pre_data['low']
-            pre_low_arr.append(pre_low)
 
             next_high = next_data['high']
             next_low = next_data['low']
             next_low_arr.append(next_low)
+            next_high_arr.append(next_high)
 
-            gap_scale = 0
-            if next_high < min(pre_low_arr):
-                gap_scale = round((next_high - min(pre_low_arr)) / min(pre_low_arr) * 100, 2)
-            elif min(next_low_arr) > pre_high:
-                gap_scale = round((min(next_low_arr) - pre_high) / pre_high * 100, 2)
+            if gap_scale == 0:
+                if pre_low > max(next_high_arr):
+                    gap_scale = round((max(next_high_arr) - pre_low) / max(next_high_arr) * 100, 2)
+                elif min(next_low_arr) > pre_high:
+                    gap_scale = round((min(next_low_arr) - pre_high) / pre_high * 100, 2)
 
             change = float(next_data['pct_change'])
             close = float(next_data['close'])
 
             if endp == 0.0:
                 endp = close
-            if change < 0:
-                if index == 0:
-                    continue
-                isndayup = False
-                beginp = close
-                break
-            else:
-                ndays += 1
+            if isndayup is True:
+                if change < 0 :
+                    if index == 0:
+                        continue
+                    isndayup = False
+                    beginp = close
+                else:
+                    ndays += 1
         # not matched the n-days-up rule
         if (isndayup is False and ndays < n) or ndays < n:
             continue
