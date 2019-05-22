@@ -408,7 +408,7 @@ def get_warn_space(df):
 
 
 if __name__ == '__main__':
-    logger.info(select_result('002414'))
+    logger.info(select_result('300167'))
     if len(argv) < 2:
         print("Invalid args! At least 2 args like: python xxx.py code1[,code2,...]")
         sys.exit(0)

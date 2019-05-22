@@ -2,7 +2,6 @@ import stocks.base.db_util as _dt
 import time
 from stocks.base.pro_util import pro
 import datetime
-from datetime import timedelta
 from stocks.base.db_util import get_db
 from stocks.base.logging import logger
 
