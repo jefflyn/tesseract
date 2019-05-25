@@ -183,12 +183,12 @@ def select_result(codeset=None, filename=''):
         lupcountdf = limitup.count(limitupdf)
         if lupcountdf.empty is False:
             lupcount = lupcountdf.ix[0, 'count']
-            lupcount30 = lupcountdf.ix[0, 'count_30d']
-            lupcountq1 = lupcountdf.ix[0, 'count_q1']
-            lupcountq2 = lupcountdf.ix[0, 'count_q2']
-            lupcountq3 = lupcountdf.ix[0, 'count_q3']
-            lupcountq4 = lupcountdf.ix[0, 'count_q4']
-            lup_lastday = lupcountdf.ix[0, 'maxdate']
+            lupcount30 = lupcountdf.ix[0, 'c30d']
+            lupcountq1 = lupcountdf.ix[0, 'cq1']
+            lupcountq2 = lupcountdf.ix[0, 'cq2']
+            lupcountq3 = lupcountdf.ix[0, 'cq3']
+            lupcountq4 = lupcountdf.ix[0, 'cq4']
+            lup_lastday = lupcountdf.ix[0, 'lldate']
             luplow = lupcountdf.ix[0, 'lup_low']
             luphigh = lupcountdf.ix[0, 'lup_high']
 
@@ -242,18 +242,18 @@ def select_result(codeset=None, filename=''):
         # curt_data.append(maupdf.ix[0, 'ma250'] if maupdf.empty is False else 0)
 
         data_list.append(curt_data)
-    columns = ['code', 'name', 'industry', 'area', 'list_date', 'price', 'wave', 'wave_a', 'wave_b', 'bottom',
+    columns = ['code', 'name', 'industry', 'area', 'list_date', 'price', 'wave_detail', 'wave_a', 'wave_b', 'bottom',
                'uspace%', 'dspace%', 'top', 'position%', 'buy1', 'buy2', 'buy3',
-               'count', 'count_30d', 'count_q1', 'count_q2', 'count_q3', 'count_q4', 'maxdate', 'lup_low', 'lup_high',
-               'change_7_days', 'gap', 'gap_space', 'sum_30_days', 'updays', 'sumup%', 'multi_vol', 'vol_rate']
+               'count', 'c30d', 'cq1', 'cq2', 'cq3', 'cq4', 'lldate', 'lup_low', 'lup_high',
+               'change_7d', 'gap', 'gap_space', 'sum_30d', 'updays', 'sumup%', 'multi_vol', 'vol_rate']
     resultdf = pd.DataFrame(data_list, columns=columns)
-    resultdf = resultdf.sort_values('sum_30_days', axis=0, ascending=False, inplace=False, kind='quicksort', na_position='last')
+    resultdf = resultdf.sort_values('sum_30d', axis=0, ascending=False, inplace=False, kind='quicksort', na_position='last')
 
     resultdf = resultdf[
-        ['code', 'name', 'industry', 'area', 'list_date', 'price', 'wave', 'wave_a', 'wave_b', 'bottom', 'uspace%', 'dspace%',
-         'top', 'position%', 'gap', 'gap_space', 'sum_30_days', 'count', 'count_30d', 'count_q1', 'count_q2', 'count_q3', 'count_q4',
-         'maxdate', 'lup_low', 'lup_high',
-         'buy1', 'buy2', 'buy3', 'change_7_days', 'updays', 'sumup%', 'vol_rate', 'multi_vol']]
+        ['code', 'name', 'industry', 'area', 'list_date', 'price', 'wave_detail', 'wave_a', 'wave_b', 'bottom',
+         'uspace%', 'dspace%', 'top', 'position%', 'gap', 'gap_space', 'sum_30d', 'count', 'c30d', 'cq1', 'cq2', 'cq3', 'cq4',
+         'lldate', 'lup_low', 'lup_high',
+         'buy1', 'buy2', 'buy3', 'change_7d', 'updays', 'sumup%', 'vol_rate', 'multi_vol']]
     resultdf['select_time'] = dt.now()
     result_name = 'select_result_' + filename
     _dt.to_db(resultdf, result_name)

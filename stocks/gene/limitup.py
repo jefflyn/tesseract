@@ -106,9 +106,8 @@ def count(df=None):
         count_data_list.append(count_data)
 
     count_result = pd.DataFrame(data=count_data_list,
-                                columns=['code', 'count', 'count_30d', 'count_q1', 'count_q2', 'count_q3', 'count_q4',
-                                         'mindate', 'maxdate',
-                                         'lup_low', 'lup_high'])
+                                columns=['code', 'count', 'c30d', 'cq1', 'cq2', 'cq3', 'cq4',
+                                         'mindate', 'lldate', 'lup_low', 'lup_high'])
     count_result = count_result.sort_values('count', axis=0, ascending=False, inplace=False, kind='quicksort',
                                             na_position='last')
 
