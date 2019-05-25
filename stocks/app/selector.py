@@ -214,6 +214,7 @@ def select_result(codeset=None, filename=''):
         if upndaydf.empty is False:
             change_7_days = upndaydf.ix[0, 'change_7_days']
             gap = upndaydf.ix[0, 'gap']
+            gap_space = upndaydf.ix[0, 'gap_space']
             sum_30_days = upndaydf.ix[0, 'sum_30_days']
             updays = upndaydf.ix[0, 'updays']
             sumup = upndaydf.ix[0, 'sumup']
@@ -221,6 +222,7 @@ def select_result(codeset=None, filename=''):
             vol_rate = upndaydf.ix[0, 'vol_rate']
         curt_data.append(change_7_days)
         curt_data.append(gap)
+        curt_data.append(gap_space)
         curt_data.append(sum_30_days)
         curt_data.append(updays)
         curt_data.append(sumup)
@@ -228,31 +230,30 @@ def select_result(codeset=None, filename=''):
         curt_data.append(vol_rate)
 
         # get maup data
-        maupdf = maup.get_ma(code)
-        curt_data.append(maupdf.ix[0, 'isup'] if maupdf.empty is False else 0)
-        curt_data.append(maupdf.ix[0, 'ma5'] if maupdf.empty is False else 0)
-        curt_data.append(maupdf.ix[0, 'ma10'] if maupdf.empty is False else 0)
-        curt_data.append(maupdf.ix[0, 'ma20'] if maupdf.empty is False else 0)
-        curt_data.append(maupdf.ix[0, 'ma30'] if maupdf.empty is False else 0)
-        curt_data.append(maupdf.ix[0, 'ma60'] if maupdf.empty is False else 0)
-        curt_data.append(maupdf.ix[0, 'ma90'] if maupdf.empty is False else 0)
-        curt_data.append(maupdf.ix[0, 'ma120'] if maupdf.empty is False else 0)
-        curt_data.append(maupdf.ix[0, 'ma250'] if maupdf.empty is False else 0)
+        # maupdf = maup.get_ma(code)
+        # curt_data.append(maupdf.ix[0, 'isup'] if maupdf.empty is False else 0)
+        # curt_data.append(maupdf.ix[0, 'ma5'] if maupdf.empty is False else 0)
+        # curt_data.append(maupdf.ix[0, 'ma10'] if maupdf.empty is False else 0)
+        # curt_data.append(maupdf.ix[0, 'ma20'] if maupdf.empty is False else 0)
+        # curt_data.append(maupdf.ix[0, 'ma30'] if maupdf.empty is False else 0)
+        # curt_data.append(maupdf.ix[0, 'ma60'] if maupdf.empty is False else 0)
+        # curt_data.append(maupdf.ix[0, 'ma90'] if maupdf.empty is False else 0)
+        # curt_data.append(maupdf.ix[0, 'ma120'] if maupdf.empty is False else 0)
+        # curt_data.append(maupdf.ix[0, 'ma250'] if maupdf.empty is False else 0)
 
         data_list.append(curt_data)
-    columns = ['code', 'name', 'industry', 'area', 'list_date', 'price', 'wave', 'wave_a', 'wave_b', 'bottom', 'uspace%', 'dspace%',
-               'top', 'position%', 'buy1', 'buy2', 'buy3',
+    columns = ['code', 'name', 'industry', 'area', 'list_date', 'price', 'wave', 'wave_a', 'wave_b', 'bottom',
+               'uspace%', 'dspace%', 'top', 'position%', 'buy1', 'buy2', 'buy3',
                'count', 'count_30d', 'count_q1', 'count_q2', 'count_q3', 'count_q4', 'maxdate', 'lup_low', 'lup_high',
-               'change_7_days', 'gap', 'sum_30_days', 'updays', 'sumup%', 'multi_vol', 'vol_rate', 'isup', 'ma5', 'ma10', 'ma20', 'ma30', 'ma60', 'ma90',
-               'ma120', 'ma250']
+               'change_7_days', 'gap', 'gap_space', 'sum_30_days', 'updays', 'sumup%', 'multi_vol', 'vol_rate']
     resultdf = pd.DataFrame(data_list, columns=columns)
     resultdf = resultdf.sort_values('sum_30_days', axis=0, ascending=False, inplace=False, kind='quicksort', na_position='last')
 
     resultdf = resultdf[
         ['code', 'name', 'industry', 'area', 'list_date', 'price', 'wave', 'wave_a', 'wave_b', 'bottom', 'uspace%', 'dspace%',
-         'top', 'position%', 'gap', 'sum_30_days', 'count', 'count_30d', 'count_q1', 'count_q2', 'count_q3', 'count_q4', 'maxdate', 'lup_low', 'lup_high',
-         'buy1', 'buy2', 'buy3', 'change_7_days', 'updays', 'sumup%', 'vol_rate', 'multi_vol',
-         'isup', 'ma5', 'ma10', 'ma20', 'ma30', 'ma60', 'ma90', 'ma120', 'ma250']]
+         'top', 'position%', 'gap', 'gap_space', 'sum_30_days', 'count', 'count_30d', 'count_q1', 'count_q2', 'count_q3', 'count_q4',
+         'maxdate', 'lup_low', 'lup_high',
+         'buy1', 'buy2', 'buy3', 'change_7_days', 'updays', 'sumup%', 'vol_rate', 'multi_vol']]
     resultdf['select_time'] = dt.now()
     result_name = 'select_result_' + filename
     _dt.to_db(resultdf, result_name)

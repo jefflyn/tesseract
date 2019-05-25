@@ -35,8 +35,8 @@ if __name__ == '__main__':
     hour = date_util.now.hour
     if hour < 16:
         sys.exit(0)
-    trade_date = date_util.get_today(format=date_util.date_format)
-    df = pro.daily_basic(ts_code='', trade_date=trade_date,
+    trade_date = date_util.get_latest_trade_date(0, format=date_util.date_format)
+    df = pro.query('daily_basic', ts_code='', trade_date=trade_date[0],
                          fields='ts_code,trade_date,close,turnover_rate,turnover_rate_f,volume_ratio,pe,pe_ttm,pb,ps,ps_ttm,total_share,float_share,free_share,total_mv,circ_mv')
 
     df['code'] = df['ts_code'].apply(lambda x: x[0:6])

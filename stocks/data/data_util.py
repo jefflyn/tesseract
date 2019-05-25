@@ -361,7 +361,7 @@ def format_amount(amount=None):
 
 
 if __name__ == '__main__':
-    get_up_gap_codes()
+    # get_up_gap_codes()
     # k_data = ts.get_k_data('000836', ktype='W')
     # print(k_data)
     # print(format_amount(''))
@@ -374,7 +374,7 @@ if __name__ == '__main__':
     # print(format_amount(2369852))
     # print(format_amount(25896325))
     # print(format_amount(369852369))
-    # print(format_amount(3628523869.9236))
+    print(format_amount(2031515665000000000000000000407000000))
     # data = get_stock_data(type='c', filename='小金属.txt')
     # trade = pd.HDFStore('trade.h5')
     # tradecomp = pd.HDFStore('trade_comp.h5')

@@ -49,6 +49,7 @@ def get_upnday(codes=None, n=0, change=None):
         beginp = 0.0
         endp = 0.0
         ndays = 0.0
+        current_price = histndf.ix[idx, 'close']
         volumes = [row[1]['vol'] for row in histndf.iterrows()]
         week_vol = []
         n_vol = 5
@@ -67,23 +68,30 @@ def get_upnday(codes=None, n=0, change=None):
         next_high_arr = []
         next_low_arr = []
         gap_scale = 0
+        gap_space = 0
         for index in range(df_size - 1):
             pre_data = histndf.iloc[index + 1]
             next_data = histndf.iloc[index]
 
             pre_high = pre_data['high']
             pre_low = pre_data['low']
-
             next_high = next_data['high']
             next_low = next_data['low']
+
             next_low_arr.append(next_low)
             next_high_arr.append(next_high)
 
             if gap_scale == 0:
+                # 向下跳空缺口
                 if pre_low > max(next_high_arr):
                     gap_scale = round((max(next_high_arr) - pre_low) / max(next_high_arr) * 100, 2)
+                    # 计算缺口和现价的空间
+                    gap_space = round((current_price - pre_low) / pre_low * 100, 2)
+                # 向上跳空
                 elif min(next_low_arr) > pre_high:
                     gap_scale = round((min(next_low_arr) - pre_high) / pre_high * 100, 2)
+                    # 计算缺口和现价的空间
+                    gap_space = round((current_price - pre_high) / pre_high * 100, 2)
 
             change = float(next_data['pct_change'])
             close = float(next_data['close'])
@@ -115,6 +123,7 @@ def get_upnday(codes=None, n=0, change=None):
         nlist.append(item.at[idx, 'area'])
         nlist.append(change_str)
         nlist.append(gap_scale)
+        nlist.append(gap_space)
         nlist.append(round(sum_30_days, 2))
         nlist.append(ndays)
         nlist.append(round(sumup, 2))
@@ -123,7 +132,8 @@ def get_upnday(codes=None, n=0, change=None):
         upndata.append(nlist)
 
     upndf = pd.DataFrame(upndata,
-                         columns=['code', 'name', 'industry', 'area', 'change_7_days', 'gap', 'sum_30_days', 'updays', 'sumup', 'multi_vol', 'vol_rate'])
+                         columns=['code', 'name', 'industry', 'area', 'change_7_days', 'gap', 'gap_space',
+                                  'sum_30_days', 'updays', 'sumup', 'multi_vol', 'vol_rate'])
     upndf = upndf.sort_values(['updays', 'sumup'], ascending=[False, True])
     return upndf
 
@@ -131,7 +141,7 @@ def get_upnday(codes=None, n=0, change=None):
 if __name__ == '__main__':
     # basics = _datautils.get_basics()
     # codes = list(basics['code'])
-    codes = ['603106']
+    codes = ['600470']
     df = get_upnday(codes)
     print(df)
     # _dt.to_db(df, 'up_volume')
