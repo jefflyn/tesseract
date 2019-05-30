@@ -242,7 +242,7 @@ def select_result(codeset=None, filename=''):
         # curt_data.append(maupdf.ix[0, 'ma250'] if maupdf.empty is False else 0)
 
         data_list.append(curt_data)
-    columns = ['code', 'name', 'industry', 'area', 'list_date', 'price', 'change', 'wave_detail', 'wave_a', 'wave_b', 'bottom',
+    columns = ['code', 'name', 'industry', 'area', 'list_date', 'price', 'pct', 'wave_detail', 'wave_a', 'wave_b', 'bottom',
                'uspace%', 'dspace%', 'top', 'position%', 'buy1', 'buy2', 'buy3',
                'count', 'c30d', 'cq1', 'cq2', 'cq3', 'cq4', 'lldate', 'lup_low', 'lup_high',
                'change_7d', 'gap', 'gap_space', 'sum_30d', 'updays', 'sumup%', 'multi_vol', 'vol_rate']
@@ -250,7 +250,7 @@ def select_result(codeset=None, filename=''):
     resultdf = resultdf.sort_values('sum_30d', axis=0, ascending=False, inplace=False, kind='quicksort', na_position='last')
 
     resultdf = resultdf[
-        ['code', 'name', 'industry', 'area', 'list_date', 'price', 'change', 'wave_detail', 'wave_a', 'wave_b', 'bottom',
+        ['code', 'name', 'industry', 'area', 'list_date', 'price', 'pct', 'wave_detail', 'wave_a', 'wave_b', 'bottom',
          'uspace%', 'dspace%', 'top', 'position%', 'gap', 'gap_space', 'sum_30d', 'count', 'c30d', 'cq1', 'cq2', 'cq3', 'cq4',
          'lldate', 'lup_low', 'lup_high',
          'buy1', 'buy2', 'buy3', 'change_7d', 'updays', 'sumup%', 'vol_rate', 'multi_vol']]

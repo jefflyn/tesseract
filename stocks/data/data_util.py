@@ -119,14 +119,20 @@ def get_ma_code(grade='a'):
 
 
 def get_my_stock_pool(type=None, hold=1):
-    sql = 'select * from my_stock_pool where 1=1 and is_hold=:hold'
-    params = {'hold': hold}
-    if type is not None:
-        params['type'] = type
-        sql = sql + ' and platform=:type'
-    log.info(sql + ' ' + str(params))
-    df = read_sql(sql, params=params)
-    return df
+    if type == 'gap':
+        sql = 'select * from daily_gap_trace where 1=1'
+        log.info(sql + ' ')
+        df = read_query(sql)
+        return df
+    else:
+        sql = 'select * from my_stock_pool where 1=1 and is_hold=:hold'
+        params = {'hold': hold}
+        if type is not None:
+            params['type'] = type
+            sql = sql + ' and platform=:type'
+        log.info(sql + ' ' + str(params))
+        df = read_sql(sql, params=params)
+        return df
 
 
 def get_code_by_concept(name=''):
@@ -360,6 +366,28 @@ def format_amount(amount=None):
         return str(result) + '亿'
 
 
+def get_last_trade_data(codes=None):
+    """
+    获取最近的一条交易数据
+    :param codes:
+    :return:
+    """
+    sql = 'select a.* from hist_trade_day a inner join ' \
+          '(select code, max(trade_date) last_date from hist_trade_day group by code) b ' \
+          'on a.code=b.code and a.trade_date = b.last_date ' \
+          'where 1=1 '
+    if codes is not None:
+        if isinstance(codes, str):
+            code_list = list()
+            code_list.append(codes)
+            codes = code_list
+        sql += 'and a.code in :code '
+    params = {'code': codes}
+    df = read_sql(sql, params=params)
+    df.index = list(df['code'])
+    return df
+
+
 if __name__ == '__main__':
     # get_up_gap_codes()
     # k_data = ts.get_k_data('000836', ktype='W')
@@ -374,7 +402,7 @@ if __name__ == '__main__':
     # print(format_amount(2369852))
     # print(format_amount(25896325))
     # print(format_amount(369852369))
-    print(format_amount(2031515665000000000000000000407000000))
+    print(get_last_trade_data('600126'))
     # data = get_stock_data(type='c', filename='小金属.txt')
     # trade = pd.HDFStore('trade.h5')
     # tradecomp = pd.HDFStore('trade_comp.h5')

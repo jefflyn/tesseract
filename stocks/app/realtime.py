@@ -11,7 +11,7 @@ import stocks.base.sms_util as sms
 from stocks.base.redis_util import redis_client
 from stocks.base import date_const
 
-keys = ['pa', 'cf', 'df', 'sim']
+keys = ['pa', 'cf', 'df', 'sim', 'gap']
 
 INDEX_LIST_NEW = dict(zip(list(x[2:] for x in ct.INDEX_LIST.values()), ct.INDEX_LIST.keys()))
 
@@ -37,15 +37,19 @@ def format_realtime(df):
     df['dspace'] = df['dspace'].apply(lambda x: str(round(x, 2)) + '%')
     df['position'] = df['position'].apply(lambda x: str(round(x, 2)) + '%')
     df['current'] = df['current'].apply(lambda x: str(round(x, 2)) + '%')
+    df['g_scale'] = df['g_scale'].apply(lambda x: '[' + str(round(x, 2)) + '%, ')
+    df['g_space'] = df['g_space'].apply(lambda x: str(round(x, 2)) + '%]')
 
     df = df.drop('cost', 1)
     df = df.drop('share', 1)
     return df
 
 
-def re_exe(hold_df=None, inc=3, show_wave=True, sortby=None):
+def re_exe(hold_df=None, inc=2, show_wave=True, sortby=None):
+    codes = list(hold_df['code'])
+    last_trade_data = _dt.get_last_trade_data(codes)
     while True:
-        real_df = get_realtime(hddf=hold_df, sortby=sortby)
+        real_df = get_realtime(hddf=hold_df, last_trade_data=last_trade_data, sortby=sortby)
         # filter
         real_df = real_df[real_df.bid > '0.01']
         finaldf = format_realtime(real_df)
@@ -56,7 +60,7 @@ def re_exe(hold_df=None, inc=3, show_wave=True, sortby=None):
         time.sleep(inc)
 
 
-def get_realtime(hddf=None, sortby=None):
+def get_realtime(hddf=None, last_trade_data=None, sortby=None):
     codes = list(hddf['code'])
     df = ts.get_realtime_quotes(codes)
     data_list = []
@@ -67,6 +71,21 @@ def get_realtime(hddf=None, sortby=None):
         price = float(row['price'])
         high = float(row['high'])
         low = float(row['low'])
+        last_high = last_trade_data.at[code, 'high']
+        last_low = last_trade_data.at[code, 'low']
+        gap_scale = 0
+        gap_space = 0
+        if gap_scale == 0:
+            # 向下跳空缺口
+            if high < last_low:
+                gap_scale = round((high - last_low) / last_low * 100, 2)
+                # 计算缺口和现价的空间
+                gap_space = round((price - last_low) / last_low * 100, 2)
+            # 向上跳空
+            elif low > last_high:
+                gap_scale = round((low - last_high) / last_high * 100, 2)
+                # 计算缺口和现价的空间
+                gap_space = round((price - last_high) / last_high * 100, 2)
 
         price_diff = price - pre_close
         change = price_diff / pre_close * 100
@@ -134,6 +153,8 @@ def get_realtime(hddf=None, sortby=None):
 
         curt_data = []
         curt_data.append(warn_sign)
+        curt_data.append(gap_scale)
+        curt_data.append(gap_space)
         curt_data.append(change)
         curt_data.append(amplitude)
         curt_data.append(cost)
@@ -153,26 +174,26 @@ def get_realtime(hddf=None, sortby=None):
         data_list.append(curt_data)
 
     df_append = pd.DataFrame(data_list,
-                             columns=['Y', 'change', 'amp', 'cost', 'profit_amt', 'profit_perc', 'profit', 'wave', 'bottom',
-                                      'uspace', 'dspace', 'top', 'current', 'position', 'share', 'capital'])
+                             columns=['Y', 'g_scale', 'g_space', 'change', 'amp', 'cost',
+                                      'profit_amt', 'profit_perc', 'profit', 'wave', 'bottom',
+                                      'uspace', 'dspace', 'top', 'current', 'position',
+                                      'share', 'capital'])
     df = df.join(df_append)
 
     df = df[df.price > '1']
-    # df['change'] = df['change'].astype('float32')
-    # df['profit_perc'] = df['profit_perc'].astype('float32')
     if sortby == 'p':
         df = df.sort_values(['profit_perc'], axis=0, ascending=True, inplace=False, kind='quicksort',
                             na_position='last')
     elif sortby == 'b':
         df = df.sort_values(['uspace'], axis=0, ascending=False, inplace=False, kind='quicksort', na_position='last')
-    elif sortby == 't':
-        df = df.sort_values(['capital'], axis=0, ascending=True, inplace=False, kind='quicksort', na_position='last')
+    elif sortby == 'g':
+        df = df.sort_values(['g_scale', 'g_space'], axis=0, ascending=True, inplace=False, kind='quicksort', na_position='last')
     else:
         df = df.sort_values(['change'], axis=0, ascending=True, inplace=False, kind='quicksort', na_position='last')
 
     return df[
-        ['Y', 'code', 'name', 'price', 'change', 'amp', 'bid', 'ask', 'low', 'high', 'current', 'wave', 'bottom', 'uspace', 'dspace',
-         'top', 'position', 'cost', 'share', 'capital', 'profit']]
+        ['Y', 'code', 'name', 'price', 'g_scale', 'g_space', 'change', 'amp', 'bid', 'ask', 'low', 'high', 'current', 'wave',
+         'bottom', 'uspace', 'dspace', 'top', 'position', 'cost', 'share', 'capital', 'profit']]
 
 
 if __name__ == '__main__':
@@ -189,10 +210,10 @@ if __name__ == '__main__':
         sys.exit(0)
     # hold = argv[2] if len(argv) > 2 else 1
     # display = True if (len(argv) > 3 and str(argv[3]).upper() == 'TRUE') else False
-    # sort = argv[4] if len(argv) > 4 else None
+    sort = argv[2] if len(argv) > 2 else None
     hold_df = _dt.get_my_stock_pool(type)
     if hold_df.empty:
         print("Stock NOT hold! Auto change to default mode.")
         hold_df = _dt.get_my_stock_pool(type, 0)
-    re_exe(hold_df, 3)
+    re_exe(hold_df, 3, sortby=sort)
 
