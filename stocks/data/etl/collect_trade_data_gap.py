@@ -51,17 +51,16 @@ if __name__ == '__main__':
                     time.sleep(sleep_time)
                 begin_time = datetime.datetime.now()
             # 前复权行情
-            df = ts.pro_bar(pro_api=pro, ts_code=stock_pool[i], adj='qfq', start_date=start_dt, end_date=end_dt)
+            df = ts.pro_bar(pro_api=pro, ts_code=ts_codes[i], adj='qfq', start_date=start_dt, end_date=end_dt)
             if df is None:
                 continue
             c_len = df.shape[0]
         except Exception as e:
-            # print(e)
-            logger.info('No DATA Code: ' + str(i))
+            logger.info('Exception: ' + str(e))
             time.sleep(60)
             df = ts.pro_bar(pro_api=pro, ts_code=ts_codes[i], adj='qfq', start_date=start_dt, end_date=end_dt)
             # 打印进度
-            logger.info('redo Seq: ' + str(i + 1) + ' of ' + str(total) + '   Code: ' + str(ts_codes[i]))
+            logger.info('Redo Seq: ' + str(i + 1) + ' of ' + str(total) + '   Code: ' + str(ts_codes[i]))
             c_len = df.shape[0]
         for j in range(c_len):
             resu0 = list(df.ix[c_len - 1 - j])

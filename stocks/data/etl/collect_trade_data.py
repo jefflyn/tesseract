@@ -1,21 +1,41 @@
 import datetime
 import time
+import sys
+import random
 import tushare as ts
 from stocks.base.db_util import get_db
 from stocks.base.logging import logger
 from stocks.base.pro_util import pro
+from stocks.base import date_util
 
 if __name__ == '__main__':
+    # 建立数据库连接
+    db = get_db()
+    cursor = db.cursor()
+
+    random_stocks = ['600000.SH', '600016.SH', '601988.SH', '600019.SH', '600028.SH', '600029.SH',
+                     '600030.SH', '600036.SH', '600048.SH', '600519.SH']
+    current = random.randint(0, 9)
+    last_trade_date = date_util.get_latest_trade_date(format=date_util.default_format)[0]
+    check_sql = "select 1 from hist_trade_day where ts_code='" + random_stocks[current] + "' and trade_date='" + str(last_trade_date) + "'"
+    total = cursor.execute(check_sql)
+    if total > 0:
+        logger.info(last_trade_date + " trade data existed")
+        sys.exit(0)
+    last_trade_date = date_util.get_latest_trade_date(format=date_util.format_flat)[0]
+    df = ts.pro_bar(pro_api=pro, ts_code=random_stocks[current], adj='qfq', start_date=last_trade_date, end_date=last_trade_date)
+    c_len = df.shape[0]
+    if c_len == 0:
+        logger.info(last_trade_date + " no trade data found yet")
+        sys.exit(0)
     # 设定获取日线行情的初始日期和终止日期，其中终止日期设定为当天
     # start_dt = '20100101'
-    time_temp = datetime.datetime.now() - datetime.timedelta(days=3)
+    time_temp = datetime.datetime.now() - datetime.timedelta(days=1)
     start_dt = time_temp.strftime('%Y%m%d')
     time_temp = datetime.datetime.now() - datetime.timedelta(days=0)
     end_dt = time_temp.strftime('%Y%m%d')
     logger.info("Collect trade data from " + start_dt + " to " + end_dt)
-    # 建立数据库连接
-    db = get_db()
-    cursor = db.cursor()
+
     total = cursor.execute('select ts_code from basic')
     if total == 0:
         logger.info("no stock found, process end!")
@@ -28,7 +48,7 @@ if __name__ == '__main__':
     for i in range(len(stock_pool)):
         try:
             # 打印进度
-            logger.info('Seq: ' + str(i + 1) + ' of ' + str(total) + '   Code: ' + str(stock_pool[i]))
+            logger.debug('Seq: ' + str(i + 1) + ' of ' + str(total) + '   Code: ' + str(stock_pool[i]))
             if i > 0 and i % 200 == 0:
                 end_time = datetime.datetime.now()
                 time_diff = (end_time - begin_time).seconds
@@ -44,11 +64,11 @@ if __name__ == '__main__':
             c_len = df.shape[0]
         except Exception as e:
             # print(e)
-            logger.info('No DATA Code: ' + str(i))
+            logger.debug('No DATA Code: ' + str(i))
             time.sleep(60)
             df = ts.pro_bar(pro_api=pro, ts_code=stock_pool[i], adj='qfq', start_date=start_dt, end_date=end_dt)
             # 打印进度
-            logger.info('redo Seq: ' + str(i + 1) + ' of ' + str(total) + '   Code: ' + str(stock_pool[i]))
+            logger.debug('Redo Seq: ' + str(i + 1) + ' of ' + str(total) + '   Code: ' + str(stock_pool[i]))
             c_len = df.shape[0]
         for j in range(c_len):
             resu0 = list(df.ix[c_len - 1 - j])

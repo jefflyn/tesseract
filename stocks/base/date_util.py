@@ -59,7 +59,7 @@ last_year_end = this_year_start - timedelta(days=1)
 last_year_start = datetime.datetime(last_year_end.year, 1, 1)
 
 default_format = '%Y-%m-%d'
-date_format = '%Y%m%d'
+format_flat = '%Y%m%d'
 
 
 # 本周第一天和最后一天
@@ -164,7 +164,7 @@ def get_latest_trade_date(days=1, format=default_format):
     trade_date_list = list()
     n = 0
     while True:
-        target_date = (now - timedelta(days=n)).strftime(date_format)
+        target_date = (now - timedelta(days=n)).strftime(format_flat)
         if is_tradeday(target_date):
             trade_date_list.append((now - timedelta(days=n)).strftime(format))
         n += 1
@@ -195,13 +195,13 @@ def get_trade_day(nday=-4):
     n_trade_day_pair = []
     n = 1
     while True:
-        target_date = (now - timedelta(days=n)).strftime(date_format)
+        target_date = (now - timedelta(days=n)).strftime(format_flat)
         if is_tradeday(target_date):
             start_date = now - timedelta(days=n)
             to_date = (now - timedelta(days=n)).strftime(default_format)
             from_date = None
             for i in range(1, 10):
-                target_from_date = (start_date - timedelta(days=i)).strftime(date_format)
+                target_from_date = (start_date - timedelta(days=i)).strftime(format_flat)
                 if is_tradeday(target_from_date):
                     from_date = (start_date - timedelta(days=i)).strftime(default_format)
                     break
