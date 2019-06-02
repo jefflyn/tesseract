@@ -4,6 +4,7 @@ import pandas as pd
 import tushare as ts
 from stocks.base.logging import logger as log
 import stocks.base.date_const as _dt
+import stocks.base.date_util as _date_util
 from stocks.base.db_util import read_sql
 from stocks.base.db_util import read_query
 
@@ -120,9 +121,11 @@ def get_ma_code(grade='a'):
 
 def get_my_stock_pool(type=None, hold=1):
     if type == 'gap':
-        sql = 'select * from daily_gap_trace where 1=1'
+        sql = 'select * from daily_gap_trace_a where 1=1 and s_date=:last_trade_date'
+        last_trade_date = _date_util.get_latest_trade_date()[0]
+        params = {'last_trade_date': last_trade_date}
         log.info(sql + ' ')
-        df = read_query(sql)
+        df = read_sql(sql, params)
         return df
     else:
         sql = 'select * from my_stock_pool where 1=1 and is_hold=:hold'

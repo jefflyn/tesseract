@@ -27,7 +27,7 @@ QUATO_WEIGHT = {
     MAUP: 0.1
 }
 
-latest_trade_date = date_util.get_latest_trade_date(1)[0]
+last_trade_date = date_util.get_latest_trade_date(1)[0]
 
 
 def select_from_change_week():
@@ -87,7 +87,7 @@ def select_result(codeset=None, filename=''):
     trade_date_list = date_util.get_latest_trade_date(3)
     hist_trade_df = None
     for trade_date in trade_date_list:
-        hist_trade_df = data_util.get_hist_trade(code=codeset, start=trade_date, end=latest_trade_date)
+        hist_trade_df = data_util.get_hist_trade(code=codeset, start=trade_date, end=last_trade_date)
         if len(hist_trade_df) > 0:
             logger.info('get latest trade: %s' % trade_date)
             break
@@ -103,13 +103,7 @@ def select_result(codeset=None, filename=''):
     # logger.info('select from %s, total: %i' % (filename, size))
     data_list = []
 
-    # while endIndex <= size:
-    #     logger.info('process from %d to %d' % (beginIndex, endIndex))
-    #     codes = codeset[beginIndex: endIndex]
-    #     df = ts.get_realtime_quotes(codes)
 
-        # beginIndex = endIndex
-        # endIndex = endIndex + limit
     wavedfset = pd.DataFrame(columns=['code', 'begin', 'end', 'status', 'begin_price', 'end_price', 'days', 'change'])
     for index, row in hist_trade_df.iterrows():
         code = row['code']
@@ -254,6 +248,7 @@ def select_result(codeset=None, filename=''):
          'uspace%', 'dspace%', 'top', 'position%', 'gap', 'gap_space', 'sum_30d', 'count', 'c30d', 'cq1', 'cq2', 'cq3', 'cq4',
          'lldate', 'lup_low', 'lup_high',
          'buy1', 'buy2', 'buy3', 'change_7d', 'updays', 'sumup%', 'vol_rate', 'multi_vol']]
+    resultdf['trade_date'] = last_trade_date
     resultdf['select_time'] = dt.now()
     result_name = 'select_result_' + filename
     _dt.to_db(resultdf, result_name)
