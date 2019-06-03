@@ -122,7 +122,7 @@ def get_ma_code(grade='a'):
 def get_my_stock_pool(type=None, hold=1):
     if type == 'gap':
         sql = 'select * from daily_gap_trace_a where 1=1 and s_date=:last_trade_date'
-        last_trade_date = _date_util.get_latest_trade_date()[0]
+        last_trade_date = _date_util.get_latest_trade_date(2)[1]
         params = {'last_trade_date': last_trade_date}
         log.info(sql + ' ')
         df = read_sql(sql, params)
@@ -405,7 +405,7 @@ if __name__ == '__main__':
     # print(format_amount(2369852))
     # print(format_amount(25896325))
     # print(format_amount(369852369))
-    print(get_last_trade_data('600126'))
+    print(get_last_trade_data(['600126', '600162']))
     # data = get_stock_data(type='c', filename='小金属.txt')
     # trade = pd.HDFStore('trade.h5')
     # tradecomp = pd.HDFStore('trade_comp.h5')
