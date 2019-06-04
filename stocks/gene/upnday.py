@@ -81,17 +81,18 @@ def get_upnday(codes=None, n=0, change=None):
             next_low_arr.append(next_low)
             next_high_arr.append(next_high)
 
-            if gap_scale == 0:
-                # 向下跳空缺口
-                if pre_low > max(next_high_arr):
-                    gap_scale = round((max(next_high_arr) - pre_low) / max(next_high_arr) * 100, 2)
-                    # 计算缺口和现价的空间
-                    gap_space = round((current_price - pre_low) / pre_low * 100, 2)
-                # 向上跳空
-                elif min(next_low_arr) > pre_high:
-                    gap_scale = round((min(next_low_arr) - pre_high) / pre_high * 100, 2)
-                    # 计算缺口和现价的空间
-                    gap_space = round((current_price - pre_high) / pre_high * 100, 2)
+            if index < 5:
+                if gap_scale == 0:
+                    # 向下跳空缺口
+                    if pre_low > max(next_high_arr):
+                        gap_scale = round((max(next_high_arr) - pre_low) / max(next_high_arr) * 100, 2)
+                        # 计算缺口和现价的空间
+                        gap_space = round((current_price - pre_low) / pre_low * 100, 2)
+                    # 向上跳空
+                    elif min(next_low_arr) > pre_high:
+                        gap_scale = round((min(next_low_arr) - pre_high) / pre_high * 100, 2)
+                        # 计算缺口和现价的空间
+                        gap_space = round((current_price - pre_high) / pre_high * 100, 2)
 
             change = float(next_data['pct_change'])
             close = float(next_data['close'])
