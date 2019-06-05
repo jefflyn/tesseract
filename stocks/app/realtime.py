@@ -144,10 +144,12 @@ def get_realtime(hddf=None, last_trade_data=None, sortby=None):
             warn_sign = '!'
 
         # 告警短信:价格、涨跌幅、止损、止盈等
-        if low < bottom or btm_space < 5 or change > 7 or change < -6:
+        if low < bottom or change > 6 or change < -6:
             name_format = '：' + code + ' ' + row['name']
             change_str = str(round(change, 2)) + '%' if change < 0 else '+' + str(round(change, 2)) + '%'
             price_format = str(round(price, 2)) + change_str
+            if low < bottom:
+                price_format += ' Get Out!'
             if len(price_format) < 12:
                 price_format = str(round(price, 2)) + ' ' + change_str
             warn_times = redis_client.get(pre_key_today + code)
@@ -207,7 +209,7 @@ def get_realtime(hddf=None, last_trade_data=None, sortby=None):
 if __name__ == '__main__':
     """
     python realtime.py df 1 false p
-
+    /usr/local/bin/redis-server /usr/local/etc/redis.conf
     """
     if len(argv) < 2:
         print("Invalid args! At least 2 args like: python realtime.py df ...")
