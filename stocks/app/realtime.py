@@ -6,9 +6,6 @@ from stocks.gene import wave
 from stocks.data import data_util as _dt
 import pandas as pd
 import time
-from tkinter import *
-import stocks.base.sms_util as sms
-from stocks.base.redis_util import redis_client
 from stocks.base import date_const
 
 keys = ['pa', 'cf', 'df', 'sim', 'gap']
@@ -143,33 +140,7 @@ def get_realtime(hddf=None, last_trade_data=None, sortby=None):
         elif btm_diff <= 0 or low < bottom or bottom_auto_flag == 'A':
             warn_sign = '!'
 
-        # 告警短信:价格、涨跌幅、止损、止盈等
-        if low < bottom or change > 6 or change < -6:
-            name_format = '：' + code + ' ' + row['name']
-            change_str = str(round(change, 2)) + '%' if change < 0 else '+' + str(round(change, 2)) + '%'
-            price_format = str(round(price, 2)) + change_str
-            if low < bottom:
-                price_format += ' Get Out!'
-            if len(price_format) < 12:
-                price_format = str(round(price, 2)) + ' ' + change_str
-            warn_times = redis_client.get(pre_key_today + code)
-            if warn_times is None:
-                try:
-                    redis_client.set(pre_key_today + code, row['name'] + price_format)
-                    sms.send_msg(code, name_format, price_format)
-                except Exception as e:
-                    print(e)
-
-        curt_data = []
-        curt_data.append(warn_sign)
-        curt_data.append(open_gap)
-        curt_data.append(gap_scale)
-        curt_data.append(gap_space)
-        curt_data.append(change)
-        curt_data.append(amplitude)
-        curt_data.append(cost)
-        curt_data.append(profit)
-        curt_data.append(profit_perc)
+        curt_data = [warn_sign, open_gap, gap_scale, gap_space, change, amplitude, cost, profit, profit_perc]
         profit_str = str(round(profit, 2)) + ', ' + str(round(profit_perc, 2)) + '%'
         curt_data.append(profit_str)
         curt_data.append(wavestr)

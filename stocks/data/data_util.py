@@ -93,7 +93,7 @@ def get_hist_trade(code=None, start=None, end=None):
 
 
 def get_monitor_stocks():
-    df = read_query('select * from monitor_trigger')
+    df = read_query('select * from monitor_pool where is_valid=1')
     return df
 
 

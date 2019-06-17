@@ -23,12 +23,14 @@ auth_token = 'fffd970e7721acdf33d1c6567a1d927b'
 client = Client(account_sid, auth_token)
 
 
-def message_to(msg='', to=''):
+def send_msg_with_twilio(msg='', to=''):
     message = client.messages.create(body=msg, from_='+15874176562', to=to)
-    print(message.sid)
+    print('send_msg_with_twilio: ' + message.status)
+    return message
 
 
-def send_msg(code=None, name='', price=''):
+def send_msg_with_tencent(code=None, name='', price=''):
+    result = ''
     try:
         if code is None:
             return
@@ -40,13 +42,13 @@ def send_msg(code=None, name='', price=''):
             return
         result = ssender.send_with_param(86, phone_numbers[0], template_id, params, sign=sms_sign, extend="", ext="")
         send_counter[code] += 1
-        print(result)
     except HTTPError as e:
         print(e)
     except Exception as e:
         print(e)
+    return result
 
 
 if __name__ == '__main__':
-    message_to(msg='', to='')
+    send_msg_with_twilio(msg='hello', to='+8618507550586')
 
