@@ -103,7 +103,6 @@ def select_result(codeset=None, filename=''):
     # logger.info('select from %s, total: %i' % (filename, size))
     data_list = []
 
-
     wavedfset = pd.DataFrame(columns=['code', 'begin', 'end', 'status', 'begin_price', 'end_price', 'days', 'change'])
     for index, row in hist_trade_df.iterrows():
         code = row['code']

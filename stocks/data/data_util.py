@@ -22,8 +22,46 @@ basics = read_sql("select * from basic", params=None)
 
 
 def get_all_wave_data():
+    """
+    全部stocks wave
+    :return:
+    """
     sql = 'select * from select_wave_all'
     df = read_query(sql)
+    return df
+
+
+def get_normal_wave_data():
+    """
+    常规stocks wave
+    :return:
+    """
+    sql = 'select * from select_wave_all where ' \
+          'code in (select code from basic where name not like :st and list_date < :list_date)'
+    params = {'st': '%ST%', 'list_date': oneyearago}
+    df = read_sql(sql, params)
+    return df
+
+
+def get_subnew_wave_data():
+    """
+    次新stocks wave
+    :return:
+    """
+    sql = 'select * from select_wave_all where code in (select code from basic where list_date >= :list_date)'
+    params = {'list_date': oneyearago}
+    df = read_sql(sql, params)
+    return df
+
+
+def get_st_wave_data():
+    """
+    st stocks wave
+    :return:
+    """
+    sql = 'select * from select_wave_all where code in (select code from basic where name like :st)'
+    params = {'st': '%ST%'}
+    df = read_sql(sql, params)
     return df
 
 

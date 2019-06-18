@@ -4,8 +4,14 @@ import numpy as np
 import pandas as pd
 
 
-if __name__ == '__main__':
-    all_wave_data = _dt.get_all_wave_data()
+def scan_wave_change(wave_data=None, tb_name='wave_change_ref'):
+    """
+    scan wave data info
+    :param wave_data:
+    :param tb_name:
+    :return:
+    """
+    all_wave_data = wave_data
     wave_group = all_wave_data.groupby('code')
     wave_map = dict()
     wave_up_total = 0
@@ -29,7 +35,7 @@ if __name__ == '__main__':
             pre_change = pre_data['change']
             nxt_change = nxt_data['change']
             # 只考虑涨跌幅20的波段
-            if abs(pre_change) < 20:
+            if abs(pre_change) < 20 or abs(nxt_change) < 20:
                 continue
             wave_pair = (pre_change, nxt_change)
             wave_map_key = round(pre_change, -1)
@@ -50,9 +56,9 @@ if __name__ == '__main__':
         max_change = np.max([v[1] for v in value])
         ratio = 0
         if key > 0:
-            ratio = round(len(value) / wave_up_total, 2)
+            ratio = round(len(value) / wave_up_total * 100, 2)
         else:
-            ratio = round(len(value) / wave_down_total, 2)
+            ratio = round(len(value) / wave_down_total * 100, 2)
         wave_result_data = [key, avg_change, len(value), ratio, round(mean_change, 2), min_change, max_change]
         wave_result_list.append(wave_result_data)
 
@@ -60,6 +66,12 @@ if __name__ == '__main__':
                                                              'min_change', 'max_change'])
     wave_change_df = wave_change_df.sort_values("range", axis=0, ascending=True, inplace=False, kind='quicksort',
                                                 na_position='last')
-    db_util.to_db(wave_change_df, 'wave_change_ref')
+    db_util.to_db(wave_change_df, tb_name)
     print(wave_map)
+
+
+if __name__ == '__main__':
+    scan_wave_change(_dt.get_normal_wave_data(), 'wave_change_normal_ref')
+    scan_wave_change(_dt.get_subnew_wave_data(), 'wave_change_subnew_ref')
+    scan_wave_change(_dt.get_st_wave_data(), 'wave_change_st_ref')
 
