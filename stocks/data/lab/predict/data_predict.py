@@ -1,5 +1,5 @@
 from sklearn import svm
-import stocks.data.lab.data_process as DP
+import stocks.data.lab.predict.data_process as DP
 
 if __name__ == '__main__':
     # ['600069.SH', '002895.SZ', '002923.SZ', '000820.SZ', '002555.SZ'

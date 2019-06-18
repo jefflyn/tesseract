@@ -44,6 +44,9 @@ def format_realtime(df):
 
 
 def re_exe(hold_df=None, inc=2, show_wave=True, sortby=None):
+    if hold_df is None or hold_df.empty:
+        print('no stock found!!!')
+        return
     codes = list(hold_df['code'])
     last_trade_data = _dt.get_last_trade_data(codes)
     while True:

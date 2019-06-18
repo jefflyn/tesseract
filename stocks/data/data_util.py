@@ -21,6 +21,12 @@ INDEX_LIST = ['000001.SH', '000300.SH', '000016.SH', '000905.SH', '399001.SZ', '
 basics = read_sql("select * from basic", params=None)
 
 
+def get_all_wave_data():
+    sql = 'select * from select_wave_all'
+    df = read_query(sql)
+    return df
+
+
 def get_up_gap_codes(days=7):
     """
     获取时间范围内向上跳空的代码
@@ -385,6 +391,8 @@ def get_last_trade_data(codes=None):
             code_list.append(codes)
             codes = code_list
         sql += 'and a.code in :code '
+    else:
+        return None
     params = {'code': codes}
     df = read_sql(sql, params=params)
     df.index = list(df['code'])
