@@ -54,12 +54,12 @@ def scan_wave_change(wave_data=None, tb_name='wave_change_ref'):
         min_change = np.min([v[1] for v in value])
         mean_change = np.mean([v[1] for v in value])
         max_change = np.max([v[1] for v in value])
-        ratio = 0
         if key > 0:
             ratio = round(len(value) / wave_up_total * 100, 2)
+            wave_result_data = [key, avg_change, len(value), ratio, round(mean_change, 2), max_change, min_change]
         else:
             ratio = round(len(value) / wave_down_total * 100, 2)
-        wave_result_data = [key, avg_change, len(value), ratio, round(mean_change, 2), min_change, max_change]
+            wave_result_data = [key, avg_change, len(value), ratio, round(mean_change, 2), min_change, max_change]
         wave_result_list.append(wave_result_data)
 
     wave_change_df = pd.DataFrame(wave_result_list, columns=['range', 'avg_range', 'count', 'ratio', 'avg_change',
@@ -72,6 +72,6 @@ def scan_wave_change(wave_data=None, tb_name='wave_change_ref'):
 
 if __name__ == '__main__':
     scan_wave_change(_dt.get_normal_wave_data(), 'wave_change_normal_ref')
-    scan_wave_change(_dt.get_subnew_wave_data(), 'wave_change_subnew_ref')
-    scan_wave_change(_dt.get_st_wave_data(), 'wave_change_st_ref')
+    # scan_wave_change(_dt.get_subnew_wave_data(), 'wave_change_subnew_ref')
+    # scan_wave_change(_dt.get_st_wave_data(), 'wave_change_st_ref')
 
