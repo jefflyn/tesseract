@@ -20,9 +20,9 @@ if __name__ == '__main__':
         logger.info(last_trade_date + " trade data existed")
         sys.exit(0)
     last_trade_date = date_util.get_latest_trade_date(format=date_util.format_flat)[0]
-    df = ts.pro_bar(pro_api=pro, ts_code=index_code, asset='I', start_date=last_trade_date, end_date=last_trade_date)
+    df = ts.pro_bar(api=pro, ts_code=index_code, asset='I', start_date=last_trade_date, end_date=last_trade_date)
     c_len = df.shape[0]
-    if c_len == 0: # 没有记录退出
+    if c_len == 0:  # 没有记录退出
         logger.info(last_trade_date + " no index data found yet")
         sys.exit(0)
 
@@ -42,12 +42,12 @@ if __name__ == '__main__':
             # 打印进度
             logger.debug('Seq: ' + str(i + 1) + ' of ' + str(total) + '   Code: ' + str(stock_pool[i]))
             # 前复权行情
-            df = ts.pro_bar(pro_api=pro, ts_code=stock_pool[i], asset='I', start_date=start_dt, end_date=end_dt)
+            df = ts.pro_bar(api=pro, ts_code=stock_pool[i], asset='I', start_date=start_dt, end_date=end_dt)
             c_len = df.shape[0]
         except Exception as e:
             logger.info('Exception: ' + str(e))
             time.sleep(60)
-            df = ts.pro_bar(pro_api=pro, ts_code=stock_pool[i], asset='I', start_date=start_dt, end_date=end_dt)
+            df = ts.pro_bar(api=pro, ts_code=stock_pool[i], asset='I', start_date=start_dt, end_date=end_dt)
             # 打印进度
             logger.debug('Redo Seq: ' + str(i + 1) + ' of ' + str(total) + '   Code: ' + str(stock_pool[i]))
             c_len = df.shape[0]

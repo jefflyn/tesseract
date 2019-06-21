@@ -23,7 +23,7 @@ if __name__ == '__main__':
         logger.info(last_trade_date + " trade data existed")
         sys.exit(0)
     last_trade_date = date_util.get_latest_trade_date(format=date_util.format_flat)[0]
-    df = ts.pro_bar(pro_api=pro, ts_code=random_stocks[current], adj='qfq', start_date=last_trade_date, end_date=last_trade_date)
+    df = ts.pro_bar(api=pro, ts_code=random_stocks[current], adj='qfq', start_date=last_trade_date, end_date=last_trade_date)
     c_len = df.shape[0]
     if c_len == 0:
         logger.info(last_trade_date + " no trade data found yet")
@@ -58,7 +58,7 @@ if __name__ == '__main__':
                     time.sleep(sleep_time)
                 begin_time = datetime.datetime.now()
             # 前复权行情
-            df = ts.pro_bar(pro_api=pro, ts_code=stock_pool[i], adj='qfq', start_date=start_dt, end_date=end_dt)
+            df = ts.pro_bar(api=pro, ts_code=stock_pool[i], adj='qfq', start_date=start_dt, end_date=end_dt)
             if df is None:
                 continue
             c_len = df.shape[0]
@@ -66,7 +66,7 @@ if __name__ == '__main__':
             # print(e)
             logger.debug('No DATA Code: ' + str(i))
             time.sleep(60)
-            df = ts.pro_bar(pro_api=pro, ts_code=stock_pool[i], adj='qfq', start_date=start_dt, end_date=end_dt)
+            df = ts.pro_bar(api=pro, ts_code=stock_pool[i], adj='qfq', start_date=start_dt, end_date=end_dt)
             # 打印进度
             logger.debug('Redo Seq: ' + str(i + 1) + ' of ' + str(total) + '   Code: ' + str(stock_pool[i]))
             c_len = df.shape[0]

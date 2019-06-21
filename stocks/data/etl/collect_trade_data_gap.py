@@ -51,14 +51,14 @@ if __name__ == '__main__':
                     time.sleep(sleep_time)
                 begin_time = datetime.datetime.now()
             # 前复权行情
-            df = ts.pro_bar(pro_api=pro, ts_code=ts_codes[i], adj='qfq', start_date=start_dt, end_date=end_dt)
+            df = ts.pro_bar(api=pro, ts_code=ts_codes[i], adj='qfq', start_date=start_dt, end_date=end_dt)
             if df is None:
                 continue
             c_len = df.shape[0]
         except Exception as e:
             logger.info('Exception: ' + str(e))
             time.sleep(60)
-            df = ts.pro_bar(pro_api=pro, ts_code=ts_codes[i], adj='qfq', start_date=start_dt, end_date=end_dt)
+            df = ts.pro_bar(api=pro, ts_code=ts_codes[i], adj='qfq', start_date=start_dt, end_date=end_dt)
             # 打印进度
             logger.info('Redo Seq: ' + str(i + 1) + ' of ' + str(total) + '   Code: ' + str(ts_codes[i]))
             c_len = df.shape[0]

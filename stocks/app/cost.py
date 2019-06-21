@@ -3,10 +3,10 @@ from sys import argv
 
 from stocks.app import _utils
 
-default_commision = 5.0
-commision_rate = 0.00025
-transfer_rate = 0.00002
-tax_rate = 0.001
+default_commission = 5.0
+commission_rate = 0.00025  # bs
+transfer_rate = 0.00002  # bs
+tax_rate = 0.001  # s
 
 
 def is_valid_price(price):
@@ -37,28 +37,28 @@ if (is_valid_share(ownshare) or is_valid_share(buyshare)) is False:
 
 # buy fee
 dealamt = buyprice * buyshare
-commision = dealamt * commision_rate
-if commision < default_commision:
-    commision = default_commision;
+commission = dealamt * commission_rate
+if commission < default_commission:
+    commission = default_commission
 # SH & SZ same
 transferfee = dealamt * transfer_rate
-totalamt = dealamt + commision + transferfee
+totalamt = dealamt + commission + transferfee
 
-totalamt = origincost * ownshare + buyprice * buyshare + commision + transferfee
+totalamt = origincost * ownshare + buyprice * buyshare + commission + transferfee
 cost = totalamt / (ownshare + buyshare)
 tax = totalamt * tax_rate
 
 # sell fee
-scommision = totalamt * commision_rate
-if scommision < default_commision:
-    scommision = default_commision
+scommission = totalamt * commission_rate
+if scommission < default_commission:
+        scommission = default_commission
 # SH & SZ same
 stransferfee = totalamt * transfer_rate
-safeamt = totalamt + scommision + stransferfee + tax
+safeamt = totalamt + scommission + stransferfee + tax
 balanceprice = safeamt / (ownshare + buyshare)
 
 print("(%.3f*%d+%.3f*%d+%.3f+%.3f) / (%d+%d)" % (
-origincost, ownshare, buyprice, buyshare, commision, transferfee, ownshare, buyshare))
+origincost, ownshare, buyprice, buyshare, commission, transferfee, ownshare, buyshare))
 print("need: %.3f" % dealamt)
 print("new cost: %.3f" % cost)
 print("balance price: %.3f" % balanceprice)

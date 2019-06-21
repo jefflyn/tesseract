@@ -30,14 +30,14 @@ if __name__ == '__main__':
             # 打印进度
             logger.info('Seq: ' + str(i + 1) + ' of ' + str(total) + '   Code: ' + str(stock_pool[i]))
             # 前复权行情
-            df = ts.pro_bar(pro_api=pro, ts_code=stock_pool[i], adj='qfq', ma=ma, start_date=start_dt, end_date=end_dt)
+            df = ts.pro_bar(api=pro, ts_code=stock_pool[i], adj='qfq', ma=ma, start_date=start_dt, end_date=end_dt)
             if df is None:
                 continue
         except Exception as e:
             print(e)
             logger.info('No DATA Code: ' + str(i))
             time.sleep(60)
-            df = ts.pro_bar(pro_api=pro, ts_code=stock_pool[i], adj='qfq', ma=ma, start_date=start_dt, end_date=end_dt)
+            df = ts.pro_bar(api=pro, ts_code=stock_pool[i], adj='qfq', ma=ma, start_date=start_dt, end_date=end_dt)
             # 打印进度
             logger.info('redo Seq: ' + str(i + 1) + ' of ' + str(total) + '   Code: ' + str(stock_pool[i]))
 
