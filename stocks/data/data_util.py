@@ -21,6 +21,17 @@ INDEX_LIST = ['000001.SH', '000300.SH', '000016.SH', '000905.SH', '399001.SZ', '
 basics = read_sql("select * from basic", params=None)
 
 
+def get_normal_codes():
+    """
+    常规stocks code
+    :return:
+    """
+    sql = 'select code from basic where name not like :st and list_date < :list_date'
+    params = {'st': '%ST%', 'list_date': oneyearago}
+    df = read_sql(sql, params)
+    return list(df['code'])
+
+
 def get_all_wave_data():
     """
     全部stocks wave

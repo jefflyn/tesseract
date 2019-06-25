@@ -11,12 +11,7 @@ from stocks.base.db_util import get_db
 
 start_date = date_const.DATE_BEFORE_90_DAYS
 
-db = get_db()
-cursor = db.cursor()
-total = cursor.execute('select code from basic')
-if total == 0:
-    exit(0)
-stock_pool = [ts_code_tuple[0] for ts_code_tuple in cursor.fetchall()]
+stock_pool = data_util.get_normal_codes()
 
 
 def cal_gap(codes=None, seq='W'):
@@ -78,7 +73,7 @@ def cal_gap(codes=None, seq='W'):
             next_low_arr.append(next_low)
             next_high_arr.append(next_high)
 
-            if index < 5:
+            if index < 3:
                 if gap_scale == 0:
                     # 向下跳空缺口
                     if pre_low > max(next_high_arr):
@@ -105,7 +100,7 @@ def cal_gap(codes=None, seq='W'):
 
 
 if __name__ == '__main__':
-    # codes = ['300637']
+    # codes = ['300123']
     codes = stock_pool
     df = cal_gap(codes=codes)
     # print(df)

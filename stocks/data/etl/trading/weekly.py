@@ -4,6 +4,7 @@ import datetime
 import time
 import sys
 import random
+import tushare as ts
 from stocks.base.db_util import get_db
 from stocks.base.logging import logger
 from stocks.base.pro_util import pro
@@ -98,5 +99,7 @@ def collect_weekly():
 
 
 if __name__ == '__main__':
-    df = pro.weekly(ts_code='300637.SZ',  start_date=start_dt, end_date=end_dt)
+    df = pro.weekly(ts_code='300123.SZ', adj='hfq', start_date=start_dt, end_date=end_dt)
     print(df)
+    histdf = ts.get_hist_data(code='300123', ktype='W', start='2019-04-30')
+    print(histdf)
