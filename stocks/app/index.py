@@ -149,7 +149,7 @@ if __name__ == '__main__':
         listdf = []
         for code in target:
             wdf = wavedf[wavedf.code == code]
-            listdf.append(wave.format_wave_data(wdf, is_index=True))
+            listdf.append(wave.format_wave_data(wdf, is_index=True), )
         # figure display
         wave.plot_wave(listdf, filename='wave_index.png', columns=3)
 

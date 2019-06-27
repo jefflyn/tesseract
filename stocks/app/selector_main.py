@@ -6,13 +6,13 @@ import stocks.base.display
 if __name__ == '__main__':
     logger.info('start selector main ...')
     # ##select from all
-    # selector.select_from_all()
+    selector.select_from_all()
 
     # selector.select_result(['002918'], 'temp')
 
     # ##select from region
-    codes = data_util.get_codes_by_region(region='佛山')
-    selector.select_result(codes, 'region')
+    # codes = data_util.get_codes_by_region(region='佛山')
+    # selector.select_result(codes, 'region')
 
     # ##select from ma
     # code_df = data_util.get_ma_code('d')
