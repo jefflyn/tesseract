@@ -21,6 +21,18 @@ INDEX_LIST = ['000001.SH', '000300.SH', '000016.SH', '000905.SH', '399001.SZ', '
 basics = read_sql("select * from basic", params=None)
 
 
+def get_codes_by_region(region=''):
+    """
+    查询省或市的stocks code
+    :return:
+    """
+    sql = 'select b.code from basic b inner join stock_company sc on b.ts_code = sc.ts_code ' \
+          'where sc.province like :region or sc.city like :region'
+    params = {'region': '%' + region + '%'}
+    df = read_sql(sql, params)
+    return list(df['code'])
+
+
 def get_normal_codes():
     """
     常规stocks code
@@ -393,22 +405,6 @@ def get_basics(code=None, cyb=True, index=False, before=None):
         data = data[data.code == code]
     data.index = list(data['code'])
     return data
-
-
-def get_bottom():
-    try:
-        data = pd.read_csv("../data/bottom.csv", encoding="utf-8")
-        data['code'] = data['code'].astype('str').str.zfill(6)
-        return data
-    except:
-        print('bottom file not found, return empty code list.')
-        return pd.DataFrame(columns=['code'])
-
-
-# filter cyb
-def filter_cyb(datadf):
-    datadf = datadf[datadf['code'].str.get(0) != '3']
-    return datadf
 
 
 def filter_basic(_basics=None, cyb=True, before=None):

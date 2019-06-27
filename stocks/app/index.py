@@ -3,13 +3,12 @@ import time
 from sys import argv
 import pandas as pd
 import tushare as ts
-
+from stocks.base import display
 from stocks.gene import wave
 from stocks.app import _utils
 import stocks.base.sms_util as sms
 from stocks.base.redis_util import redis_client
 from stocks.base import date_const
-from stocks.base import display
 
 
 INDEX_SH = ['000001', '000016', '000300']
@@ -88,7 +87,7 @@ def get_status():
             price_format = str(round(float(row['change']), 2)) + '%'
             warn_times = redis_client.get(date_const.TODAY + '_' + code)
             if warn_times is None:
-                sms.send_msg(code, name_format, price_format)
+                sms.send_msg_with_tencent(code, name_format, price_format)
                 redis_client.set(date_const.TODAY + '_' + code, row['name'] + price_format)
 
     columns = ['code', 'name', 'change', 'close', 'low', 'high', 'volume', 'amount', 'current', 'wave', 'bottom', 'uspace',

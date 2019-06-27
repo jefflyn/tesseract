@@ -6,12 +6,10 @@ from sys import argv
 import pandas as pd
 import stocks.base.db_util as _dt
 import tushare as ts
-from stocks.app import falco
 from stocks.base.logging import logger
 from stocks.data import data_util
 from stocks.base import date_util
 from stocks.gene import limitup
-from stocks.gene import maup
 from stocks.gene import upnday
 from stocks.gene import wave
 from stocks.base import display
@@ -343,51 +341,6 @@ def select_subnew_issue_space():
 
     wavedf = wave.get_wave(list(resultdf['code']))
     _dt.to_db(wavedf, 'wave_subnew')
-
-
-"""
-select from industry or concept
-"""
-
-
-def select_s1(type='', classname=''):
-    data = data_util.get_stock_data(type=type, filename=classname)
-    codes = list(data['code'])
-    limitupdf = limitup.get_limitup_from_hist_k(codes)
-    _dt.to_db(limitupdf, 'limitupx')
-    # 1.choose the active codes from the limitups which limitup at lease more than n
-    limitupcount = limitup.count(limitupdf, times=0, condition=[90, 0])
-    # logger.info(limitupcount)
-
-    codes = list(limitupcount.index.get_values())
-    # 2.get the bottom price data
-    bottomdf = falco.get_monitor(codes)
-    bottomdf = pd.merge(bottomdf, limitupcount[['code', 'count']], on='code', how='left')
-    # logger.info(bottomdf)
-
-    # 3.ma data
-    madf = maup.get_ma(codes)
-    # logger.info(madf)
-    result = pd.merge(bottomdf, madf[['code', 'isup', 'ma5', 'ma10', 'ma20', 'ma30', 'ma60', 'ma30std', 'ma10_space']],
-                      on='code', how='left')
-    result.to_csv('select1.csv')
-    _dt.to_db(result, 'select1')
-    # exit()
-
-    #########
-    wavecodes = list(result['code'])
-    # 4.get wave data
-    wavedf = wave.get_wave(wavecodes)
-    # logger.info(wavedf)
-    listdf = []
-    for code in wavecodes:
-        wdf = wavedf[wavedf.code == code]
-        listdf.append(wave.format_wave_data(wdf))
-    # figure display
-    wave.plot_wave(listdf, filename='select1.png')
-
-    # 5.limitup data
-    logger.info(limitupdf)
 
 
 def get_limitup_space(df):
