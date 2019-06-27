@@ -223,11 +223,12 @@ def get_wave(codes=None, is_index=False, start=None, end=None, beginlow=True, du
     for code in code_list:
         # print("   >>> processing %s ..." % code)
         # hist_data = ts.get_h_data(code, start)  # network issue
-        hist_data = ts.get_k_data(code=code, index=is_index,
+        hist_data_1 = ts.get_k_data(code=code, index=is_index,
                                   start=start)  # one day delay issue, use realtime interface solved
-
+        hist_data = data_util.get_hist_trade(code=code, is_index=is_index, start=start)
         if hist_data is None or len(hist_data) == 0:
             continue
+        hist_data['date'] = hist_data['trade_date']
         latestdate = hist_data.tail(1).at[hist_data.tail(1).index.get_values()[0], 'date']
         if todaystr != latestdate:  # not the latest record
             if is_index is False:
@@ -239,7 +240,7 @@ def get_wave(codes=None, is_index=False, start=None, end=None, beginlow=True, du
                 if todaylow > 0:
                     newone = {'date': todaystr, 'open': float(realtime.at[0, 'open']),
                               'close': float(realtime.at[0, 'price']), 'high': float(realtime.at[0, 'high']),
-                              'low': todaylow, 'volume': int(float(realtime.at[0, 'volume']) / 100), 'code': code}
+                              'low': todaylow, 'vol': int(float(realtime.at[0, 'volume']) / 100), 'code': code}
                     newdf = pd.DataFrame(newone, index=[0])
                     hist_data = hist_data.append(newdf, ignore_index=True)
             else:
@@ -249,10 +250,10 @@ def get_wave(codes=None, is_index=False, start=None, end=None, beginlow=True, du
                 index = indexdf.index.values[0]
                 todaylow = float(indexdf.at[index, 'low'])
                 if todaylow > 0:
-                    newone = {'date': todaystr, 'open': float(indexdf.at[index, 'open']),
+                    newone = {'trade_date': todaystr, 'open': float(indexdf.at[index, 'open']),
                               'close': round(float(indexdf.at[index, 'close']), 2),
                               'high': round(float(indexdf.at[index, 'high']), 2),
-                              'low': todaylow, 'volume': int(float(indexdf.at[index, 'volume'])), 'code': code}
+                              'low': todaylow, 'vol': int(float(indexdf.at[index, 'vol'])), 'code': code}
                     newdf = pd.DataFrame(newone, index=[0])
                     hist_data = hist_data.append(newdf, ignore_index=True)
 

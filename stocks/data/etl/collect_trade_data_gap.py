@@ -12,7 +12,9 @@ if __name__ == '__main__':
     # 建立数据库连接
     db = get_db()
     cursor = db.cursor()
-    total = cursor.execute('select b.ts_code, b.code from select_result_all s inner join basic b on s.code = b.code where abs(gap) > 12')
+    # sql = "select b.ts_code, b.code from basic b inner join stock_company sc on b.ts_code = sc.ts_code where sc.province like '%佛山%' or sc.city like '%佛山%'"
+    sql = 'select b.ts_code, b.code from select_result_all s inner join basic b on s.code = b.code where abs(gap) > 12'
+    total = cursor.execute(sql)
     if total == 0:
         logger.info("no stock found, process end!")
         exit(0)

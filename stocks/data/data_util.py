@@ -159,7 +159,7 @@ def get_weekly(code=None, start=None, end=None):
     return df
 
 
-def get_hist_trade(code=None, start=None, end=None):
+def get_hist_trade(code=None, is_index=False, start=None, end=None):
     """
     获取历史日k
     :param code:
@@ -167,7 +167,8 @@ def get_hist_trade(code=None, start=None, end=None):
     :param end:
     :return:
     """
-    sql = 'select * from hist_trade_day where 1=1 '
+    table_name = 'hist_trade_day' if is_index is False else 'hist_index_day'
+    sql = 'select * from ' + table_name + ' where 1=1 '
     if code is not None:
         if isinstance(code, str):
             codes = list()

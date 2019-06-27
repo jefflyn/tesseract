@@ -8,7 +8,7 @@ if __name__ == '__main__':
     # ##select from all
     # selector.select_from_all()
 
-    # selector.select_result(['002930'], 'temp')
+    # selector.select_result(['002918'], 'temp')
 
     # ##select from region
     codes = data_util.get_codes_by_region(region='佛山')
