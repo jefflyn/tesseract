@@ -35,7 +35,7 @@ def get_codes_by_region(region=''):
 
 def get_normal_codes():
     """
-    常规stocks code
+    常规stocks code, 不含st和次新
     :return:
     """
     sql = 'select code from basic where name not like :st and list_date < :list_date'

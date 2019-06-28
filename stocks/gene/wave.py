@@ -3,17 +3,15 @@ import datetime as dt
 import numpy as np
 import pandas as pd
 import matplotlib
-
+import stocks.base.display
 matplotlib.use('TkAgg')
 matplotlib.rcParams['font.sans-serif'] = 'SimHei'
 import matplotlib.pyplot as plt
-import matplotlib.ticker as ticker
+import stocks.base.db_util as _dt
 import matplotlib.dates as mdates
 import stocks.base.date_util as _dateutil
 import tushare as ts
-
 from stocks.data import data_util
-import stocks.base.display
 
 todaystr = _dateutil.get_today()
 
@@ -415,8 +413,10 @@ def tryBottom():
 if __name__ == '__main__':
     # tryBottom()
     code_list = ['002796']
-    result = get_wave(code_list, index=False, start='2015-01-01')
-    bottom = get_bottom(result, 15)
-    print(wave_to_str(result))
-    print(result)
-    print(bottom)
+    code_list = data_util.get_normal_codes()
+    result = get_wave(code_list, is_index=False, start='2019-01-01')
+    _dt.to_db(result, 'wave_data_2019')
+    # bottom = get_bottom(result, 15)
+    # print(wave_to_str(result))
+    # print(result)
+    # print(bottom)
