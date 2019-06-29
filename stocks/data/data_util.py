@@ -21,6 +21,17 @@ INDEX_LIST = ['000001.SH', '000300.SH', '000016.SH', '000905.SH', '399001.SZ', '
 basics = read_sql("select * from basic", params=None)
 
 
+def get_codes_by_wave(from_date='2019-01-01', pct_change=100):
+    """
+    选波段
+    :return:
+    """
+    sql = "select distinct code from wave_data_2019 where begin >= :from_date and `change` >= :pct_change"
+    params = {'from_date': from_date, 'pct_change': pct_change}
+    df = read_sql(sql, params)
+    return list(df['code'])
+
+
 def get_codes_by_region(region=''):
     """
     查询省或市的stocks code
