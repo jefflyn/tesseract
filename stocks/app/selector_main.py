@@ -5,10 +5,10 @@ import stocks.base.display
 
 if __name__ == '__main__':
     logger.info('start selector main ...')
-    # ##select from all
-    # selector.select_from_all()
-
     # selector.select_result(['002918'], 'temp')
+
+    # ##select from all
+    selector.select_from_all()
 
     # ##select from wave
     codes = data_util.get_codes_by_wave()

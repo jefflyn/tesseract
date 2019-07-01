@@ -142,8 +142,8 @@ def select_result(codeset=None, filename=''):
                 wave_pct_list.append(pct)
         if wave_b != 0:
             wave_pct_list.insert(0, wave_b)
-        wave_b = wave_pct_list[0]
-        wave_a = wave_pct_list[1]
+        wave_b = float(wave_pct_list[0])
+        wave_a = float(wave_pct_list[1] if len(wave_pct_list) > 1 else 0)
         wavedfset = wavedfset.append(wavedf)
         bottomdf = wave.get_bottom(wavedf)
         if bottomdf is None or bottomdf.empty is True:
