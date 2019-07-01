@@ -140,6 +140,8 @@ def select_result(codeset=None, filename=''):
                 wave_b += float(pct)
             else:
                 wave_pct_list.append(pct)
+            if len(wave_pct_list) > 1:
+                break
         if wave_b != 0:
             wave_pct_list.insert(0, wave_b)
         wave_b = float(wave_pct_list[0])
@@ -367,7 +369,7 @@ def get_warn_space(df):
 
 
 if __name__ == '__main__':
-    logger.info(select_result('300167'))
+    logger.info(select_result('603000'))
     if len(argv) < 2:
         print("Invalid args! At least 2 args like: python xxx.py code1[,code2,...]")
         sys.exit(0)
