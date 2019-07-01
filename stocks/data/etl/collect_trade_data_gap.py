@@ -5,15 +5,15 @@ from stocks.base.db_util import get_db
 from stocks.base.logging import logger
 from stocks.base.pro_util import pro
 
-if __name__ == '__main__':
+
+def recollect_hist_daily(sql='select b.ts_code, b.code from select_result_all s '
+                             'inner join basic b on s.code = b.code where abs(gap) > 12'):
     """
-    重新获取除权后的历史数据
-    """
+        重新获取除权后的历史数据
+        """
     # 建立数据库连接
     db = get_db()
     cursor = db.cursor()
-    # sql = "select b.ts_code, b.code from basic b inner join stock_company sc on b.ts_code = sc.ts_code where sc.province like '%佛山%' or sc.city like '%佛山%'"
-    sql = 'select b.ts_code, b.code from select_result_all s inner join basic b on s.code = b.code where abs(gap) > 12'
     total = cursor.execute(sql)
     if total == 0:
         logger.info("no stock found, process end!")
@@ -36,7 +36,7 @@ if __name__ == '__main__':
         db.rollback()
         logger.error(e)
         exit(0)
-    # stock_pool = ['002414.SZ']
+    # stock_pool = ['300594.SZ']
     # 循环获取单个股票的日线行情
     # 1分钟不超过200次调用
     begin_time = datetime.datetime.now()
@@ -76,8 +76,9 @@ if __name__ == '__main__':
             try:
                 sql_insert = "INSERT INTO hist_trade_day(trade_date,ts_code,code,pre_close,open,close,high,low,vol,amount,amt_change,pct_change) " \
                              "VALUES ('%s', '%s', '%s', '%.2f', '%.2f','%.2f','%.2f','%.2f','%i','%.4f','%.2f','%.4f')" % (
-                    trade_date, str(resu[0]), str(resu[0])[0:6], float(resu[6]), float(resu[2]), float(resu[5]), float(resu[3]), float(resu[4]),
-                    float(resu[9]), float(resu[10]),  float(resu[7]), float(resu[8]))
+                                 trade_date, str(resu[0]), str(resu[0])[0:6], float(resu[6]), float(resu[2]),
+                                 float(resu[5]), float(resu[3]), float(resu[4]),
+                                 float(resu[9]), float(resu[10]), float(resu[7]), float(resu[8]))
                 cursor.execute(sql_insert)
                 db.commit()
             except Exception as err:
@@ -87,3 +88,9 @@ if __name__ == '__main__':
     cursor.close()
     db.close()
     logger.info('All Finished!')
+
+
+if __name__ == '__main__':
+    # sql = 'select ts_code, code from basic where code=300594'
+    # recollect_hist_daily(sql)
+    recollect_hist_daily()

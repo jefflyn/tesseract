@@ -125,7 +125,8 @@ def select_result(codeset=None, filename=''):
         curt_data.append(round(float(row['pct_change']), 2))
         # get wave data and bottom top
         wavedf = wave.get_wave(code)  # need to save
-        # logger.debug(code)
+        if wavedf is None or wavedf.empty is True:
+            continue
         wave_size = 5
         if filename == 'subnew':
             wave_size = 10
@@ -369,7 +370,7 @@ def get_warn_space(df):
 
 
 if __name__ == '__main__':
-    logger.info(select_result('603000'))
+    logger.info(select_result('300594'))
     if len(argv) < 2:
         print("Invalid args! At least 2 args like: python xxx.py code1[,code2,...]")
         sys.exit(0)
