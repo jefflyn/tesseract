@@ -131,8 +131,19 @@ def select_result(codeset=None, filename=''):
             wave_size = 10
         wavestr = wave.wave_to_str(wavedf, wave_size)
         wavestr_ab = wavestr.split('\n')[0].split('|')
-        wave_a = float(wavestr_ab[-2] if wavestr_ab[-2] != '' else '0')
-        wave_b = float(wavestr_ab[-1])
+        wave_pct_list = []
+        wave_b = 0
+        for pct in reversed(wavestr_ab):
+            if pct == '':
+                continue
+            if abs(float(pct)) < 20:
+                wave_b += float(pct)
+            else:
+                wave_pct_list.append(pct)
+        if wave_b != 0:
+            wave_pct_list.insert(0, wave_b)
+        wave_b = wave_pct_list[0]
+        wave_a = wave_pct_list[1]
         wavedfset = wavedfset.append(wavedf)
         bottomdf = wave.get_bottom(wavedf)
         if bottomdf is None or bottomdf.empty is True:
