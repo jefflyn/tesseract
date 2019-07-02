@@ -1,11 +1,11 @@
+import stocks.base.display
 from stocks.data import data_util
 from stocks.app import selector
 from stocks.base.logging import logger
-import stocks.base.display
 
 if __name__ == '__main__':
     logger.info('start selector main ...')
-    selector.select_result(['002918'], 'temp')
+    # selector.select_result(['002918'], 'temp')
 
     # ##select from all
     # selector.select_from_all()
