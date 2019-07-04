@@ -282,10 +282,11 @@ def wavefrom(code, df, beginlow, direction='left', duration=0, pchange=0):
     # start from the lowest price, find the wave from both sides
     pivot_low = df.min()['close'] if df.min()['low'] == 0 else df.min()['low']
     pivot_rec = df[df.low == pivot_low]
-    # print(pivot_rec)
+    if pivot_rec is None or pivot_rec.empty is True:
+        print(code + ' pivot_rec is None or pivot_rec.empty')
+        return
     pivot_index = pivot_rec.index.get_values()[0]
     pivot_date = pivot_rec.at[pivot_index, 'date']
-    # pivot_date = datetime.utcfromtimestamp((pivot_rec.tail(1).index.get_values()[0]).astype('O') / 1e9).strftime("%Y-%m-%d")
     pivot_close = pivot_rec.at[pivot_index, 'close']
 
     ismax = beginlow
