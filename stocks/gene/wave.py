@@ -219,10 +219,6 @@ def get_wave(codes=None, is_index=False, start=None, end=None, beginlow=True, du
         index_realtime = ts.get_index()
     perioddf_list = []
     for code in code_list:
-        # print("   >>> processing %s ..." % code)
-        # hist_data = ts.get_h_data(code, start)  # network issue
-        hist_data_1 = ts.get_k_data(code=code, index=is_index,
-                                  start=start)  # one day delay issue, use realtime interface solved
         hist_data = data_util.get_hist_trade(code=code, is_index=is_index, start=start)
         if hist_data is None or len(hist_data) == 0:
             continue
@@ -414,8 +410,8 @@ def tryBottom():
 
 if __name__ == '__main__':
     # tryBottom()
-    code_list = ['002796']
-    code_list = data_util.get_normal_codes()
+    code_list = ['300157']
+    # code_list = data_util.get_normal_codes()
     result = get_wave(code_list, is_index=False, start='2019-01-01')
     _dt.to_db(result, 'wave_data_2019')
     # bottom = get_bottom(result, 15)
