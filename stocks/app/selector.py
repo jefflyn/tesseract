@@ -266,7 +266,8 @@ def select_result(codeset=None, filename=''):
         _dt.to_db(resultdf, result_name)
         _dt.to_db(wavedfset, 'select_wave_' + filename)
     except Exception as e:
-        writer = pd.ExcelWriter(filename + 'a.xlsx')
+        logger.exception('save db failed, msg=' + str(e))
+        writer = pd.ExcelWriter(filename + '.xlsx')
         resultdf.to_excel(writer, sheet_name='select')
         wavedfset.to_excel(writer, sheet_name='wave')
         writer.save()
