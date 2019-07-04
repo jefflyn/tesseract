@@ -8,7 +8,7 @@ if __name__ == '__main__':
     # selector.select_result(['300157'], 'temp')
 
     # ##select from all
-    selector.select_from_all()
+    # selector.select_from_all()
 
     # ##select from wave
     codes = data_util.get_codes_by_wave()

@@ -410,8 +410,8 @@ def tryBottom():
 
 if __name__ == '__main__':
     # tryBottom()
-    code_list = ['300157']
-    # code_list = data_util.get_normal_codes()
+    # code_list = ['300157']
+    code_list = data_util.get_normal_codes()
     result = get_wave(code_list, is_index=False, start='2019-01-01')
     _dt.to_db(result, 'wave_data_2019')
     # bottom = get_bottom(result, 15)
