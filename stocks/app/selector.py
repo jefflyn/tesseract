@@ -262,8 +262,15 @@ def select_result(codeset=None, filename=''):
     resultdf['trade_date'] = last_trade_date
     resultdf['select_time'] = dt.now()
     result_name = 'select_result_' + filename
-    _dt.to_db(resultdf, result_name)
-    _dt.to_db(wavedfset, 'select_wave_' + filename)
+    try:
+        _dt.to_db(resultdf, result_name)
+        _dt.to_db(wavedfset, 'select_wave_' + filename)
+    except Exception as e:
+        writer = pd.ExcelWriter(filename + 'a.xlsx')
+        resultdf.to_excel(writer, sheet_name='select')
+        wavedfset.to_excel(writer, sheet_name='wave')
+        writer.save()
+        logger.info('save excel success')
     logger.info('select stocks finished! result size: %d\n' % len(resultdf.index.get_values()))
     return resultdf
 

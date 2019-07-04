@@ -11,7 +11,7 @@ if __name__ == '__main__':
     index = False
     try:
         index = (argv[2] == 'true')
-    except Exception as e:
+    except:
         index = False
 
     code_list = codes.split(',')

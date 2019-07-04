@@ -324,7 +324,9 @@ def wavefrom(code, df, beginlow, direction='left', duration=0, pchange=0):
             enddate = date
             status = 'up' if ismax else 'down'
 
-        diff_precent = (endprice - beginprice) / beginprice * 100
+        diff_precent = 0
+        if beginprice > 0:
+            diff_precent = (endprice - beginprice) / beginprice * 100
         if abs(diff_precent) < pchange:
             break
         list = []
