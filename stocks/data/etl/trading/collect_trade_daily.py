@@ -8,7 +8,7 @@ from stocks.base.logging import logger
 from stocks.base.pro_util import pro
 from stocks.base import date_util
 
-INIT_DATA = True
+INIT_DATA = False
 INIT_DATA_START_DATE = '20100101'
 
 
