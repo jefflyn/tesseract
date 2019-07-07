@@ -27,9 +27,9 @@ if __name__ == '__main__':
         sys.exit(0)
 
     # 设定获取日线行情的初始日期和终止日期，其中终止日期设定为当天
-    # start_dt = '20100101'
     time_temp = datetime.datetime.now() - datetime.timedelta(days=2)
     start_dt = time_temp.strftime('%Y%m%d')
+    # start_dt = '20100101'
     time_temp = datetime.datetime.now() - datetime.timedelta(days=0)
     end_dt = time_temp.strftime('%Y%m%d')
     logger.info("Collect index data from " + start_dt + " to " + end_dt)
