@@ -82,7 +82,7 @@ def merge_select_result():
 
 
 def select_result(codeset=None, filename=''):
-    if codeset is None or len(codeset) == 0 and filename != 'all':
+    if (codeset is None or len(codeset) == 0) and filename != 'all':
         return
     trade_date_list = date_util.get_latest_trade_date(3)
     hist_trade_df = None
