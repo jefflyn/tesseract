@@ -219,7 +219,7 @@ def get_wave(codes=None, is_index=False, start=None, end=None, beginlow=True, du
         index_realtime = ts.get_index()
     perioddf_list = []
     for code in code_list:
-        hist_data = data_util.get_hist_trade(code=code, is_index=is_index, start=start)
+        hist_data = data_util.get_hist_trade(code=code, is_index=is_index, start=start, end=end)
         if hist_data is None or len(hist_data) == 0:
             continue
         hist_data['date'] = hist_data['trade_date']
