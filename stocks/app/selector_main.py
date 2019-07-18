@@ -11,12 +11,16 @@ if __name__ == '__main__':
     selector.select_from_all()
 
     # ##select from wave
-    codes = data_util.get_codes_by_wave()
-    selector.select_result(codes, 'wave')
+    # codes = data_util.get_codes_by_wave()
+    # selector.select_result(codes, 'wave')
 
     # ##select from region
     # codes = data_util.get_codes_by_region(region='佛山')
     # selector.select_result(codes, 'region')
+
+    # ##select from concepts -大基建、大消费、大金融、大健康、大科技、大军工
+    # concept_codes = data_util.get_code_by_concept('磷')
+    # selector.select_result(concept_codes, 'concept')
 
     # ##select from ma
     # code_df = data_util.get_ma_code('d')
@@ -29,10 +33,6 @@ if __name__ == '__main__':
     # code_df = data_util.get_limitup_code(period_type=type, period=period, times=3)
     # codes = list(code_df['code'])
     # selector.select_result(codes, 'limitup_' + period)
-
-    # ##select from concepts -大基建、大消费、大金融、大健康、大科技、大军工
-    # concept_codes = data_util.get_code_by_concept('风电')
-    # selector.select_result(concept_codes, 'concept')
 
     # ##select by new
     # selector.select_from_subnew(fname='new')
