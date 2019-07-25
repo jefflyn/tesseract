@@ -3,6 +3,7 @@ import sys
 from datetime import datetime as dt
 from sys import argv
 
+import numpy as np
 import pandas as pd
 import stocks.base.db_util as _dt
 import tushare as ts
@@ -134,21 +135,31 @@ def select_result(codeset=None, filename=''):
             wave_size = 10
         wavestr = wave.wave_to_str(wavedf, wave_size)
         wavestr_ab = wavestr.split('\n')[0].split('|')
-        wave_pct_list = []
-        wave_b = 0
-        for pct in reversed(wavestr_ab):
+        wave_pct_dict = {'a': 0, 'b': 0}
+        a_index = -1
+        wavestr_ab_list = list(reversed(wavestr_ab))
+        wavestr_ab_list = [float(i) for i in wavestr_ab_list[0:len(wavestr_ab_list) - 1]]
+        for idx, pct in enumerate(wavestr_ab_list):
             if pct == '':
                 continue
-            if abs(float(pct)) < 20:
-                wave_b += float(pct)
-            else:
-                wave_pct_list.append(pct)
-            if len(wave_pct_list) > 1:
+            if idx == 0 and abs(float(pct)) >= 20:
+                a_index = idx
                 break
-        if wave_b != 0:
-            wave_pct_list.insert(0, wave_b)
-        wave_b = float(wave_pct_list[0])
-        wave_a = float(wave_pct_list[1] if len(wave_pct_list) > 1 else 0)
+            else:
+                if abs(float(pct)) >= 20:
+                    a_index = idx
+                    break
+
+        if a_index == 0:
+            wave_a = float(wavestr_ab_list[a_index + 1])
+            wave_b = float(wavestr_ab_list[a_index])
+        elif a_index == -1:
+            wave_a = float(wavestr_ab_list[1])
+            wave_b = float(wavestr_ab_list[0])
+        else:
+            wave_a = float(wavestr_ab_list[a_index])
+            wave_b = np.sum(wavestr_ab_list[0:a_index])
+
         wavedfset = wavedfset.append(wavedf)
         bottomdf = wave.get_bottom(wavedf)
         if bottomdf is None or bottomdf.empty is True:
