@@ -146,7 +146,7 @@ def select_result(codeset=None, filename=''):
                 a_index = idx
                 break
             else:
-                if abs(float(pct)) >= 20:
+                if abs(float(pct)) >= 33:
                     a_index = idx
                     break
 
@@ -391,7 +391,7 @@ def get_warn_space(df):
 
 
 if __name__ == '__main__':
-    logger.info(select_result('300594'))
+    logger.info(select_result('603677'))
     if len(argv) < 2:
         print("Invalid args! At least 2 args like: python xxx.py code1[,code2,...]")
         sys.exit(0)
