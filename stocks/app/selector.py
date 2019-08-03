@@ -142,7 +142,7 @@ def select_result(codeset=None, filename=''):
         for idx, pct in enumerate(wavestr_ab_list):
             if pct == '':
                 continue
-            if idx == 0 and abs(float(pct)) >= 20:
+            if idx == 0 and abs(float(pct)) >= 33:
                 a_index = idx
                 break
             else:
@@ -151,8 +151,8 @@ def select_result(codeset=None, filename=''):
                     break
 
         if a_index == 0:
-            wave_a = float(wavestr_ab_list[a_index + 1])
-            wave_b = float(wavestr_ab_list[a_index])
+            wave_a = float(wavestr_ab_list[a_index]) if len(wavestr_ab_list) == 1 else float(wavestr_ab_list[a_index + 1])
+            wave_b = 0 if len(wavestr_ab_list) == 1 else float(wavestr_ab_list[a_index])
         elif a_index == -1:
             wave_a = float(wavestr_ab_list[1])
             wave_b = float(wavestr_ab_list[0])

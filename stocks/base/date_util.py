@@ -5,7 +5,7 @@ from datetime import timedelta
 from dateutil.relativedelta import relativedelta
 from dateutil.rrule import *
 import urllib.request as request
-
+import tushare.util.dateu as ts_dateu
 
 now = datetime.datetime.now()
 
@@ -164,7 +164,7 @@ def get_latest_trade_date(days=1, format=default_format):
     trade_date_list = list()
     n = 0
     while True:
-        target_date = (now - timedelta(days=n)).strftime(format_flat)
+        target_date = (now - timedelta(days=n)).strftime(format)
         if is_tradeday(target_date):
             trade_date_list.append((now - timedelta(days=n)).strftime(format))
         n += 1
@@ -174,11 +174,10 @@ def get_latest_trade_date(days=1, format=default_format):
 
 
 def is_tradeday(query_date):
-    weekday = datetime.datetime.strptime(query_date, '%Y%m%d').isoweekday()
-    if weekday <= 5 and get_day_type(query_date) == 0:
-        return True
-    else:
-        return False
+    query_date = datetime.datetime.strptime(query_date, default_format) if len(query_date) > 8 \
+        else datetime.datetime.strptime(query_date, format_flat)
+    is_holiday = ts_dateu.is_holiday(query_date)
+    return is_holiday is False
 
 
 def today_is_tradeday():
