@@ -101,7 +101,11 @@ def get_realtime(hddf=None, last_trade_data=None, sortby=None):
         # cost = cost if cost > 1 else price
         share = hddf.ix[index, 'share']
         wavedf = wave.get_wave(code)
-        wavestr = wave.wave_to_str(wavedf, size=3)
+        wavestr = wave.wave_to_str(wavedf, 6)
+        wave_ab = wave.get_wave_ab(wavestr, 33)
+        wave_a = wave_ab[0]
+        wave_b = wave_ab[1]
+
         bdf = wave.get_bottom(wavedf)
         bottom = hddf.ix[index, 'bottom']
         bottom_auto = bdf.ix[0, 'bottom']
@@ -124,7 +128,7 @@ def get_realtime(hddf=None, last_trade_data=None, sortby=None):
         cost_diff = price - cost
         profit = cost_diff * share if share > 0 else 0
 
-        if profit < 0 and price > 0:
+        if profit < 0 < price:
             profit_perc = (cost / price - 1) * -100.0
         else:
             profit_perc = cost_diff / cost * 100.0 if profit > 0 else 0
@@ -146,7 +150,7 @@ def get_realtime(hddf=None, last_trade_data=None, sortby=None):
         curt_data = [warn_sign, open_gap, gap_scale, gap_space, change, amplitude, cost, profit, profit_perc]
         profit_str = str(round(profit, 2)) + ', ' + str(round(profit_perc, 2)) + '%'
         curt_data.append(profit_str)
-        curt_data.append(wavestr)
+        curt_data.append(str(wave_a) + '|' + str(wave_b))
         curt_data.append(str(bottom) + bottom_auto_flag)
         curt_data.append(btm_space)
         curt_data.append(dspace)

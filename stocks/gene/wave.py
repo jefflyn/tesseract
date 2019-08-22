@@ -353,6 +353,36 @@ def wavefrom(code, df, beginlow, direction='left', duration=0, pchange=0):
     return period_data
 
 
+def get_wave_ab(wavestr=None, pct_limit=33):
+    if wavestr is None:
+        return
+    wavestr_ab = wavestr.split('\n')[0].split('|')
+    a_index = -1
+    wavestr_ab_list = list(reversed(wavestr_ab))
+    wavestr_ab_list = [float(i) for i in wavestr_ab_list[0:len(wavestr_ab_list) - 1]]
+    for idx, pct in enumerate(wavestr_ab_list):
+        if pct == '':
+            continue
+        if idx == 0 and abs(float(pct)) >= pct_limit:
+            a_index = idx
+            break
+        else:
+            if abs(float(pct)) >= 33:
+                a_index = idx
+                break
+
+    if a_index == 0:
+        wave_a = float(wavestr_ab_list[a_index]) if len(wavestr_ab_list) == 1 else float(wavestr_ab_list[a_index + 1])
+        wave_b = 0 if len(wavestr_ab_list) == 1 else float(wavestr_ab_list[a_index])
+    elif a_index == -1:
+        wave_a = float(wavestr_ab_list[0]) if len(wavestr_ab_list) == 1 else float(wavestr_ab_list[1])
+        wave_b = 0 if len(wavestr_ab_list) == 1 else float(wavestr_ab_list[0])
+    else:
+        wave_a = float(wavestr_ab_list[a_index])
+        wave_b = np.sum(wavestr_ab_list[0:a_index])
+    return [wave_a, wave_b]
+
+
 def wave_to_str(wavedf=None, size=4, change=10):
     if wavedf is None or size < 1:
         return ''
