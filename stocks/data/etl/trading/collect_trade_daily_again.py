@@ -7,7 +7,7 @@ from stocks.base.pro_util import pro
 
 
 def recollect_hist_daily(sql='select b.ts_code, b.code from select_result_all s '
-                             'inner join basic b on s.code = b.code where abs(gap) > 12'):
+                             'inner join basic b on s.code = b.code where abs(gap) > 12', all=False):
     """
         重新获取除权后的历史数据
         """
@@ -29,9 +29,10 @@ def recollect_hist_daily(sql='select b.ts_code, b.code from select_result_all s 
     codes = [result[1] for result in stock_pool]
     code_str = ','.join(str(n) for n in codes)
     try:
-        del_sql = 'delete from hist_trade_day where code in (' + code_str + ')'
-        logger.info(del_sql)
-        succ = cursor.execute(del_sql)
+        if all is False:
+            del_sql = 'delete from hist_trade_day where code in (' + code_str + ')'
+            logger.info(del_sql)
+            succ = cursor.execute(del_sql)
     except Exception as e:
         db.rollback()
         logger.error(e)
@@ -93,5 +94,5 @@ def recollect_hist_daily(sql='select b.ts_code, b.code from select_result_all s 
 if __name__ == '__main__':
     # sql = 'select ts_code, code from hist_trade_day where open=0 and high=0'
     sql = 'select ts_code, code from basic where code=600278'
-    recollect_hist_daily(sql)
+    recollect_hist_daily(sql, False)
     # recollect_hist_daily()
