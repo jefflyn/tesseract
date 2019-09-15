@@ -27,7 +27,7 @@ def get_word_cloud():
 
 
 def get_word_cloud_by_image():
-   path_img = "/Users/linjingu/Pictures/bull.jpeg"
+   path_img = "/Users/linjingu/Pictures/spider.jpeg"
    f = open(path_txt, 'r', encoding='UTF-8').read()
    background_image = np.array(Image.open(path_img))
    # 结巴分词，生成字符串，如果不通过分词，无法直接生成正确的中文词云,感兴趣的朋友可以去查一下，有多种分词模式
