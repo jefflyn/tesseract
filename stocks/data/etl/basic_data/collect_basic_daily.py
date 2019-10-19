@@ -37,7 +37,8 @@ if __name__ == '__main__':
         sys.exit(0)
     trade_date = date_util.get_latest_trade_date(0, format=date_util.format_flat)
     df = pro.query('daily_basic', ts_code='', trade_date=trade_date[0],
-                         fields='ts_code,trade_date,close,turnover_rate,turnover_rate_f,volume_ratio,pe,pe_ttm,pb,ps,ps_ttm,total_share,float_share,free_share,total_mv,circ_mv')
+                   fields='ts_code,trade_date,close,turnover_rate,turnover_rate_f,volume_ratio,pe,pe_ttm,pb,ps,'
+                          'ps_ttm,total_share,float_share,free_share,total_mv,circ_mv')
 
     if df is None or df.empty is True:
         logger.info("no daily data found")

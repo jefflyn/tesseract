@@ -145,6 +145,7 @@ if __name__ == '__main__':
     else:
         # format_index(get_status())
         wavedf = wave.get_wave(codes=target, start='2015-01-01', is_index=True)
+        print(wavedf)
         # plot figure
         listdf = []
         for code in target:

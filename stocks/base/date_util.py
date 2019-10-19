@@ -43,7 +43,8 @@ last_2month_start = datetime.datetime(last_2month_end.year, last_2month_end.mont
 # 本季第一天和最后一天
 month = (now.month - 1) - (now.month - 1) % 3 + 1
 this_quarter_start = datetime.datetime(now.year, month, 1)
-this_quarter_end = datetime.datetime(now.year, month + 3, 1) - timedelta(days=1)
+this_quarter_end = datetime.datetime(now.year, month + 3, 1) - timedelta(days=1) if month < 10 \
+    else datetime.datetime(now.year, 12, 31)
 
 # 上季第一天和最后一天
 last_quarter_end = this_quarter_start - timedelta(days=1)
