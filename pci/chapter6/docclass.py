@@ -162,7 +162,7 @@ class fisherclassifier(classifier):
     for f in features:
       p*=(self.weightedprob(f,cat,self.cprob))
 
-    # Take the natural log and multiply by -2
+    # Take the natural logs and multiply by -2
     fscore=-2*math.log(p)
 
     # Use the inverse chi2 function to get a probability

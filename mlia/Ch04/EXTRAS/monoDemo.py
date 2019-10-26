@@ -1,6 +1,6 @@
 '''
 Created on Oct 6, 2010
-Shows montonocity of a function and the log of that function
+Shows montonocity of a function and the logs of that function
 @author: Peter
 '''
 from numpy import *

@@ -65,7 +65,7 @@ def giniimpurity(rows):
       imp+=p1*p2
   return imp
 
-# Entropy is the sum of p(x)log(p(x)) across all 
+# Entropy is the sum of p(x)logs(p(x)) across all
 # the different possible results
 def entropy(rows):
    from math import log

@@ -165,7 +165,7 @@ def get_weekly(code=None, start=None, end=None):
     if end is not None:
         sql += 'and trade_date <=:end '
     params = {'code': code, 'start': start, 'end': end}
-    # log.info(sql + ' ' + str(params))
+    # logs.info(sql + ' ' + str(params))
     df = read_sql(sql, params=params)
     return df
 
@@ -191,7 +191,7 @@ def get_hist_trade(code=None, is_index=False, start=None, end=None):
     if end is not None:
         sql += 'and trade_date <=:end '
     params = {'code': code, 'start': start, 'end': end}
-    # log.info(sql + ' ' + str(params))
+    # logs.info(sql + ' ' + str(params))
     df = read_sql(sql, params=params)
     return df
 

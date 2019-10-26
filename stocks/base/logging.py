@@ -11,8 +11,9 @@ logger = logging.getLogger()
 logger.setLevel(logging.INFO)  # Log等级总开关
 # 第二步，创建一个handler，用于写入日志文件
 rq = time.strftime('%Y%m%d', time.localtime(time.time()))
-logpath = os.getenv('STOCKS_HOME') + '/logs/'
-log_name = logpath + rq + '.log'
+# logpath = os.getenv('STOCKS_HOME') + '/logs/'
+logpath = '/Users/ruian/work/my-git/tesseract/stocks' + '/logs/'
+log_name = logpath + rq + '.logs'
 logfile = log_name
 fh = logging.FileHandler(logfile, mode='w')
 fh.setLevel(logging.DEBUG)  # 输出到file的log等级的开关
