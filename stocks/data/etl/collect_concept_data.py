@@ -3,10 +3,11 @@ from stocks.base.pro_util import pro
 import datetime
 from stocks.base.db_util import get_db
 from stocks.base.logging import logger
+import stocks.base.db_util as _dt
 
 if __name__ == '__main__':
-    # df = pro.concept()
-    # _dt.to_db(df, 'concept')
+    df = pro.concept()
+    _dt.to_db(df, 'concept')
 
     db = get_db()
     cursor = db.cursor()
