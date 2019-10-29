@@ -4,11 +4,11 @@ from sqlalchemy import create_engine
 import pymysql
 from stocks.base.logging import logger
 
-engine = create_engine("mysql+pymysql://linjingu:linjingu@127.0.0.1:3306/stocks?charset=utf8")
+engine = create_engine("mysql+pymysql://linjingu:linjingu@127.0.0.1:3306/stocks?charset=UTF8MB4")
 
 
 def get_db():
-    db = pymysql.connect(host='127.0.0.1', user='linjingu', passwd='linjingu', db='stocks', charset='utf8')
+    db = pymysql.connect(host='127.0.0.1', user='linjingu', passwd='linjingu', db='stocks', charset='UTF8MB4')
     return db
 
 

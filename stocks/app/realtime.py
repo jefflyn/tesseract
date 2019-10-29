@@ -108,7 +108,7 @@ def get_realtime(hddf=None, last_trade_data=None, sortby=None):
 
         bdf = wave.get_bottom(wavedf)
         bottom = hddf.ix[index, 'bottom']
-        bottom_auto = bdf.ix[0, 'bottom']
+        bottom_auto = bdf.loc[bdf.index[0], 'bottom']
         bottom_auto_flag = ''
         if bottom is None or bottom_auto < bottom:
             bottom = bottom_auto
@@ -150,7 +150,7 @@ def get_realtime(hddf=None, last_trade_data=None, sortby=None):
         curt_data = [warn_sign, open_gap, gap_scale, gap_space, change, amplitude, cost, profit, profit_perc]
         profit_str = str(round(profit, 2)) + ', ' + str(round(profit_perc, 2)) + '%'
         curt_data.append(profit_str)
-        curt_data.append(str(wave_a) + '|' + str(wave_b))
+        curt_data.append(str(wave_a) + '|' + str(round(wave_b, 2)))
         curt_data.append(str(bottom) + bottom_auto_flag)
         curt_data.append(btm_space)
         curt_data.append(dspace)
@@ -175,7 +175,8 @@ def get_realtime(hddf=None, last_trade_data=None, sortby=None):
     elif sortby == 'b':
         df = df.sort_values(['uspace'], axis=0, ascending=False, inplace=False, kind='quicksort', na_position='last')
     elif sortby == 'g':
-        df = df.sort_values(['o_gap', 'g_scale', 'g_space'], axis=0, ascending=True, inplace=False, kind='quicksort', na_position='last')
+        df = df.sort_values(['o_gap', 'g_scale', 'g_space'], axis=0, ascending=True, inplace=False, kind='quicksort',
+                            na_position='last')
     else:
         df = df.sort_values(['change'], axis=0, ascending=True, inplace=False, kind='quicksort', na_position='last')
 
@@ -204,4 +205,3 @@ if __name__ == '__main__':
         print("Stock NOT hold! Auto change to default mode.")
         hold_df = _dt.get_my_stock_pool(type, 0)
     re_exe(hold_df, 3, sortby=sort)
-
