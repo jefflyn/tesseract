@@ -297,7 +297,7 @@ select * from wave_data_2019 where code = 002118;
 
 select * from select_result_wave order by wave_a, wave_b;
 
-select * from select_result_wave where name like '%精准%';
+select * from select_result_wave where name like '%国风%';
 
 select * from select_result_wave;
 
@@ -352,11 +352,7 @@ select code, count(1) from hist_trade_day where pct_change >= 9.8 and trade_date
 group by code
 order by count(1) desc;
 
-select * from hist_trade_day where code in(
-000150,
-000785,
-600292,
-600293);
+select * from select_result_all where name like '%国风%';
 
 SELECT * FROM hist_trade_day ORDER BY code LIMIT 1000000, 10;
 SELECT * FROM hist_trade_day WHERE code >= (SELECT code FROM hist_trade_day LIMIT 1000000, 1) LIMIT 10;

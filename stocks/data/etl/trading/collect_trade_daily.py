@@ -29,13 +29,13 @@ if __name__ == '__main__':
     total = cursor.execute(check_sql)
     if total > 0:
         logger.info(last_trade_date + " trade data existed")
-        sys.exit(0)
+        # sys.exit(0)
     last_trade_date = date_util.get_latest_trade_date(format=date_util.format_flat)[0]
     df = ts.pro_bar(api=pro, ts_code=random_stocks[current], adj='qfq', start_date=last_trade_date, end_date=last_trade_date)
     c_len = df.shape[0]
     if c_len == 0:
         logger.info(last_trade_date + " no trade data found yet")
-        sys.exit(0)
+        # sys.exit(0)
     # 设定获取日线行情的初始日期和终止日期，其中终止日期设定为当天
     time_temp = datetime.datetime.now() - datetime.timedelta(days=2)
     start_dt = time_temp.strftime('%Y%m%d')

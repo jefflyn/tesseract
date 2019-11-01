@@ -18,7 +18,7 @@ if __name__ == '__main__':
     total = cursor.execute(check_sql)
     if total > 0:
         logger.info(last_trade_date + " trade data existed")
-        sys.exit(0)
+        # sys.exit(0)
     last_trade_date = date_util.get_latest_trade_date(format=date_util.format_flat)[0]
     df = ts.pro_bar(api=pro, ts_code=index_code, asset='I', start_date=last_trade_date, end_date=last_trade_date)
     c_len = df.shape[0]
