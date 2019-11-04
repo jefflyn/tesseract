@@ -1,5 +1,10 @@
 select * from wave_change_normal_ref;
 
+select distinct code from hist_trade_day where trade_date>='2019-10-01' and high=low and pct_change>0;
+select code, count(1) from hist_trade_day where trade_date>='2019-10-01' and high=low and pct_change>0
+group by code
+having count(1) > 2;
+
 select * from hist_trade_day where code=600278 order by trade_date desc;
 -- 验证每天trade data etl
 select trade_date, count(1) from hist_trade_day where trade_date >= '2019-08-01' group by trade_date order by trade_date desc;
@@ -276,7 +281,7 @@ order by wave_a;
 select * from select_result_all where list_date between 20160101 and 20170101;
 select * from select_result_all where list_date between 20170101 and 20180101;
 select * from select_result_all where list_date between 20180101 and 20190101;
-select * from select_result_all where name like '%塑业%';
+select * from select_result_all where name like '%精准%';
 select * from basic_daily;
 select * from concept where name like '%垃圾%';
 insert into concepts
@@ -308,15 +313,21 @@ select * from my_stock_pool where platform = 'df';
 select * from my_stock_pool where platform = 'pa';
 select * from my_stock_pool where platform = 'sim';
 
+-- 条件查询select data
 select c.concepts, bd.pe, bd.pe_ttm, bd.turnover_rate, s.*
 from select_result_all s left join basic_daily bd on s.code = bd.code left join concepts c on s.code = c.code
 where 1 = 1
 and s.name not like '%ST%' and list_date < 20190101
+# and pe_ttm is not null
 # and s.name like '%佛燃%'
 # and c.concepts like '%油%'
 # and s.area like '%甘肃%'
 # and s.count > 0
-and s.code in (select code from my_stock_pool where platform in ('cf'))
+# and wave_a < 0 and wave_b < 15
+# and s.code in (select code from my_stock_pool where platform in ('cf')) -- self position
+and s.code in (select code from hist_trade_day where trade_date>='2019-09-01' and trade_date<='2019-12-31' and pct_change>9.9-- and high=low
+    group by code
+    having count(1) > 3) -- 时间区间的一字
 order by wave_a;
 
 -- 1、超跌选股，包含次新股（低风险，长线投资）
