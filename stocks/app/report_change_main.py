@@ -1,10 +1,10 @@
 import pandas as pd
 import datetime
 import tushare as ts
-import stocks.base.db_util as _dt
+import stocks.util.db_util as _dt
 from stocks.data import data_util
-from stocks.base import date_util as _dateutil
-from stocks.base.logging import logger
+from stocks.util import date_util as _dateutil
+from stocks.util.logging import logger
 
 basics = data_util.get_basics(cyb=False)
 today = _dateutil.get_today()

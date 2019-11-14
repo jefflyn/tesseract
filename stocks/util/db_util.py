@@ -2,7 +2,7 @@ import pandas as pd
 import sqlalchemy as sa
 from sqlalchemy import create_engine
 import pymysql
-from stocks.base.logging import logger
+from stocks.util.logging import logger
 
 engine = create_engine("mysql+pymysql://linjingu:linjingu@127.0.0.1:3306/stocks?charset=UTF8MB4")
 

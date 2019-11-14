@@ -1,5 +1,5 @@
 import arrow
-from stocks.base.logging import logger
+from stocks.util.logging import logger
 
 utc = arrow.utcnow()
 local = utc.to('local')

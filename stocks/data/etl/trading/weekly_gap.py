@@ -1,14 +1,14 @@
-from stocks.base import display
+from stocks.util import display
 
 import datetime
 import time
 import sys
 import random
 import tushare as ts
-from stocks.base.db_util import get_db
-from stocks.base.logging import logger
-from stocks.base.pro_util import pro
-from stocks.base import date_util
+from stocks.util.db_util import get_db
+from stocks.util.logging import logger
+from stocks.util.pro_util import pro
+from stocks.util import date_util
 
 
 # 设定获取日线行情的初始日期和终止日期，其中终止日期设定为当天

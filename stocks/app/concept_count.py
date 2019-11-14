@@ -3,11 +3,10 @@ import matplotlib.pyplot as plt
 import jieba
 import numpy as np
 from PIL import Image
-import util.config_util as config
+from stocks.util.base_util import home_path
 
-font_path = config.home_path + "/simhei.ttf"
 path_txt = 'concept_top.txt'
-
+font_path = home_path + "/simhei.ttf"
 
 def get_word_cloud():
     f = open(path_txt, 'r', encoding='UTF-8').read()
@@ -48,4 +47,5 @@ def get_word_cloud_by_image():
 
 
 if __name__ == '__main__':
-    get_word_cloud_by_image()
+    # get_word_cloud_by_image()
+    get_word_cloud()

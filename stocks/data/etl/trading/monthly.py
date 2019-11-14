@@ -2,10 +2,10 @@ import datetime
 import time
 import sys
 import random
-from stocks.base.db_util import get_db
-from stocks.base.logging import logger
-from stocks.base.pro_util import pro
-from stocks.base import date_util
+from stocks.util.db_util import get_db
+from stocks.util.logging import logger
+from stocks.util.pro_util import pro
+from stocks.util import date_util
 
 if __name__ == '__main__':
     # 建立数据库连接

@@ -1,7 +1,7 @@
 import sys
 from sys import argv
 
-from stocks.app import _utils
+from stocks.util import _utils
 
 default_commission = 5.0
 commission_rate = 0.00025  # bs

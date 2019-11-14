@@ -339,14 +339,14 @@ where name not like '%ST%' -- and list_date < 20180901
 #   and pe_ttm < pe -- 价值向上趋势
   and wave_a < -50 and wave_b < 20
   and count > 0 and count < 7
-# and concepts like '%燃料%'
+# and concepts like '%黄金%'
 order by wave_a;
 
 -- 2、超跌活跃选股，包含次新股（中风险，适合中短线）
 select c.concepts, bd.pe, bd.pe_ttm,  bd.turnover_rate, s.*
 from select_result_all s left join basic_daily bd on s.code = bd.code left join concepts c on s.code = c.code
 where name not like '%ST%'
-# and pe_ttm is not null
+and pe_ttm is not null
 #  and pe_ttm < pe -- 价值向上趋势
 and wave_a < -40 and wave_b < 15 and count >= 8
 order by wave_a;
@@ -363,7 +363,10 @@ select code, count(1) from hist_trade_day where pct_change >= 9.8 and trade_date
 group by code
 order by count(1) desc;
 
-select * from select_result_all where name like '%国风%';
+select * from select_result_all where name like '%华金资本%';
 
 SELECT * FROM hist_trade_day ORDER BY code LIMIT 1000000, 10;
 SELECT * FROM hist_trade_day WHERE code >= (SELECT code FROM hist_trade_day LIMIT 1000000, 1) LIMIT 10;
+
+
+

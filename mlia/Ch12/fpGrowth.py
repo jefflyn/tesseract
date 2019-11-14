@@ -93,7 +93,7 @@ def mineTree(inTree, headerTable, minSup, preFix, freqItemList):
         freqItemList.append(newFreqSet)
         condPattBases = findPrefixPath(basePat, headerTable[basePat][1])
         #print 'condPattBases :',basePat, condPattBases
-        #2. construct cond FP-tree from cond. pattern base
+        #2. construct cond FP-tree from cond. pattern util
         myCondTree, myHead = createTree(condPattBases, minSup)
         #print 'head from conditional tree: ', myHead
         if myHead != None: #3. mine cond. FP-tree

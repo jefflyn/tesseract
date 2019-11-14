@@ -1,10 +1,10 @@
 import datetime
 import time
 import tushare as ts
-from stocks.base.db_util import get_db
-from stocks.base.logging import logger
-from stocks.base.pro_util import pro
-import stocks.base.display
+from stocks.util.db_util import get_db
+from stocks.util.logging import logger
+from stocks.util.pro_util import pro
+import stocks.util.display
 
 if __name__ == '__main__':
     # 设定获取日线行情的初始日期和终止日期，其中终止日期设定为当天

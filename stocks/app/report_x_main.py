@@ -1,4 +1,4 @@
-from stocks.base import db_util
+from stocks.util import db_util
 
 if __name__ == '__main__':
     df = db_util.read_table('uprising_daily')

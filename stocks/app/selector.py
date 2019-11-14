@@ -5,15 +5,15 @@ from sys import argv
 
 import numpy as np
 import pandas as pd
-import stocks.base.db_util as _dt
+import stocks.util.db_util as _dt
 import tushare as ts
-from stocks.base.logging import logger
+from stocks.util.logging import logger
 from stocks.data import data_util
-from stocks.base import date_util
+from stocks.util import date_util
 from stocks.gene import limitup
 from stocks.gene import upnday
 from stocks.gene import wave
-from stocks.base import display
+from stocks.util import display
 
 LIMITUP = 'limitup'
 BOTTOM = 'bottom'

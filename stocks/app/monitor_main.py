@@ -2,10 +2,10 @@ import tushare as ts
 import time
 import datetime
 
-from stocks.base import sms_util
-from stocks.base.redis_util import redis_client
+from stocks.util import sms_util
+from stocks.util.redis_util import redis_client
 from stocks.data import data_util
-from stocks.base import date_const
+from stocks.util import date_const
 
 
 pre_key_today = date_const.TODAY + '_'

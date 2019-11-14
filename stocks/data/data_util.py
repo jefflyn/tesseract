@@ -2,11 +2,11 @@ import datetime
 import pandas as pd
 
 import tushare as ts
-from stocks.base.logging import logger as log
-import stocks.base.date_const as _dt
-import stocks.base.date_util as _date_util
-from stocks.base.db_util import read_sql
-from stocks.base.db_util import read_query
+from stocks.util.logging import logger as log
+import stocks.util.date_const as _dt
+import stocks.util.date_util as _date_util
+from stocks.util.db_util import read_sql
+from stocks.util.db_util import read_query
 
 todaystr = datetime.datetime.now().strftime('%Y-%m-%d')
 yeardays = datetime.timedelta(days=-365)

@@ -5,8 +5,7 @@ import numpy as np
 import pandas as pd
 
 from stocks.data import data_util
-from stocks.app import _utils
-import stocks.base.display
+from stocks.util import _utils
 
 histnum = 30
 lastmonthstr = (dtime.now() + datetime.timedelta(days=-histnum)).strftime('%Y-%m-%d')

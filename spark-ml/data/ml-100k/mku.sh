@@ -8,18 +8,18 @@ do
 	sort -t"	" -k 1,1n -k 2,2n tmp.$$ > u$i.test
 	head -`expr \( $i - 1 \) \* 20000` u.data > tmp.$$
 	tail -`expr \( 5 - $i \) \* 20000` u.data >> tmp.$$
-	sort -t"	" -k 1,1n -k 2,2n tmp.$$ > u$i.base
+	sort -t"	" -k 1,1n -k 2,2n tmp.$$ > u$i.util
 done
 
 allbut.pl ua 1 10 100000 u.data
-sort -t"	" -k 1,1n -k 2,2n ua.base > tmp.$$
-mv tmp.$$ ua.base
+sort -t"	" -k 1,1n -k 2,2n ua.util > tmp.$$
+mv tmp.$$ ua.util
 sort -t"	" -k 1,1n -k 2,2n ua.test > tmp.$$
 mv tmp.$$ ua.test
 
 allbut.pl ub 11 20 100000 u.data
-sort -t"	" -k 1,1n -k 2,2n ub.base > tmp.$$
-mv tmp.$$ ub.base
+sort -t"	" -k 1,1n -k 2,2n ub.util > tmp.$$
+mv tmp.$$ ub.util
 sort -t"	" -k 1,1n -k 2,2n ub.test > tmp.$$
 mv tmp.$$ ub.test
 

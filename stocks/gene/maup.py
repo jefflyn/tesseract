@@ -3,7 +3,7 @@ import datetime
 import numpy as np
 import pandas as pd
 
-from stocks.app import _utils
+from stocks.util import _utils
 from stocks.data import data_util as dt
 
 

@@ -1,9 +1,9 @@
 import datetime
 import pandas as pd
 from stocks.data import data_util
-from stocks.base import db_util
-from stocks.base import display
-from stocks.base.logging import logger
+from stocks.util import db_util
+from stocks.util import display
+from stocks.util.logging import logger
 
 LIMITUP_MIN = 9.9
 LIMITUP_FROM_DAYS = -365

@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from stocks.app import _utils
+from stocks.util import _utils
 from stocks.app import report
 from stocks.app import selector
 from stocks.data import data_util

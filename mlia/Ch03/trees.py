@@ -26,7 +26,7 @@ def calcShannonEnt(dataSet):
     shannonEnt = 0.0
     for key in labelCounts:
         prob = float(labelCounts[key])/numEntries
-        shannonEnt -= prob * log(prob,2) #logs base 2
+        shannonEnt -= prob * log(prob,2) #logs util 2
     return shannonEnt
     
 def splitDataSet(dataSet, axis, value):

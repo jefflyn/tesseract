@@ -3,13 +3,13 @@ import datetime as dt
 import numpy as np
 import pandas as pd
 import matplotlib
-import stocks.base.display
+import stocks.util.display
 matplotlib.use('TkAgg')
 matplotlib.rcParams['font.sans-serif'] = 'SimHei'
 import matplotlib.pyplot as plt
-import stocks.base.db_util as _dt
+import stocks.util.db_util as _dt
 import matplotlib.dates as mdates
-import stocks.base.date_util as _dateutil
+import stocks.util.date_util as _dateutil
 import tushare as ts
 from stocks.data import data_util
 

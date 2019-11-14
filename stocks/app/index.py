@@ -3,13 +3,10 @@ import time
 from sys import argv
 import pandas as pd
 import tushare as ts
-from stocks.base import display
 from stocks.gene import wave
-from stocks.app import _utils
-import stocks.base.sms_util as sms
-from stocks.base.redis_util import redis_client
-from stocks.base import date_const
-
+import stocks.util.sms_util as sms
+from stocks.util.redis_util import redis_client
+from stocks.util import date_const, _utils
 
 INDEX_SH = ['000001', '000016', '000300']
 INDEX_SZ = ['399001', '399005']

@@ -1,8 +1,8 @@
 import time
-from stocks.base.pro_util import pro
+from stocks.util.pro_util import pro
 import datetime
-from stocks.base.db_util import get_db
-from stocks.base.logging import logger
+from stocks.util.db_util import get_db
+from stocks.util.logging import logger
 
 if __name__ == '__main__':
     # df = pro.concept()

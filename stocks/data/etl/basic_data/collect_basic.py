@@ -9,9 +9,9 @@ Created on 2019/01/01
 
 import pymysql
 
-from stocks.base.pro_util import pro
-from stocks.base.logging import logger
-from stocks.base.db_util import get_db
+from stocks.util.pro_util import pro
+from stocks.util.logging import logger
+from stocks.util.db_util import get_db
 
 if __name__ == '__main__':
     # 查询当前所有正常上市交易的股票列表

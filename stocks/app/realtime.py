@@ -1,4 +1,4 @@
-import stocks.base.display
+import stocks.util.display
 from sys import argv
 import tushare as ts
 from tushare.stock import cons as ct
@@ -6,7 +6,7 @@ from stocks.gene import wave
 from stocks.data import data_util as _dt
 import pandas as pd
 import time
-from stocks.base import date_const
+from stocks.util import date_const
 
 keys = ['pa', 'cf', 'df', 'sim', 'gap']
 

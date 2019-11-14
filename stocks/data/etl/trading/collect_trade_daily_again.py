@@ -1,9 +1,9 @@
 import datetime
 import time
 import tushare as ts
-from stocks.base.db_util import get_db
-from stocks.base.logging import logger
-from stocks.base.pro_util import pro
+from stocks.util.db_util import get_db
+from stocks.util.logging import logger
+from stocks.util.pro_util import pro
 
 
 def recollect_hist_daily(sql='select b.ts_code, b.code from select_result_all s '

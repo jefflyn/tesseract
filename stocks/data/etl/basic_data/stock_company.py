@@ -1,6 +1,6 @@
-from stocks.base import display
-from stocks.base.pro_util import pro
-from stocks.base import db_util
+from stocks.util import display
+from stocks.util.pro_util import pro
+from stocks.util import db_util
 
 if __name__ == '__main__':
     # SSE-上交所 SZSE-深交所

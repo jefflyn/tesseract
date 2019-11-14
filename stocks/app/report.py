@@ -10,7 +10,7 @@ from email.utils import formataddr
 import numpy as np
 import pandas as pd
 
-from stocks.app import _utils
+from stocks.util import _utils
 from stocks.app import falco
 from stocks.app import realtime
 from stocks.data import data_util

@@ -1,4 +1,4 @@
-from stocks.base import display
+from stocks.util import display
 import tushare as ts
 
 if __name__ == '__main__':
