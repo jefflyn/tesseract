@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 
-export PYTHONPATH=/Users/linjingu/work/machine-learning/
-export STOCKS_HOME=/Users/linjingu/work/machine-learning/stocks
-
-/anaconda/bin/python /Users/linjingu/work/machine-learning/stocks/data/etl/trading/collect_index_data.py
-
+cd $STOCKS_HOME/data/etl/trading
+python3 ./collect_index_data.py
+echo "finished collect_index_data"
