@@ -5,7 +5,6 @@ from stocks.util import date_util
 from stocks.util import db_util
 from stocks.util.pro_util import pro
 from stocks.util.logging import logger
-from stocks.util.db_util import get_db
 import sys
 
 if __name__ == '__main__':
@@ -46,5 +45,6 @@ if __name__ == '__main__':
             continue
         df['code'] = df['ts_code'].apply(lambda x: x[0:6])
         db_util.to_db(df, 'basic_daily')
-        logger.info('All Finished!')
+        # df.to_csv('basic_daily.csv')
+        logger.info('collect fundamental daily finished!')
         break

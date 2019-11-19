@@ -311,7 +311,6 @@ select * from my_stock_pool;
 select * from my_stock_pool where platform = 'cf';
 select * from my_stock_pool where platform = 'df';
 select * from my_stock_pool where platform = 'pa';
-select * from my_stock_pool where platform = 'sim';
 
 -- 条件查询select data
 select c.concepts, bd.pe, bd.pe_ttm, bd.turnover_rate, s.*
@@ -337,7 +336,8 @@ where name not like '%ST%' -- and list_date < 20180901
   and pe_ttm is not null
   and abs(pe - pe_ttm) <= 10
 #   and pe_ttm < pe -- 价值向上趋势
-  and wave_a < -50 and wave_b < 20
+  and wave_a < -50
+  and wave_b < 20
   and count > 0 and count < 7
 # and concepts like '%黄金%'
 order by wave_a;
