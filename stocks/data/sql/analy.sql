@@ -318,15 +318,15 @@ from select_result_all s left join basic_daily bd on s.code = bd.code left join 
 where 1 = 1
 and s.name not like '%ST%' and list_date < 20190101
 # and pe_ttm is not null
-# and s.name like '%佛燃%'
+and s.name like '%海油%'
 # and c.concepts like '%油%'
 # and s.area like '%甘肃%'
 # and s.count > 0
 # and wave_a < 0 and wave_b < 15
 # and s.code in (select code from my_stock_pool where platform in ('cf')) -- self position
-and s.code in (select code from hist_trade_day where trade_date>='2019-09-01' and trade_date<='2019-12-31' and pct_change>9.9-- and high=low
-    group by code
-    having count(1) > 3) -- 时间区间的一字
+# and s.code in (select code from hist_trade_day where trade_date>='2019-09-01' and trade_date<='2019-12-31' and pct_change>9.9-- and high=low
+#     group by code
+#     having count(1) > 3) -- 时间区间的一字
 order by wave_a;
 
 -- 1、超跌选股，包含次新股（低风险，长线投资）
@@ -336,23 +336,21 @@ where name not like '%ST%' -- and list_date < 20180901
   and pe_ttm is not null
   and abs(pe - pe_ttm) <= 10
 #   and pe_ttm < pe -- 价值向上趋势
-  and wave_a < -50
-  and wave_b < 20
+  and (wave_a < -40 and wave_b < 15 or wave_b <= -30)
   and count > 0 and count < 7
 # and concepts like '%黄金%'
-order by wave_a;
+order by count desc, wave_a;
 
 -- 2、超跌活跃选股，不含次新股（中风险，适合中短线）
 select c.concepts, bd.pe, bd.pe_ttm,  bd.turnover_rate, s.*
 from select_result_all s left join basic_daily bd on s.code = bd.code left join concepts c on s.code = c.code
 where name not like '%ST%'
-and pe_ttm is not null
+and (pe_ttm is not null or pe is not null)
 #  and pe_ttm < pe -- 价值向上趋势
-and wave_a < -40
-and wave_b < 15
+and (wave_a < -40 and wave_b < 15 or wave_b <= -30)
 and count >= 8
 and list_date < 20190101
-order by wave_a;
+order by count desc, wave_a;
 
 -- 3、本月涨停选股，不含次新股（高风险，适合超短线）
 select c.concepts, bd.pe, bd.pe_ttm, bd.turnover_rate, s.*
@@ -368,7 +366,7 @@ select code, count(1) from hist_trade_day where pct_change >= 9.8 and trade_date
 group by code
 order by count(1) desc;
 
-select * from select_result_all where name like '%华金资本%';
+select * from select_result_all where code like '%002486%';
 
 SELECT * FROM hist_trade_day ORDER BY code LIMIT 1000000, 10;
 SELECT * FROM hist_trade_day WHERE code >= (SELECT code FROM hist_trade_day LIMIT 1000000, 1) LIMIT 10;

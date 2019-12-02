@@ -24,7 +24,7 @@ if __name__ == '__main__':
     c_len = df.shape[0]
     if c_len == 0:  # 没有记录退出
         logger.info(last_trade_date + " no index data found yet")
-        sys.exit(0)
+        # sys.exit(0)
 
     # 设定获取日线行情的初始日期和终止日期，其中终止日期设定为当天
     time_temp = datetime.datetime.now() - datetime.timedelta(days=2)

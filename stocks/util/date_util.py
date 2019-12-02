@@ -31,7 +31,8 @@ last_week_end = now - timedelta(days=now.weekday() + 1)
 
 # 本月第一天和最后一天
 this_month_start = datetime.datetime(now.year, now.month, 1)
-this_month_end = datetime.datetime(now.year, now.month + 1, 1) - timedelta(days=1)
+this_month_end = datetime.datetime(now.year, now.month, 31) if now.month == 12 else \
+    datetime.datetime(now.year, now.month + 1, 1) - timedelta(days=1)
 
 # 上月第一天和最后一天
 last_month_end = this_month_start - timedelta(days=1)
