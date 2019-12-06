@@ -102,7 +102,7 @@ def count(df=None):
         count_data.append(count_qrt2nd)
         count_data.append(count_qrt3rd)
         count_data.append(count_qrt4th)
-        count_data.append(super_lup.trade_date.min() if super_lup.trade_date.min() is None else mindate)
+        count_data.append(super_lup.trade_date.min() if super_lup.trade_date.min() is not None else mindate)
         count_data.append(mindate)
         count_data.append(maxdate)
         count_data.append(round(low, 2))

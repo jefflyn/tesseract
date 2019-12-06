@@ -304,24 +304,24 @@ select * from my_stock_pool where platform = 'df';
 select * from my_stock_pool where platform = 'pa';
 
 -- 条件查询select data
-select c.concepts, bd.pe, bd.pe_ttm, bd.turnover_rate, s.*
-from select_result_all s left join basic_daily bd on s.code = bd.code left join concepts c on s.code = c.code
+select *
+from select_result_all
 where 1 = 1
-and s.name not like '%ST%'
-# and s.industry like '%证券%'
-# and s.list_date < 20190101
-# and bd.pe_ttm is not null
-# and s.name like '%津劝业%'
+and name not like '%ST%'
+# and industry like '%证券%'
+# and list_date < 20190101
+# and pe_ttm is not null
+# and name like '%津劝业%'
 # and c.concepts like '%油%'
-# and s.area like '%甘肃%'
-# and s.count > 0
-# and s.wave_a < 0
-# and s.wave_b < 15
-# and s.code in (select code from my_stock_pool where platform in ('cf')) -- self position
-# and s.code in (select code from hist_trade_day where trade_date>='2019-09-01' and trade_date<='2019-12-31' and pct_change>9.9-- and high=low
+# and area like '%甘肃%'
+# and count > 0
+# and wave_a < 0
+# and wave_b < 15
+# and code in (select code from my_stock_pool where platform in ('cf')) -- self position
+# and code in (select code from hist_trade_day where trade_date>='2019-09-01' and trade_date<='2019-12-31' and pct_change>9.9-- and high=low
 #     group by code
 #     having count(1) > 3) -- 时间区间的一字
-order by s.count desc, s.wave_a;
+order by count desc, wave_a;
 
 -- 1、超跌选股，包含次新股（低风险，长线投资）
 select c.concepts, bd.pe, bd.pe_ttm, bd.turnover_rate, s.*
@@ -336,8 +336,8 @@ where name not like '%ST%' -- and list_date < 20180901
 order by wave_a;
 
 -- 2、超跌活跃选股，不含次新股（中风险，适合中短线）
-select c.concepts, bd.pe, bd.pe_ttm,  bd.turnover_rate, s.*
-from select_result_all s left join basic_daily bd on s.code = bd.code left join concepts c on s.code = c.code
+select *
+from select_result_all
 where name not like '%ST%'
 and (pe_ttm is not null or pe is not null)
 #  and pe_ttm < pe -- 价值向上趋势
@@ -365,5 +365,5 @@ select * from select_result_all where code like '%002486%';
 SELECT * FROM hist_trade_day ORDER BY code LIMIT 1000000, 10;
 SELECT * FROM hist_trade_day WHERE code >= (SELECT code FROM hist_trade_day LIMIT 1000000, 1) LIMIT 10;
 
-select * from hist_weekly;
+select count(1) from hist_weekly;
 
