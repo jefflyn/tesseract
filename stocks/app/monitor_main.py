@@ -26,10 +26,10 @@ if __name__ == '__main__':
             realtime_change = price_diff / pre_close * 100
 
             index = list(monitor_stocks['code']).index(code)
-            name = monitor_stocks.ix[index, 'name']
-            alert_prices = monitor_stocks.ix[index, 'alert_price']
-            alert_changes = monitor_stocks.ix[index, 'percent_change']
-            receive_mobile = monitor_stocks.ix[index, 'receive_mobile']
+            name = monitor_stocks.loc[index, 'name']
+            alert_prices = monitor_stocks.loc[index, 'alert_price']
+            alert_changes = monitor_stocks.loc[index, 'percent_change']
+            receive_mobile = monitor_stocks.loc[index, 'receive_mobile']
 
             prices = str.split(alert_prices, ',')
             changes = str.split(alert_changes, ',')

@@ -34,7 +34,7 @@ def get_upnday(codes=None, n=0, change=None):
         if hist_data is None or len(hist_data) < 5:
             continue
         latest = hist_data.tail(1)
-        idx = latest.index.get_values()[0]
+        idx = latest.index.to_numpy()[0]
         latest_date_str = latest.at[idx, 'trade_date']
         # excluding halting
         if _utils.is_halting(code, latest_date_str):
@@ -48,7 +48,7 @@ def get_upnday(codes=None, n=0, change=None):
         beginp = 0.0
         endp = 0.0
         ndays = 0.0
-        current_price = histndf.ix[idx, 'close']
+        current_price = histndf.loc[idx, 'close']
         volumes = [row[1]['vol'] for row in histndf.iterrows()]
         week_vol = []
         n_vol = 5
@@ -115,7 +115,7 @@ def get_upnday(codes=None, n=0, change=None):
             sumup = (endp - beginp) / beginp * 100
 
         item = data_util.get_basics(code)
-        idx = item.index.get_values()[0]
+        idx = item.index.to_numpy()[0]
         nlist = []
         nlist.append(code)
         nlist.append(item.at[idx, 'name'])

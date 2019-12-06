@@ -33,12 +33,12 @@ def cal_gap(codes=None, seq='W'):
         if histndf is None or len(histndf) < 5:
             continue
         latest = histndf.tail(1)
-        idx = latest.index.get_values()[0]
+        idx = latest.index.to_numpy()[0]
         latest_date_str = latest.at[idx, 'trade_date']
         # excluding halting
         if _utils.is_halting(code, latest_date_str):
             continue
-        current_price = histndf.ix[idx, 'close']
+        current_price = histndf.loc[idx, 'close']
         histndf = histndf.sort_values('trade_date', ascending=False)
         volumes = [row[1]['vol'] for row in histndf.iterrows()]
         week_vol = []
@@ -84,7 +84,7 @@ def cal_gap(codes=None, seq='W'):
                         gap_space = round((current_price - pre_high) / pre_high * 100, 2)
 
         item = data_util.get_basics(code)
-        idx = item.index.get_values()[0]
+        idx = item.index.to_numpy()[0]
         nlist = [code, item.at[idx, 'name'], item.at[idx, 'industry'], item.at[idx, 'area'], change_str, gap_scale,
                  gap_space, str(np.round(week_vol, 2)), multi_vol_rate]
         upndata.append(nlist)

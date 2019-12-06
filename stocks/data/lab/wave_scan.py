@@ -22,7 +22,7 @@ def scan_wave_change(wave_data=None, tb_name='wave_change_ref'):
         print(str(count) + ':' + code)
         # 重置index
         group = group.reset_index(drop=True)
-        index_list = group.index.get_values()
+        index_list = group.index.to_numpy()
         first_row = index_list[0]
         last_row = index_list[-1]
         # 去掉头尾行

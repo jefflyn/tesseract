@@ -26,14 +26,14 @@ def get_period_change(period_k=None):
     """
     first = period_k.head(1)
     last = period_k.tail(1)
-    last_begin_open = first.ix[first.index.get_values()[0], 'open'] if (first is not None and len(first) > 0) else 0
-    last_end_close = last.ix[last.index.get_values()[0], 'close'] if (last is not None and len(last) > 0) else 0
+    last_begin_open = first.ix[first.index.to_numpy()[0], 'open'] if (first is not None and len(first) > 0) else 0
+    last_end_close = last.ix[last.index.to_numpy()[0], 'close'] if (last is not None and len(last) > 0) else 0
     last_change = 0
     if last_begin_open > 0:
         last_change = (last_end_close - last_begin_open) / last_begin_open * 100
 
-    last_begin_vol = first.ix[first.index.get_values()[0], 'volume'] if (first is not None and len(first) > 0) else 0
-    last_end_vol = last.ix[last.index.get_values()[0], 'volume'] if (last is not None and len(last) > 0) else 0
+    last_begin_vol = first.ix[first.index.to_numpy()[0], 'volume'] if (first is not None and len(first) > 0) else 0
+    last_end_vol = last.ix[last.index.to_numpy()[0], 'volume'] if (last is not None and len(last) > 0) else 0
     vol_change = 0
     if last_begin_vol > 0:
         vol_change = last_end_vol / last_begin_vol
@@ -133,7 +133,7 @@ def multi_volume_appear():
         rec_list.append(row['area'])
         rec_list.append(markettime)
 
-        index_list = target_k_data.index.get_values()
+        index_list = target_k_data.index.to_numpy()
         pre_vol = target_k_data.ix[index_list[-2], 'volume']
         nxt_vol = target_k_data.ix[index_list[-1], 'volume']
         vol_rate = nxt_vol / pre_vol

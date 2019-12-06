@@ -27,7 +27,7 @@ def get_trump(codes=None, start=None, end=None):
         hist_k = ts.get_k_data(code=code, start=start, end=end)
         if hist_k is None or len(hist_k) == 0:
             continue
-        # latestdate = hist_k.tail(1).at[hist_k.tail(1).index.get_values()[0], 'date']
+        # latestdate = hist_k.tail(1).at[hist_k.tail(1).index.to_numpy()[0], 'date']
         # if todaystr != latestdate: # not the latest record
         #     # get today data from [get_realtime_quotes(code)]
         #     realtime = ts.get_realtime_quotes(code)
@@ -38,7 +38,7 @@ def get_trump(codes=None, start=None, end=None):
         #         newone = {'date':todaystr,'open':float(realtime.at[0,'open']),'close':float(realtime.at[0,'price']),'high':float(realtime.at[0,'high']), 'low':todaylow,'volume':int(float(realtime.at[0,'volume'])/100),'code':code}
         #         newdf = pd.DataFrame(newone, index=[0])
         #         hist_k = hist_k.append(newdf, ignore_index=True)
-        last_idx = len(hist_k.index.get_values()) - 4
+        last_idx = len(hist_k.index.to_numpy()) - 4
         start_idx = 1
         trump_lists = []
         while start_idx <= last_idx:

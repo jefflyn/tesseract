@@ -377,14 +377,14 @@ def get_k_data(code=None, start=None, end=None):
         print(code + ' k data not found')
         return None
     try:
-        latestdate = hist_data.tail(1).at[hist_data.tail(1).index.get_values()[0], 'date']
+        latestdate = hist_data.tail(1).at[hist_data.tail(1).index.to_numpy()[0], 'date']
         if todaystr != latestdate:
             # get today data from [get_realtime_quotes(code)]
             realtime = ts.get_realtime_quotes(code)
             rt_date = realtime.at[0, 'date']
             if latestdate == rt_date:
                 return hist_data
-            # ridx = realtime.index.get_values()[0]
+            # ridx = realtime.index.to_numpy()[0]
             todaylow = float(realtime.at[0, 'low'])
             if todaylow > 0:
                 newone = {'date': todaystr, 'open': float(realtime.at[0, 'open']),
@@ -477,7 +477,7 @@ def get_last_trade_data(codes=None):
         return None
     params = {'code': codes}
     df = read_sql(sql, params=params)
-    df.index = list(df['code'])
+    df.index = df['code'].astype('str').str.zfill(6)
     return df
 
 

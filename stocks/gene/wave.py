@@ -31,7 +31,7 @@ def get_bottom(df=None, limit=20):
         size = group.iloc[:, 0].size
         startfromlast = 1
         lastestrec = group.tail(startfromlast)
-        idx = lastestrec.index.get_values()[0]
+        idx = lastestrec.index.to_numpy()[0]
         status = lastestrec.at[idx, 'status']
         bottom = lastestrec.at[idx, 'begin_price'] if status == 'up' else lastestrec.at[idx, 'end_price']
         bottom_price = bottom
@@ -41,7 +41,7 @@ def get_bottom(df=None, limit=20):
         while startfromlast < size:
             startfromlast += 1
             lastrec = group.tail(startfromlast)
-            idx_list = lastrec.index.get_values()
+            idx_list = lastrec.index.to_numpy()
             lastidx = idx_list[0]
             laststatus = lastrec.at[lastidx, 'status']
             lastp = lastrec.at[lastidx, 'change']
@@ -181,12 +181,12 @@ def format_wave_data(wavedf=None, is_index=False):
     latestone = wavedf.tail(1)  # get the newest record
     if latestone.empty is True:
         return None
-    i = latestone.index.get_values()[0]
+    i = latestone.index.to_numpy()[0]
     code = latestone.at[i, 'code']
     stock = data_util.get_basics(code, index=is_index)
-    name = stock if isinstance(stock, str) else stock.at[stock.index.get_values()[0], 'name']
-    enddate = latestone.at[latestone.index.get_values()[0], 'end']
-    endprice = latestone.at[latestone.index.get_values()[0], 'end_price']
+    name = stock if isinstance(stock, str) else stock.at[stock.index.to_numpy()[0], 'name']
+    enddate = latestone.at[latestone.index.to_numpy()[0], 'end']
+    endprice = latestone.at[latestone.index.to_numpy()[0], 'end_price']
 
     codes = list(wavedf['code'])
     codes.append(code)
@@ -223,7 +223,7 @@ def get_wave(codes=None, is_index=False, start=None, end=None, beginlow=True, du
         if hist_data is None or len(hist_data) == 0:
             continue
         hist_data['date'] = hist_data['trade_date']
-        latestdate = hist_data.tail(1).at[hist_data.tail(1).index.get_values()[0], 'date']
+        latestdate = hist_data.tail(1).at[hist_data.tail(1).index.to_numpy()[0], 'date']
         if todaystr != latestdate:  # not the latest record
             if is_index is False:
                 # get today data from [get_realtime_quotes(code)]
@@ -274,10 +274,10 @@ def get_wave(codes=None, is_index=False, start=None, end=None, beginlow=True, du
 def wavefrom(code, df, beginlow, direction='left', duration=0, pchange=0):
     period_data = []
     # for get_k_data use
-    firstdate = df.head(1).at[df.head(1).index.get_values()[0], 'date']
-    lastdate = df.tail(1).at[df.tail(1).index.get_values()[0], 'date']
-    # firstdate = datetime.utcfromtimestamp((df.tail(1).index.get_values()[0]).astype('O') / 1e9).strftime("%Y-%m-%d")
-    # lastdate = datetime.utcfromtimestamp((df.head(1).index.get_values()[0]).astype('O') / 1e9).strftime("%Y-%m-%d")
+    firstdate = df.head(1).at[df.head(1).index.to_numpy()[0], 'date']
+    lastdate = df.tail(1).at[df.tail(1).index.to_numpy()[0], 'date']
+    # firstdate = datetime.utcfromtimestamp((df.tail(1).index.to_numpy()[0]).astype('O') / 1e9).strftime("%Y-%m-%d")
+    # lastdate = datetime.utcfromtimestamp((df.head(1).index.to_numpy()[0]).astype('O') / 1e9).strftime("%Y-%m-%d")
 
     # start from the lowest price, find the wave from both sides
     pivot_low = df.min()['close'] if df.min()['low'] == 0 else df.min()['low']
@@ -285,7 +285,7 @@ def wavefrom(code, df, beginlow, direction='left', duration=0, pchange=0):
     if pivot_rec is None or pivot_rec.empty is True:
         print(code + ' pivot_rec is None or pivot_rec.empty')
         return
-    pivot_index = pivot_rec.index.get_values()[0]
+    pivot_index = pivot_rec.index.to_numpy()[0]
     pivot_date = pivot_rec.at[pivot_index, 'date']
     pivot_close = pivot_rec.at[pivot_index, 'close']
 
@@ -307,7 +307,7 @@ def wavefrom(code, df, beginlow, direction='left', duration=0, pchange=0):
 
         status = ''
         rec = data[data.high == price] if ismax else data[data.low == price]
-        idx = rec.index.get_values()[0]
+        idx = rec.index.to_numpy()[0]
         date = rec.at[idx, 'date']
         close = rec.at[idx, 'close']
 

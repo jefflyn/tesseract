@@ -22,7 +22,7 @@ def get_ma(codes=None, start='2017-01-04', end=None):
         if hist_data is None or len(hist_data) == 0:
             continue
         latest = hist_data.tail(1)
-        idx = latest.index.get_values()[0]
+        idx = latest.index.to_numpy()[0]
         price = latest.at[idx, 'close']
         latest_date_str = latest.at[idx, 'date']
         # excluding halting
@@ -51,7 +51,7 @@ def get_ma(codes=None, start='2017-01-04', end=None):
         isup = (ma10 >= ma20) & (ma20 >= ma30)
 
         row = dt.get_basics(code)
-        idx = row.index.get_values()[0]
+        idx = row.index.to_numpy()[0]
         malist = []
         malist.append(code)
         malist.append(row.at[idx, 'name'])

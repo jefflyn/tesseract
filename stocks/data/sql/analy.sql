@@ -155,18 +155,11 @@ select * from select_result_all where list_date < 20190101 and name not like '%S
 select * from select_result_all order by `uspace%` asc;
 select * from select_result_all where list_date < 20190101 and name not like '%ST%'
                                   and area='江苏' order by wave_a, wave_b asc;
-select * from select_result_all where list_date < 20190101 and name not like '%ST%'
-                                  and count_30d < 2 and count_q1 > 2 order by `count_30d` desc;
 select * from select_result_all order by vol_rate desc;
 select * from select_result_all where name like '%东方%';
 select * from select_result_all where name in ('锋龙','科融环境','德尔未来');
-select code, name, industry, area, list_date, count, count_30d, count_q1+count_q2+count_q3+count_q4 as qt_count, count_q1,count_q2,count_q3,count_q4
-from select_result_all order by count_30d desc;
 select * from select_result_concept order by wave_b asc;
 select * from select_result_concept order by `uspace%` asc;
-select * from `select_result_limitup_2019-02` order by `uspace%` asc;
-select * from select_result_new order by `dspace%` asc;
-select * from select_result_new where count_30d < 2 and count_q1 > 2 order by `count_30d` desc;
 
 -- industry temp table
 drop table IF EXISTS temp_industry;
@@ -236,7 +229,6 @@ select * from basic where name like '%ST%';
 select * from select_wave_all where code in (select code from basic where name not like '%ST%' and list_date < 20180618);
 select * from select_result_all where name like '%ST%';
 -- forecast preview
-select * from select_result_forecast;
 select * from profit_forecast;
 select * from profit_forecast where code='002895';
 select * from profit_forecast where type = '预盈' and name like '%ST%';
@@ -257,7 +249,6 @@ select * from select_wave_all order by `change` desc;
 
 select * from hist_weekly where code='000958' order by trade_date desc limit 20;
 select * from hist_monthly where code=000958;
-
 
 select * from weekly_gap where gap > 0 order by gap desc;
 
@@ -316,18 +307,21 @@ select * from my_stock_pool where platform = 'pa';
 select c.concepts, bd.pe, bd.pe_ttm, bd.turnover_rate, s.*
 from select_result_all s left join basic_daily bd on s.code = bd.code left join concepts c on s.code = c.code
 where 1 = 1
-and s.name not like '%ST%' and list_date < 20190101
-# and pe_ttm is not null
-and s.name like '%海油%'
+and s.name not like '%ST%'
+# and s.industry like '%证券%'
+# and s.list_date < 20190101
+# and bd.pe_ttm is not null
+and s.name like '%津劝业%'
 # and c.concepts like '%油%'
 # and s.area like '%甘肃%'
 # and s.count > 0
-# and wave_a < 0 and wave_b < 15
+# and s.wave_a < 0
+# and s.wave_b < 15
 # and s.code in (select code from my_stock_pool where platform in ('cf')) -- self position
 # and s.code in (select code from hist_trade_day where trade_date>='2019-09-01' and trade_date<='2019-12-31' and pct_change>9.9-- and high=low
 #     group by code
 #     having count(1) > 3) -- 时间区间的一字
-order by wave_a;
+order by s.count desc, s.wave_a;
 
 -- 1、超跌选股，包含次新股（低风险，长线投资）
 select c.concepts, bd.pe, bd.pe_ttm, bd.turnover_rate, s.*
@@ -339,7 +333,7 @@ where name not like '%ST%' -- and list_date < 20180901
   and (wave_a < -40 and wave_b < 15 or wave_b <= -30)
   and count > 0 and count < 7
 # and concepts like '%黄金%'
-order by count desc, wave_a;
+order by wave_a;
 
 -- 2、超跌活跃选股，不含次新股（中风险，适合中短线）
 select c.concepts, bd.pe, bd.pe_ttm,  bd.turnover_rate, s.*

@@ -3,12 +3,14 @@ import sys
 from datetime import datetime as dt
 from sys import argv
 
-import numpy as np
 import pandas as pd
 import stocks.util.db_util as _dt
 import tushare as ts
 from stocks.util.logging import logger
 from stocks.data import data_util
+from stocks.data.service import concept_service
+from stocks.data.service import fundamental_service
+
 from stocks.util import date_util
 from stocks.gene import limitup
 from stocks.gene import upnday
@@ -96,14 +98,16 @@ def select_result(codeset=None, filename=''):
     if codeset is not None:
         size = len(codeset)
     else:
-        size = len(hist_trade_df.index.get_values())
+        size = len(hist_trade_df.index.to_numpy())
     logger.info('select stocks start! total size: %d\n' % size)
     # limit = 500
     # beginIndex = 0
     # endIndex = beginIndex + limit if size > limit else size
     # logger.info('select from %s, total: %i' % (filename, size))
     data_list = []
-
+    # 概念信息
+    concepts = concept_service.get_concepts()
+    fundamental = fundamental_service.get_fundamental()
     wavedfset = pd.DataFrame(columns=['code', 'begin', 'end', 'status', 'begin_price', 'end_price', 'days', 'change'])
     for index, row in hist_trade_df.iterrows():
         code = row['code']
@@ -119,11 +123,16 @@ def select_result(codeset=None, filename=''):
         if basic is None or basic.empty is True:
             continue
         curt_data = list()
+        curt_data.append(concepts.loc[code, 'concepts'])
+        curt_data.append(fundamental.loc[code, 'pe'])
+        curt_data.append(fundamental.loc[code, 'pe_ttm'])
+        curt_data.append(fundamental.loc[code, 'turnover_rate'])
+
         curt_data.append(code)
-        curt_data.append(basic.ix[code, 'name'])
-        curt_data.append(basic.ix[code, 'industry'])
-        curt_data.append(basic.ix[code, 'area'])
-        curt_data.append(basic.ix[code, 'list_date'])
+        curt_data.append(basic.loc[code, 'name'])
+        curt_data.append(basic.loc[code, 'industry'])
+        curt_data.append(basic.loc[code, 'area'])
+        curt_data.append(basic.loc[code, 'list_date'])
         curt_data.append(current_price)
         curt_data.append(round(float(row['pct_change']), 2))
         # get wave data and bottom top
@@ -141,8 +150,8 @@ def select_result(codeset=None, filename=''):
         bottomdf = wave.get_bottom(wavedf)
         if bottomdf is None or bottomdf.empty is True:
             continue
-        bottom = bottomdf.ix[0, 'bottom']
-        top = bottomdf.ix[0, 'top']
+        bottom = bottomdf.at[0, 'bottom']
+        top = bottomdf.at[0, 'top']
         uspace = (current_price - bottom) / bottom * 100
         dspace = (current_price - top) / top * 100
         position = (current_price - bottom) / (top - bottom) * 100
@@ -156,9 +165,9 @@ def select_result(codeset=None, filename=''):
         curt_data.append(round(top, 2))
 
         curt_data.append(round(position, 2))
-        curt_data.append(round(bottomdf.ix[0, 'buy1'], 2))
-        curt_data.append(round(bottomdf.ix[0, 'buy2'], 2))
-        curt_data.append(round(bottomdf.ix[0, 'buy3'], 2))
+        curt_data.append(round(bottomdf.at[0, 'buy1'], 2))
+        curt_data.append(round(bottomdf.at[0, 'buy2'], 2))
+        curt_data.append(round(bottomdf.at[0, 'buy3'], 2))
 
         # limit up data
         limitupdf = limitup.get_limitup_from_hist_trade(code)
@@ -177,15 +186,15 @@ def select_result(codeset=None, filename=''):
         luphigh = 0
         lupcountdf = limitup.count(limitupdf)
         if lupcountdf.empty is False:
-            lupcount = lupcountdf.ix[0, 'count']
-            lupcount30 = lupcountdf.ix[0, 'c30d']
-            lupcountq1 = lupcountdf.ix[0, 'cq1']
-            lupcountq2 = lupcountdf.ix[0, 'cq2']
-            lupcountq3 = lupcountdf.ix[0, 'cq3']
-            lupcountq4 = lupcountdf.ix[0, 'cq4']
-            lup_lastday = lupcountdf.ix[0, 'lldate']
-            luplow = lupcountdf.ix[0, 'lup_low']
-            luphigh = lupcountdf.ix[0, 'lup_high']
+            lupcount = lupcountdf.at[0, 'count']
+            lupcount30 = lupcountdf.at[0, 'c30d']
+            lupcountq1 = lupcountdf.at[0, 'cq1']
+            lupcountq2 = lupcountdf.at[0, 'cq2']
+            lupcountq3 = lupcountdf.at[0, 'cq3']
+            lupcountq4 = lupcountdf.at[0, 'cq4']
+            lup_lastday = lupcountdf.at[0, 'lldate']
+            luplow = lupcountdf.at[0, 'lup_low']
+            luphigh = lupcountdf.at[0, 'lup_high']
 
         curt_data.append(lupcount)
         curt_data.append(lupcount30)
@@ -207,14 +216,14 @@ def select_result(codeset=None, filename=''):
         sum_30_days = 0
         gap = 0
         if upndaydf.empty is False:
-            change_7_days = upndaydf.ix[0, 'change_7_days']
-            gap = upndaydf.ix[0, 'gap']
-            gap_space = upndaydf.ix[0, 'gap_space']
-            sum_30_days = upndaydf.ix[0, 'sum_30_days']
-            updays = upndaydf.ix[0, 'updays']
-            sumup = upndaydf.ix[0, 'sumup']
-            multi_vol_rate = upndaydf.ix[0, 'multi_vol']
-            vol_rate = upndaydf.ix[0, 'vol_rate']
+            change_7_days = upndaydf.at[0, 'change_7_days']
+            gap = upndaydf.at[0, 'gap']
+            gap_space = upndaydf.at[0, 'gap_space']
+            sum_30_days = upndaydf.at[0, 'sum_30_days']
+            updays = upndaydf.at[0, 'updays']
+            sumup = upndaydf.at[0, 'sumup']
+            multi_vol_rate = upndaydf.at[0, 'multi_vol']
+            vol_rate = upndaydf.at[0, 'vol_rate']
         curt_data.append(change_7_days)
         curt_data.append(gap)
         curt_data.append(gap_space)
@@ -226,18 +235,19 @@ def select_result(codeset=None, filename=''):
 
         # get maup data
         # maupdf = maup.get_ma(code)
-        # curt_data.append(maupdf.ix[0, 'isup'] if maupdf.empty is False else 0)
-        # curt_data.append(maupdf.ix[0, 'ma5'] if maupdf.empty is False else 0)
-        # curt_data.append(maupdf.ix[0, 'ma10'] if maupdf.empty is False else 0)
-        # curt_data.append(maupdf.ix[0, 'ma20'] if maupdf.empty is False else 0)
-        # curt_data.append(maupdf.ix[0, 'ma30'] if maupdf.empty is False else 0)
-        # curt_data.append(maupdf.ix[0, 'ma60'] if maupdf.empty is False else 0)
-        # curt_data.append(maupdf.ix[0, 'ma90'] if maupdf.empty is False else 0)
-        # curt_data.append(maupdf.ix[0, 'ma120'] if maupdf.empty is False else 0)
-        # curt_data.append(maupdf.ix[0, 'ma250'] if maupdf.empty is False else 0)
+        # curt_data.append(maupdf.at[0, 'isup'] if maupdf.empty is False else 0)
+        # curt_data.append(maupdf.at[0, 'ma5'] if maupdf.empty is False else 0)
+        # curt_data.append(maupdf.at[0, 'ma10'] if maupdf.empty is False else 0)
+        # curt_data.append(maupdf.at[0, 'ma20'] if maupdf.empty is False else 0)
+        # curt_data.append(maupdf.at[0, 'ma30'] if maupdf.empty is False else 0)
+        # curt_data.append(maupdf.at[0, 'ma60'] if maupdf.empty is False else 0)
+        # curt_data.append(maupdf.at[0, 'ma90'] if maupdf.empty is False else 0)
+        # curt_data.append(maupdf.at[0, 'ma120'] if maupdf.empty is False else 0)
+        # curt_data.append(maupdf.at[0, 'ma250'] if maupdf.empty is False else 0)
 
         data_list.append(curt_data)
-    columns = ['code', 'name', 'industry', 'area', 'list_date', 'price', 'pct', 'wave_detail', 'wave_a', 'wave_b', 'bottom',
+    columns = ['concepts', 'pe', 'pe_ttm', 'turnover_rate', 'code', 'name', 'industry', 'area', 'list_date',
+               'price', 'pct', 'wave_detail', 'wave_a', 'wave_b', 'bottom',
                'uspace%', 'dspace%', 'top', 'position%', 'buy1', 'buy2', 'buy3',
                'count', 'c30d', 'cq1', 'cq2', 'cq3', 'cq4', 'lldate', 'lup_low', 'lup_high',
                'change_7d', 'gap', 'gap_space', 'sum_30d', 'updays', 'sumup%', 'multi_vol', 'vol_rate']
@@ -245,7 +255,8 @@ def select_result(codeset=None, filename=''):
     resultdf = resultdf.sort_values('sum_30d', axis=0, ascending=False, inplace=False, kind='quicksort', na_position='last')
 
     resultdf = resultdf[
-        ['code', 'name', 'industry', 'area', 'list_date', 'price', 'pct', 'wave_detail', 'wave_a', 'wave_b', 'bottom',
+        ['concepts', 'pe', 'pe_ttm', 'turnover_rate', 'code', 'name', 'industry', 'area', 'list_date', 'price',
+         'pct', 'wave_detail', 'wave_a', 'wave_b', 'bottom',
          'uspace%', 'dspace%', 'top', 'position%', 'gap', 'gap_space', 'sum_30d', 'count', 'c30d', 'cq1', 'cq2', 'cq3', 'cq4',
          'lldate', 'lup_low', 'lup_high',
          'buy1', 'buy2', 'buy3', 'change_7d', 'updays', 'sumup%', 'vol_rate', 'multi_vol']]
@@ -262,7 +273,7 @@ def select_result(codeset=None, filename=''):
         wavedfset.to_excel(writer, sheet_name='wave')
         writer.save()
         logger.info('save excel success')
-    logger.info('select stocks finished! result size: %d\n' % len(resultdf.index.get_values()))
+    logger.info('select stocks finished! result size: %d\n' % len(resultdf.index.to_numpy()))
     return resultdf
 
 
@@ -300,7 +311,7 @@ def select_subnew_issue_space():
         logger.info(rowsize - index)
         code = row['code']
         current_price = float(row['price'])
-        timeToMarket = subnewbasic.ix[code, 'timeToMarket']
+        timeToMarket = subnewbasic.loc[code, 'timeToMarket']
         if timeToMarket == 0 or current_price <= 0:
             continue;
         timeToMarket = str(timeToMarket)
@@ -308,7 +319,7 @@ def select_subnew_issue_space():
         issuedays = (starttime - dt.strptime(timeToMarket, '%Y-%m-%d')).days
 
         firstData = data_util.get_k_data(code, start=timeToMarket, end=timeToMarket)
-        issue_close_price = float(firstData.ix[0, 'close'])
+        issue_close_price = float(firstData.at[0, 'close'])
         issue_space = (current_price - issue_close_price) / issue_close_price * 100
 
         hist99 = data_util.get_k_data(code, start=startstr)
@@ -323,9 +334,9 @@ def select_subnew_issue_space():
         curt_data = []
         curt_data.append(code)
         curt_data.append(row['name'])
-        curt_data.append(subnewbasic.ix[code, 'industry'])
-        curt_data.append(subnewbasic.ix[code, 'area'])
-        curt_data.append(subnewbasic.ix[code, 'pe'])
+        curt_data.append(subnewbasic.loc[code, 'industry'])
+        curt_data.append(subnewbasic.loc[code, 'area'])
+        curt_data.append(subnewbasic.loc[code, 'pe'])
 
         curt_data.append(issuedays)
         curt_data.append(issue_close_price)

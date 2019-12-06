@@ -58,8 +58,8 @@ def get_status():
         wavedf = wave.get_wave(code, is_index=True)
         wavestr = wave.wave_to_str(wavedf, size=3)
         bottomdf = wave.get_bottom(wavedf, limit=8)
-        bottom = bottomdf.ix[0, 'bottom']
-        top = bottomdf.ix[0, 'top']
+        bottom = bottomdf.at[0, 'bottom']
+        top = bottomdf.at[0, 'top']
         current = 0
         if high > low:
             current = (current_point - low) / (high - low) * 100
