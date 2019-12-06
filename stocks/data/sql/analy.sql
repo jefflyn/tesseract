@@ -7,8 +7,8 @@ having count(1) > 2;
 
 select * from hist_trade_day where code=600278 order by trade_date desc;
 -- 验证每天trade data etl
-select trade_date, count(1) from hist_trade_day where trade_date >= '2019-08-01' group by trade_date order by trade_date desc;
-select trade_date, count(1) from hist_index_day where trade_date >= '2019-08-01' group by trade_date order by trade_date desc;
+select trade_date, count(1) from hist_trade_day where trade_date >= '2019-12-01' group by trade_date order by trade_date desc;
+select trade_date, count(1) from hist_index_day where trade_date >= '2019-12-01' group by trade_date order by trade_date desc;
 -- daily market data
 select l.*, i.hz, i.sz50, i.scz, i.zxb, i.cyb
 from
@@ -18,7 +18,7 @@ from
        count(case when pct_change = 0 then 1 else null end) as flat,
        count(case when pct_change < 0 then 1 else null end) as down
 from hist_trade_day
-where trade_date >= '2019-01-01'
+where trade_date >= '2019-06-01'
 group by trade_date) as l
 left join
     (select trade_date,
@@ -311,7 +311,7 @@ and s.name not like '%ST%'
 # and s.industry like '%证券%'
 # and s.list_date < 20190101
 # and bd.pe_ttm is not null
-and s.name like '%津劝业%'
+# and s.name like '%津劝业%'
 # and c.concepts like '%油%'
 # and s.area like '%甘肃%'
 # and s.count > 0
@@ -365,5 +365,5 @@ select * from select_result_all where code like '%002486%';
 SELECT * FROM hist_trade_day ORDER BY code LIMIT 1000000, 10;
 SELECT * FROM hist_trade_day WHERE code >= (SELECT code FROM hist_trade_day LIMIT 1000000, 1) LIMIT 10;
 
-
+select * from hist_weekly;
 

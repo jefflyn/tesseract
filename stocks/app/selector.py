@@ -123,7 +123,8 @@ def select_result(codeset=None, filename=''):
         if basic is None or basic.empty is True:
             continue
         curt_data = list()
-        curt_data.append(concepts.loc[code, 'concepts'])
+        concept = concepts[concepts.code == code]
+        curt_data.append(concept.loc[code, 'concepts'] if concept.empty is False else '')
         curt_data.append(fundamental.loc[code, 'pe'])
         curt_data.append(fundamental.loc[code, 'pe_ttm'])
         curt_data.append(fundamental.loc[code, 'turnover_rate'])
@@ -176,33 +177,42 @@ def select_result(codeset=None, filename=''):
         # l2 = l2.append(limitupdf, ignore_index=True)
 
         lupcount = 0
+        lup_count = 0
         lupcount30 = 0
         lupcountq1 = 0
         lupcountq2 = 0
         lupcountq3 = 0
         lupcountq4 = 0
-        lup_lastday = "-"
+        lup_fireday = '-'
+        call_price = '-'
         luplow = 0
         luphigh = 0
         lupcountdf = limitup.count(limitupdf)
         if lupcountdf.empty is False:
             lupcount = lupcountdf.at[0, 'count']
+            lup_count = lupcountdf.at[0, 'count_']
             lupcount30 = lupcountdf.at[0, 'c30d']
             lupcountq1 = lupcountdf.at[0, 'cq1']
             lupcountq2 = lupcountdf.at[0, 'cq2']
             lupcountq3 = lupcountdf.at[0, 'cq3']
             lupcountq4 = lupcountdf.at[0, 'cq4']
-            lup_lastday = lupcountdf.at[0, 'lldate']
+            lup_fireday = lupcountdf.at[0, 'fdate']
             luplow = lupcountdf.at[0, 'lup_low']
             luphigh = lupcountdf.at[0, 'lup_high']
+            pre_trade_date = date_util.get_previous_trade_day(lup_fireday)
+            fire_hist = data_util.get_hist_trade(code=code, start=pre_trade_date, end=pre_trade_date)
+            if fire_hist.empty is False and current_price < fire_hist.at[0, 'close']:
+                call_price = '<=' + str(fire_hist.at[0, 'close'])
 
         curt_data.append(lupcount)
+        curt_data.append(lup_count)
         curt_data.append(lupcount30)
         curt_data.append(lupcountq1)
         curt_data.append(lupcountq2)
         curt_data.append(lupcountq3)
         curt_data.append(lupcountq4)
-        curt_data.append(lup_lastday)
+        curt_data.append(lup_fireday)
+        curt_data.append(call_price)
         curt_data.append(luplow)
         curt_data.append(luphigh)
 
@@ -249,16 +259,16 @@ def select_result(codeset=None, filename=''):
     columns = ['concepts', 'pe', 'pe_ttm', 'turnover_rate', 'code', 'name', 'industry', 'area', 'list_date',
                'price', 'pct', 'wave_detail', 'wave_a', 'wave_b', 'bottom',
                'uspace%', 'dspace%', 'top', 'position%', 'buy1', 'buy2', 'buy3',
-               'count', 'c30d', 'cq1', 'cq2', 'cq3', 'cq4', 'lldate', 'lup_low', 'lup_high',
+               'count', 'count_', 'c30d', 'cq1', 'cq2', 'cq3', 'cq4', 'fdate', 'call_price', 'lup_low', 'lup_high',
                'change_7d', 'gap', 'gap_space', 'sum_30d', 'updays', 'sumup%', 'multi_vol', 'vol_rate']
     resultdf = pd.DataFrame(data_list, columns=columns)
     resultdf = resultdf.sort_values('sum_30d', axis=0, ascending=False, inplace=False, kind='quicksort', na_position='last')
 
     resultdf = resultdf[
         ['concepts', 'pe', 'pe_ttm', 'turnover_rate', 'code', 'name', 'industry', 'area', 'list_date', 'price',
-         'pct', 'wave_detail', 'wave_a', 'wave_b', 'bottom',
-         'uspace%', 'dspace%', 'top', 'position%', 'gap', 'gap_space', 'sum_30d', 'count', 'c30d', 'cq1', 'cq2', 'cq3', 'cq4',
-         'lldate', 'lup_low', 'lup_high',
+         'pct', 'wave_detail', 'wave_a', 'wave_b', 'bottom', 'uspace%', 'dspace%', 'top', 'position%',
+         'gap', 'gap_space', 'sum_30d', 'count', 'count_', 'c30d', 'cq1', 'cq2', 'cq3', 'cq4',
+         'fdate', 'call_price', 'lup_low', 'lup_high',
          'buy1', 'buy2', 'buy3', 'change_7d', 'updays', 'sumup%', 'vol_rate', 'multi_vol']]
     resultdf['trade_date'] = last_trade_date
     resultdf['select_time'] = dt.now()
@@ -379,7 +389,7 @@ def get_warn_space(df):
 
 
 if __name__ == '__main__':
-    logger.info(select_result('603677'))
+    logger.info(select_result('000626'))
     if len(argv) < 2:
         print("Invalid args! At least 2 args like: python xxx.py code1[,code2,...]")
         sys.exit(0)

@@ -86,19 +86,23 @@ def count(df=None):
         lupdf = group[group.trade_date < qrt3rd]
         count_qrt4th = lupdf.iloc[:, 0].size
 
-        size = group.trade_date.count()
+        super_lup = group[group.high == group.low]
+        slp_count = super_lup.iloc[:, 0].size
+        total_count = group.trade_date.count()
         mindate = group.trade_date.min()
         maxdate = group.trade_date.max()
         low = group.low.min()  # the low in time limitup time zone
         high = group.high.max()
 
         count_data.append(name)
-        count_data.append(size)
+        count_data.append(total_count)
+        count_data.append(slp_count)
         count_data.append(count_30d)
         count_data.append(count_qrt1st)
         count_data.append(count_qrt2nd)
         count_data.append(count_qrt3rd)
         count_data.append(count_qrt4th)
+        count_data.append(super_lup.trade_date.min() if super_lup.trade_date.min() is None else mindate)
         count_data.append(mindate)
         count_data.append(maxdate)
         count_data.append(round(low, 2))
@@ -106,7 +110,7 @@ def count(df=None):
         count_data_list.append(count_data)
 
     count_result = pd.DataFrame(data=count_data_list,
-                                columns=['code', 'count', 'c30d', 'cq1', 'cq2', 'cq3', 'cq4',
+                                columns=['code', 'count', 'count_', 'c30d', 'cq1', 'cq2', 'cq3', 'cq4', 'fdate',
                                          'mindate', 'lldate', 'lup_low', 'lup_high'])
     count_result = count_result.sort_values('count', axis=0, ascending=False, inplace=False, kind='quicksort',
                                             na_position='last')
@@ -119,7 +123,7 @@ if __name__ == '__main__':
 
     # lpdf = get_limitup_from_hist_k(['002813'])
     # print(lpdf)
-    df = get_limitup_from_hist_trade(['600405'])
+    df = get_limitup_from_hist_trade(['002127'])
     print(df)
     dfcount = count(df)
     print(dfcount)

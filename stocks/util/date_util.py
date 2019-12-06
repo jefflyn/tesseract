@@ -55,7 +55,6 @@ last_quarter_start = datetime.datetime(last_quarter_end.year, last_quarter_end.m
 this_year_start = datetime.datetime(now.year, 1, 1)
 this_year_end = datetime.datetime(now.year + 1, 1, 1) - timedelta(days=1)
 
-
 # 去年第一天和最后一天
 last_year_end = this_year_start - timedelta(days=1)
 last_year_start = datetime.datetime(last_year_end.year, 1, 1)
@@ -175,9 +174,14 @@ def get_latest_trade_date(days=1, format=default_format):
     return trade_date_list
 
 
+def parse_to_date(date_str):
+    query_date = datetime.datetime.strptime(date_str, default_format) if len(date_str) > 8 \
+        else datetime.datetime.strptime(date_str, format_flat)
+    return query_date
+
+
 def is_tradeday(query_date):
-    query_date = datetime.datetime.strptime(query_date, default_format) if len(query_date) > 8 \
-        else datetime.datetime.strptime(query_date, format_flat)
+    query_date = parse_to_date(query_date)
     is_holiday = ts_dateu.is_holiday(query_date)
     return is_holiday is False
 
@@ -185,6 +189,21 @@ def is_tradeday(query_date):
 def today_is_tradeday():
     query_date = datetime.datetime.strftime(datetime.datetime.today(), '%Y%m%d')
     return is_tradeday(query_date)
+
+
+def get_previous_trade_day(trade_date=today):
+    """
+    获取指定日期上个交易日
+    :param trade_date:'yyyy-MM-dd' or 'yyyyMMdd'
+    :return: str 'yyyy-MM-dd'
+    """
+    n = 1
+    while True:
+        query_date = parse_to_date(trade_date)
+        target_date = (query_date - timedelta(days=n)).strftime(default_format)
+        if is_tradeday(target_date):
+            return target_date
+        n += 1
 
 
 def get_trade_day(nday=-4):
