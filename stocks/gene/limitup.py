@@ -1,9 +1,10 @@
+from stocks.util import display
+from stocks.util.logging import logger
 import datetime
 import pandas as pd
 from stocks.data import data_util
 from stocks.util import db_util
-from stocks.util import display
-from stocks.util.logging import logger
+from stocks.util import date_util
 
 LIMITUP_MIN = 9.9
 LIMITUP_FROM_DAYS = -365
@@ -43,6 +44,44 @@ def get_limitup_from_hist_trade(codes=None, nature=False, start=None, end=None):
     return limitupdf
 
 
+def get_fire_date(date_list=None):
+    """
+    find the previous date from the continuous trade date
+    :param date_list:
+    :return: list of previous date
+    """
+    begin_time = date_util.get_now()
+    logger.info('begin from %s' % str(begin_time))
+    if date_list is None:
+        return list()
+    fire_date_list = list()
+    index_flag = 0
+    # 需要3个涨停生效，剩下两个不需要处理，所以遍历到倒数第3结束
+    index_end = len(date_list) - 2
+    for index in range(index_end):
+        if index != index_flag:
+            continue
+        date_str = date_list[index]
+        # 连续交易日累加数，大于3有效
+        continue_count = 1
+        for nxt_index in range(index + 1, len(date_list)):
+            nxt_date_str = date_list[nxt_index]
+            nxt_date_str_pre = date_util.get_previous_trade_day(nxt_date_str)
+            # 如果该交易日是连续的，累加
+            if nxt_date_str_pre == date_str:
+                continue_count += 1
+                date_str = nxt_date_str
+            else:
+                # 从连续断开的index再遍历
+                index_flag = nxt_index
+                break
+        if continue_count > 2:
+            fire_date_list.append(date_util.get_previous_trade_day(date_list[index]))
+    end_time = date_util.get_now()
+    logger.info("end to %s, total consume time: %s", str(end_time), str((end_time - begin_time).seconds))
+    return fire_date_list
+
+
 def count(df=None):
     """
     count the specific periods limitup 
@@ -56,7 +95,7 @@ def count(df=None):
     count_data_list = []
     # group by data
     dfgroup = df.groupby('code')
-    for name, group in dfgroup:
+    for code, group in dfgroup:
         count_data = []
         starttime = datetime.datetime.now()
         days = datetime.timedelta(backward_days)
@@ -94,7 +133,7 @@ def count(df=None):
         low = group.low.min()  # the low in time limitup time zone
         high = group.high.max()
 
-        count_data.append(name)
+        count_data.append(code)
         count_data.append(total_count)
         count_data.append(slp_count)
         count_data.append(count_30d)
@@ -102,7 +141,7 @@ def count(df=None):
         count_data.append(count_qrt2nd)
         count_data.append(count_qrt3rd)
         count_data.append(count_qrt4th)
-        count_data.append(super_lup.trade_date.min() if super_lup.trade_date.min() is not None else mindate)
+        count_data.append(get_fire_date(list(group['trade_date'])))
         count_data.append(mindate)
         count_data.append(maxdate)
         count_data.append(round(low, 2))
@@ -119,11 +158,14 @@ def count(df=None):
 
 
 if __name__ == '__main__':
+    # print(get_fire_date(['2019-01-10', '2019-01-30', '2019-01-31', '2019-02-01', '2019-02-11', '2019-02-12', '2019-02-13',
+    #                '2019-02-14', '2019-02-15', '2019-06-17', '2019-06-19', '2019-06-20', '2019-06-21', '2019-11-28',
+    #                '2019-11-29', '2019-12-02']))
+    print(get_fire_date(['2019-01-30', '2019-01-31', '2019-02-01']))
     logger.debug(get_today_limitup())
-
     # lpdf = get_limitup_from_hist_k(['002813'])
     # print(lpdf)
-    df = get_limitup_from_hist_trade(['002127'])
+    df = get_limitup_from_hist_trade(['000862'])
     print(df)
-    dfcount = count(df)
-    print(dfcount)
+    df_count = count(df)
+    print(df_count)

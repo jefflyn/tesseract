@@ -184,7 +184,7 @@ def select_result(codeset=None, filename=''):
         lupcountq3 = 0
         lupcountq4 = 0
         lup_fireday = '-'
-        call_price = '-'
+        call_prices = []
         luplow = 0
         luphigh = 0
         lupcountdf = limitup.count(limitupdf)
@@ -196,13 +196,14 @@ def select_result(codeset=None, filename=''):
             lupcountq2 = lupcountdf.at[0, 'cq2']
             lupcountq3 = lupcountdf.at[0, 'cq3']
             lupcountq4 = lupcountdf.at[0, 'cq4']
-            lup_fireday = lupcountdf.at[0, 'fdate']
+            fire_days = lupcountdf.at[0, 'fdate']
             luplow = lupcountdf.at[0, 'lup_low']
             luphigh = lupcountdf.at[0, 'lup_high']
-            pre_trade_date = date_util.get_previous_trade_day(lup_fireday)
-            fire_hist = data_util.get_hist_trade(code=code, start=pre_trade_date, end=pre_trade_date)
-            if fire_hist.empty is False and current_price < fire_hist.at[0, 'close']:
-                call_price = '<=' + str(fire_hist.at[0, 'close'])
+
+            for fire_date in fire_days:
+                fire_hist = data_util.get_hist_trade(code=code, start=fire_date, end=fire_date)
+                if fire_hist.empty is False and current_price < fire_hist.at[0, 'close']:
+                    call_prices.append('<=' + str(fire_hist.at[0, 'close']))
 
         curt_data.append(lupcount)
         curt_data.append(lup_count)
@@ -212,7 +213,7 @@ def select_result(codeset=None, filename=''):
         curt_data.append(lupcountq3)
         curt_data.append(lupcountq4)
         curt_data.append(lup_fireday)
-        curt_data.append(call_price)
+        curt_data.append(call_prices)
         curt_data.append(luplow)
         curt_data.append(luphigh)
 
@@ -389,7 +390,7 @@ def get_warn_space(df):
 
 
 if __name__ == '__main__':
-    logger.info(select_result('603106'))
+    logger.info(select_result('000862'))
     if len(argv) < 2:
         print("Invalid args! At least 2 args like: python xxx.py code1[,code2,...]")
         sys.exit(0)

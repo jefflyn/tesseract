@@ -1,4 +1,5 @@
 # coding=utf-8
+import os
 import calendar
 import datetime
 from datetime import timedelta
@@ -6,6 +7,7 @@ from dateutil.relativedelta import relativedelta
 from dateutil.rrule import *
 import urllib.request as request
 import tushare.util.dateu as ts_dateu
+import pandas as pd
 
 now = datetime.datetime.now()
 
@@ -61,6 +63,12 @@ last_year_start = datetime.datetime(last_year_end.year, 1, 1)
 
 default_format = '%Y-%m-%d'
 format_flat = '%Y%m%d'
+
+hist_date_list = pd.read_csv(os.getenv('STOCKS_HOME') + '/data/etl/basic_data/' + 'hist_trade_date.csv')
+
+
+def get_now():
+    return datetime.datetime.now()
 
 
 # 本周第一天和最后一天
@@ -144,6 +152,12 @@ def get_last_year_end(format=default_format):
     return last_year_end.strftime(format)
 
 
+def convert_to_date(date_str):
+    query_date = datetime.datetime.strptime(date_str, default_format) if len(date_str) > 8 \
+        else datetime.datetime.strptime(date_str, format_flat)
+    return query_date
+
+
 def get_day_type(query_date):
     url = 'http://tool.bitefu.net/jiari/?d=' + query_date
     resp = request.urlopen(url)
@@ -167,23 +181,19 @@ def get_latest_trade_date(days=1, format=default_format):
     while True:
         target_date = (now - timedelta(days=n)).strftime(format)
         if is_tradeday(target_date):
-            trade_date_list.append((now - timedelta(days=n)).strftime(format))
+            trade_date_list.append(target_date)
         n += 1
         if len(trade_date_list) == days:
             break
     return trade_date_list
 
 
-def parse_to_date(date_str):
-    query_date = datetime.datetime.strptime(date_str, default_format) if len(date_str) > 8 \
-        else datetime.datetime.strptime(date_str, format_flat)
-    return query_date
-
-
-def is_tradeday(query_date):
-    query_date = parse_to_date(query_date)
-    is_holiday = ts_dateu.is_holiday(query_date)
-    return is_holiday is False
+def is_tradeday(query_date=None):
+    hist_date = hist_date_list[(hist_date_list.hist_date == query_date) & (hist_date_list.is_trade == 1)]
+    return True if hist_date is not None else False
+    # query_date = convert_to_date(query_date)
+    # is_holiday = ts_dateu.is_holiday(query_date)
+    # return is_holiday is False
 
 
 def today_is_tradeday():
@@ -197,13 +207,28 @@ def get_previous_trade_day(trade_date=today):
     :param trade_date:'yyyy-MM-dd' or 'yyyyMMdd'
     :return: str 'yyyy-MM-dd'
     """
-    n = 1
-    while True:
-        query_date = parse_to_date(trade_date)
-        target_date = (query_date - timedelta(days=n)).strftime(default_format)
-        if is_tradeday(target_date):
-            return target_date
-        n += 1
+    hist_date = hist_date_list[hist_date_list.hist_date == trade_date]
+    index = hist_date.index.to_numpy()[0]
+    for i in range(1, 15):
+        next_hist_date = hist_date_list.loc[index + i, ['hist_date', 'is_trade']]
+        if next_hist_date[1] == 1:
+            return next_hist_date.iat[0]
+
+
+def get_next_trade_day(trade_date=today):
+    """
+    获取指定日期下个交易日
+    :param trade_date:'yyyy-MM-dd'
+    :return: str 'yyyy-MM-dd'
+    """
+    hist_date = hist_date_list[hist_date_list.hist_date == trade_date]
+    index = hist_date.index.to_numpy()[0]
+    for i in range(1, 15):
+        if index - i < 0:
+            break
+        next_hist_date = hist_date_list.loc[index - i, ['hist_date', 'is_trade']]
+        if next_hist_date[1] == 1:
+            return next_hist_date.iat[0]
 
 
 def get_trade_day(nday=-4):
@@ -280,7 +305,31 @@ def get_month_firstday_lastday(howmany=12):
     return result_list
 
 
+def init_trade_date_list():
+    n = 0
+    result = list()
+    while True:
+        target_date = (now - timedelta(days=n)).strftime(default_format)
+        if is_tradeday(target_date):
+            date_list = [target_date, 1]
+        else:
+            date_list = [target_date, 0]
+        result.append(date_list)
+        print(date_list)
+
+        n += 1
+        if n == 3650:
+            break
+    result_df = pd.DataFrame(result, columns=['trade_date', 'is_trade'])
+    print(result_df)
+    result_df.to_csv("hist_trade_date.csv")
+
+
 if __name__ == '__main__':
+    print(get_next_trade_day('2019-12-06'))
+    print(get_previous_trade_day('2019-12-08'))
+    # init_trade_date_list()
+
     print(get_latest_trade_date(5))
     # print(get_month_firstday_lastday(8))
     # print(this_month_start)
