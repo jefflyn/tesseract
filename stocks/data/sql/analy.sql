@@ -6,7 +6,7 @@ group by code
 having count(1) > 2;
 
 select * from hist_trade_day where code=600278 order by trade_date desc;
--- 验证每天trade data etl
+# 验证每天trade data etl
 select trade_date, count(1) from hist_trade_day where trade_date >= '2019-12-01' group by trade_date order by trade_date desc;
 select trade_date, count(1) from hist_index_day where trade_date >= '2019-12-01' group by trade_date order by trade_date desc;
 -- daily market data
@@ -30,6 +30,9 @@ left join
       from hist_index_day where trade_date >= '2019-06-01' group by trade_date) as i
 on l.trade_date = i.trade_date
 order by l.trade_date desc;
+
+-- hist weekly data
+select count(1) from hist_weekly;
 
 -- ma data
 select count(distinct ts_code) from hist_ma_day;
@@ -324,8 +327,8 @@ and name not like '%ST%'
 order by count desc, wave_a;
 
 -- 1、超跌选股，包含次新股（低风险，长线投资）
-select c.concepts, bd.pe, bd.pe_ttm, bd.turnover_rate, s.*
-from select_result_all s left join basic_daily bd on s.code = bd.code left join concepts c on s.code = c.code
+select *
+from select_result_all
 where name not like '%ST%' -- and list_date < 20180901
   and pe_ttm is not null
   and abs(pe - pe_ttm) <= 10
@@ -347,13 +350,13 @@ and list_date < 20190101
 order by count desc, wave_a;
 
 -- 3、本月涨停选股，不含次新股（高风险，适合超短线）
-select c.concepts, bd.pe, bd.pe_ttm, bd.turnover_rate, s.*
-from select_result_all s left join basic_daily bd on s.code = bd.code left join concepts c on s.code = c.code
-where s.code in (select code from hist_trade_day where pct_change > 9.8 and code not like '688%' and trade_date >= '2019-08-01')
-and s.c30d > 2
+select *
+from select_result_all
+where code in (select code from hist_trade_day where pct_change > 9.8 and code not like '688%' and trade_date >= '2019-08-01')
+and c30d > 2
 and list_date < 20190101
 and pe_ttm is not null
-order by s.wave_a;
+order by wave_a;
 
 
 select code, count(1) from hist_trade_day where pct_change >= 9.8 and trade_date >= '2019-08-01'
@@ -365,5 +368,4 @@ select * from select_result_all where code like '%002486%';
 SELECT * FROM hist_trade_day ORDER BY code LIMIT 1000000, 10;
 SELECT * FROM hist_trade_day WHERE code >= (SELECT code FROM hist_trade_day LIMIT 1000000, 1) LIMIT 10;
 
-select count(1) from hist_weekly;
 
