@@ -201,9 +201,9 @@ def select_result(codeset=None, filename=''):
             luphigh = lupcountdf.at[0, 'lup_high']
 
             for fire_date in fire_dates:
-                fire_hist = data_util.get_hist_trade(code=code, start=fire_date, end=fire_date)
-                if fire_hist.empty is False:
-                    call_prices.append('<=' + str(fire_hist.at[0, 'close']))
+                fire_pre_hist = data_util.get_pre_hist_trade(code, fire_date)
+                if fire_pre_hist.empty is False:
+                    call_prices.append('<=' + str(fire_pre_hist.at[0, 'close']))
 
         curt_data.append(lupcount)
         curt_data.append(lup_count)
@@ -386,7 +386,7 @@ def get_limitup_space(df):
 def get_warn_space(df):
     price = float(df[0])
     low = float(df[1])
-    return (price - low)
+    return price - low
 
 
 if __name__ == '__main__':

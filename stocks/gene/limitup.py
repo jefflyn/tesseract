@@ -76,7 +76,7 @@ def get_fire_date(date_list=None):
                 index_flag = nxt_index
                 break
         if continue_count > 2:
-            fire_date_list.append(date_util.get_previous_trade_day(date_list[index]))
+            fire_date_list.append(date_list[index])
     end_time = date_util.get_now()
     logger.debug("end to %s, total consume time: %s", str(end_time), str((end_time - begin_time).seconds))
     return fire_date_list

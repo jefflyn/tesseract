@@ -196,6 +196,29 @@ def get_hist_trade(code=None, is_index=False, start=None, end=None):
     return df
 
 
+def get_pre_hist_trade(code, trade_date, is_index=False):
+    """
+    获取历史日k
+    :param code: str
+    :param trade_date: str
+    :param is_index: boolean
+    :return:
+    """
+    table_name = 'hist_trade_day' if is_index is False else 'hist_index_day'
+    sql = 'select * from ' + table_name + ' where 1=1 '
+    if isinstance(code, str):
+        codes = list()
+        codes.append(code)
+        code = codes
+        sql += 'and code in :code '
+    sql += 'and trade_date <:trade_date '
+    sql += 'order by trade_date desc limit 1 '
+    params = {'code': code, 'trade_date': trade_date}
+    # logs.info(sql + ' ' + str(params))
+    df = read_sql(sql, params=params)
+    return df
+
+
 def get_monitor_stocks():
     df = read_query('select * from monitor_pool where is_valid=1')
     return df
