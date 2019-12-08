@@ -187,6 +187,7 @@ def select_result(codeset=None, filename=''):
         lupcountq4 = 0
         fire_dates = []
         call_prices = []
+        call_price = bottom
         luplow = 0
         luphigh = 0
         lupcountdf = limitup.count(limitupdf)
@@ -205,7 +206,9 @@ def select_result(codeset=None, filename=''):
             for fire_date in fire_dates:
                 fire_pre_hist = data_util.get_pre_hist_trade(code, fire_date)
                 if fire_pre_hist.empty is False:
-                    call_prices.append('<=' + str(fire_pre_hist.at[0, 'close']))
+                    fire_pre_close = fire_pre_hist.at[0, 'close']
+                    call_prices.append('<=' + str(fire_pre_close))
+                    call_price = fire_pre_close
 
         curt_data.append(lupcount)
         curt_data.append(lup_count)
@@ -216,6 +219,8 @@ def select_result(codeset=None, filename=''):
         curt_data.append(lupcountq4)
         curt_data.append(str(fire_dates))
         curt_data.append(str(call_prices))
+        curt_data.append(current_price - call_price)
+
         curt_data.append(luplow)
         curt_data.append(luphigh)
 
@@ -260,10 +265,10 @@ def select_result(codeset=None, filename=''):
 
         data_list.append(curt_data)
     columns = ['concepts', 'pe', 'pe_ttm', 'turnover_rate', 'code', 'name', 'industry', 'area', 'list_date',
-               'price', 'pct', 'wave_detail', 'wave_a', 'wave_b', 'bottom',
-               'uspace%', 'dspace%', 'top', 'position%', 'buy1', 'buy2', 'buy3',
-               'count', 'count_', 'c30d', 'cq1', 'cq2', 'cq3', 'cq4', 'fdate', 'call_price', 'lup_low', 'lup_high',
-               'change_7d', 'gap', 'gap_space', 'sum_30d', 'updays', 'sumup%', 'multi_vol', 'vol_rate']
+               'price', 'pct', 'wave_detail', 'wave_a', 'wave_b', 'bottom', 'uspace%', 'dspace%', 'top', 'position%',
+               'buy1', 'buy2', 'buy3', 'count', 'count_', 'c30d', 'cq1', 'cq2', 'cq3', 'cq4', 'fdate', 'call_price',
+               'call_diff', 'lup_low', 'lup_high', 'change_7d', 'gap', 'gap_space', 'sum_30d', 'updays', 'sumup%',
+               'multi_vol', 'vol_rate']
     resultdf = pd.DataFrame(data_list, columns=columns)
     # resultdf = resultdf.sort_values('sum_30d', axis=0, ascending=False, inplace=False, kind='quicksort', na_position='last')
 
@@ -271,7 +276,7 @@ def select_result(codeset=None, filename=''):
         ['concepts', 'pe', 'pe_ttm', 'turnover_rate', 'code', 'name', 'industry', 'area', 'list_date',
          'pct', 'wave_detail', 'wave_a', 'wave_b', 'bottom', 'uspace%', 'dspace%', 'top', 'position%',
          'gap', 'gap_space', 'sum_30d', 'count', 'count_', 'c30d', 'cq1', 'cq2', 'cq3', 'cq4',
-         'fdate', 'price', 'call_price', 'lup_low', 'lup_high',
+         'fdate', 'price', 'call_price', 'call_diff', 'lup_low', 'lup_high',
          'buy1', 'buy2', 'buy3', 'change_7d', 'updays', 'sumup%', 'vol_rate', 'multi_vol']]
     resultdf['trade_date'] = last_trade_date
     resultdf['select_time'] = dt.now()
