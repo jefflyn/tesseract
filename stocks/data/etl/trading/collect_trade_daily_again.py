@@ -66,7 +66,8 @@ def recollect_hist_daily(sql='select b.ts_code, b.code from select_result_all s 
             logger.info('Redo Seq: ' + str(i + 1) + ' of ' + str(total) + '   Code: ' + str(ts_codes[i]))
             c_len = df.shape[0]
         for j in range(c_len):
-            resu0 = list(df.ix[c_len - 1 - j])
+            resu0 = list(df.iloc[c_len - 1 - j])
+
             resu = []
             for k in range(len(resu0)):
                 if str(resu0[k]) == 'nan':
@@ -93,6 +94,6 @@ def recollect_hist_daily(sql='select b.ts_code, b.code from select_result_all s 
 
 if __name__ == '__main__':
     # sql = 'select ts_code, code from hist_trade_day where open=0 and high=0'
-    sql = 'select ts_code, code from basic where code=600278'
+    sql = 'select ts_code, code from basic where code=000862'
     recollect_hist_daily(sql, False)
     # recollect_hist_daily()

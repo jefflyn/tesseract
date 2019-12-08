@@ -19,7 +19,7 @@ if __name__ == '__main__':
     # selector.select_result(codes, 'region')
 
     # ##select from concepts -大基建、大消费、大金融、大健康、大科技、大军工
-    # concept_codes = data_util.get_code_by_concept('磷')
+    # concept_codes = data_util.get_code_by_concept('基建')
     # selector.select_result(concept_codes, 'concept')
 
     # ##select from ma

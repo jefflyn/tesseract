@@ -54,7 +54,7 @@ def collect_weekly():
             if i > 0 and i % 120 == 0:
                 end_time = date_util.get_now()
                 time_diff = (end_time - begin_time).seconds
-                sleep_time = 63 - time_diff
+                sleep_time = 60 - time_diff
                 if sleep_time > 0:
                     logger.info('sleep for ' + str(sleep_time) + ' seconds ...')
                     time.sleep(sleep_time)

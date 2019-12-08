@@ -183,7 +183,7 @@ def select_result(codeset=None, filename=''):
         lupcountq2 = 0
         lupcountq3 = 0
         lupcountq4 = 0
-        lup_fireday = '-'
+        fire_dates = []
         call_prices = []
         luplow = 0
         luphigh = 0
@@ -196,13 +196,13 @@ def select_result(codeset=None, filename=''):
             lupcountq2 = lupcountdf.at[0, 'cq2']
             lupcountq3 = lupcountdf.at[0, 'cq3']
             lupcountq4 = lupcountdf.at[0, 'cq4']
-            fire_days = lupcountdf.at[0, 'fdate']
+            fire_dates = lupcountdf.at[0, 'fdate']
             luplow = lupcountdf.at[0, 'lup_low']
             luphigh = lupcountdf.at[0, 'lup_high']
 
-            for fire_date in fire_days:
+            for fire_date in fire_dates:
                 fire_hist = data_util.get_hist_trade(code=code, start=fire_date, end=fire_date)
-                if fire_hist.empty is False and current_price < fire_hist.at[0, 'close']:
+                if fire_hist.empty is False:
                     call_prices.append('<=' + str(fire_hist.at[0, 'close']))
 
         curt_data.append(lupcount)
@@ -212,7 +212,7 @@ def select_result(codeset=None, filename=''):
         curt_data.append(lupcountq2)
         curt_data.append(lupcountq3)
         curt_data.append(lupcountq4)
-        curt_data.append(lup_fireday)
+        curt_data.append(str(fire_dates))
         curt_data.append(str(call_prices))
         curt_data.append(luplow)
         curt_data.append(luphigh)
@@ -266,10 +266,10 @@ def select_result(codeset=None, filename=''):
     # resultdf = resultdf.sort_values('sum_30d', axis=0, ascending=False, inplace=False, kind='quicksort', na_position='last')
 
     resultdf = resultdf[
-        ['concepts', 'pe', 'pe_ttm', 'turnover_rate', 'code', 'name', 'industry', 'area', 'list_date', 'price',
+        ['concepts', 'pe', 'pe_ttm', 'turnover_rate', 'code', 'name', 'industry', 'area', 'list_date',
          'pct', 'wave_detail', 'wave_a', 'wave_b', 'bottom', 'uspace%', 'dspace%', 'top', 'position%',
          'gap', 'gap_space', 'sum_30d', 'count', 'count_', 'c30d', 'cq1', 'cq2', 'cq3', 'cq4',
-         'fdate', 'call_price', 'lup_low', 'lup_high',
+         'fdate', 'price', 'call_price', 'lup_low', 'lup_high',
          'buy1', 'buy2', 'buy3', 'change_7d', 'updays', 'sumup%', 'vol_rate', 'multi_vol']]
     resultdf['trade_date'] = last_trade_date
     resultdf['select_time'] = dt.now()

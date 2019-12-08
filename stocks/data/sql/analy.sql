@@ -5,7 +5,7 @@ select code, count(1) from hist_trade_day where trade_date>='2019-10-01' and hig
 group by code
 having count(1) > 2;
 
-select * from hist_trade_day where code=600278 order by trade_date desc;
+select count(1) from hist_trade_day where code=000862;
 # 验证每天trade data etl
 select trade_date, count(1) from hist_trade_day where trade_date >= '2019-12-01' group by trade_date order by trade_date desc;
 select trade_date, count(1) from hist_index_day where trade_date >= '2019-12-01' group by trade_date order by trade_date desc;
