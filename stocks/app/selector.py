@@ -213,7 +213,7 @@ def select_result(codeset=None, filename=''):
         curt_data.append(lupcountq3)
         curt_data.append(lupcountq4)
         curt_data.append(lup_fireday)
-        curt_data.append(call_prices)
+        curt_data.append(str(call_prices))
         curt_data.append(luplow)
         curt_data.append(luphigh)
 
@@ -263,7 +263,7 @@ def select_result(codeset=None, filename=''):
                'count', 'count_', 'c30d', 'cq1', 'cq2', 'cq3', 'cq4', 'fdate', 'call_price', 'lup_low', 'lup_high',
                'change_7d', 'gap', 'gap_space', 'sum_30d', 'updays', 'sumup%', 'multi_vol', 'vol_rate']
     resultdf = pd.DataFrame(data_list, columns=columns)
-    resultdf = resultdf.sort_values('sum_30d', axis=0, ascending=False, inplace=False, kind='quicksort', na_position='last')
+    # resultdf = resultdf.sort_values('sum_30d', axis=0, ascending=False, inplace=False, kind='quicksort', na_position='last')
 
     resultdf = resultdf[
         ['concepts', 'pe', 'pe_ttm', 'turnover_rate', 'code', 'name', 'industry', 'area', 'list_date', 'price',

@@ -51,7 +51,7 @@ def get_fire_date(date_list=None):
     :return: list of previous date
     """
     begin_time = date_util.get_now()
-    logger.info('begin from %s' % str(begin_time))
+    logger.debug('begin from %s' % str(begin_time))
     if date_list is None:
         return list()
     fire_date_list = list()
@@ -78,7 +78,7 @@ def get_fire_date(date_list=None):
         if continue_count > 2:
             fire_date_list.append(date_util.get_previous_trade_day(date_list[index]))
     end_time = date_util.get_now()
-    logger.info("end to %s, total consume time: %s", str(end_time), str((end_time - begin_time).seconds))
+    logger.debug("end to %s, total consume time: %s", str(end_time), str((end_time - begin_time).seconds))
     return fire_date_list
 
 
