@@ -85,6 +85,7 @@ def merge_select_result():
 
 
 def select_result(codeset=None, filename=''):
+    begin_time = date_util.get_now()
     if (codeset is None or len(codeset) == 0) and filename != 'all':
         return
     trade_date_list = date_util.get_latest_trade_date(3)
@@ -111,7 +112,8 @@ def select_result(codeset=None, filename=''):
     wavedfset = pd.DataFrame(columns=['code', 'begin', 'end', 'status', 'begin_price', 'end_price', 'days', 'change'])
     for index, row in hist_trade_df.iterrows():
         code = row['code']
-        logger.info('count down ' + str(size) + ' >>> processing ' + code)
+        if index % 100 == 0:
+            logger.info('count down from ' + str(size) + ' >>> processing ' + code)
         size -= 1
         open = float(row['open'])
         current_price = float(row['close'])
@@ -284,7 +286,9 @@ def select_result(codeset=None, filename=''):
         wavedfset.to_excel(writer, sheet_name='wave')
         writer.save()
         logger.info('save excel success')
-    logger.info('select stocks finished! result size: %d\n' % len(resultdf.index.to_numpy()))
+    end_time = date_util.get_now()
+    logger.info('select stocks finished, consume time %d secs! result size: %d\n' %
+                ((end_time - begin_time).seconds, len(resultdf.index.to_numpy())))
     return resultdf
 
 
