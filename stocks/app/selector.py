@@ -186,6 +186,7 @@ def select_result(codeset=None, filename=''):
         lupcountq3 = 0
         lupcountq4 = 0
         fire_dates = []
+        last_f_date = ''
         call_prices = []
         call_price = bottom
         luplow = 0
@@ -204,6 +205,7 @@ def select_result(codeset=None, filename=''):
             luphigh = lupcountdf.at[0, 'lup_high']
 
             for fire_date in fire_dates:
+                last_f_date = fire_date
                 fire_pre_hist = data_util.get_pre_hist_trade(code, fire_date)
                 if fire_pre_hist.empty is False:
                     fire_pre_close = fire_pre_hist.at[0, 'close']
@@ -218,8 +220,10 @@ def select_result(codeset=None, filename=''):
         curt_data.append(lupcountq3)
         curt_data.append(lupcountq4)
         curt_data.append(str(fire_dates))
+        curt_data.append(last_f_date)
+
         curt_data.append(str(call_prices))
-        curt_data.append(current_price - call_price)
+        curt_data.append(round(current_price - call_price, 2))
 
         curt_data.append(luplow)
         curt_data.append(luphigh)
@@ -266,9 +270,9 @@ def select_result(codeset=None, filename=''):
         data_list.append(curt_data)
     columns = ['concepts', 'pe', 'pe_ttm', 'turnover_rate', 'code', 'name', 'industry', 'area', 'list_date',
                'price', 'pct', 'wave_detail', 'wave_a', 'wave_b', 'bottom', 'uspace%', 'dspace%', 'top', 'position%',
-               'buy1', 'buy2', 'buy3', 'count', 'count_', 'c30d', 'cq1', 'cq2', 'cq3', 'cq4', 'fdate', 'call_price',
-               'call_diff', 'lup_low', 'lup_high', 'change_7d', 'gap', 'gap_space', 'sum_30d', 'updays', 'sumup%',
-               'multi_vol', 'vol_rate']
+               'buy1', 'buy2', 'buy3', 'count', 'count_', 'c30d', 'cq1', 'cq2', 'cq3', 'cq4', 'fdate', 'last_f_date',
+               'call_price', 'call_diff', 'lup_low', 'lup_high', 'change_7d', 'gap', 'gap_space', 'sum_30d',
+               'updays', 'sumup%', 'multi_vol', 'vol_rate']
     resultdf = pd.DataFrame(data_list, columns=columns)
     # resultdf = resultdf.sort_values('sum_30d', axis=0, ascending=False, inplace=False, kind='quicksort', na_position='last')
 
@@ -276,7 +280,7 @@ def select_result(codeset=None, filename=''):
         ['concepts', 'pe', 'pe_ttm', 'turnover_rate', 'code', 'name', 'industry', 'area', 'list_date',
          'pct', 'wave_detail', 'wave_a', 'wave_b', 'bottom', 'uspace%', 'dspace%', 'top', 'position%',
          'gap', 'gap_space', 'sum_30d', 'count', 'count_', 'c30d', 'cq1', 'cq2', 'cq3', 'cq4',
-         'fdate', 'price', 'call_price', 'call_diff', 'lup_low', 'lup_high',
+         'fdate', 'last_f_date', 'price', 'call_price', 'call_diff', 'lup_low', 'lup_high',
          'buy1', 'buy2', 'buy3', 'change_7d', 'updays', 'sumup%', 'vol_rate', 'multi_vol']]
     resultdf['trade_date'] = last_trade_date
     resultdf['select_time'] = dt.now()
@@ -399,7 +403,7 @@ def get_warn_space(df):
 
 
 if __name__ == '__main__':
-    logger.info(select_result('000862'))
+    logger.info(select_result('600345'))
     if len(argv) < 2:
         print("Invalid args! At least 2 args like: python xxx.py code1[,code2,...]")
         sys.exit(0)

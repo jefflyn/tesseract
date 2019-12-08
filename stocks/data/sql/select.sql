@@ -44,9 +44,10 @@ order by count desc, wave_a;
 select * from select_result_all
 where name not like '%ST%'
   and call_diff < 0
+    and (wave_a < 15 and wave_b < 15 or wave_b <= -30)
   and (pe_ttm is not null or pe is not null)
 #  and pe_ttm < pe -- 价值向上趋势
-  and list_date < 20190101
+  and list_date < 20181215
 order by call_diff, count desc;
 
 -- 3、本月涨停选股，不含次新股（高风险，适合超短线）
