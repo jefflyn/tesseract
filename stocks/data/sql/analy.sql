@@ -144,26 +144,6 @@ select distinct d.code, c.name from concept c inner join concept_detail d
   on c.code = d.concept_code
 where c.name like '%化工%';
 
--- select result
-select a.*, d.* from select_result_all a left join basic_daily d on a.code = d.code
-# where a.code = '002813';
-where a.name like '%天和%'
-order by `dspace%` asc;
-
-select area, count(1) from basic group by area order by count(1) desc;
-select * from basic_daily where code='';
-select * from select_result_all where abs(gap) > 12;
-select * from select_result_all where list_date < 20190101 and name not like '%ST%' and gap > 0 order by gap desc;
-select * from select_result_all where list_date < 20190101 and name not like '%ST%' and pct > 9.9 order by `position%`;
-select * from select_result_all order by `uspace%` asc;
-select * from select_result_all where list_date < 20190101 and name not like '%ST%'
-                                  and area='江苏' order by wave_a, wave_b asc;
-select * from select_result_all order by vol_rate desc;
-select * from select_result_all where name like '%东方%';
-select * from select_result_all where name in ('锋龙','科融环境','德尔未来');
-select * from select_result_concept order by wave_b asc;
-select * from select_result_concept order by `uspace%` asc;
-
 -- industry temp table
 drop table IF EXISTS temp_industry;
 CREATE TEMPORARY TABLE IF NOT EXISTS temp_industry
@@ -189,48 +169,14 @@ select * from basic where code='000820';
 -- my pool
 select * from my_stock_pool;
 select * from monitor_pool;
-select * from daily_gap_trace_a where s_date='2019-06-21' order by position;
-select * from daily_gap_trace_b where s_date='2019-06-18' order by s_date desc;
-
-update daily_gap_trace_a g inner join hist_trade_day h on g.v_date=h.trade_date and g.code=h.code
-set g.o_profit=(h.close-h.open)/h.open*100, g.l_profit=(h.close-h.low)/h.low*100;
-
-update daily_gap_trace_b g inner join hist_trade_day h on g.v_date=h.trade_date and g.code=h.code
-set g.o_profit=(h.close-h.open)/h.open*100, g.l_profit=(h.close-h.low)/h.low*100;
-
-select * from select_result_all where abs(gap) > 12;
-# delete from daily_gap_trace_a where s_date='2019-06-19';
--- 插入向上跳空缺口，并且当天涨幅大于9%
-  insert into daily_gap_trace_a (s_date, v_date, code, name, industry, cost, bottom, share, b_up, position, gap, g_space, c30d, vol, uds)
-select trade_date, '2019-06-25', code, name, industry, price, bottom, 100, `uspace%`, `position%`, gap, gap_space, c30d, vol_rate, updays
-  from select_result_all
-where list_date < 20190101 and name not like '%ST%' and pct > 9.9;
-
-  insert into daily_gap_trace_b (s_date, v_date, code, name, industry, cost, bottom, share, b_up, position, gap, g_space, c30d, vol, uds)
-select trade_date, '2019-06-22', code, name, industry, price, bottom, 100, `uspace%`, `position%`, gap, gap_space, c30d, vol_rate, updays
-  from select_result_all
-where list_date < 20190101 and name not like '%ST%' and pct > 9.9 and `position%` >= 40;
-
-select * from select_result_all where (wave_a between -75 and -60 or wave_b between -75 and -60)
-  and name not like '%ST%' and list_date < 20180618;
-select * from my_stock_pool;
-select * from monitor_pool;
-select * from my_stock_pool where platform = 'cf';
-select * from my_stock_pool where platform = 'df';
-select * from my_stock_pool where platform = 'pa';
-select * from my_stock_pool where platform = 'sim';
-select * from select_result_all where code in(600217);
-select * from select_result_all where name like '%信息%';
 
 INSERT INTO stocks.my_stock_pool (alias, code, concept, platform, cost, bottom, share, is_hold, grade, hold_date, close_date, remark)
 VALUES ('银星能源', '000862', '电力', 'cf', 6.87, 9.89, 4400, 1, 'a', current_date(), null, null);
 
 select concat(round(sum(DATA_LENGTH/1024/1024),2),'M')
 from information_schema.tables where table_schema='stocks' and table_name='select_wave_all';
-
 select * from basic where name like '%ST%';
-select * from select_wave_all where code in (select code from basic where name not like '%ST%' and list_date < 20180618);
-select * from select_result_all where name like '%ST%';
+
 -- forecast preview
 select * from profit_forecast;
 select * from profit_forecast where code='002895';
@@ -248,14 +194,10 @@ from hist_trade_day a inner join (select code, max(trade_date) last_date from hi
          on a.code=b.code and a.trade_date = b.last_date
 where a.code in('600126', '002895');
 
-select * from select_wave_all order by `change` desc;
-
 select * from hist_weekly where code='000958' order by trade_date desc limit 20;
 select * from hist_monthly where code=000958;
 
 select * from weekly_gap where gap > 0 order by gap desc;
-
-select * from hist_weekly where code='300123';
 
 select b.code,b.name,sc.province,sc.city,b.list_date
 from basic b inner join stock_company sc on b.ts_code = sc.ts_code
@@ -265,107 +207,26 @@ select b.ts_code, b.code
 from basic b inner join stock_company sc on b.ts_code = sc.ts_code
 where sc.province like '%佛山%' or sc.city like '%佛山%';
 
-select * from select_result_all where code not like '3%';
 select * from stock_company where ts_code='002898.SZ';
 
-select c.concepts, bd.pe, bd.pe_ttm, s.* from select_result_all s left join basic_daily bd on s.code = bd.code left join concepts c on s.code = c.code
--- where name not like '%ST%' and list_date < 20190101
-order by wave_a;
-
-select * from select_result_all where list_date between 20160101 and 20170101;
-select * from select_result_all where list_date between 20170101 and 20180101;
-select * from select_result_all where list_date between 20180101 and 20190101;
-select * from select_result_all where name like '%精准%';
 select * from basic_daily;
 select * from concept where name like '%垃圾%';
 insert into concepts
 select cd.code, GROUP_CONCAT(c.name) as concepts from concept_detail cd inner join concept c on cd.concept_code=c.code
 # where cd.name like '%精准%'
 group by code;
-select * from select_result_concept;
 select * from hist_weekly where trade_date='2019-04-30';
 select * from hist_index_day where code='000001' and
                                    trade_date in('2016-09-02','2016-09-05','2016-09-06',
                                                  '2017-07-06','2017-07-07','2017-07-10',
                                                  '2018-11-29','2018-11-30','2018-12-03');
 
-
 select * from wave_data_2019 where `change` >= 100 order by end desc;
 
 select * from wave_data_2019 where code = 002118;
-
-select * from select_result_wave order by wave_a, wave_b;
-
-select * from select_result_wave where name like '%国风%';
-
-select * from select_result_wave;
 
 select * from monitor_pool;
 select * from my_stock_pool;
 select * from my_stock_pool where platform = 'cf';
 select * from my_stock_pool where platform = 'df';
 select * from my_stock_pool where platform = 'pa';
-
--- 条件查询select data
-select *
-from select_result_all
-where 1 = 1
-and name not like '%ST%'
-# and industry like '%证券%'
-# and list_date < 20190101
-# and pe_ttm is not null
-# and name like '%津劝业%'
-# and c.concepts like '%油%'
-# and area like '%甘肃%'
-# and count > 0
-# and wave_a < 0
-# and wave_b < 15
-# and code in (select code from my_stock_pool where platform in ('cf')) -- self position
-# and code in (select code from hist_trade_day where trade_date>='2019-09-01' and trade_date<='2019-12-31' and pct_change>9.9-- and high=low
-#     group by code
-#     having count(1) > 3) -- 时间区间的一字
-order by count desc, wave_a;
-
--- 1、超跌选股，包含次新股（低风险，长线投资）
-select *
-from select_result_all
-where name not like '%ST%' -- and list_date < 20180901
-  and pe_ttm is not null
-  and abs(pe - pe_ttm) <= 10
-#   and pe_ttm < pe -- 价值向上趋势
-  and (wave_a < -40 and wave_b < 15 or wave_b <= -30)
-  and count > 0 and count < 7
-# and concepts like '%黄金%'
-order by wave_a;
-
--- 2、超跌活跃选股，不含次新股（中风险，适合中短线）
-select *
-from select_result_all
-where name not like '%ST%'
-and (pe_ttm is not null or pe is not null)
-#  and pe_ttm < pe -- 价值向上趋势
-and (wave_a < -40 and wave_b < 15 or wave_b <= -30)
-and count >= 8
-and list_date < 20190101
-order by count desc, wave_a;
-
--- 3、本月涨停选股，不含次新股（高风险，适合超短线）
-select *
-from select_result_all
-where code in (select code from hist_trade_day where pct_change > 9.8 and code not like '688%' and trade_date >= '2019-08-01')
-and c30d > 2
-and list_date < 20190101
-and pe_ttm is not null
-order by wave_a;
-
-
-select code, count(1) from hist_trade_day where pct_change >= 9.8 and trade_date >= '2019-08-01'
-group by code
-order by count(1) desc;
-
-select * from select_result_all where code like '%002486%';
-
-SELECT * FROM hist_trade_day ORDER BY code LIMIT 1000000, 10;
-SELECT * FROM hist_trade_day WHERE code >= (SELECT code FROM hist_trade_day LIMIT 1000000, 1) LIMIT 10;
-
-
