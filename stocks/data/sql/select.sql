@@ -3,6 +3,9 @@ select *
 from select_result_all
 where 1 = 1
 and name not like '%ST%'
+and last_f_date <> ''
+#     and call_diff
+
 # and industry like '%证券%'
 # and list_date < 20190101
 # and pe_ttm is not null

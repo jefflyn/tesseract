@@ -223,7 +223,7 @@ def select_result(codeset=None, filename=''):
         curt_data.append(last_f_date)
 
         curt_data.append(str(call_prices))
-        curt_data.append(round(current_price - call_price, 2))
+        curt_data.append(round((current_price - call_price) / current_price * 100, 2))
 
         curt_data.append(luplow)
         curt_data.append(luphigh)
