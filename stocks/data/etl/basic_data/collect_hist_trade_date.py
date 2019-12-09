@@ -29,7 +29,7 @@ def init_trade_date_list():
             break
     result_df = pd.DataFrame(result, columns=['hist_date', 'is_trade'])
     print(result_df)
-    result_df.to_csv("hist_trade_date.csv")
+    # result_df.to_csv("hist_trade_date.csv")
 
 
 def collect_trade_date():
@@ -47,7 +47,7 @@ def collect_trade_date():
         hist_date_df = insert_df.append(hist_date_df, ignore_index=True, sort=False)
         hist_date_df = hist_date_df[['hist_date', 'is_trade']]
         print(hist_date_df.head(10))
-        hist_date_df.to_csv("hist_trade_date.csv")
+        hist_date_df.to_csv('hist_trade_date.csv')
     else:
         logger.info('collect_trade_date %s existed!' % date_util.get_today())
 

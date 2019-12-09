@@ -198,6 +198,8 @@ def get_previous_trade_day(trade_date=today):
     :return: str 'yyyy-MM-dd'
     """
     hist_date = hist_date_list[hist_date_list.hist_date == trade_date]
+    if hist_date.empty is True:
+        print(trade_date)
     index = hist_date.index.to_numpy()[0]
     for i in range(1, 15):
         next_hist_date = hist_date_list.loc[index + i, ['hist_date', 'is_trade']]
@@ -294,25 +296,6 @@ def get_month_firstday_lastday(howmany=12):
     result_list = result_list[::-1]
     return result_list
 
-
-def init_trade_date_list():
-    n = 0
-    result = list()
-    while True:
-        target_date = (now - timedelta(days=n)).strftime(default_format)
-        if is_tradeday(target_date):
-            date_list = [target_date, 1]
-        else:
-            date_list = [target_date, 0]
-        result.append(date_list)
-        print(date_list)
-
-        n += 1
-        if n == 3650:
-            break
-    result_df = pd.DataFrame(result, columns=['trade_date', 'is_trade'])
-    print(result_df)
-    result_df.to_csv("hist_trade_date.csv")
 
 
 if __name__ == '__main__':

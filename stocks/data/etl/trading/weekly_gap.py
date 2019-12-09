@@ -74,7 +74,7 @@ def calc_weekly_gap():
             logger.debug('Redo Seq: ' + str(i + 1) + ' of ' + str(total) + '   Code: ' + str(stock_pool[i]))
             c_len = df.shape[0]
         for j in range(c_len):
-            resu0 = list(df.ix[c_len - 1 - j])
+            resu0 = list(df.loc[c_len - 1 - j])
             resu = []
             for k in range(len(resu0)):
                 if str(resu0[k]) == 'nan':
