@@ -88,7 +88,7 @@ def select_result(codeset=None, filename=''):
     begin_time = date_util.get_now()
     if (codeset is None or len(codeset) == 0) and filename != 'all':
         return
-    trade_date_list = date_util.get_latest_trade_date(3)
+    trade_date_list = date_util.get_latest_trade_date(4)
     hist_trade_df = None
     for trade_date in trade_date_list:
         hist_trade_df = data_util.get_hist_trade(code=codeset, start=trade_date, end=last_trade_date)
@@ -403,7 +403,7 @@ def get_warn_space(df):
 
 
 if __name__ == '__main__':
-    logger.info(select_result('600345'))
+    logger.info(select_result('300099'))
     if len(argv) < 2:
         print("Invalid args! At least 2 args like: python xxx.py code1[,code2,...]")
         sys.exit(0)

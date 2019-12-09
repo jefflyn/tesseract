@@ -34,7 +34,7 @@ if __name__ == '__main__':
     hour = date_util.now.hour
     if hour < 10:
         sys.exit(0)
-    trade_date = date_util.get_latest_trade_date(2, format=date_util.format_flat)
+    trade_date = date_util.get_latest_trade_date(2)
     for i in range(len(trade_date)):
         df = pro.query('daily_basic', ts_code='', trade_date=trade_date[i],
                        fields='ts_code,trade_date,close,turnover_rate,turnover_rate_f,volume_ratio,pe,pe_ttm,pb,ps,'

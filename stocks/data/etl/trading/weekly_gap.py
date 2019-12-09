@@ -27,14 +27,14 @@ def calc_weekly_gap():
     random_stocks = ['600000.SH', '600016.SH', '601988.SH', '600019.SH', '600028.SH', '600029.SH',
                      '600030.SH', '600036.SH', '600048.SH', '600519.SH']
     current = random.randint(0, 9)
-    last_trade_date = date_util.get_latest_trade_date(format=date_util.default_format)[0]
+    last_trade_date = date_util.get_latest_trade_date()[0]
     check_sql = "select 1 from hist_weekly where ts_code='" + random_stocks[current] \
                 + "' and trade_date='" + str(last_trade_date) + "'"
     total = cursor.execute(check_sql)
     if total > 0:
         logger.info(last_trade_date + " trade data existed")
         # sys.exit(0)
-    last_trade_date = date_util.get_latest_trade_date(format=date_util.format_flat)[0]
+    last_trade_date = date_util.get_latest_trade_date()[0]
     df = pro.weekly(ts_code=random_stocks[current], adj='qfq', start_date=last_trade_date, end_date=last_trade_date)
     c_len = df.shape[0]
     if c_len == 0:

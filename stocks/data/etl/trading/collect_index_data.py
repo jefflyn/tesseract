@@ -13,13 +13,13 @@ if __name__ == '__main__':
     db = get_db()
     cursor = db.cursor()
     index_code = INDEX_LIST[0]
-    last_trade_date = date_util.get_latest_trade_date(format=date_util.default_format)[0]
+    last_trade_date = date_util.get_latest_trade_date()[0]
     check_sql = "select 1 from hist_index_day where ts_code='" + index_code + "' and trade_date='" + str(last_trade_date) + "'"
     total = cursor.execute(check_sql)
     if total > 0:
         logger.info(last_trade_date + " trade data existed")
         # sys.exit(0)
-    last_trade_date = date_util.get_latest_trade_date(format=date_util.format_flat)[0]
+    last_trade_date = date_util.get_latest_trade_date()[0]
     df = ts.pro_bar(api=pro, ts_code=index_code, asset='I', start_date=last_trade_date, end_date=last_trade_date)
     c_len = df.shape[0]
     if c_len == 0:  # 没有记录退出

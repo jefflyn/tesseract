@@ -173,19 +173,9 @@ def get_day_type(query_date):
         return -1
 
 
-def get_latest_trade_date(days=1, format=default_format):
-    if days <= 0:
-        days = 1
-    trade_date_list = list()
-    n = 0
-    while True:
-        target_date = (now - timedelta(days=n)).strftime(format)
-        if is_tradeday(target_date):
-            trade_date_list.append(target_date)
-        n += 1
-        if len(trade_date_list) == days:
-            break
-    return trade_date_list
+def get_latest_trade_date(days=1):
+    trade_dates = hist_date_list[hist_date_list.is_trade == 1].head(days)
+    return list(trade_dates['hist_date'])
 
 
 def is_tradeday(query_date=None):

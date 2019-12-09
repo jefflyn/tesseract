@@ -3,7 +3,8 @@ select *
 from select_result_all
 where 1 = 1
 and name not like '%ST%'
-and last_f_date <> ''
+  and code = '300099'
+# and last_f_date <> ''
 #     and call_diff
 
 # and industry like '%证券%'
