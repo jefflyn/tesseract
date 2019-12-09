@@ -97,9 +97,9 @@ def get_realtime(hddf=None, last_trade_data=None, sortby=None):
         change = price_diff / pre_close * 100
 
         index = list(hddf['code']).index(code)
-        cost = hddf.ix[index, 'cost']
+        cost = hddf.loc[index, 'cost']
         # cost = cost if cost > 1 else price
-        share = hddf.ix[index, 'share']
+        share = hddf.loc[index, 'share']
         wavedf = wave.get_wave(code)
         wavestr = wave.wave_to_str(wavedf, 6)
         wave_ab = wave.get_wave_ab(wavestr, 33)
@@ -107,14 +107,14 @@ def get_realtime(hddf=None, last_trade_data=None, sortby=None):
         wave_b = wave_ab[1]
 
         bdf = wave.get_bottom(wavedf)
-        bottom = hddf.ix[index, 'bottom']
+        bottom = hddf.loc[index, 'bottom']
         bottom_auto = bdf.loc[bdf.index[0], 'bottom']
         bottom_auto_flag = ''
         if bottom is None or bottom_auto < bottom:
             bottom = bottom_auto
             bottom_auto_flag = 'A'
 
-        top = bdf.ix[0, 'top']
+        top = bdf.at[0, 'top']
         dspace = (price - top) / top * 100
         current = 0
         amplitude = 0
