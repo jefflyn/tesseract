@@ -135,7 +135,8 @@ def select_result(codeset=None, filename=''):
         curt_data.append(basic.loc[code, 'name'])
         curt_data.append(basic.loc[code, 'industry'])
         curt_data.append(basic.loc[code, 'area'])
-        curt_data.append(basic.loc[code, 'list_date'])
+        list_date = str(basic.loc[code, 'list_date'])
+        curt_data.append(list_date)
         curt_data.append(current_price)
         curt_data.append(round(float(row['pct_change']), 2))
         # get wave data and bottom top
@@ -188,7 +189,8 @@ def select_result(codeset=None, filename=''):
         fire_dates = []
         last_f_date = ''
         call_prices = []
-        call_price = bottom
+        call_price = 0
+        call_diff = 0
         luplow = 0
         luphigh = 0
         lupcountdf = limitup.count(limitupdf)
@@ -205,7 +207,6 @@ def select_result(codeset=None, filename=''):
             luphigh = lupcountdf.at[0, 'lup_high']
 
             for fire_date in fire_dates:
-                last_f_date = fire_date
                 fire_pre_hist = data_util.get_pre_hist_trade(code, fire_date)
                 if fire_pre_hist.empty is False:
                     fire_pre_close = fire_pre_hist.at[0, 'close']
@@ -219,11 +220,18 @@ def select_result(codeset=None, filename=''):
         curt_data.append(lupcountq2)
         curt_data.append(lupcountq3)
         curt_data.append(lupcountq4)
+        if len(fire_dates) > 0:
+            last_f_date = fire_dates[-1]
+            call_diff = round((current_price - call_price) / current_price * 100, 2)
+            if (date_util.convert_to_date(list_date) - date_util.convert_to_date(last_f_date)).days == 0:
+                fire_dates = ''
+                last_f_date = ''
+                call_prices = ''
+                call_diff = 0
         curt_data.append(str(fire_dates))
         curt_data.append(last_f_date)
-
         curt_data.append(str(call_prices))
-        curt_data.append(round((current_price - call_price) / current_price * 100, 2))
+        curt_data.append(call_diff)
 
         curt_data.append(luplow)
         curt_data.append(luphigh)
@@ -403,7 +411,7 @@ def get_warn_space(df):
 
 
 if __name__ == '__main__':
-    logger.info(select_result('300099'))
+    logger.info(select_result('603068'))
     if len(argv) < 2:
         print("Invalid args! At least 2 args like: python xxx.py code1[,code2,...]")
         sys.exit(0)

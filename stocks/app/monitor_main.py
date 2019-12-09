@@ -33,6 +33,7 @@ if __name__ == '__main__':
 
             prices = str.split(alert_prices, ',')
             changes = str.split(alert_changes, ',')
+            print(' ', code, price, str(alert_prices), str(alert_changes), sep=' | ')
 
             for p in prices:
                 if price == float(p):

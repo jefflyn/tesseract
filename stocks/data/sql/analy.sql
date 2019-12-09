@@ -5,7 +5,7 @@ select code, count(1) from hist_trade_day where trade_date>='2019-10-01' and hig
 group by code
 having count(1) > 2;
 
-select * from hist_trade_day where code=600345;
+select * from hist_trade_day where code=601865;
 # 验证每天trade data etl
 select trade_date, count(1) from hist_trade_day where trade_date >= '2019-12-01' group by trade_date order by trade_date desc;
 select trade_date, count(1) from hist_index_day where trade_date >= '2019-12-01' group by trade_date order by trade_date desc;
@@ -222,7 +222,6 @@ select * from hist_index_day where code='000001' and
                                                  '2018-11-29','2018-11-30','2018-12-03');
 
 select * from wave_data_2019 where `change` >= 100 order by end desc;
-
 select * from wave_data_2019 where code = 002118;
 
 select * from monitor_pool;

@@ -94,6 +94,6 @@ def recollect_hist_daily(sql='select b.ts_code, b.code from select_result_all s 
 
 if __name__ == '__main__':
     # sql = 'select ts_code, code from hist_trade_day where open=0 and high=0'
-    sql = 'select ts_code, code from basic where code=600345'
+    sql = 'select ts_code, code from basic where code=300782'
     recollect_hist_daily(sql, False)
     # recollect_hist_daily()
