@@ -28,9 +28,9 @@ select *
 from select_result_all
 where name not like '%ST%' -- and list_date < 20180901
   and pe_ttm is not null
-  and abs(pe - pe_ttm) <= 10
-#   and pe_ttm < pe -- 价值向上趋势
-  and (wave_a < -40 and wave_b < 15 or wave_b <= -30)
+#   and abs(pe - pe_ttm) <= 10
+  and pe_ttm < pe -- 价值向上趋势
+  and (wave_a < -50 and wave_b < 15 or wave_b <= -50)
   and count > 0 and count < 7
 # and concepts like '%黄金%'
 order by wave_a;
@@ -51,10 +51,10 @@ where name not like '%ST%'
     and last_f_date <> ''
     and call_diff between -8 and 6
     and (wave_a < -30 and wave_b < 10 or wave_b <= -35)
-    and pe_ttm is not null
-#     and pe is not null
-#   and pe_ttm < pe -- 价值向上趋势
-    and list_date < 20181215
+#     and pe_ttm is not null
+# #     and pe is not null
+# #   and pe_ttm < pe -- 价值向上趋势
+#     and list_date < 20181215
     and count > 3
 order by last_f_date desc, call_diff, count desc;
 

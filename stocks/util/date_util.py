@@ -152,6 +152,11 @@ def get_last_year_end(format=default_format):
     return last_year_end.strftime(format)
 
 
+def parse_date_str(date_str, format=default_format):
+    c_date = convert_to_date(date_str)
+    return c_date.strftime(format)
+
+
 def convert_to_date(date_str):
     query_date = datetime.datetime.strptime(date_str, default_format) if len(date_str) > 8 \
         else datetime.datetime.strptime(date_str, format_flat)
@@ -174,6 +179,10 @@ def get_day_type(query_date):
 
 
 def get_latest_trade_date(days=1):
+    """
+    :param days:
+    :return: [yyyy-MM-dd]
+    """
     trade_dates = hist_date_list[hist_date_list.is_trade == 1].head(days)
     return list(trade_dates['hist_date'])
 
@@ -205,6 +214,7 @@ def get_previous_trade_day(trade_date=today):
         next_hist_date = hist_date_list.loc[index + i, ['hist_date', 'is_trade']]
         if next_hist_date[1] == 1:
             return next_hist_date.iat[0]
+
 
 
 def get_next_trade_day(trade_date=today):
