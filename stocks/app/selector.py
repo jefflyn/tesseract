@@ -108,7 +108,7 @@ def select_result(codeset=None, filename=''):
     data_list = []
     # 概念信息
     concepts = concept_service.get_concepts()
-    fundamental = fundamental_service.get_fundamental()
+    fundamentals = fundamental_service.get_fundamental()
     wavedfset = pd.DataFrame(columns=['code', 'begin', 'end', 'status', 'begin_price', 'end_price', 'days', 'change'])
     for index, row in hist_trade_df.iterrows():
         code = row['code']
@@ -126,10 +126,12 @@ def select_result(codeset=None, filename=''):
             continue
         curt_data = list()
         concept = concepts[concepts.code == code]
+        fundamental = fundamentals[fundamentals.code == code]
+
         curt_data.append(concept.loc[code, 'concepts'] if concept.empty is False else '')
-        curt_data.append(fundamental.loc[code, 'pe'])
-        curt_data.append(fundamental.loc[code, 'pe_ttm'])
-        curt_data.append(fundamental.loc[code, 'turnover_rate'])
+        curt_data.append(fundamental.loc[code, 'pe'] if fundamental.empty is False else 0)
+        curt_data.append(fundamental.loc[code, 'pe_ttm'] if fundamental.empty is False else 0)
+        curt_data.append(fundamental.loc[code, 'turnover_rate'] if fundamental.empty is False else 0)
 
         curt_data.append(code)
         curt_data.append(basic.loc[code, 'name'])

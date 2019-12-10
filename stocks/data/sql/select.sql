@@ -48,12 +48,14 @@ order by count desc, wave_a;
 -- 2.1 连续3天涨停回调
 select * from select_result_all
 where name not like '%ST%'
-    and call_diff < 0
-    and (wave_a < 15 and wave_b < 15 or wave_b <= -30)
+    and last_f_date <> ''
+    and call_diff between -8 and 6
+    and (wave_a < -30 and wave_b < 10 or wave_b <= -35)
     and pe_ttm is not null
 #     and pe is not null
 #   and pe_ttm < pe -- 价值向上趋势
     and list_date < 20181215
+    and count > 3
 order by last_f_date desc, call_diff, count desc;
 
 -- 3、本月涨停选股，不含次新股（高风险，适合超短线）
