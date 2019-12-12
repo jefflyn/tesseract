@@ -4,24 +4,22 @@ from select_result_all
 where 1 = 1
 and name not like '%ST%'
 #   and code = '300099'
-and call_diff = ''
+# and call_diff = ''
 and last_f_date <> ''
 #     and call_diff
-
 # and industry like '%证券%'
 # and list_date < 20190101
-# and pe_ttm is not null
-# and name like '%津劝业%'
+and pe_ttm is not null
+# and name like '%三川%'
 # and c.concepts like '%油%'
 # and area like '%甘肃%'
 # and count > 0
-# and wave_a < 0
-# and wave_b < 15
+  and (wave_a <= -33 and wave_b < 15 or wave_b <= -33)
 # and code in (select code from my_stock_pool where platform in ('cf')) -- self position
 # and code in (select code from hist_trade_day where trade_date>='2019-09-01' and trade_date<='2019-12-31' and pct_change>9.9-- and high=low
 #     group by code
 #     having count(1) > 3) -- 时间区间的一字
-order by count desc, wave_a;
+order by last_f_date desc, count desc, wave_a;
 
 -- 1、超跌选股，包含次新股（低风险，长线投资）
 select *
