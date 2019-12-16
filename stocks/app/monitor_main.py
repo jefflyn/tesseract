@@ -38,10 +38,10 @@ if __name__ == '__main__':
             for p in prices:
                 target_price = float(p)
                 if 0 < target_price <= price:
-                    redis_key = pre_key_today + code + '_price_' + target_price
+                    redis_key = pre_key_today + code + '_price_' + str(target_price)
                     warn_times = redis_client.get(redis_key)
                     if warn_times is None:
-                        content = name + ':' + code + ' up to ' + target_price + ', please check!'
+                        content = name + ':' + code + ' up to ' + str(target_price) + ', please check!'
                         try:
                             redis_client.set(redis_key, name + str(price))
                             name_format = '：' + code + ' ' + name
@@ -58,7 +58,7 @@ if __name__ == '__main__':
                     redis_key = pre_key_today + code + '_price_' + abs(target_price)
                     warn_times = redis_client.get(redis_key)
                     if warn_times is None:
-                        content = name + ':' + code + ' down to ' + abs(target_price) + ', please check!'
+                        content = name + ':' + code + ' down to ' + str(abs(target_price)) + ', please check!'
                         try:
                             redis_client.set(redis_key, name + str(price))
                             name_format = '：' + code + ' ' + name

@@ -27,7 +27,7 @@ order by last_f_date desc, count desc, wave_a;
 -- 1、超跌选股，包含次新股（低风险，长线投资）
 select *
 from select_result_all
-where name not like '%ST%' -- and list_date < 20180901
+where list_date < 20180901
   and pe_ttm is not null
 #   and abs(pe - pe_ttm) <= 10
   and pe_ttm < pe -- 价值向上趋势
@@ -38,8 +38,7 @@ order by wave_a;
 
 -- 2、超跌活跃选股，不含次新股（中风险，适合中短线）
 select * from select_result_all
-where name not like '%ST%'
-and (pe_ttm is not null or pe is not null)
+where (pe_ttm is not null or pe is not null)
 #  and pe_ttm < pe -- 价值向上趋势
 and (wave_a < -40 and wave_b < 15 or wave_b <= -30)
 and count >= 8

@@ -9,14 +9,14 @@ from email.utils import formataddr
 
 import numpy as np
 import pandas as pd
-
-from stocks.util import _utils
-from stocks.app import falco
 from stocks.app import realtime
 from stocks.data import data_util
 from stocks.gene import limitup
 from stocks.gene import maup
 from stocks.gene import wave
+import stocks.util.db_util as _dt
+
+
 
 sender = '649054380@qq.com'
 passw = 'pznntikuyzfvbchb'
@@ -198,7 +198,7 @@ def generate_report(title=None, filename=None, monitor=False, uad=False, ma=Fals
         html_content += wavedf_html
 
     # 3.moving average prices of several crucial waves
-    if ma == True:
+    if ma is True:
         html_content += '<h4>3.moving average prices of several crucial waves:</h4>'
         madf = maup.get_ma(codes, start='2017-01-01')
         # madf_html = madf.to_html(escape=False, index=False, sparsify=True, border=0, index_names=False, header=True)
@@ -206,7 +206,7 @@ def generate_report(title=None, filename=None, monitor=False, uad=False, ma=Fals
         html_content += madf_html
 
     # 4.limit-up of recent 1 year
-    if lup == True:
+    if lup is True:
         html_content += '<h4>4.limit-up of recent 1 year:</h4>'
         limitupdf = limitup.get_limitup_from_hist_k(codes, start='2017-01-01')
         limitupdf = limitupdf.replace(stkdict)
@@ -267,25 +267,28 @@ def mail_with_attch(to_users=[], subject=None, content=None, attaches=[]):
 
 
 if __name__ == '__main__':
-    generate_report2(title='The holding stocks report', filename='pa')
+    content = 'Please find the attaches for the selection report details.'
 
-    content1 = generate_report(title='The position stocks report', filename='ot', uad=True, ma=True, lup=True)
-    _utils.save_to_pdf(content1, 'report_ot.pdf')
-    content2 = generate_report(title='The tracking stocks report', monitor=True, filename='app/monitorot.txt', uad=True,
-                               ma=True, lup=True)
-    _utils.save_to_pdf(content2, 'report_ot_trace.pdf')
+    sql_down = "select * from select_result_all where list_date < 20180901 and pe_ttm is not null and pe_ttm < pe and (wave_a < -50 and wave_b < 15 or wave_b <= -50) and count > 0 and count < 7 order by wave_a"
+    df_down = _dt.read_query(sql_down)
+
+    sql_active = "select * from select_result_all where (pe_ttm is not null or pe is not null) and (wave_a < -40 and wave_b < 15 or wave_b <= -30) and count >= 8 and list_date < 20190101 order by count desc, wave_a"
+    df_active = _dt.read_query(sql_active)
+
+    writer = pd.ExcelWriter('select.xlsx')
+    df_down.to_excel(writer, sheet_name='down')
+    df_active.to_excel(writer, sheet_name='active')
+    writer.save()
 
     attaches = []
-    att1 = create_attach('otreport.pdf', 'daily_report.pdf')
-    att2 = create_attach('trace_report.pdf', 'trace_report.pdf')
-    attaches.append(att1)
-    attaches.append(att2)
-    # contenta = generate_report(title='The position stocks report', filename='pa', uad=True, ma=True, lup=True)
-    # contentb = generate_report(title='The tracking stocks report', monitor=True, filename='app/monitormy.txt', uad=True, ma=True, lup=True)
-    subj = "Stocks Report " + todaystr
-    to_users = ['649054380@qq.com']  # , '1677258052@qq.com', '53985188@qq.com']
-    ret = mail_with_attch(to_users, subject=subj, content=content1 + content2, attaches=attaches)
+    att = create_attach(file='select.xlsx')
+    attaches.append(att)
+
+    subj = "Stock Selection Report " + todaystr
+    to_users = ['649054380@qq.com']
+    ret = mail_with_attch(to_users, subject=subj, content=content, attaches=attaches)
     if ret:
         print("Email send successfully")
     else:
         print("Send failed")
+
