@@ -1,3 +1,6 @@
+select * from select_result_all where name like '%银星%';
+select * from select_result_all where code=603936;
+
 # 条件查询 select data
 select *
 from select_result_all

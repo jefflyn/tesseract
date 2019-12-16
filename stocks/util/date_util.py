@@ -183,7 +183,7 @@ def get_latest_trade_date(days=1):
     :param days:
     :return: [yyyy-MM-dd]
     """
-    trade_dates = hist_date_list[hist_date_list.is_trade == 1].head(days)
+    trade_dates = hist_date_list[(hist_date_list.is_trade == 1) & (hist_date_list.hist_date <= get_today())].head(days)
     return list(trade_dates['hist_date'])
 
 
