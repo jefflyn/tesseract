@@ -7,6 +7,7 @@ from email.mime.text import MIMEText
 from email.utils import formataddr
 
 sender = '649054380@qq.com'
+sender_alias = '【咕噜咕噜魔法阵】'
 passw = 'pznntikuyzfvbchb'
 
 
@@ -37,7 +38,7 @@ def mail_with_attch(to_users=[], subject=None, content=None, attaches=[]):
     '''
     ret = True
     message = MIMEMultipart()
-    message['From'] = formataddr(["jefflyn", sender])
+    message['From'] = formataddr([sender_alias, sender])
     # message['To'] = Header("test to", 'utf-8')
     message['Subject'] = Header(subject, 'utf-8')
     message.attach(MIMEText(content, 'html', 'utf-8'))

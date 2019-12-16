@@ -1,5 +1,5 @@
 from stocks.data import data_util
-from stocks.app import selector
+from stocks.app.select import selector
 from stocks.util.logging import logger
 
 if __name__ == '__main__':
@@ -10,15 +10,3 @@ if __name__ == '__main__':
     # ##select from wave
     codes = data_util.get_codes_by_wave()
     selector.select_result(codes, 'wave')
-
-
-
-
-
-
-
-
-
-
-
-

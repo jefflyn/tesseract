@@ -38,24 +38,23 @@ order by wave_a;
 
 -- 2、超跌活跃选股，不含次新股（中风险，适合中短线）
 select * from select_result_all
-where (pe_ttm is not null or pe is not null)
+where list_date < 20190101
+  and (pe_ttm is not null or pe is not null)
 #  and pe_ttm < pe -- 价值向上趋势
 and (wave_a < -40 and wave_b < 15 or wave_b <= -30)
 and count >= 8
 and list_date < 20190101
 order by count desc, wave_a;
 
--- 2.1 连续3天涨停回调
-select * from select_result_all
-where name not like '%ST%'
-    and last_f_date <> ''
-    and call_diff between -8 and 6
-    and (wave_a < -30 and wave_b < 10 or wave_b <= -35)
-#     and pe_ttm is not null
-# #     and pe is not null
-# #   and pe_ttm < pe -- 价值向上趋势
-#     and list_date < 20181215
-    and count > 3
+-- 2.1
+select *
+from select_result_all
+where list_date < 20190101
+  and last_f_date <> ''
+  and (pe_ttm is not null or pe is not null)
+  and call_diff between -10 and 10
+  and count > 3
+  and count_ >= 2
 order by last_f_date desc, call_diff, count desc;
 
 -- 3、本月涨停选股，不含次新股（高风险，适合超短线）

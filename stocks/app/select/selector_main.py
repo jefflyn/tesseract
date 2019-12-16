@@ -1,6 +1,4 @@
-import stocks.util.display
-from stocks.data import data_util
-from stocks.app import selector
+from stocks.app.select import selector
 from stocks.util.logging import logger
 
 if __name__ == '__main__':

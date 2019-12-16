@@ -76,8 +76,10 @@ def get_fire_date(date_list=None):
                 # 从连续断开的index再遍历
                 index_flag = nxt_index
                 break
-        if continue_count > 2:
+        if continue_count == 3:
             fire_date_list.append(date_list[index])
+        elif continue_count > 3:
+            fire_date_list.append(date_list[index + 1])
     end_time = date_util.get_now()
     logger.debug("end to %s, total consume time: %s", str(end_time), str((end_time - begin_time).seconds))
     return fire_date_list
@@ -88,6 +90,7 @@ def count(df=None):
     count the specific periods limitup 
     :param df: limit data frame
     :return: latest 30 days, last 4 quarters, total 11 months' limitup count
+    ['code', 'count', 'count_', 'c30d', 'cq1', 'cq2', 'cq3', 'cq4', 'fdate', 'mindate', 'lldate', 'lup_low', 'lup_high']
     """
     if df.empty:
         return df
