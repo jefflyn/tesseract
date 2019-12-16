@@ -6,15 +6,15 @@ from stocks.util import date_util
 if __name__ == '__main__':
     content = 'Please find the attaches for the selection report details.'
 
-    select_columns = "select code,name,wave_a,wave_b,bottom,`uspace%`,`dspace%`,count,count_,fdate,last_f_date,call_price,call_diff,select_time"
+    select_columns = "select code,name,wave_a,wave_b,bottom,uspace,dspace,count,count_,fdate,last_f_date,call_price,call_diff,select_time "
 
-    sql_down = select_columns + " from select_result_all where list_date < 20180901 and pe_ttm is not null and pe_ttm < pe and (wave_a < -50 and wave_b < 15 or wave_b <= -50) and count > 0 and count < 7 order by wave_a"
+    sql_down = select_columns + "from select_result_all where list_date < 20180901 and pe_ttm is not null and pe_ttm < pe and (wave_a < -50 and wave_b < 15 or wave_b <= -50) and count > 0 and count < 7 order by wave_a"
     df_down = _dt.read_query(sql_down)
 
     sql_active = select_columns + "from select_result_all where (pe_ttm is not null or pe is not null) and (wave_a < -40 and wave_b < 15 or wave_b <= -30) and count >= 8 and list_date < 20190101 order by count desc, wave_a"
     df_active = _dt.read_query(sql_active)
 
-    sql_chance = select_columns + "from select_result_all where list_date < 20190101 and last_f_date <> '' and (pe_ttm is not null or pe is not null) and call_diff between -10 and 10 and count > 3 and count_ >= 2 order by last_f_date desc, call_diff, count desc;"
+    sql_chance = select_columns + "from select_result_all where list_date < 20190101 and last_f_date <> '' and (pe_ttm is not null or pe is not null) and call_diff between -10 and 10 and count > 3 and count_ >= 2 order by last_f_date desc, call_diff, count desc"
     df_chance = _dt.read_query(sql_chance)
 
     writer = pd.ExcelWriter('select.xlsx')
