@@ -63,7 +63,7 @@ def select_from_change_month():
 
 def select_from_all(fname='all'):
     """
-    select all stocks 
+    select all stocks
     :param fname: all
     :return: 
     """

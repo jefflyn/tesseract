@@ -277,7 +277,7 @@ class searcher:
 
   def inboundlinkscore(self,rows):
     uniqueurls=dict([(row[0],1) for row in rows])
-    inboundcount=dict([(u,self.con.execute('select count(*) from link where toid=%d' % u).fetchone()[0]) for u in uniqueurls])   
+    inboundcount=dict([(u,self.con.execute('select count(*) from link where toid=%d' % u).fetchone()[0]) for u in uniqueurls])
     return self.normalizescores(inboundcount)
 
   def linktextscore(self,rows,wordids):

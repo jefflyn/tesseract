@@ -4,7 +4,7 @@ from stocks.data import data_util
 from stocks.data.etl.deprecated import _reference
 from stocks.gene import maup
 from stocks.gene import upnday
-from stocks.app.select import selector
+from stocks.app.selection import selector
 
 if __name__ == '__main__':
     content = """  <html>  <head>  <meta name="pdfkit-page-size" content="Legal"/>  <meta name="pdfkit-orientation" content="Landscape"/> </head><body>"""

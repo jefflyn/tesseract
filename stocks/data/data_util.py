@@ -519,13 +519,4 @@ if __name__ == '__main__':
     # print(format_amount(25896325))
     # print(format_amount(369852369))
     print(get_last_trade_data(['600126', '600162']))
-    # data = get_stock_data(type='c', filename='小金属.txt')
-    # trade = pd.HDFStore('trade.h5')
-    # tradecomp = pd.HDFStore('trade_comp.h5')
-    # limitups = pd.read_hdf('trade.h5', 'hist')
-    # df = tradecomp.select('hist')
-    # df = df[(df.p_change > 9.9) & (df['code'].str.get(0) != '3')][['code']]
-    # df = df.drop_duplicates(['code'])
-    # print(df)
-    # df1 = tradecomp.select('hist')
-    # print(df1)
+
