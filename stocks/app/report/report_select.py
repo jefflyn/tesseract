@@ -14,10 +14,11 @@ if __name__ == '__main__':
     sql_active = select_columns + "from select_result_all where list_date < 20190101 and (pe_ttm is not null or pe is not null) and (wave_a < -40 and wave_b < 15 or wave_b <= -30) and count >= 8 order by count desc, wave_a"
     df_active = _dt.read_query(sql_active)
 
-    sql_chance = select_columns + "from select_result_all where list_date < 20190101 and last_f_date <> '' and (pe_ttm is not null or pe is not null) and call_diff between -10 and 10 and count > 3 and count_ >= 2 order by last_f_date desc, call_diff, count desc"
+    sql_chance = select_columns + "from select_result_all where list_date < 20190101 and last_f_date <> '' and wave_a < -30 and (pe_ttm is not null or pe is not null) and call_diff between -10 and 10 and count > 3 order by count desc, wave_a, last_f_date desc, call_diff, count desc"
     df_chance = _dt.read_query(sql_chance)
 
-    writer = pd.ExcelWriter('select.xlsx')
+    file_name = 'select_' + date_util.get_today(date_util.format_flat) + '.xlsx'
+    writer = pd.ExcelWriter(file_name)
     df_down.to_excel(writer, sheet_name='down')
     df_active.to_excel(writer, sheet_name='active')
     df_chance.to_excel(writer, sheet_name='chance')
@@ -25,7 +26,7 @@ if __name__ == '__main__':
     writer.save()
 
     attaches = []
-    att = mail_util.create_attach('select.xlsx')
+    att = mail_util.create_attach(file_name)
     attaches.append(att)
 
     subj = "Stock Selection Report " + date_util.get_today()
