@@ -129,8 +129,8 @@ def select_result(codeset=None, filename=''):
         fundamental = fundamentals[fundamentals.code == code]
 
         curt_data.append(concept.loc[code, 'concepts'] if concept.empty is False else '')
-        curt_data.append(fundamental.loc[code, 'pe'] if fundamental.empty is False else 0)
-        curt_data.append(fundamental.loc[code, 'pe_ttm'] if fundamental.empty is False else 0)
+        curt_data.append(round(fundamental.loc[code, 'pe'], 1) if fundamental.empty is False else 0)
+        curt_data.append(round(fundamental.loc[code, 'pe_ttm'], 1) if fundamental.empty is False else 0)
         curt_data.append(fundamental.loc[code, 'turnover_rate'] if fundamental.empty is False else 0)
 
         curt_data.append(code)

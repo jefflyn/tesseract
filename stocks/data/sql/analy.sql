@@ -14,11 +14,12 @@ select l.*, i.hz, i.sz50, i.scz, i.zxb, i.cyb
 from
 (select trade_date, count(case when close >= round(pre_close * 1.1, 2) then 1 else null end) as limitup,
        count(case when close <= round(pre_close * 0.9, 2) then 1 else null end) as limitdown,
+       count(1) as total,
        count(case when pct_change > 0 then 1 else null end) as up,
        count(case when pct_change = 0 then 1 else null end) as flat,
        count(case when pct_change < 0 then 1 else null end) as down
 from hist_trade_day
-where trade_date >= '2019-06-01'
+where trade_date >= '2019-12-01'
 group by trade_date) as l
 left join
     (select trade_date,
