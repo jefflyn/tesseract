@@ -168,6 +168,35 @@ def get_weekly(code=None, start=None, end=None):
     return df
 
 
+def get_hist_week(code=None, n=None, start=None, end=None):
+    """
+    获取历史周k
+    :param code:
+    :param n:
+    :param start:
+    :param end:
+    :return:
+    """
+    table_name = 'hist_weekly'
+    sql = 'select * from ' + table_name + ' where 1=1 '
+    if code is not None:
+        if isinstance(code, str):
+            codes = list()
+            codes.append(code)
+            code = codes
+        sql += 'and code in :code '
+    if start is not None:
+        sql += 'and trade_date >=:start '
+    if end is not None:
+        sql += 'and trade_date <=:end '
+    if n is not None:
+        sql += 'order by trade_date desc limit :n '
+    params = {'code': code, 'start': start, 'end': end, 'n': n}
+    df = read_sql(sql, params=params)
+    df2 = df.reset_index(drop=True)
+    return df2
+
+
 def get_hist_trade(code=None, is_index=False, start=None, end=None):
     """
     获取历史日k

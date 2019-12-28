@@ -218,7 +218,7 @@ insert into concepts
 select cd.code, GROUP_CONCAT(c.name) as concepts from concept_detail cd inner join concept c on cd.concept_code=c.code
 # where cd.name like '%精准%'
 group by code;
-select * from hist_weekly where trade_date='2019-04-30';
+select * from hist_weekly where code='601607' order by trade_date desc limit 2;
 select * from hist_index_day where code='000001' and
                                    trade_date in('2016-09-02','2016-09-05','2016-09-06',
                                                  '2017-07-06','2017-07-07','2017-07-10',

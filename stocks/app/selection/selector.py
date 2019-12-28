@@ -265,6 +265,23 @@ def select_result(codeset=None, filename=''):
         curt_data.append(multi_vol_rate)
         curt_data.append(vol_rate)
 
+        week_hist = data_util.get_hist_week(code=code, n=2)
+        week_gap = 0
+        if week_hist.empty is False and week_hist.shape[0] > 1:
+            # 向上跳空缺口
+            late_week_low = week_hist.loc[0, 'low']
+            pre_week_high = week_hist.loc[1, 'high']
+            if late_week_low > pre_week_high:
+                week_gap = (late_week_low - pre_week_high) / pre_week_high * 100
+
+            # 向下跳空缺口
+            late_week_high = week_hist.loc[0, 'high']
+            pre_week_low = week_hist.loc[1, 'low']
+            if late_week_high < pre_week_low:
+                week_gap = (late_week_high - pre_week_low) / pre_week_low * 100
+
+        curt_data.append(round(week_gap, 2))
+
         # get maup data
         # maupdf = maup.get_ma(code)
         # curt_data.append(maupdf.at[0, 'isup'] if maupdf.empty is False else 0)
@@ -282,13 +299,13 @@ def select_result(codeset=None, filename=''):
                'price', 'pct', 'wave_detail', 'wave_a', 'wave_b', 'bottom', 'uspace', 'dspace', 'top', 'position',
                'buy1', 'buy2', 'buy3', 'count', 'count_', 'c30d', 'cq1', 'cq2', 'cq3', 'cq4', 'fdate', 'last_f_date',
                'call_price', 'call_diff', 'lup_low', 'lup_high', 'change_7d', 'gap', 'gap_space', 'sum_30d',
-               'updays', 'sumup', 'multi_vol', 'vol_rate']
+               'updays', 'sumup', 'multi_vol', 'vol_rate', 'w_gap']
     resultdf = pd.DataFrame(data_list, columns=columns)
     # resultdf = resultdf.sort_values('sum_30d', axis=0, ascending=False, inplace=False, kind='quicksort', na_position='last')
 
     resultdf = resultdf[
         ['concepts', 'pe', 'pe_ttm', 'turnover_rate', 'code', 'name', 'industry', 'area', 'list_date',
-         'pct', 'wave_detail', 'wave_a', 'wave_b', 'bottom', 'uspace', 'dspace', 'top', 'position',
+         'pct', 'wave_detail', 'wave_a', 'wave_b', 'bottom', 'uspace', 'dspace', 'top', 'position', 'w_gap',
          'gap', 'gap_space', 'sum_30d', 'count', 'count_', 'c30d', 'cq1', 'cq2', 'cq3', 'cq4',
          'fdate', 'last_f_date', 'price', 'call_price', 'call_diff', 'lup_low', 'lup_high',
          'buy1', 'buy2', 'buy3', 'change_7d', 'updays', 'sumup', 'vol_rate', 'multi_vol']]
@@ -299,7 +316,7 @@ def select_result(codeset=None, filename=''):
         _dt.to_db(resultdf, result_name)
         _dt.to_db(wavedfset, 'select_wave_' + filename)
     except Exception as e:
-        logger.exception('save db failed, msg=' + str(e))
+        print('save db failed, msg=' + str(e))
         writer = pd.ExcelWriter(filename + '.xlsx')
         resultdf.to_excel(writer, sheet_name='select')
         wavedfset.to_excel(writer, sheet_name='wave')
