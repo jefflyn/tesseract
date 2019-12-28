@@ -52,7 +52,7 @@ def get_fire_date(date_list=None):
     :return: list of previous date
     """
     begin_time = date_util.get_now()
-    logger.debug('begin from %s' % str(begin_time))
+    #print('begin from %s' % str(begin_time))
     if date_list is None:
         return list()
     fire_date_list = list()
@@ -81,7 +81,7 @@ def get_fire_date(date_list=None):
         elif continue_count > 3:
             fire_date_list.append(date_list[index + 1])
     end_time = date_util.get_now()
-    logger.debug("end to %s, total consume time: %s", str(end_time), str((end_time - begin_time).seconds))
+    #print("end to %s, total consume time: %s", str(end_time), str((end_time - begin_time).seconds))
     return fire_date_list
 
 
@@ -104,25 +104,25 @@ def count(df=None):
         starttime = datetime.datetime.now()
         days = datetime.timedelta(backward_days)
         start30 = datetime.datetime.strftime(starttime + days, '%Y-%m-%d')
-        logger.debug('latest 30 days limitup from %s' % start30)
+        # #print('latest 30 days limitup from %s' % start30)
         lupdf = group[group.trade_date >= start30]
         count_30d = lupdf.iloc[:, 0].size
 
         days = datetime.timedelta(backward_days * 3 + backward_days)
         qrt1st = datetime.datetime.strftime(starttime + days, '%Y-%m-%d')
-        logger.debug('latest 1 quarter limitup from %s' % qrt1st)
+        #print('latest 1 quarter limitup from %s' % qrt1st)
         lupdf = group[(group.trade_date >= qrt1st) & (group.trade_date < start30)]
         count_qrt1st = lupdf.iloc[:, 0].size
 
         days = datetime.timedelta(backward_days * 6 + backward_days)
         qrt2nd = datetime.datetime.strftime(starttime + days, '%Y-%m-%d')
-        logger.debug('latest 2 quarter limitup from %s' % qrt2nd)
+        #print('latest 2 quarter limitup from %s' % qrt2nd)
         lupdf = group[(group.trade_date >= qrt2nd) & (group.trade_date < qrt1st)]
         count_qrt2nd = lupdf.iloc[:, 0].size
 
         days = datetime.timedelta(backward_days * 9 + backward_days)
         qrt3rd = datetime.datetime.strftime(starttime + days, '%Y-%m-%d')
-        logger.debug('latest 3 quarter limitup from %s' % qrt3rd)
+        #print('latest 3 quarter limitup from %s' % qrt3rd)
         lupdf = group[(group.trade_date >= qrt3rd) & (group.trade_date < qrt2nd)]
         count_qrt3rd = lupdf.iloc[:, 0].size
 
@@ -168,8 +168,8 @@ if __name__ == '__main__':
     # print(get_fire_date(['2019-01-30', '2019-01-31', '2019-02-01']))
     # logger.debug(get_today_limitup())
     # lpdf = get_limitup_from_hist_k(['002813'])
-    # print(lpdf)
+    # #print(lpdf)
     df = get_limitup_from_hist_trade(['600345'])
-    print(df)
+    #print(df)
     df_count = count(df)
-    print(df_count)
+    #print(df_count)

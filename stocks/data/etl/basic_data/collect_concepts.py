@@ -53,14 +53,14 @@ if __name__ == '__main__':
                     resu.append(-1)
                 else:
                     resu.append(resu0[k])
-            logger.debug(resu)
+            print(resu)
             try:
                 sql_insert = "INSERT INTO concept_detail(concept_code, ts_code, code, name) " \
                              "VALUES ('%s', '%s', '%s', '%s')" % (resu[0], resu[2], str(resu[2])[0:6], resu[3])
                 cursor.execute(sql_insert)
                 db.commit()
             except Exception as err:
-                logger.error(err)
+                print(err)
                 continue
 
     # insert into concepts group by code

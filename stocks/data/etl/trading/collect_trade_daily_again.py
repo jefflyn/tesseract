@@ -35,7 +35,7 @@ def recollect_hist_daily(sql='select b.ts_code, b.code from select_result_all s 
             succ = cursor.execute(del_sql)
     except Exception as e:
         db.rollback()
-        logger.error(e)
+        print(e)
         exit(0)
     # stock_pool = ['300594.SZ']
     # 循环获取单个股票的日线行情

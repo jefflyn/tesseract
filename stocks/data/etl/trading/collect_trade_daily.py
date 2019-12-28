@@ -30,7 +30,7 @@ if __name__ == '__main__':
     if total > 0:
         print(last_trade_date + " trade data existed")
         # sys.exit(0)
-    last_trade_date = date_util.get_latest_trade_date()[0]
+    last_trade_date = date_util.get_latest_trade_date()[0].replace('-', '')
     df = ts.pro_bar(api=pro, ts_code=random_stocks[current], adj='qfq', start_date=last_trade_date, end_date=last_trade_date)
     c_len = df.shape[0]
     if c_len == 0:

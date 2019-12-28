@@ -27,12 +27,12 @@ def collect_weekly():
     current = random.randint(0, 9)
     last_trade_date = date_util.get_latest_trade_date()[0]
     check_sql = "select 1 from hist_weekly where ts_code='" + random_stocks[current] \
-                + "' and trade_date='" + str(last_trade_date).replace('-', '') + "'"
+                + "' and trade_date='" + str(last_trade_date) + "'"
     total = cursor.execute(check_sql)
     if total > 0:
         print(last_trade_date + " trade data existed")
         # sys.exit(0)
-    last_trade_date = date_util.get_latest_trade_date()[0]
+    last_trade_date = date_util.get_latest_trade_date()[0].replace('-', '')
     df = pro.weekly(ts_code=random_stocks[current], adj='qfq', start_date=last_trade_date, end_date=last_trade_date)
     c_len = df.shape[0]
     if c_len == 0:
@@ -90,7 +90,7 @@ def collect_weekly():
                 cursor.execute(sql_insert)
                 db.commit()
             except Exception as err:
-                logger.error(err)
+                print(err)
                 continue
     cursor.close()
     db.close()

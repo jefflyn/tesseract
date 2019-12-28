@@ -32,7 +32,7 @@ on l.trade_date = i.trade_date
 order by l.trade_date desc;
 
 -- hist weekly data
-select * from hist_weekly;
+select * from hist_weekly order by trade_date desc;
 
 -- ma data
 select count(distinct ts_code) from hist_ma_day;
