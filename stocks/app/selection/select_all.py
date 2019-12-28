@@ -1,9 +1,9 @@
 from stocks.data import data_util
 from stocks.app.selection import selector
-from stocks.util.logging import logger
+
 
 if __name__ == '__main__':
-    logger.info('start selector main ...')
+    print('start selector main ...')
     # >>> select from all
     selector.select_from_all()
 

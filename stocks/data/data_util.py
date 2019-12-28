@@ -2,7 +2,6 @@ import datetime
 import pandas as pd
 
 import tushare as ts
-from stocks.util.logging import logger as log
 import stocks.util.date_const as _dt
 import stocks.util.date_util as _date_util
 from stocks.util.db_util import read_sql
@@ -165,7 +164,6 @@ def get_weekly(code=None, start=None, end=None):
     if end is not None:
         sql += 'and trade_date <=:end '
     params = {'code': code, 'start': start, 'end': end}
-    # logs.info(sql + ' ' + str(params))
     df = read_sql(sql, params=params)
     return df
 
@@ -191,7 +189,6 @@ def get_hist_trade(code=None, is_index=False, start=None, end=None):
     if end is not None:
         sql += 'and trade_date <=:end '
     params = {'code': code, 'start': start, 'end': end}
-    # logs.info(sql + ' ' + str(params))
     df = read_sql(sql, params=params)
     return df
 
@@ -233,7 +230,6 @@ def get_app_codes():
 def get_limitup_code(period_type='m', period='2019-01', times=3):
     sql = 'select distinct code from limitup_stat where period_type=:type and period=:period and times>=:times'
     params = {'type': period_type, 'period': period, 'times': times}
-    log.info(sql + ' ' + str(params))
     df = read_sql(sql, params=params)
     return df
 
@@ -241,7 +237,6 @@ def get_limitup_code(period_type='m', period='2019-01', times=3):
 def get_ma_code(grade='a'):
     sql = 'select distinct b.code from hist_ma_day m join basic b on m.ts_code = b.ts_code where rank=:grade'
     params = {'grade': grade}
-    log.info(sql + ' ' + str(params))
     df = read_sql(sql, params=params)
     return df
 
@@ -251,7 +246,6 @@ def get_my_stock_pool(type=None, hold=1):
         sql = 'select * from daily_gap_trace_a where 1=1 and s_date=:last_trade_date'
         last_trade_date = _date_util.get_latest_trade_date(2)[1]
         params = {'last_trade_date': last_trade_date}
-        log.info(sql + ' ')
         df = read_sql(sql, params)
         return df
     else:
@@ -260,7 +254,6 @@ def get_my_stock_pool(type=None, hold=1):
         if type is not None:
             params['type'] = type
             sql = sql + ' and platform=:type'
-        log.info(sql + ' ' + str(params))
         df = read_sql(sql, params=params)
         return df
 
@@ -272,10 +265,8 @@ def get_code_by_concept(name=''):
           'inner join concept_detail d on c.code = d.concept_code ' \
           'where c.name like :name'
     df = read_sql(sql, params=params)
-    log.info(sql + ' ' + str(params))
     codes = list(df['code'])
     concepts = set(df['name'])
-    log.info('get codes from concept: ' + str(concepts))
     return codes
 
 

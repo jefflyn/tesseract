@@ -1,4 +1,3 @@
-select * from wave_change_normal_ref;
 
 select distinct code from hist_trade_day where trade_date>='2019-10-01' and high=low and pct_change>0;
 select code, count(1) from hist_trade_day where trade_date>='2019-10-01' and high=low and pct_change>0
@@ -33,7 +32,7 @@ on l.trade_date = i.trade_date
 order by l.trade_date desc;
 
 -- hist weekly data
-select count(1) from hist_weekly;
+select * from hist_weekly;
 
 -- ma data
 select count(distinct ts_code) from hist_ma_day;

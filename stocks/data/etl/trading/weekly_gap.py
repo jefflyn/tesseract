@@ -6,7 +6,7 @@ import sys
 import random
 import tushare as ts
 from stocks.util.db_util import get_db
-from stocks.util.logging import logger
+
 from stocks.util.pro_util import pro
 from stocks.util import date_util
 
@@ -32,20 +32,20 @@ def calc_weekly_gap():
                 + "' and trade_date='" + str(last_trade_date) + "'"
     total = cursor.execute(check_sql)
     if total > 0:
-        logger.info(last_trade_date + " trade data existed")
+        print(last_trade_date + " trade data existed")
         # sys.exit(0)
     last_trade_date = date_util.get_latest_trade_date()[0]
     df = pro.weekly(ts_code=random_stocks[current], adj='qfq', start_date=last_trade_date, end_date=last_trade_date)
     c_len = df.shape[0]
     if c_len == 0:
-        logger.info(last_trade_date + " no trade data found yet")
+        print(last_trade_date + " no trade data found yet")
         sys.exit(0)
     total = cursor.execute('select ts_code from basic')
     if total == 0:
-        logger.info("no stock found, process end!")
+        print("no stock found, process end!")
         exit(0)
     stock_pool = [ts_code_tuple[0] for ts_code_tuple in cursor.fetchall()]
-    logger.info("Collect trade data from " + start_dt + " to " + end_dt)
+    print("Collect trade data from " + start_dt + " to " + end_dt)
     # 1分钟不超过200次调用
     begin_time = datetime.datetime.now()
     for i in range(len(stock_pool)):
@@ -57,7 +57,7 @@ def calc_weekly_gap():
                 time_diff = (end_time - begin_time).seconds
                 sleep_time = 60 - time_diff
                 if sleep_time > 0:
-                    logger.info('sleep for ' + str(sleep_time) + ' seconds ...')
+                    print('sleep for ' + str(sleep_time) + ' seconds ...')
                     time.sleep(sleep_time)
                 begin_time = datetime.datetime.now()
             # 前复权行情
@@ -95,7 +95,7 @@ def calc_weekly_gap():
                 continue
     cursor.close()
     db.close()
-    logger.info('All Finished!')
+    print('All Finished!')
 
 
 if __name__ == '__main__':

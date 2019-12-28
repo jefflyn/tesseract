@@ -3,7 +3,7 @@ import time
 import sys
 import tushare as ts
 from stocks.util.db_util import get_db
-from stocks.util.logging import logger
+
 from stocks.util.pro_util import pro
 from stocks.data.data_util import INDEX_LIST
 from stocks.util import date_util
@@ -17,13 +17,13 @@ if __name__ == '__main__':
     check_sql = "select 1 from hist_index_day where ts_code='" + index_code + "' and trade_date='" + str(last_trade_date) + "'"
     total = cursor.execute(check_sql)
     if total > 0:
-        logger.info(last_trade_date + " trade data existed")
+        print(last_trade_date + " trade data existed")
         # sys.exit(0)
     last_trade_date = date_util.get_latest_trade_date()[0]
     df = ts.pro_bar(api=pro, ts_code=index_code, asset='I', start_date=last_trade_date, end_date=last_trade_date)
     c_len = df.shape[0]
     if c_len == 0:  # 没有记录退出
-        logger.info(last_trade_date + " no index data found yet")
+        print(last_trade_date + " no index data found yet")
         # sys.exit(0)
 
     # 设定获取日线行情的初始日期和终止日期，其中终止日期设定为当天
@@ -32,7 +32,7 @@ if __name__ == '__main__':
     # start_dt = '20100101'
     time_temp = datetime.datetime.now() - datetime.timedelta(days=0)
     end_dt = time_temp.strftime('%Y%m%d')
-    logger.info("Collect index data from " + start_dt + " to " + end_dt)
+    print("Collect index data from " + start_dt + " to " + end_dt)
     total = len(INDEX_LIST)
     stock_pool = INDEX_LIST
     # 循环获取指数日线行情
@@ -45,7 +45,7 @@ if __name__ == '__main__':
             df = ts.pro_bar(api=pro, ts_code=stock_pool[i], asset='I', start_date=start_dt, end_date=end_dt)
             c_len = df.shape[0]
         except Exception as e:
-            logger.info('Exception: ' + str(e))
+            print('Exception: ' + str(e))
             time.sleep(60)
             df = ts.pro_bar(api=pro, ts_code=stock_pool[i], asset='I', start_date=start_dt, end_date=end_dt)
             # 打印进度
@@ -66,7 +66,7 @@ if __name__ == '__main__':
                              "VALUES ('%s', '%s', '%s', '%.4f', '%.4f', '%.4f','%.4f','%.4f','%i','%.4f','%.4f','%.4f')" % (
                                  trade_date, str(resu[0]), str(resu[0])[0:6], float(resu[6]), float(resu[3]), float(resu[2]),
                                  float(resu[4]), float(resu[5]), float(resu[9]), float(resu[10]), float(resu[7]), float(resu[8]))
-                logger.info(sql_insert)
+                print(sql_insert)
                 cursor.execute(sql_insert)
                 db.commit()
             except Exception as err:
@@ -74,4 +74,4 @@ if __name__ == '__main__':
                 continue
     cursor.close()
     db.close()
-    logger.info('All Finished!')
+    print('All Finished!')

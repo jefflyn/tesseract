@@ -4,7 +4,7 @@ import tushare as ts
 import stocks.util.db_util as _dt
 from stocks.data import data_util
 from stocks.util import date_util as _dateutil
-from stocks.util.logging import logger
+
 
 basics = data_util.get_basics(cyb=False)
 today = _dateutil.get_today()
@@ -49,7 +49,7 @@ get last 8 statistics by default
 
 
 def period_statis(period=-6, ktype=None, db_name='change_week_statis'):
-    logger.info('start period statistics...')
+    print('start period statistics...')
     result_list = []
     date_pairs = _dateutil.get_trade_day(period)
     columns = None
@@ -85,7 +85,7 @@ def period_statis(period=-6, ktype=None, db_name='change_week_statis'):
         rec_list.append(row['industry'])
         rec_list.append(row['area'])
         rec_list.append(markettime)
-        # logger.info(row['code'])
+        # print(row['code'])
 
         for targetdate in date_pairs:
             kdata = target_k_data[(target_k_data.date >= targetdate[0]) & (target_k_data.date <= targetdate[1])]
@@ -97,11 +97,11 @@ def period_statis(period=-6, ktype=None, db_name='change_week_statis'):
             rec_list.append(change[1])
         result_list.append(rec_list)
         # break
-    logger.info(len(result_list))
+    print(len(result_list))
     result_df = pd.DataFrame(result_list, columns=columns)
     result_df = result_df.sort_values(columns[-1], ascending=False)
     _dt.to_db(result_df, db_name)
-    logger.info('period statistics finished!')
+    print('period statistics finished!')
 
 
 """
@@ -111,7 +111,7 @@ get daily multi volume stocks
 
 def multi_volume_appear():
     start_time = datetime.datetime.now()
-    logger.info('multi_volume_appear start...')
+    print('multi_volume_appear start...')
     result_list = []
 
     hist_vol = data_util.get_hist_k()
@@ -143,17 +143,17 @@ def multi_volume_appear():
         nxt_close = target_k_data.ix[index_list[-1], 'close']
         rec_list.append(round((nxt_close - pre_close) / pre_close * 100, 2))
         result_list.append(rec_list)
-    logger.info(len(result_list))
+    print(len(result_list))
     result_df = pd.DataFrame(result_list,
                              columns=['code', 'name', 'industry', 'area', 'market_time', 'vol_rate', 'change'])
 
     result_df = result_df.sort_values('vol_rate', ascending=False)
     _dt.to_db(result_df, 'change_statis_volume')
-    logger.info('multi_volume_appear end!')
+    print('multi_volume_appear end!')
 
 
 def period_statis_from_hist():
-    logger.info('period_statis_from_hist start...')
+    print('period_statis_from_hist start...')
     result = []
     for index, row in basics.iterrows():
         markettime = str(row['timeToMarket'])  # exclude new stock by 2 months
@@ -161,8 +161,8 @@ def period_statis_from_hist():
             continue
         hist_data = ts.get_hist_data(code=index, ktype='W')
         result.append(hist_data)
-    logger.info(len(result))
-    logger.info('period_statis_from_hist end!')
+    print(len(result))
+    print('period_statis_from_hist end!')
 
 
 def change_statis_month():
@@ -172,7 +172,7 @@ def change_statis_month():
     columns = change_statis.columns
     change_statis = change_statis.sort_values(by=columns[-1], ascending=False)
     _dt.to_db(change_statis, 'hist_change_month_statis')
-    logger.info('finished!')
+    print('finished!')
 
 
 def change_statis_week():
@@ -182,11 +182,11 @@ def change_statis_week():
     columns = change_statis.columns
     change_statis = change_statis.sort_values(by=columns[-1], ascending=False)
     _dt.to_db(change_statis, 'hist_change_week_statis')
-    logger.info('finished!')
+    print('finished!')
 
 
 if __name__ == '__main__':
-    logger.info('start main')
+    print('start main')
     change_statis_week()
     change_statis_month
     # period_statis_from_hist()

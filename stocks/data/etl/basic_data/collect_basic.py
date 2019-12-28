@@ -10,7 +10,7 @@ Created on 2019/01/01
 import pymysql
 
 from stocks.util.pro_util import pro
-from stocks.util.logging import logger
+
 from stocks.util.db_util import get_db
 
 if __name__ == '__main__':
@@ -35,10 +35,10 @@ if __name__ == '__main__':
             db.commit()
             insert_count += result
         except Exception as err:
-            logger.error(err)
+            print(err)
             continue
 
     # 关闭游标和数据库的连接
     cursor.close()
     db.close()
-    logger.info('All Finished! Total size: ' + str(total_size) + ' , ' + str(insert_count) + ' insert successfully.')
+    print('All Finished! Total size: ' + str(total_size) + ' , ' + str(insert_count) + ' insert successfully.')

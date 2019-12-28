@@ -4,7 +4,7 @@
 from stocks.util import date_util
 from stocks.util import db_util
 from stocks.util.pro_util import pro
-from stocks.util.logging import logger
+
 import sys
 
 if __name__ == '__main__':
@@ -42,10 +42,10 @@ if __name__ == '__main__':
                               'ps_ttm,total_share,float_share,free_share,total_mv,circ_mv')
 
         if df is None or df.empty is True:
-            logger.info(trade_date[i] + " no daily data found")
+            print(trade_date[i] + " no daily data found")
             continue
         df['code'] = df['ts_code'].apply(lambda x: x[0:6])
         db_util.to_db(df, 'basic_daily')
         # df.to_csv('basic_daily.csv')
-        logger.info('collect fundamental daily finished!')
+        print('collect fundamental daily finished!')
         break

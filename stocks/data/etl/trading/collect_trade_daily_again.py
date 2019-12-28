@@ -2,7 +2,7 @@ import datetime
 import time
 import tushare as ts
 from stocks.util.db_util import get_db
-from stocks.util.logging import logger
+
 from stocks.util.pro_util import pro
 
 
@@ -16,13 +16,13 @@ def recollect_hist_daily(sql='select b.ts_code, b.code from select_result_all s 
     cursor = db.cursor()
     total = cursor.execute(sql)
     if total == 0:
-        logger.info("no stock found, process end!")
+        print("no stock found, process end!")
         exit(0)
 
     start_dt = '20100101'
     time_temp = datetime.datetime.now() - datetime.timedelta(days=0)
     end_dt = time_temp.strftime('%Y%m%d')
-    logger.info("Collect trade data from " + start_dt + " to " + end_dt)
+    print("Collect trade data from " + start_dt + " to " + end_dt)
 
     stock_pool = [ts_code_tuple for ts_code_tuple in cursor.fetchall()]
     ts_codes = [result[0] for result in stock_pool]
@@ -31,7 +31,7 @@ def recollect_hist_daily(sql='select b.ts_code, b.code from select_result_all s 
     try:
         if all is False:
             del_sql = 'delete from hist_trade_day where code in (' + code_str + ')'
-            logger.info(del_sql)
+            print(del_sql)
             succ = cursor.execute(del_sql)
     except Exception as e:
         db.rollback()
@@ -44,13 +44,13 @@ def recollect_hist_daily(sql='select b.ts_code, b.code from select_result_all s 
     for i in range(len(ts_codes)):
         try:
             # 打印进度
-            logger.info('Seq: ' + str(i + 1) + ' of ' + str(total) + '   Code: ' + str(ts_codes[i]))
+            print('Seq: ' + str(i + 1) + ' of ' + str(total) + '   Code: ' + str(ts_codes[i]))
             if i > 0 and i % 200 == 0:
                 end_time = datetime.datetime.now()
                 time_diff = (end_time - begin_time).seconds
                 sleep_time = 60 - time_diff
                 if sleep_time > 0:
-                    logger.info('sleep for ' + str(sleep_time) + ' seconds ...')
+                    print('sleep for ' + str(sleep_time) + ' seconds ...')
                     time.sleep(sleep_time)
                 begin_time = datetime.datetime.now()
             # 前复权行情
@@ -59,11 +59,11 @@ def recollect_hist_daily(sql='select b.ts_code, b.code from select_result_all s 
                 continue
             c_len = df.shape[0]
         except Exception as e:
-            logger.info('Exception: ' + str(e))
+            print('Exception: ' + str(e))
             time.sleep(60)
             df = ts.pro_bar(api=pro, ts_code=ts_codes[i], adj='qfq', start_date=start_dt, end_date=end_dt)
             # 打印进度
-            logger.info('Redo Seq: ' + str(i + 1) + ' of ' + str(total) + '   Code: ' + str(ts_codes[i]))
+            print('Redo Seq: ' + str(i + 1) + ' of ' + str(total) + '   Code: ' + str(ts_codes[i]))
             c_len = df.shape[0]
         for j in range(c_len):
             resu0 = list(df.iloc[c_len - 1 - j])
@@ -89,7 +89,7 @@ def recollect_hist_daily(sql='select b.ts_code, b.code from select_result_all s 
                 continue
     cursor.close()
     db.close()
-    logger.info('All Finished!')
+    print('All Finished!')
 
 
 if __name__ == '__main__':

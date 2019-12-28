@@ -6,7 +6,7 @@ from sys import argv
 import pandas as pd
 import stocks.util.db_util as _dt
 import tushare as ts
-from stocks.util.logging import logger
+
 from stocks.data import data_util
 from stocks.data.service import concept_service
 from stocks.data.service import fundamental_service
@@ -35,14 +35,14 @@ def select_from_change_week():
     change_df = _dt.read_query('select * from hist_change_statis_week')
     columns = change_df.columns
     for col in columns[1::]:
-        logger.info('hist_change_statis_week sorted by column %s' % col)
+        print('hist_change_statis_week sorted by column %s' % col)
         change_df = change_df.sort_values(by=col, ascending=False)
         target_change = change_df[change_df[col] >= 15.0]
         if target_change is None or target_change.empty is True:
             continue
         codes = list(target_change['code'])
         select_result(codes, filename='week_' + col)
-    logger.info('finished!')
+    print('finished!')
 
 
 def select_from_change_month():
@@ -51,14 +51,14 @@ def select_from_change_month():
     for col in columns[1::]:
         if col != '2018-07':
             continue
-        logger.info('hist_change_statis sorted by column %s' % col)
+        print('hist_change_statis sorted by column %s' % col)
         change_df = change_df.sort_values(by=col, ascending=False)
         target_change = change_df[change_df[col] >= 20.0]
         if target_change is None or target_change.empty is True:
             continue
         codes = list(target_change['code'])
         select_result(codes, filename='month_' + col)
-    logger.info('finished!')
+    print('finished!')
 
 
 def select_from_all(fname='all'):
@@ -93,18 +93,18 @@ def select_result(codeset=None, filename=''):
     for trade_date in trade_date_list:
         hist_trade_df = data_util.get_hist_trade(code=codeset, start=trade_date, end=last_trade_date)
         if len(hist_trade_df) > 0:
-            logger.info('get latest trade: %s' % trade_date)
+            print('get latest trade: %s' % trade_date)
             break
     size = 0
     if codeset is not None:
         size = len(codeset)
     else:
         size = len(hist_trade_df.index.to_numpy())
-    logger.info('select stocks start! total size: %d\n' % size)
+    print('select stocks start! total size: %d\n' % size)
     # limit = 500
     # beginIndex = 0
     # endIndex = beginIndex + limit if size > limit else size
-    # logger.info('select from %s, total: %i' % (filename, size))
+    # print('select from %s, total: %i' % (filename, size))
     data_list = []
     # 概念信息
     concepts = concept_service.get_concepts()
@@ -113,7 +113,7 @@ def select_result(codeset=None, filename=''):
     for index, row in hist_trade_df.iterrows():
         code = row['code']
         if index % 100 == 0:
-            logger.info('count down from ' + str(size) + ' >>> processing ' + code)
+            print('count down from ' + str(size) + ' >>> processing ' + code)
         size -= 1
         open = float(row['open'])
         current_price = float(row['close'])
@@ -304,9 +304,9 @@ def select_result(codeset=None, filename=''):
         resultdf.to_excel(writer, sheet_name='select')
         wavedfset.to_excel(writer, sheet_name='wave')
         writer.save()
-        logger.info('save excel success')
+        print('save excel success')
     end_time = date_util.get_now()
-    logger.info('select stocks finished, consume time %d secs! result size: %d\n' %
+    print('select stocks finished, consume time %d secs! result size: %d\n' %
                 ((end_time - begin_time).seconds, len(resultdf.index.to_numpy())))
     return resultdf
 
@@ -342,7 +342,7 @@ def select_subnew_issue_space():
     rowsize = df.index.size
     data_list = []
     for index, row in df.iterrows():
-        logger.info(rowsize - index)
+        print(rowsize - index)
         code = row['code']
         current_price = float(row['price'])
         timeToMarket = subnewbasic.loc[code, 'timeToMarket']
@@ -413,7 +413,7 @@ def get_warn_space(df):
 
 
 if __name__ == '__main__':
-    logger.info(select_result('603068'))
+    print(select_result('603068'))
     if len(argv) < 2:
         print("Invalid args! At least 2 args like: python xxx.py code1[,code2,...]")
         sys.exit(0)

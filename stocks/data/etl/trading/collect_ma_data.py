@@ -2,7 +2,7 @@ import datetime
 import time
 import tushare as ts
 from stocks.util.db_util import get_db
-from stocks.util.logging import logger
+
 from stocks.util.pro_util import pro
 import stocks.util.display
 
@@ -13,13 +13,13 @@ if __name__ == '__main__':
     time_temp = datetime.datetime.now() - datetime.timedelta(days=0)
     end_dt = time_temp.strftime('%Y%m%d')
     ma = [5, 10, 20, 30, 60, 90, 120, 250]
-    logger.info("Collect ma data from " + start_dt + " to " + end_dt)
+    print("Collect ma data from " + start_dt + " to " + end_dt)
     # 建立数据库连接
     db = get_db()
     cursor = db.cursor()
     total = cursor.execute("select ts_code from basic")
     if total == 0:
-        logger.info("no stock found, process end!")
+        print("no stock found, process end!")
         exit(0)
     cursor.execute("delete from hist_ma_day")
     stock_pool = [ts_code_tuple[0] for ts_code_tuple in cursor.fetchall()]
@@ -28,18 +28,18 @@ if __name__ == '__main__':
     for i in range(len(stock_pool)):
         try:
             # 打印进度
-            logger.info('Seq: ' + str(i + 1) + ' of ' + str(total) + '   Code: ' + str(stock_pool[i]))
+            print('Seq: ' + str(i + 1) + ' of ' + str(total) + '   Code: ' + str(stock_pool[i]))
             # 前复权行情
             df = ts.pro_bar(api=pro, ts_code=stock_pool[i], adj='qfq', ma=ma, start_date=start_dt, end_date=end_dt)
             if df is None:
                 continue
         except Exception as e:
             print(e)
-            logger.info('No DATA Code: ' + str(i))
+            print('No DATA Code: ' + str(i))
             time.sleep(60)
             df = ts.pro_bar(api=pro, ts_code=stock_pool[i], adj='qfq', ma=ma, start_date=start_dt, end_date=end_dt)
             # 打印进度
-            logger.info('redo Seq: ' + str(i + 1) + ' of ' + str(total) + '   Code: ' + str(stock_pool[i]))
+            print('redo Seq: ' + str(i + 1) + ' of ' + str(total) + '   Code: ' + str(stock_pool[i]))
 
         df = df.head(3)
         c_len = df.shape[0]
@@ -73,7 +73,7 @@ if __name__ == '__main__':
                     rank = 'd'
                 if rank == '':
                     continue
-                logger.info('found up up up! insert to hist_ma_day >>>')
+                print('found up up up! insert to hist_ma_day >>>')
                 sql_insert = "INSERT INTO hist_ma_day(trade_date,ts_code,rank,price,ma5,ma10,ma20,ma30,ma60,ma90,ma120,ma250) " \
                              "VALUES ('%s', '%s', '%s', '%.2f', '%.2f', '%.2f','%.2f','%.2f','%.2f','%.2f','%.2f','%.2f')" % (
                                  trade_date, str(resu[0]), rank, price, ma5, ma10, ma20, ma30, ma60, ma90, ma120, ma250)
@@ -84,4 +84,4 @@ if __name__ == '__main__':
                 continue
     cursor.close()
     db.close()
-    logger.info('All Finished!')
+    print('All Finished!')

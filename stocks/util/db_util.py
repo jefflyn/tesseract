@@ -2,7 +2,6 @@ import pandas as pd
 import sqlalchemy as sa
 from sqlalchemy import create_engine
 import pymysql
-from stocks.util.logging import logger
 
 engine = create_engine("mysql+pymysql://linjingu:linjingu@127.0.0.1:3306/stocks?charset=UTF8MB4")
 
@@ -15,7 +14,6 @@ def get_db():
 # save to db
 def to_db(data=None, tbname=None, if_exists='replace'):
     data.to_sql(name=tbname, con=engine, if_exists=if_exists, index=False, index_label=None)
-    logger.info('%s save to db successfully.' % tbname)
 
 
 def read_table(tbname):

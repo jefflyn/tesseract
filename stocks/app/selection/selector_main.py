@@ -1,8 +1,8 @@
 from stocks.app.selection import selector
-from stocks.util.logging import logger
+
 
 if __name__ == '__main__':
-    logger.info('start selector main ...')
+    print('start selector main ...')
     # selector.select_result(['002892'], 'temp')
 
     # ##selection from all

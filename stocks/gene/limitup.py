@@ -1,5 +1,5 @@
 from stocks.util import display
-from stocks.util.logging import logger
+
 import datetime
 import pandas as pd
 from stocks.data import data_util

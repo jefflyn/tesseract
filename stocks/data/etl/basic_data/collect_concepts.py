@@ -2,7 +2,7 @@ import time
 from stocks.util.pro_util import pro
 import datetime
 from stocks.util.db_util import get_db
-from stocks.util.logging import logger
+
 import stocks.util.db_util as _dt
 
 if __name__ == '__main__':
@@ -16,7 +16,7 @@ if __name__ == '__main__':
     cursor = db.cursor()
     total = cursor.execute("select code from concept")
     if total == 0:
-        logger.info("no concept found, process end!")
+        print("no concept found, process end!")
         exit(0)
     concept_ids = [id_tuple[0] for id_tuple in cursor.fetchall()]
     begin_time = datetime.datetime.now()
@@ -24,25 +24,25 @@ if __name__ == '__main__':
         id = concept_ids[i]
         try:
             # 打印进度
-            logger.info('Seq: ' + str(i + 1) + ' of ' + str(total) + '   Code: ' + id)
+            print('Seq: ' + str(i + 1) + ' of ' + str(total) + '   Code: ' + id)
             if i > 0 and i % 100 == 0:
                 end_time = datetime.datetime.now()
                 time_diff = (end_time - begin_time).seconds
                 sleep_time = 60 - time_diff
                 if sleep_time > 0:
-                    logger.info('sleep for ' + str(sleep_time) + ' seconds ...')
+                    print('sleep for ' + str(sleep_time) + ' seconds ...')
                     time.sleep(sleep_time)
                 begin_time = datetime.datetime.now()
             df = pro.concept_detail(id=id)
             if df is None:
                 continue
         except Exception as e:
-            logger.info('Exception found when id = : ' + id)
+            print('Exception found when id = : ' + id)
             print(e)
             time.sleep(60)
             df = pro.concept_detail(id=id)
             # 打印进度
-            logger.info('redo Seq: ' + str(i + 1) + ' of ' + str(total) + '   Code: ' + id)
+            print('redo Seq: ' + str(i + 1) + ' of ' + str(total) + '   Code: ' + id)
 
         c_len = df.shape[0]
         for j in range(c_len):
@@ -70,5 +70,5 @@ if __name__ == '__main__':
     db.commit()
     cursor.close()
     db.close()
-    logger.info('All Finished!')
+    print('All Finished!')
 
