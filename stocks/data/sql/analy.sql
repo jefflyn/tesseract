@@ -33,6 +33,9 @@ order by l.trade_date desc;
 
 -- hist weekly data
 select * from hist_weekly order by trade_date desc;
+select * from hist_weekly where code=600126 order by trade_date desc limit 2;
+
+
 
 -- ma data
 select count(distinct ts_code) from hist_ma_day;
