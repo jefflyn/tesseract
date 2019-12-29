@@ -11,7 +11,7 @@ from stocks.util.pro_util import pro
 from stocks.util import date_util
 
 
-time_temp = datetime.datetime.now() - datetime.timedelta(days=365*2)
+time_temp = datetime.datetime.now() - datetime.timedelta(days=365)
 start_dt = time_temp.strftime('%Y%m%d')
 time_temp = datetime.datetime.now() - datetime.timedelta(days=0)
 end_dt = time_temp.strftime('%Y%m%d')
