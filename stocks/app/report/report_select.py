@@ -8,7 +8,6 @@ if __name__ == '__main__':
 
     index_sql = "select l.*, i.hz, i.sz50, i.scz, i.zxb, i.cyb from (select trade_date, count(case when close >= round(pre_close * 1.1, 2) then 1 else null end) as limitup,        count(case when close <= round(pre_close * 0.9, 2) then 1 else null end) as limitdown,        count(1) as total,        count(case when pct_change > 0 then 1 else null end) as up,        count(case when pct_change = 0 then 1 else null end) as flat,        count(case when pct_change < 0 then 1 else null end) as down from hist_trade_day where trade_date >= '2019-12-01' group by trade_date) as l left join     (select trade_date,        sum(case ts_code when '000001.SH' then pct_change else 0 end) 'hz',        sum(case ts_code when '000016.SH' then pct_change else 0 end) 'sz50',        sum(case ts_code when '399001.SZ' then pct_change else 0 end) 'scz',        sum(case ts_code when '399005.SZ' then pct_change else 0 end) 'zxb',        sum(case ts_code when '399006.SZ' then pct_change else 0 end) 'cyb'       from hist_index_day where trade_date >= '2019-06-01' group by trade_date) as i on l.trade_date = i.trade_date order by l.trade_date desc"
     df_index = _dt.read_query(index_sql)
-    content = df_index
 
     select_columns = "select code,name,industry,pe,pe_ttm,wave_a,wave_b,w_gap,bottom,uspace,dspace,count,count_,fdate,last_f_date,price,call_price,call_diff,select_time "
 
@@ -26,8 +25,7 @@ if __name__ == '__main__':
 
     file_name = 'select_' + date_util.get_today(date_util.format_flat) + '.xlsx'
     writer = pd.ExcelWriter(file_name)
-    # df_index.to_excel(writer, sheet_name='index')
-
+    df_index.to_excel(writer, sheet_name='index')
     df_down.to_excel(writer, sheet_name='down')
     df_active.to_excel(writer, sheet_name='active')
     df_chance.to_excel(writer, sheet_name='chance')
@@ -42,7 +40,7 @@ if __name__ == '__main__':
 
     subj = "Stock Selection Report " + date_util.get_today()
     to_users = ['649054380@qq.com']
-    ret = mail_util.mail_with_attch(to_users, subject=subj, content=str(content), attaches=attaches)
+    ret = mail_util.mail_with_attch(to_users, subject=subj, content=content, attaches=attaches)
     if ret:
         print("Email send successfully.")
     else:
