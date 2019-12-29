@@ -267,6 +267,8 @@ def select_result(codeset=None, filename=''):
 
         week_hist = data_util.get_hist_week(code=code, n=2)
         week_gap = 0
+        late_week_low = 0
+        late_week_high = 0
         if week_hist.empty is False and week_hist.shape[0] > 1:
             # 向上跳空缺口
             late_week_low = week_hist.loc[0, 'low']
@@ -281,6 +283,19 @@ def select_result(codeset=None, filename=''):
                 week_gap = (late_week_high - pre_week_low) / pre_week_low * 100
 
         curt_data.append(round(week_gap, 2))
+
+        c_week_gap = 0
+        this_week_hist = data_util.get_hist_trade_high_low(code=code, start=date_util.this_week_start, end=date_util.this_month_end)
+        if this_week_hist.empty is False:
+            curt_week_low = this_week_hist.loc[0, 'low']
+            curt_week_high = this_week_hist.loc[0, 'high']
+            if curt_week_low > late_week_high > 0:
+                c_week_gap = (curt_week_low - late_week_high) / late_week_high * 100
+            # 向下跳空缺口
+            if curt_week_high < late_week_low and late_week_low > 0:
+                c_week_gap = (curt_week_high - late_week_low) / late_week_low * 100
+
+        curt_data.append(round(c_week_gap, 2))
 
         # get maup data
         # maupdf = maup.get_ma(code)
@@ -299,13 +314,13 @@ def select_result(codeset=None, filename=''):
                'price', 'pct', 'wave_detail', 'wave_a', 'wave_b', 'bottom', 'uspace', 'dspace', 'top', 'position',
                'buy1', 'buy2', 'buy3', 'count', 'count_', 'c30d', 'cq1', 'cq2', 'cq3', 'cq4', 'fdate', 'last_f_date',
                'call_price', 'call_diff', 'lup_low', 'lup_high', 'change_7d', 'gap', 'gap_space', 'sum_30d',
-               'updays', 'sumup', 'multi_vol', 'vol_rate', 'w_gap']
+               'updays', 'sumup', 'multi_vol', 'vol_rate', 'w_gap', 'c_gap']
     resultdf = pd.DataFrame(data_list, columns=columns)
     # resultdf = resultdf.sort_values('sum_30d', axis=0, ascending=False, inplace=False, kind='quicksort', na_position='last')
 
     resultdf = resultdf[
         ['concepts', 'pe', 'pe_ttm', 'turnover_rate', 'code', 'name', 'industry', 'area', 'list_date',
-         'pct', 'wave_detail', 'wave_a', 'wave_b', 'bottom', 'uspace', 'dspace', 'top', 'position', 'w_gap',
+         'pct', 'wave_detail', 'wave_a', 'wave_b', 'bottom', 'uspace', 'dspace', 'top', 'position', 'w_gap','c_gap',
          'gap', 'gap_space', 'sum_30d', 'count', 'count_', 'c30d', 'cq1', 'cq2', 'cq3', 'cq4',
          'fdate', 'last_f_date', 'price', 'call_price', 'call_diff', 'lup_low', 'lup_high',
          'buy1', 'buy2', 'buy3', 'change_7d', 'updays', 'sumup', 'vol_rate', 'multi_vol']]
