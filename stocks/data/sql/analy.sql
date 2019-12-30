@@ -232,3 +232,5 @@ select * from my_stock_pool;
 select * from my_stock_pool where platform = 'cf';
 select * from my_stock_pool where platform = 'df';
 select * from my_stock_pool where platform = 'pa';
+
+select * from hist_weekly where code='600876'

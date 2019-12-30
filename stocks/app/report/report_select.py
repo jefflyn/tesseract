@@ -14,10 +14,10 @@ if __name__ == '__main__':
     sql_down = select_columns + "from select_result_all where list_date < 20190101 and pe_ttm is not null and pe_ttm < pe and (wave_a < -50 and wave_b < 15 or wave_b <= -50) and count > 0 and count < 7 order by wave_a"
     df_down = _dt.read_query(sql_down)
 
-    sql_active = select_columns + "from select_result_all where list_date < 20190101 and (pe_ttm is not null or pe is not null) and (wave_a < -40 and wave_b < 15 or wave_b <= -30) and count >= 8 order by count desc, wave_a"
+    sql_active = select_columns + "from select_result_all where list_date < 20190101 and (pe_ttm is not null or pe is not null) and (wave_a < -40 and wave_b < 15 or wave_b <= -30) and count >= 8 order by wave_a"
     df_active = _dt.read_query(sql_active)
 
-    sql_chance = select_columns + "from select_result_all where list_date < 20190101 and last_f_date <> '' and wave_a < -30 and (pe_ttm is not null or pe is not null) and call_diff between -10 and 10 and count > 3 order by count desc, wave_a, last_f_date desc, call_diff, count desc"
+    sql_chance = select_columns + "from select_result_all where list_date < 20190101 and last_f_date <> '' and wave_a < -30 and (pe_ttm is not null or pe is not null) and call_diff between -10 and 10 and count > 3 order by wave_a, last_f_date desc, call_diff, count desc"
     df_chance = _dt.read_query(sql_chance)
 
     sql_all = select_columns + "from select_result_all order by wave_a"

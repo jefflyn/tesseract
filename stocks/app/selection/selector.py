@@ -12,6 +12,7 @@ from stocks.data.service import concept_service
 from stocks.data.service import fundamental_service
 
 from stocks.util import date_util
+from stocks.util import date_const
 from stocks.gene import limitup
 from stocks.gene import upnday
 from stocks.gene import wave
@@ -285,7 +286,8 @@ def select_result(codeset=None, filename=''):
         curt_data.append(round(week_gap, 2))
 
         c_week_gap = 0
-        this_week_hist = data_util.get_hist_trade_high_low(code=code, start=date_util.this_week_start, end=date_util.this_month_end)
+        this_week_hist = data_util.get_hist_trade_high_low(code=code, start=date_const.FIRST_DAY_THIS_WEEK,
+                                                           end=date_const.LAST_DAY_THIS_WEEK)
         if this_week_hist.empty is False:
             curt_week_low = this_week_hist.loc[0, 'low']
             curt_week_high = this_week_hist.loc[0, 'high']
@@ -445,7 +447,7 @@ def get_warn_space(df):
 
 
 if __name__ == '__main__':
-    print(select_result('603068'))
+    print(select_result('600876'))
     if len(argv) < 2:
         print("Invalid args! At least 2 args like: python xxx.py code1[,code2,...]")
         sys.exit(0)
