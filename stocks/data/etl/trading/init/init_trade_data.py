@@ -58,7 +58,7 @@ if __name__ == '__main__':
         try:
             # 打印进度
             print('Seq: ' + str(i + 1) + ' of ' + str(total) + '   Code: ' + str(stock_pool[i]))
-            if i > 0 and i % 200 == 0:
+            if i > 0 and i % 199 == 0:
                 end_time = datetime.datetime.now()
                 time_diff = (end_time - begin_time).seconds
                 sleep_time = 60 - time_diff
