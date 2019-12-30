@@ -106,7 +106,7 @@ def shift_date(target=local, shiftType='d', n=-1, format=DATE_FORMAT_DEFAULT):
     elif shiftType == 'y':
         target = target.shift(years=n)
     else:
-        logger.error('shift type not found: %s' % shiftType)
+        print('shift type not found: %s' % shiftType)
     return target.format(format)
 
 

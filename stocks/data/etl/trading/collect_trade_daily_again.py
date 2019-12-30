@@ -85,7 +85,7 @@ def recollect_hist_daily(sql='select b.ts_code, b.code from select_result_all s 
                 db.commit()
             except Exception as err:
                 db.rollback()
-                logger.error(err)
+                print(err)
                 continue
     cursor.close()
     db.close()

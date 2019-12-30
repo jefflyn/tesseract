@@ -51,7 +51,7 @@ def calc_weekly_gap():
     for i in range(len(stock_pool)):
         try:
             # 打印进度
-            logger.debug('Seq: ' + str(i + 1) + ' of ' + str(total) + '   Code: ' + str(stock_pool[i]))
+            print('Seq: ' + str(i + 1) + ' of ' + str(total) + '   Code: ' + str(stock_pool[i]))
             if i > 0 and i % 200 == 0:
                 end_time = datetime.datetime.now()
                 time_diff = (end_time - begin_time).seconds
@@ -67,11 +67,11 @@ def calc_weekly_gap():
             c_len = df.shape[0]
         except Exception as e:
             # print(e)
-            logger.debug('No DATA Code: ' + str(i))
+            print('No DATA Code: ' + str(i))
             time.sleep(60)
             df = pro.weekly(api=pro, ts_code=stock_pool[i], adj='qfq', start_date=start_dt, end_date=end_dt)
             # 打印进度
-            logger.debug('Redo Seq: ' + str(i + 1) + ' of ' + str(total) + '   Code: ' + str(stock_pool[i]))
+            print('Redo Seq: ' + str(i + 1) + ' of ' + str(total) + '   Code: ' + str(stock_pool[i]))
             c_len = df.shape[0]
         for j in range(c_len):
             resu0 = list(df.loc[c_len - 1 - j])
@@ -91,7 +91,7 @@ def calc_weekly_gap():
                 cursor.execute(sql_insert)
                 db.commit()
             except Exception as err:
-                logger.error(err)
+                print(err)
                 continue
     cursor.close()
     db.close()

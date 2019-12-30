@@ -166,7 +166,7 @@ if __name__ == '__main__':
     #                '2019-02-14', '2019-02-15', '2019-06-17', '2019-06-19', '2019-06-20', '2019-06-21', '2019-11-28',
     #                '2019-11-29', '2019-12-02']))
     # print(get_fire_date(['2019-01-30', '2019-01-31', '2019-02-01']))
-    # logger.debug(get_today_limitup())
+    # print(get_today_limitup())
     # lpdf = get_limitup_from_hist_k(['002813'])
     # #print(lpdf)
     df = get_limitup_from_hist_trade(['600345'])

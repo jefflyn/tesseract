@@ -96,7 +96,7 @@ if __name__ == '__main__':
                 cursor.execute(sql_insert)
                 db.commit()
             except Exception as err:
-                logger.error(err)
+                print(err)
                 continue
     cursor.close()
     db.close()
