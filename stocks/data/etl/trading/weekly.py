@@ -49,7 +49,7 @@ def collect_weekly():
         try:
             # 打印进度
             print('Seq: ' + str(i + 1) + ' of ' + str(total) + '   Code: ' + str(stock_pool[i]))
-            if i > 0 and i % 119 == 0:
+            if i > 0 and i % 118 == 0:
                 end_time = datetime.datetime.now()
                 time_diff = (end_time - begin_time).seconds
                 sleep_time = 60 - time_diff
@@ -63,8 +63,8 @@ def collect_weekly():
                 continue
             c_len = df.shape[0]
         except Exception as e:
-            # print(e)
             print('No DATA Code: ' + str(i))
+            print(e)
             time.sleep(60)
             df = pro.weekly(api=pro, ts_code=stock_pool[i], adj='qfq', start_date=start_dt, end_date=end_dt)
             # 打印进度

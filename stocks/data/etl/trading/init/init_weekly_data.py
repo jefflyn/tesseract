@@ -51,7 +51,7 @@ def collect_weekly():
             # 打印进度
             print('Seq: ' + str(i + 1) + ' of ' + str(total) + '   Code: ' + str(stock_pool[i]))
             # 每分钟最多访问该接口120次
-            if i > 0 and i % 119 == 0:
+            if i > 0 and i % 118 == 0:
                 end_time = date_util.get_now()
                 time_diff = (end_time - begin_time).seconds
                 sleep_time = 60 - time_diff

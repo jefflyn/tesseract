@@ -19,7 +19,7 @@ def recollect_hist_daily(sql='select b.ts_code, b.code from select_result_all s 
         print("no stock found, process end!")
         exit(0)
 
-    start_dt = '20100101'
+    start_dt = '20150101'
     time_temp = datetime.datetime.now() - datetime.timedelta(days=0)
     end_dt = time_temp.strftime('%Y%m%d')
     print("Collect trade data from " + start_dt + " to " + end_dt)
@@ -45,7 +45,7 @@ def recollect_hist_daily(sql='select b.ts_code, b.code from select_result_all s 
         try:
             # 打印进度
             print('Seq: ' + str(i + 1) + ' of ' + str(total) + '   Code: ' + str(ts_codes[i]))
-            if i > 0 and i % 199 == 0:
+            if i > 0 and i % 198 == 0:
                 end_time = datetime.datetime.now()
                 time_diff = (end_time - begin_time).seconds
                 sleep_time = 60 - time_diff
