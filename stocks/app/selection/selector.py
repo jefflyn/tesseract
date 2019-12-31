@@ -31,6 +31,9 @@ QUATO_WEIGHT = {
 
 last_trade_date = date_util.get_latest_trade_date(1)[0]
 
+this_week_hist = data_util.get_hist_trade_high_low(start=date_const.FIRST_DAY_THIS_WEEK,
+                                                           end=date_const.LAST_DAY_THIS_WEEK)
+
 
 def select_from_change_week():
     change_df = _dt.read_query('select * from hist_change_statis_week')
@@ -286,11 +289,10 @@ def select_result(codeset=None, filename=''):
         curt_data.append(round(week_gap, 2))
 
         c_week_gap = 0
-        this_week_hist = data_util.get_hist_trade_high_low(code=code, start=date_const.FIRST_DAY_THIS_WEEK,
-                                                           end=date_const.LAST_DAY_THIS_WEEK)
-        if this_week_hist.empty is False:
-            curt_week_low = this_week_hist.loc[0, 'low']
-            curt_week_high = this_week_hist.loc[0, 'high']
+        c_this_week_hist = this_week_hist[this_week_hist.code == code]
+        if c_this_week_hist.empty is False:
+            curt_week_low = c_this_week_hist.iloc[0, 2]
+            curt_week_high = c_this_week_hist.iloc[0, 1]
             if curt_week_low > late_week_high > 0:
                 c_week_gap = (curt_week_low - late_week_high) / late_week_high * 100
             # 向下跳空缺口

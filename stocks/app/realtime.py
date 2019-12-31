@@ -188,7 +188,7 @@ def get_realtime(hddf=None, last_trade_data=None, sortby=None):
 if __name__ == '__main__':
     """
     python realtime.py df 1 false p
-    /usr/local/bin/redis-server /usr/local/etc/redis.conf
+    /usr/local/bin/redis-server /usr/local/etc/redis.conf /etc/redis.conf
     """
     if len(argv) < 2:
         print("Invalid args! At least 2 args like: python realtime.py df ...")
