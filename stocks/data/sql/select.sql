@@ -1,5 +1,5 @@
-select * from select_result_all where name like '%银星%';
-select * from select_result_all where code=600876;
+select * from select_result_all where name like '%衡%';
+select * from select_result_all where code=002437;
 
 # 条件查询 selection data
 select *

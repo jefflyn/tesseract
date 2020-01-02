@@ -12,6 +12,9 @@ pre_key_today = date_const.TODAY + '_'
 
 
 if __name__ == '__main__':
+    """
+    nohup /usr/local/bin/redis-server /etc/redis.conf &
+    """
     while True:
         monitor_stocks = data_util.get_monitor_stocks()
         codes = list(monitor_stocks['code'])
