@@ -7,6 +7,6 @@ if __name__ == '__main__':
     # >>> select from all
     selector.select_from_all()
 
-    # ##select from wave
-    codes = data_util.get_codes_by_wave()
-    selector.select_result(codes, 'wave')
+    # >>> select from wave
+    # codes = data_util.get_codes_by_wave()
+    # selector.select_result(codes, 'wave')

@@ -1,5 +1,5 @@
-select * from select_result_all where name like '%衡%';
-select * from select_result_all where code=002437;
+select * from select_result_all where name like '%西藏%';
+select * from select_result_all where code in (select code from my_stock_pool where platform='cf');
 
 # 条件查询 selection data
 select *
@@ -66,24 +66,4 @@ and list_date < 20190101
 and pe_ttm is not null
 order by wave_a;
 
-# 缺口选股
-select * from daily_gap_trace_a where s_date='2019-06-21' order by position;
-select * from daily_gap_trace_b where s_date='2019-06-18' order by s_date desc;
 
-update daily_gap_trace_a g inner join hist_trade_day h on g.v_date=h.trade_date and g.code=h.code
-set g.o_profit=(h.close-h.open)/h.open*100, g.l_profit=(h.close-h.low)/h.low*100;
-
-update daily_gap_trace_b g inner join hist_trade_day h on g.v_date=h.trade_date and g.code=h.code
-set g.o_profit=(h.close-h.open)/h.open*100, g.l_profit=(h.close-h.low)/h.low*100;
-
-# delete from daily_gap_trace_a where s_date='2019-06-19';
--- 插入向上跳空缺口，并且当天涨幅大于9%
-  insert into daily_gap_trace_a (s_date, v_date, code, name, industry, cost, bottom, share, b_up, position, gap, g_space, c30d, vol, uds)
-select trade_date, '2019-06-25', code, name, industry, price, bottom, 100, `uspace%`, `position%`, gap, gap_space, c30d, vol_rate, updays
-  from select_result_all
-where list_date < 20190101 and name not like '%ST%' and pct > 9.9;
-
-  insert into daily_gap_trace_b (s_date, v_date, code, name, industry, cost, bottom, share, b_up, position, gap, g_space, c30d, vol, uds)
-select trade_date, '2019-06-22', code, name, industry, price, bottom, 100, `uspace%`, `position%`, gap, gap_space, c30d, vol_rate, updays
-  from select_result_all
-where list_date < 20190101 and name not like '%ST%' and pct > 9.9 and `position%` >= 40;
