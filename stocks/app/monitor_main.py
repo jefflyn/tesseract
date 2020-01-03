@@ -38,42 +38,43 @@ if __name__ == '__main__':
             changes = str.split(alert_changes, ',')
             print(' ', code, price, str(alert_prices), str(alert_changes), sep=' | ')
 
-            for p in prices:
-                target_price = float(p)
-                if 0 < target_price <= price:
-                    redis_key = pre_key_today + code + '_price_' + str(target_price)
-                    warn_times = redis_client.get(redis_key)
-                    if warn_times is None:
-                        content = name + ':' + code + ' up to ' + str(target_price) + ', please check!'
-                        try:
-                            redis_client.set(redis_key, name + str(price))
-                            name_format = '：' + code + ' ' + name
-                            change_str = str(round(realtime_change, 2)) + '%' if realtime_change < 0 else '+' + str(
-                                round(realtime_change, 2)) + '%'
-                            price_format = str(round(price, 2)) + change_str
-                            # send msg
-                            # t_msg = sms_util.send_msg_with_twilio(msg=content, to=receive_mobile)
-                            t_msg = sms_util.send_msg_with_tencent(code, name_format, price_format)
-                            print(t_msg)
-                        except Exception as e:
-                            print(e)
-                if target_price < 0 and price <= abs(target_price):
-                    redis_key = pre_key_today + code + '_price_' + abs(target_price)
-                    warn_times = redis_client.get(redis_key)
-                    if warn_times is None:
-                        content = name + ':' + code + ' down to ' + str(abs(target_price)) + ', please check!'
-                        try:
-                            redis_client.set(redis_key, name + str(price))
-                            name_format = '：' + code + ' ' + name
-                            change_str = str(round(realtime_change, 2)) + '%' if realtime_change < 0 else '+' + str(
-                                round(realtime_change, 2)) + '%'
-                            price_format = str(round(price, 2)) + change_str
-                            # send msg
-                            # t_msg = sms_util.send_msg_with_twilio(msg=content, to=receive_mobile)
-                            t_msg = sms_util.send_msg_with_tencent(code, name_format, price_format)
-                            print(t_msg)
-                        except Exception as e:
-                            print(e)
+            if prices is None and prices != '':
+                for p in prices:
+                    target_price = float(p)
+                    if 0 < target_price <= price:
+                        redis_key = pre_key_today + code + '_price_' + str(target_price)
+                        warn_times = redis_client.get(redis_key)
+                        if warn_times is None:
+                            content = name + ':' + code + ' up to ' + str(target_price) + ', please check!'
+                            try:
+                                redis_client.set(redis_key, name + str(price))
+                                name_format = '：' + code + ' ' + name
+                                change_str = str(round(realtime_change, 2)) + '%' if realtime_change < 0 else '+' + str(
+                                    round(realtime_change, 2)) + '%'
+                                price_format = str(round(price, 2)) + change_str
+                                # send msg
+                                # t_msg = sms_util.send_msg_with_twilio(msg=content, to=receive_mobile)
+                                t_msg = sms_util.send_msg_with_tencent(code, name_format, price_format)
+                                print(t_msg)
+                            except Exception as e:
+                                print(e)
+                    if target_price < 0 and price <= abs(target_price):
+                        redis_key = pre_key_today + code + '_price_' + abs(target_price)
+                        warn_times = redis_client.get(redis_key)
+                        if warn_times is None:
+                            content = name + ':' + code + ' down to ' + str(abs(target_price)) + ', please check!'
+                            try:
+                                redis_client.set(redis_key, name + str(price))
+                                name_format = '：' + code + ' ' + name
+                                change_str = str(round(realtime_change, 2)) + '%' if realtime_change < 0 else '+' + str(
+                                    round(realtime_change, 2)) + '%'
+                                price_format = str(round(price, 2)) + change_str
+                                # send msg
+                                # t_msg = sms_util.send_msg_with_twilio(msg=content, to=receive_mobile)
+                                t_msg = sms_util.send_msg_with_tencent(code, name_format, price_format)
+                                print(t_msg)
+                            except Exception as e:
+                                print(e)
 
             for p in changes:
                 if 0 < float(p) <= realtime_change:

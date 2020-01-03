@@ -105,10 +105,6 @@ def select_result(codeset=None, filename=''):
     else:
         size = len(hist_trade_df.index.to_numpy())
     print('select stocks start! total size: %d\n' % size)
-    # limit = 500
-    # beginIndex = 0
-    # endIndex = beginIndex + limit if size > limit else size
-    # print('select from %s, total: %i' % (filename, size))
     data_list = []
     # 概念信息
     concepts = concept_service.get_concepts()
