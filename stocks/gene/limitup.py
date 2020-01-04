@@ -10,7 +10,7 @@ LIMITUP_MIN = 9.9
 LIMITUP_FROM_DAYS = -365
 
 sql = "select h.trade_date, b.code, h.close, h.open, h.high, h.low, h.pct_change " \
-      "from hist_trade_day h inner join basic b on h.ts_code = b.ts_code " \
+      "from hist_trade_day h left join basic b on h.ts_code = b.ts_code " \
       "where h.trade_date >='2018-01-01' " \
       "and (h.close = round(h.pre_close * 1.1, 2) or h.pct_change > 9.9)"
 histlimitup = db_util.read_query(sql)
@@ -89,7 +89,7 @@ def count(df=None):
     """
     count the specific periods limitup 
     :param df: limit data frame
-    :return: latest 30 days, last 4 quarters, total 11 months' limitup count
+    :return: latest 30 days, last 4 quarters, total 13 months' limitup count
     ['code', 'count', 'count_', 'c30d', 'cq1', 'cq2', 'cq3', 'cq4', 'fdate', 'mindate', 'lldate', 'lup_low', 'lup_high']
     """
     if df.empty:
@@ -155,8 +155,7 @@ def count(df=None):
     count_result = pd.DataFrame(data=count_data_list,
                                 columns=['code', 'count', 'count_', 'c30d', 'cq1', 'cq2', 'cq3', 'cq4', 'fdate',
                                          'mindate', 'lldate', 'lup_low', 'lup_high'])
-    count_result = count_result.sort_values('count', axis=0, ascending=False, inplace=False, kind='quicksort',
-                                            na_position='last')
+    count_result = count_result.sort_values('count', ascending=False)
 
     return count_result
 
@@ -169,7 +168,7 @@ if __name__ == '__main__':
     # print(get_today_limitup())
     # lpdf = get_limitup_from_hist_k(['002813'])
     # #print(lpdf)
-    df = get_limitup_from_hist_trade(['600345'])
+    df = get_limitup_from_hist_trade(['002813'])
     #print(df)
     df_count = count(df)
     #print(df_count)

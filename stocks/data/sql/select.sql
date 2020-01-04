@@ -1,18 +1,24 @@
-select * from select_result_all where name like '%西藏%';
-select * from select_result_all where code in (select code from my_stock_pool where platform='cf');
+select count(1)
+from select_result_all;
+select *
+from select_result_all
+where name like '%长城%';
+select *
+from select_result_all
+where code in (select code from my_stock_pool where platform = 'cf');
 
 # 条件查询 selection data
 select *
 from select_result_all
 where 1 = 1
-and name not like '%ST%'
+  and name not like '%ST%'
 #   and code = '300099'
 # and call_diff = ''
-and last_f_date <> ''
+  and last_f_date <> ''
 #     and call_diff
 # and industry like '%证券%'
 # and list_date < 20190101
-and pe_ttm is not null
+  and pe_ttm is not null
 # and name like '%三川%'
 # and c.concepts like '%油%'
 # and area like '%甘肃%'
@@ -27,24 +33,22 @@ order by last_f_date desc, count desc, wave_a;
 -- 1、超跌选股，包含次新股（低风险，长线投资）
 select *
 from select_result_all
-where list_date < 20180901
-  and pe_ttm is not null
-#   and abs(pe - pe_ttm) <= 10
-  and pe_ttm < pe -- 价值向上趋势
+where list_date < 20190101
+  and (pe_ttm is not null or pe is not null)
+#   and pe_ttm is not null
+#   and pe_ttm < pe
   and (wave_a < -50 and wave_b < 15 or wave_b <= -50)
-  and count > 0 and count < 7
-# and concepts like '%黄金%'
+  and count between 0 and 7
 order by wave_a;
 
 -- 2、超跌活跃选股，不含次新股（中风险，适合中短线）
-select * from select_result_all
+select *
+from select_result_all
 where list_date < 20190101
   and (pe_ttm is not null or pe is not null)
-#  and pe_ttm < pe -- 价值向上趋势
-and (wave_a < -40 and wave_b < 15 or wave_b <= -30)
-and count >= 8
-and list_date < 20190101
-order by count desc, wave_a;
+  and (wave_a < -40 and wave_b < 15 or wave_b <= -40)
+  and count >= 8
+order by wave_a;
 
 -- 2.1
 select *
@@ -60,10 +64,11 @@ order by last_f_date desc, call_diff, count desc;
 -- 3、本月涨停选股，不含次新股（高风险，适合超短线）
 select *
 from select_result_all
-where code in (select code from hist_trade_day where pct_change > 9.8 and code not like '688%' and trade_date >= '2019-08-01')
-and c30d > 2
-and list_date < 20190101
-and pe_ttm is not null
+where code in
+      (select code from hist_trade_day where pct_change > 9.8 and code not like '688%' and trade_date >= '2019-08-01')
+  and c30d > 2
+  and list_date < 20190101
+  and pe_ttm is not null
 order by wave_a;
 
 

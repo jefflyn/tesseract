@@ -213,6 +213,8 @@ def get_wave(codes=None, is_index=False, start=None, end=None, beginlow=True, du
         code_list.append(codes)
     else:
         code_list = codes
+    if len(code_list) == 0:
+        return None
 
     index_realtime = []
     if is_index is True:
@@ -357,9 +359,12 @@ def get_wave_ab(wavestr=None, pct_limit=33):
     if wavestr is None:
         return
     wavestr_ab = wavestr.split('\n')[0].split('|')
-    a_index = -1
     wavestr_ab_list = list(reversed(wavestr_ab))
     wavestr_ab_list = [float(i) for i in wavestr_ab_list[0:len(wavestr_ab_list) - 1]]
+    wave_day_ab = wavestr.split('\n')[1].split('|')
+    wave_day_ab_list = list(reversed(wave_day_ab))
+    wave_day_ab_list = [int(i) for i in wave_day_ab_list[0:len(wave_day_ab_list) - 1]]
+    a_index = -1
     for idx, pct in enumerate(wavestr_ab_list):
         if pct == '':
             continue
@@ -367,20 +372,26 @@ def get_wave_ab(wavestr=None, pct_limit=33):
             a_index = idx
             break
         else:
-            if abs(float(pct)) >= 33:
+            if abs(float(pct)) >= pct_limit:
                 a_index = idx
                 break
 
     if a_index == 0:
         wave_a = float(wavestr_ab_list[a_index]) if len(wavestr_ab_list) == 1 else float(wavestr_ab_list[a_index + 1])
         wave_b = 0 if len(wavestr_ab_list) == 1 else float(wavestr_ab_list[a_index])
+        day_a = int(wave_day_ab_list[a_index]) if len(wave_day_ab_list) == 1 else int(wave_day_ab_list[a_index + 1])
+        day_b = 0 if len(wave_day_ab_list) == 1 else int(wave_day_ab_list[a_index])
     elif a_index == -1:
         wave_a = float(wavestr_ab_list[0]) if len(wavestr_ab_list) == 1 else float(wavestr_ab_list[1])
         wave_b = 0 if len(wavestr_ab_list) == 1 else float(wavestr_ab_list[0])
+        day_a = int(wave_day_ab_list[0]) if len(wave_day_ab_list) == 1 else int(wave_day_ab_list[1])
+        day_b = 0 if len(wave_day_ab_list) == 1 else int(wave_day_ab_list[0])
     else:
         wave_a = float(wavestr_ab_list[a_index])
         wave_b = np.sum(wavestr_ab_list[0:a_index])
-    return [wave_a, wave_b]
+        day_a = int(wave_day_ab_list[a_index])
+        day_b = np.sum(wave_day_ab_list[0:a_index])
+    return [(wave_a, day_a), (wave_b, day_b)]
 
 
 def wave_to_str(wavedf=None, size=4, change=10):
@@ -391,10 +402,13 @@ def wave_to_str(wavedf=None, size=4, change=10):
     str_list = []
     sum_last = 0
     price_wave = ''
+    wave_days = []
+    sum_days = 0
     for index, row in wavedf.iterrows():
         # for i in range(0, len(changelist)):
         #     lastone = changelist[i]
         lastone = row['change']
+        wave_day = row['days']
         flag = row['status']
         if abs(lastone) >= change:
             if 'up' == flag:
@@ -408,30 +422,41 @@ def wave_to_str(wavedf=None, size=4, change=10):
             if sum_last != 0:
                 str_list.append(sum_last)
                 sum_last = 0
+                wave_days.append(sum_days)
+                sum_days = 0
             str_list.append(lastone)
+            wave_days.append(wave_day)
             continue
         else:
             sum_last += lastone
+            sum_days += wave_day
             if abs(sum_last) >= change:
                 str_list.append(sum_last)
                 sum_last = 0
+                wave_days.append(wave_day)
+                sum_days = 0
                 continue
             else:
                 if index == len(changelist) - 1:
                     str_list.append(sum_last)
                     sum_last = 0
+                    wave_days.append(sum_days)
+                    sum_days = 0
     takes = len(str_list) - size if len(str_list) - size > 0 else 0
     str_list = str_list[takes:]
     wavestr = ''
+    wave_days = wave_days[takes:]
+    wave_day_str = ''
     for k in range(0, len(str_list)):
         wavestr += ('|' + str(round(str_list[k], 2)))
-    return wavestr + '\n￥' + price_wave
+        wave_day_str += ('|' + str(wave_days[k]))
+    return wavestr + '\n' + wave_day_str + '\n￥' + price_wave
 
 
 def tryBottom():
     # df = get_wave('399005', index=True)
     df = get_wave('300156')
-    wave_to_str(df, size=10)
+    wave_to_str(df, size=3)
     print(df)
     bottom_def = get_bottom(df)
     print(bottom_def.ix[0, 'bottom'])
@@ -441,10 +466,15 @@ def tryBottom():
 
 if __name__ == '__main__':
     # tryBottom()
-    # code_list = ['300157']
-    code_list = data_util.get_normal_codes()
+    code_list = ['300157']
+    # code_list = data_util.get_normal_codes()
     result = get_wave(code_list, is_index=False, start='2019-01-01')
-    _dt.to_db(result, 'wave_data_2019')
+    wave_str = wave_to_str(result)
+    print(wave_str)
+    wave_ab = get_wave_ab(wave_str, 33)
+    print(wave_ab)
+
+    # _dt.to_db(result, 'wave_data_2019')
     # bottom = get_bottom(result, 15)
     # print(wave_to_str(result))
     # print(result)

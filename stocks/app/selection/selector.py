@@ -150,8 +150,8 @@ def select_result(codeset=None, filename=''):
             wave_size = 10
         wavestr = wave.wave_to_str(wavedf, wave_size)
         wave_ab = wave.get_wave_ab(wavestr, 33)
-        wave_a = wave_ab[0]
-        wave_b = wave_ab[1]
+        wave_a = wave_ab[0][0]
+        wave_b = wave_ab[1][0]
         wavedfset = wavedfset.append(wavedf)
         bottomdf = wave.get_bottom(wavedf)
         if bottomdf is None or bottomdf.empty is True:
@@ -162,9 +162,11 @@ def select_result(codeset=None, filename=''):
         dspace = (current_price - top) / top * 100
         position = (current_price - bottom) / (top - bottom) * 100
 
-        curt_data.append(wavestr)
+        curt_data.append(wavestr.split('\n')[0])
         curt_data.append(round(wave_a, 2))
+        curt_data.append(wave_ab[0][1])
         curt_data.append(round(wave_b, 2))
+        curt_data.append(wave_ab[1][1])
         curt_data.append(bottom)
         curt_data.append(round(uspace, 2))
         curt_data.append(round(dspace, 2))
@@ -311,7 +313,7 @@ def select_result(codeset=None, filename=''):
 
         data_list.append(curt_data)
     columns = ['concepts', 'pe', 'pe_ttm', 'turnover_rate', 'code', 'name', 'industry', 'area', 'list_date',
-               'price', 'pct', 'wave_detail', 'wave_a', 'wave_b', 'bottom', 'uspace', 'dspace', 'top', 'position',
+               'price', 'pct', 'wave_detail', 'wave_a', 'a_days', 'wave_b', 'b_days', 'bottom', 'uspace', 'dspace', 'top', 'position',
                'buy1', 'buy2', 'buy3', 'count', 'count_', 'c30d', 'cq1', 'cq2', 'cq3', 'cq4', 'fdate', 'last_f_date',
                'call_price', 'call_diff', 'lup_low', 'lup_high', 'change_7d', 'gap', 'gap_space', 'sum_30d',
                'updays', 'sumup', 'multi_vol', 'vol_rate', 'w_gap', 'c_gap']
@@ -320,7 +322,7 @@ def select_result(codeset=None, filename=''):
 
     resultdf = resultdf[
         ['concepts', 'pe', 'pe_ttm', 'turnover_rate', 'code', 'name', 'industry', 'area', 'list_date',
-         'pct', 'wave_detail', 'wave_a', 'wave_b', 'bottom', 'uspace', 'dspace', 'top', 'position', 'w_gap','c_gap',
+         'pct', 'wave_detail', 'wave_a', 'a_days', 'wave_b', 'b_days', 'bottom', 'uspace', 'dspace', 'top', 'position', 'w_gap','c_gap',
          'gap', 'gap_space', 'sum_30d', 'count', 'count_', 'c30d', 'cq1', 'cq2', 'cq3', 'cq4',
          'fdate', 'last_f_date', 'price', 'call_price', 'call_diff', 'lup_low', 'lup_high',
          'buy1', 'buy2', 'buy3', 'change_7d', 'updays', 'sumup', 'vol_rate', 'multi_vol']]

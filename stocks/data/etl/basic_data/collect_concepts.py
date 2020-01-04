@@ -64,7 +64,7 @@ if __name__ == '__main__':
                 continue
 
     # insert into concepts group by code
-    concept_sql = "insert into concepts select cd.code, GROUP_CONCAT(c.name) as concepts from concept_detail cd " \
+    concept_sql = "insert into concepts select cd.code, GROUP_CONCAT(c.name separator '\n') as concepts from concept_detail cd " \
                   "inner join concept c on cd.concept_code=c.code group by code;"
     cursor.execute(concept_sql)
     db.commit()
