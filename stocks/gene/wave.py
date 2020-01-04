@@ -201,11 +201,11 @@ def format_wave_data(wavedf=None, is_index=False):
 
 def get_wave(codes=None, is_index=False, start=None, end=None, beginlow=True, duration=0, pchange=0):
     """
-    default get the recent 3 year data
+    default get the recent 2 year data
     """
     starttime = datetime.now()
     if start is None:
-        bwdays = dt.timedelta(-1000)
+        bwdays = dt.timedelta(-365*2)
         start = (starttime + bwdays).strftime("%Y-%m-%d")
     # print("get wave start at [%s]" % starttime)
     code_list = []
