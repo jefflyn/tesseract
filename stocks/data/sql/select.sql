@@ -1,18 +1,13 @@
-select count(1)
-from select_result_all;
-select *
-from select_result_all
-where name like '%长城%';
-select *
-from select_result_all
-where code in (select code from my_stock_pool where platform = 'cf');
+select count(1) from select_result_all;
+select * from select_result_all where name like '%长城%';
+select * from select_result_all where code in ('000862','002437','300089');
 
 # 条件查询 selection data
 select *
 from select_result_all
 where 1 = 1
   and name not like '%ST%'
-#   and code = '300099'
+#   and code in ('300099')
 # and call_diff = ''
   and last_f_date <> ''
 #     and call_diff
