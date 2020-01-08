@@ -33,10 +33,11 @@ if __name__ == '__main__':
             alert_prices = monitor_stocks.loc[index, 'alert_price']
             alert_changes = monitor_stocks.loc[index, 'percent_change']
             receive_mobile = monitor_stocks.loc[index, 'receive_mobile']
-
             prices = str.split(alert_prices, ',')
             changes = str.split(alert_changes, ',')
-            print(' ', code, price, str(alert_prices), str(alert_changes), sep=' | ')
+
+            realtime_price_info = str(price) + ' ' + str(round(realtime_change, 2)) + '%'
+            print(' ', code, realtime_price_info, str(alert_prices), str(alert_changes), sep=' | ')
 
             if prices is None and prices != '':
                 for p in prices:
