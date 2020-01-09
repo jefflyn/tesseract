@@ -6,13 +6,13 @@ from stocks.gene import wave
 from stocks.data import data_util as _dt
 import pandas as pd
 import time
-from stocks.util import date_const
+from stocks.util import date_util
 
 keys = ['pa', 'cf', 'df', 'sim', 'gap']
 
 INDEX_LIST_NEW = dict(zip(list(x[2:] for x in ct.INDEX_LIST.values()), ct.INDEX_LIST.keys()))
 
-pre_key_today = date_const.TODAY + '_'
+pre_key_today = date_util.TODAY + '_'
 
 
 def format_realtime(df):

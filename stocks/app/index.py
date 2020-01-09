@@ -6,7 +6,8 @@ import tushare as ts
 from stocks.gene import wave
 import stocks.util.sms_util as sms
 from stocks.util.redis_util import redis_client
-from stocks.util import date_const, _utils
+from stocks.util import date_util, _utils
+
 
 INDEX_SH = ['000001', '000016', '000300']
 INDEX_SZ = ['399001', '399005']
@@ -82,10 +83,10 @@ def get_status():
         if float(row['change']) < -2:
             name_format = '：' + code + ' ' + row['name']
             price_format = str(round(float(row['change']), 2)) + '%'
-            warn_times = redis_client.get(date_const.TODAY + '_' + code)
+            warn_times = redis_client.get(date_util.TODAY + '_' + code)
             if warn_times is None:
                 sms.send_msg_with_tencent(code, name_format, price_format)
-                redis_client.set(date_const.TODAY + '_' + code, row['name'] + price_format)
+                redis_client.set(date_util.TODAY + '_' + code, row['name'] + price_format)
 
     columns = ['code', 'name', 'change', 'close', 'low', 'high', 'volume', 'amount', 'current', 'wave', 'bottom', 'uspace',
                'dspace', 'top', 'position', 'suggest']

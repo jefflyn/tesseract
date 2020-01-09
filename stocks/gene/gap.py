@@ -2,11 +2,11 @@ from datetime import datetime as dtime
 
 import numpy as np
 import pandas as pd
-import stocks.util.date_const as date_const
+from stocks.util import date_util
 from stocks.data import data_util
 from stocks.util import db_util, _utils
 
-start_date = date_const.DATE_BEFORE_90_DAYS
+start_date = date_util.DATE_BEFORE_90_DAYS
 
 stock_pool = data_util.get_normal_codes()
 

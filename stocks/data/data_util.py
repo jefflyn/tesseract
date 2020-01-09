@@ -2,8 +2,7 @@ import datetime
 import pandas as pd
 
 import tushare as ts
-import stocks.util.date_const as _dt
-import stocks.util.date_util as _date_util
+from stocks.util import date_util
 from stocks.util.db_util import read_sql
 from stocks.util.db_util import read_query
 
@@ -104,7 +103,7 @@ def get_up_gap_codes(days=7):
     :param days:
     :return:
     """
-    from_date = _dt.DATE_BEFORE_7_DAYS
+    from_date = date_util.DATE_BEFORE_7_DAYS
     sql = 'select * from hist_trade_day where trade_date >=:fdate'
     params = {'fdate': from_date}
     df = read_sql(sql, params=params)
@@ -299,7 +298,7 @@ def get_ma_code(grade='a'):
 def get_my_stock_pool(type=None, hold=1):
     if type == 'gap':
         sql = 'select * from daily_gap_trace_a where 1=1 and s_date=:last_trade_date'
-        last_trade_date = _date_util.get_latest_trade_date(2)[1]
+        last_trade_date = date_util.get_latest_trade_date(2)[1]
         params = {'last_trade_date': last_trade_date}
         df = read_sql(sql, params)
         return df

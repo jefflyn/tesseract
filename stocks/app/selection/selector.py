@@ -1,3 +1,5 @@
+from stocks.util import display
+
 import datetime
 import sys
 from datetime import datetime as dt
@@ -12,11 +14,9 @@ from stocks.data.service import concept_service
 from stocks.data.service import fundamental_service
 
 from stocks.util import date_util
-from stocks.util import date_const
 from stocks.gene import limitup
 from stocks.gene import upnday
 from stocks.gene import wave
-from stocks.util import display
 
 LIMITUP = 'limitup'
 BOTTOM = 'bottom'
@@ -31,8 +31,8 @@ QUATO_WEIGHT = {
 
 last_trade_date = date_util.get_latest_trade_date(1)[0]
 
-this_week_hist = data_util.get_hist_trade_high_low(start=date_const.FIRST_DAY_THIS_WEEK,
-                                                           end=date_const.LAST_DAY_THIS_WEEK)
+this_week_hist = data_util.get_hist_trade_high_low(start=date_util.FIRST_DAY_THIS_WEEK,
+                                                           end=date_util.LAST_DAY_THIS_WEEK)
 
 
 def select_from_change_week():

@@ -1,6 +1,6 @@
 select count(1) from select_result_all;
 select * from select_result_all where concepts like '%黄金%' and (wave_a < -50 and wave_b < 15 or wave_b <= -50)
-select * from select_result_all where code in ('000862','002437','300089');
+select * from select_result_all where code in ('000587','002437','300089');
 
 # 条件查询 selection data
 select *

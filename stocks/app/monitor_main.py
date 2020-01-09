@@ -5,10 +5,9 @@ import datetime
 from stocks.util import sms_util
 from stocks.util.redis_util import redis_client
 from stocks.data import data_util
-from stocks.util import date_const
 
 
-pre_key_today = date_const.TODAY + '_'
+pre_key_today = data_util.TODAY + '_'
 
 
 if __name__ == '__main__':
