@@ -31,7 +31,7 @@ if __name__ == '__main__':
         total_mv	float	总市值 （万元）
         circ_mv	float	流通市值（万元）
     '''
-    hour = date_util.now.hour
+    hour = date_util.today.hour
     if hour < 10:
         sys.exit(0)
     trade_date_list = date_util.get_latest_trade_date(2)

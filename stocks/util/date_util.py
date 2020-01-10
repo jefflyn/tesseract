@@ -9,28 +9,29 @@ import urllib.request as request
 import pandas as pd
 import arrow
 
+today = datetime.datetime.now()
 
 # 昨天
-yesterday = now - timedelta(days=1)
+yesterday = today - timedelta(days=1)
 
 # 明天
-tomorrow = now + timedelta(days=1)
+tomorrow = today + timedelta(days=1)
 
 # 当前季度
-now_quarter = now.month / 3 if now.month % 3 == 0 else now.month / 3 + 1
+now_quarter = today.month / 3 if today.month % 3 == 0 else today.month / 3 + 1
 
 # 本周第一天和最后一天
-this_week_start = now - timedelta(days=now.weekday())
-this_week_end = now + timedelta(days=6 - now.weekday())
+this_week_start = today - timedelta(days=today.weekday())
+this_week_end = today + timedelta(days=6 - today.weekday())
 
 # 上周第一天和最后一天
-last_week_start = now - timedelta(days=now.weekday() + 7)
-last_week_end = now - timedelta(days=now.weekday() + 1)
+last_week_start = today - timedelta(days=today.weekday() + 7)
+last_week_end = today - timedelta(days=today.weekday() + 1)
 
 # 本月第一天和最后一天
-this_month_start = datetime.datetime(now.year, now.month, 1)
-this_month_end = datetime.datetime(now.year, now.month, 31) if now.month == 12 else \
-    datetime.datetime(now.year, now.month + 1, 1) - timedelta(days=1)
+this_month_start = datetime.datetime(today.year, today.month, 1)
+this_month_end = datetime.datetime(today.year, today.month, 31) if today.month == 12 else \
+    datetime.datetime(today.year, today.month + 1, 1) - timedelta(days=1)
 
 # 上月第一天和最后一天
 last_month_end = this_month_start - timedelta(days=1)
@@ -40,18 +41,18 @@ last_2month_end = last_month_start - timedelta(days=1)
 last_2month_start = datetime.datetime(last_2month_end.year, last_2month_end.month, 1)
 
 # 本季第一天和最后一天
-month = (now.month - 1) - (now.month - 1) % 3 + 1
-this_quarter_start = datetime.datetime(now.year, month, 1)
-this_quarter_end = datetime.datetime(now.year, month + 3, 1) - timedelta(days=1) if month < 10 \
-    else datetime.datetime(now.year, 12, 31)
+month = (today.month - 1) - (today.month - 1) % 3 + 1
+this_quarter_start = datetime.datetime(today.year, month, 1)
+this_quarter_end = datetime.datetime(today.year, month + 3, 1) - timedelta(days=1) if month < 10 \
+    else datetime.datetime(today.year, 12, 31)
 
 # 上季第一天和最后一天
 last_quarter_end = this_quarter_start - timedelta(days=1)
 last_quarter_start = datetime.datetime(last_quarter_end.year, last_quarter_end.month - 2, 1)
 
 # 本年第一天和最后一天
-this_year_start = datetime.datetime(now.year, 1, 1)
-this_year_end = datetime.datetime(now.year + 1, 1, 1) - timedelta(days=1)
+this_year_start = datetime.datetime(today.year, 1, 1)
+this_year_end = datetime.datetime(today.year + 1, 1, 1) - timedelta(days=1)
 
 # 去年第一天和最后一天
 last_year_end = this_year_start - timedelta(days=1)
@@ -154,7 +155,7 @@ def parse_datestr(datestr=NOW, format=None):
 
 def shift_date(target=local, shiftType='d', n=-1, format=DATE_FORMAT_DEFAULT):
     """
-
+    日期前后滑动
     :param target: arrow
     :param shiftType: d w m y
     :param n:
@@ -348,10 +349,10 @@ def get_trade_day(nday=-4):
     n_trade_day_pair = []
     n = 1
     while True:
-        target_date = (now - timedelta(days=n)).strftime(format_flat)
+        target_date = (today - timedelta(days=n)).strftime(format_flat)
         if is_tradeday(target_date):
-            start_date = now - timedelta(days=n)
-            to_date = (now - timedelta(days=n)).strftime(default_format)
+            start_date = today - timedelta(days=n)
+            to_date = (today - timedelta(days=n)).strftime(default_format)
             from_date = None
             for i in range(1, 10):
                 target_from_date = (start_date - timedelta(days=i)).strftime(format_flat)
@@ -385,8 +386,8 @@ def get_month_firstday_lastday(howmany=12):
     :return: firstDay: 当月的第一天，datetime.date类型
               lastDay: 当月的最后一天，datetime.date类型
     """
-    year = now.year
-    month = now.month
+    year = today.year
+    month = today.month
     if year:
         year = int(year)
     else:

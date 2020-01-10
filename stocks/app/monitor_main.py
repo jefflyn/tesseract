@@ -7,7 +7,7 @@ from stocks.util.redis_util import redis_client
 from stocks.data import data_util
 
 
-pre_key_today = data_util.TODAY + '_'
+pre_key_today = data_util.todaystr + '_'
 
 
 if __name__ == '__main__':

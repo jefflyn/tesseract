@@ -7,13 +7,11 @@ import stocks.util.display
 matplotlib.use('TkAgg')
 matplotlib.rcParams['font.sans-serif'] = 'SimHei'
 import matplotlib.pyplot as plt
-import stocks.util.db_util as _dt
-import matplotlib.dates as mdates
-import stocks.util.date_util as _dateutil
+from stocks.util import date_util
 import tushare as ts
 from stocks.data import data_util
 
-todaystr = _dateutil.get_today()
+todaystr = date_util.get_today()
 
 
 def get_bottom(df=None, limit=20):
@@ -222,6 +220,8 @@ def get_wave(codes=None, is_index=False, start=None, end=None, beginlow=True, du
     perioddf_list = []
     for code in code_list:
         hist_data = data_util.get_hist_trade(code=code, is_index=is_index, start=start, end=end)
+        # hist_data = data_util.get_hist_week(code=code, start=start, end=end)
+
         if hist_data is None or len(hist_data) == 0:
             continue
         hist_data['date'] = hist_data['trade_date']
@@ -453,7 +453,7 @@ def wave_to_str(wavedf=None, size=4, change=10):
     return wavestr + '\n' + wave_day_str + '\n￥' + price_wave
 
 
-def tryBottom():
+def try_bottom():
     # df = get_wave('399005', index=True)
     df = get_wave('300156')
     wave_to_str(df, size=3)
@@ -465,10 +465,10 @@ def tryBottom():
 
 
 if __name__ == '__main__':
-    # tryBottom()
+    # try_bottom()
     code_list = ['300157']
     # code_list = data_util.get_normal_codes()
-    result = get_wave(code_list, is_index=False, start='2019-01-01')
+    result = get_wave(code_list, is_index=False, start='2018-01-01')
     wave_str = wave_to_str(result)
     print(wave_str)
     wave_ab = get_wave_ab(wave_str, 33)
