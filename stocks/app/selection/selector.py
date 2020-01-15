@@ -148,9 +148,9 @@ def select_result(codeset=None, filename=''):
         wavedf = wave.get_wave(code)  # need to save
         if wavedf is None or wavedf.empty is True:
             continue
-        wave_size = 5
-        if filename == 'subnew':
-            wave_size = 10
+        wave_size = 10
+        # if filename == 'subnew':
+        #     wave_size = 10
         wavestr = wave.wave_to_str(wavedf, wave_size)
         wave_ab = wave.get_wave_ab(wavestr, 33)
         wave_a = wave_ab[0][0]
@@ -369,12 +369,12 @@ def select_subnew_issue_space():
     days = datetime.timedelta(-99)
     startstr = dt.strftime(starttime + days, '%Y-%m-%d')
 
-    subnewbasic = data_util.get_subnew()
-    codes = list(subnewbasic['code'])
+    sub_new_basic = data_util.get_subnew()
+    codes = list(sub_new_basic['code'])
     # codes = ['601108']
     # get the bottom price data
     df = ts.get_realtime_quotes(codes)
-    subnewbasic = subnewbasic.set_index('code')
+    sub_new_basic = sub_new_basic.set_index('code')
 
     rowsize = df.index.size
     data_list = []
@@ -382,7 +382,7 @@ def select_subnew_issue_space():
         print(rowsize - index)
         code = row['code']
         current_price = float(row['price'])
-        timeToMarket = subnewbasic.loc[code, 'timeToMarket']
+        timeToMarket = sub_new_basic.loc[code, 'timeToMarket']
         if timeToMarket == 0 or current_price <= 0:
             continue;
         timeToMarket = str(timeToMarket)
@@ -405,9 +405,9 @@ def select_subnew_issue_space():
         curt_data = []
         curt_data.append(code)
         curt_data.append(row['name'])
-        curt_data.append(subnewbasic.loc[code, 'industry'])
-        curt_data.append(subnewbasic.loc[code, 'area'])
-        curt_data.append(subnewbasic.loc[code, 'pe'])
+        curt_data.append(sub_new_basic.loc[code, 'industry'])
+        curt_data.append(sub_new_basic.loc[code, 'area'])
+        curt_data.append(sub_new_basic.loc[code, 'pe'])
 
         curt_data.append(issuedays)
         curt_data.append(issue_close_price)
@@ -450,7 +450,7 @@ def get_warn_space(df):
 
 
 if __name__ == '__main__':
-    print(select_result('002437'))
+    print(select_result('002443'))
     if len(argv) < 2:
         print("Invalid args! At least 2 args like: python xxx.py code1[,code2,...]")
         sys.exit(0)
