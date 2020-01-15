@@ -1,6 +1,5 @@
 import arrow
 
-
 utc = arrow.utcnow()
 local = utc.to('local')
 
@@ -8,8 +7,6 @@ DATE_FORMAT_MONTH = 'YYYY-MM'
 DATE_FORMAT_SIMPLE = 'YYYYMMDD'
 DATE_FORMAT_DEFAULT = 'YYYY-MM-DD'
 DATE_FORMAT_FULL = 'YYYY-MM-DD HH:mm:ss'
-
-EIGHT_HOURS = 60 * 60 * 8
 
 """
 天

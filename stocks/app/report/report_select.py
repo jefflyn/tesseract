@@ -41,7 +41,7 @@ if __name__ == '__main__':
     sql_st = select_columns + r"from select_result_all where name like :name order by wave_a"
     df_st = _dt.read_sql(sql_st, params={"name": "%ST%"})
 
-    sql_new = select_columns + "from select_result_all where list_date < :list_date order by wave_a"
+    sql_new = select_columns + "from select_result_all where list_date >= :list_date order by wave_a"
     df_new = _dt.read_sql(sql_new, params={"list_date": one_year_ago})
 
 
