@@ -5,10 +5,16 @@ import datetime
 from datetime import timedelta
 from dateutil.relativedelta import relativedelta
 from dateutil.rrule import *
-import urllib.request as request
 import pandas as pd
 import arrow
 
+
+hist_date_list = pd.read_csv(os.getenv('STOCKS_HOME') + '/data/etl/basic_data/' + 'hist_trade_date.csv')
+
+default_format = '%Y-%m-%d'
+format_flat = '%Y%m%d'
+
+# 今天
 today = datetime.datetime.now()
 
 # 昨天
@@ -58,147 +64,32 @@ this_year_end = datetime.datetime(today.year + 1, 1, 1) - timedelta(days=1)
 last_year_end = this_year_start - timedelta(days=1)
 last_year_start = datetime.datetime(last_year_end.year, 1, 1)
 
-default_format = '%Y-%m-%d'
-format_flat = '%Y%m%d'
 
-hist_date_list = pd.read_csv(os.getenv('STOCKS_HOME') + '/data/etl/basic_data/' + 'hist_trade_date.csv')
-
-
-utc = arrow.utcnow()
-local = utc.to('local')
-
-DATE_FORMAT_MONTH = 'YYYY-MM'
-DATE_FORMAT_SIMPLE = 'YYYYMMDD'
-DATE_FORMAT_DEFAULT = 'YYYY-MM-DD'
-DATE_FORMAT_FULL = 'YYYY-MM-DD HH:mm:ss'
-
-EIGHT_HOURS = 60 * 60 * 8
-
-"""
-天
-"""
-#今天
-NOW = local.format(DATE_FORMAT_FULL)
-
-TODAY = local.format(DATE_FORMAT_DEFAULT)
-#昨天
-YESTERDAY = local.shift(days=-1).format(DATE_FORMAT_DEFAULT)
-#7天前
-DATE_BEFORE_7_DAYS = local.shift(days=-7).format(DATE_FORMAT_DEFAULT)
-DATE_BEFORE_7_DAYS_SIMP = local.shift(days=-7).format(DATE_FORMAT_SIMPLE)
-#30天前
-DATE_BEFORE_30_DAYS = local.shift(days=-30).format(DATE_FORMAT_DEFAULT)
-#60天前
-DATE_BEFORE_60_DAYS = local.shift(days=-60).format(DATE_FORMAT_DEFAULT)
-#90天前
-DATE_BEFORE_90_DAYS = local.shift(days=-90).format(DATE_FORMAT_DEFAULT)
-
-"""
-周
-"""
-#本周第一天
-FIRST_DAY_THIS_WEEK = local.floor('week').format(DATE_FORMAT_DEFAULT)
-#本周最后一天
-LAST_DAY_THIS_WEEK = local.ceil('week').shift(days=-2).format(DATE_FORMAT_DEFAULT)
-#上周第一天
-FIRST_DAY_LAST_WEEK = local.floor('week').shift(weeks=-1).format(DATE_FORMAT_DEFAULT)
-#上周最后一天
-LAST_DAY_LAST_WEEK = local.ceil('week').shift(weeks=-1).shift(days=-2).format(DATE_FORMAT_DEFAULT)
-#6周前第一天
-FIRST_DAY_6_WEEK = local.ceil('week').shift(weeks=-8).shift(days=-2).format(DATE_FORMAT_DEFAULT)
-
-"""
-月
-"""
-#本月第一天
-FIRST_DAY_THIS_MONTH = local.floor('month').format(DATE_FORMAT_DEFAULT)
-#本月最后一天
-LAST_DAY_THIS_MONTH = local.ceil('month').format(DATE_FORMAT_DEFAULT)
-#上月第一天
-FIRST_DAY_LAST_MONTH = local.floor('month').shift(months=-1).format(DATE_FORMAT_DEFAULT)
-#上月最后一天
-LAST_DAY_LAST_MONTH = local.ceil('month').shift(months=-1).format(DATE_FORMAT_DEFAULT)
-#6个月前第一天
-FIRST_DAY_6_MONTH = local.floor('month').shift(months=-6).format(DATE_FORMAT_DEFAULT)
-#6个月前最后一天
-LAST_DAY_6_MONTH = local.ceil('month').shift(months=-6).format(DATE_FORMAT_DEFAULT)
-
-"""
-季度
-"""
-#今年第1季度
-FIR_Q_THIS_YEAR = local.floor('year').format(DATE_FORMAT_DEFAULT)
-#今年第2季度
-SEC_Q_THIS_YEAR = local.floor('year').shift(months=3).format(DATE_FORMAT_DEFAULT)
-#今年第3季度
-THIRD_Q_THIS_YEAR = local.floor('year').shift(months=6).format(DATE_FORMAT_DEFAULT)
-#今年第4季度
-FOUR_Q_THIS_YEAR = local.floor('year').shift(months=9).format(DATE_FORMAT_DEFAULT)
-
-"""
-年
-"""
-#今年第一天
-FIRST_DAY_THIS_YEAR = local.floor('year').format(DATE_FORMAT_DEFAULT)
-#去年第一天
-FIRST_DAY_LAST_YEAR = local.floor('year').shift(years=-1).format(DATE_FORMAT_DEFAULT)
-#去年最后一天
-LAST_DAY_LAST_YEAR = local.ceil('year').shift(years=-1).format(DATE_FORMAT_DEFAULT)
-
-
-def parse_datestr(datestr=NOW, format=None):
-    if format is None:
-        return arrow.get(datestr)
-    else:
-        return arrow.get(datestr).format(format)
-
-
-def shift_date(target=local, shiftType='d', n=-1, format=DATE_FORMAT_DEFAULT):
-    """
-    日期前后滑动
-    :param target: arrow
-    :param shiftType: d w m y
-    :param n:
-    :return:
-    """
-    if shiftType == 'd':
-        target = target.shift(days=n)
-    elif shiftType == 'w':
-        target = target.shift(weeks=n)
-    elif shiftType == 'm':
-        target = target.shift(months=n)
-    elif shiftType == 'y':
-        target = target.shift(years=n)
-    else:
-        print('shift type not found: %s' % shiftType)
-    return target.format(format)
-
-
-def get_now():
+def now():
     return datetime.datetime.now()
 
 
 # 本周第一天和最后一天
 def get_today(format=default_format):
-    return today.strftime(format)
+    return now().strftime(format)
 
 
 # 本周第一天和最后一天
 def get_this_week_start(format=default_format):
-    return this_week_start.strftime(format)
+    return now() - timedelta(days=now().weekday()).strftime(format)
 
 
 def get_this_week_end(format=default_format):
-    return this_week_end.strftime(format)
+    return now() + timedelta(days=6 - now().weekday()).strftime(format)
 
 
 # 上周第一天和最后一天
 def get_last_week_start(format=default_format):
-    return last_week_start.strftime(format)
+    return now() - timedelta(days=now().weekday() + 7).strftime(format)
 
 
 def get_last_week_end(format=default_format):
-    return last_week_end.strftime(format)
+    return now() - timedelta(days=now().weekday() + 1).strftime(format)
 
 
 # 本月第一天和最后一天
@@ -270,21 +161,6 @@ def convert_to_date(date_str):
     return query_date
 
 
-def get_day_type(query_date):
-    url = 'http://tool.bitefu.net/jiari/?d=' + query_date
-    resp = request.urlopen(url)
-    content = resp.read()
-    if content:
-        try:
-            day_type = int(content)
-        except ValueError:
-            return -1
-        else:
-            return day_type
-    else:
-        return -1
-
-
 def get_latest_trade_date(days=1):
     """
     :param days:
@@ -307,12 +183,14 @@ def today_is_tradeday():
     return is_tradeday(query_date)
 
 
-def get_previous_trade_day(trade_date=today):
+def get_previous_trade_day(trade_date=None):
     """
     获取指定日期上个交易日
     :param trade_date:'yyyy-MM-dd' or 'yyyyMMdd'
     :return: str 'yyyy-MM-dd'
     """
+    if trade_date is None:
+        trade_date = now()
     hist_date = hist_date_list[hist_date_list.hist_date == trade_date]
     if hist_date.empty is True:
         print(trade_date)
@@ -413,6 +291,25 @@ def get_month_firstday_lastday(howmany=12):
     result_list = result_list[::-1]
     return result_list
 
+
+def shift_date(type='d', n=-1, format='YYYY-MM-DD'):
+    """
+    :param type: d w m y
+    :param n:
+    :param format:
+    :return:
+    """
+    utc = arrow.utcnow()
+    local = utc.to('local')
+    if type == 'd':
+        target = local.shift(days=n)
+    elif type == 'w':
+        target = local.shift(weeks=n)
+    elif type == 'm':
+        target = local.shift(months=n)
+    elif type == 'y':
+        target = local.shift(years=n)
+    return target.format(format)
 
 
 if __name__ == '__main__':

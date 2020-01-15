@@ -45,14 +45,14 @@ def collect_weekly():
     stock_pool = [ts_code_tuple[0] for ts_code_tuple in cursor.fetchall()]
     print("Collect trade data from " + start_dt + " to " + end_dt)
     # 1分钟不超过200次调用
-    begin_time = date_util.get_now()
+    begin_time = date_util.now()
     for i in range(len(stock_pool)):
         try:
             # 打印进度
             print('Seq: ' + str(i + 1) + ' of ' + str(total) + '   Code: ' + str(stock_pool[i]))
             # 每分钟最多访问该接口120次
             if i > 0 and i % 118 == 0:
-                end_time = date_util.get_now()
+                end_time = date_util.now()
                 time_diff = (end_time - begin_time).seconds
                 sleep_time = 60 - time_diff
                 if sleep_time > 0:

@@ -74,46 +74,17 @@ FOUR_Q_THIS_YEAR = local.floor('year').shift(months=9).format(DATE_FORMAT_DEFAUL
 """
 年
 """
-#今年第一天
+# 一年前
+ONE_YEAR_AGO_YYYYMMDD = local.shift(years=-1).format(DATE_FORMAT_SIMPLE)
+# 今年第一天
 FIRST_DAY_THIS_YEAR = local.floor('year').format(DATE_FORMAT_DEFAULT)
-#去年第一天
+# 去年第一天
 FIRST_DAY_LAST_YEAR = local.floor('year').shift(years=-1).format(DATE_FORMAT_DEFAULT)
-#去年最后一天
+# 去年最后一天
 LAST_DAY_LAST_YEAR = local.ceil('year').shift(years=-1).format(DATE_FORMAT_DEFAULT)
 
 
-def parse_datestr(datestr=NOW, format=None):
-    if format is None:
-        return arrow.get(datestr)
-    else:
-        return arrow.get(datestr).format(format)
-
-
-def shift_date(target=local, shiftType='d', n=-1, format=DATE_FORMAT_DEFAULT):
-    """
-
-    :param target: arrow
-    :param shiftType: d w m y
-    :param n:
-    :return:
-    """
-    if shiftType == 'd':
-        target = target.shift(days=n)
-    elif shiftType == 'w':
-        target = target.shift(weeks=n)
-    elif shiftType == 'm':
-        target = target.shift(months=n)
-    elif shiftType == 'y':
-        target = target.shift(years=n)
-    else:
-        print('shift type not found: %s' % shiftType)
-    return target.format(format)
-
-
 if __name__ == '__main__':
-    print(THIRD_Q_THIS_YEAR)
+    print(ONE_YEAR_AGO_YYYYMMDD)
     print(FOUR_Q_THIS_YEAR)
-    print(parse_datestr())
-    print(parse_datestr(format=DATE_FORMAT_DEFAULT))
-    print(shift_date(target=parse_datestr(), shiftType='w'))
-    print([shift_date(target=parse_datestr(LAST_DAY_6_MONTH), shiftType='m', n=n, format=DATE_FORMAT_MONTH) for n in range(6)])
+

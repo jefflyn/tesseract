@@ -12,8 +12,8 @@ import tushare as ts
 from stocks.data import data_util
 from stocks.data.service import concept_service
 from stocks.data.service import fundamental_service
-
 from stocks.util import date_util
+from stocks.util import date_const
 from stocks.gene import limitup
 from stocks.gene import upnday
 from stocks.gene import wave
@@ -31,8 +31,8 @@ QUATO_WEIGHT = {
 
 last_trade_date = date_util.get_latest_trade_date(1)[0]
 
-this_week_hist = data_util.get_hist_trade_high_low(start=date_util.FIRST_DAY_THIS_WEEK,
-                                                           end=date_util.LAST_DAY_THIS_WEEK)
+this_week_hist = data_util.get_hist_trade_high_low(start=date_const.FIRST_DAY_THIS_WEEK,
+                                                           end=date_const.LAST_DAY_THIS_WEEK)
 
 
 def select_from_change_week():
@@ -89,7 +89,7 @@ def merge_select_result():
 
 
 def select_result(codeset=None, filename=''):
-    begin_time = date_util.get_now()
+    begin_time = date_util.now()
     if (codeset is None or len(codeset) == 0) and filename != 'all':
         return
     trade_date_list = date_util.get_latest_trade_date(4)
@@ -112,6 +112,9 @@ def select_result(codeset=None, filename=''):
     wavedfset = pd.DataFrame(columns=['code', 'begin', 'end', 'status', 'begin_price', 'end_price', 'days', 'change'])
     for index, row in hist_trade_df.iterrows():
         code = row['code']
+        if str(code)[:3] == '688':
+            continue
+
         if index % 100 == 0:
             print('count down from ' + str(size) + ' >>> processing ' + code)
         size -= 1
@@ -339,7 +342,7 @@ def select_result(codeset=None, filename=''):
         wavedfset.to_excel(writer, sheet_name='wave')
         writer.save()
         print('save excel success')
-    end_time = date_util.get_now()
+    end_time = date_util.now()
     print('select stocks finished, consume time %d secs! result size: %d\n' %
                 ((end_time - begin_time).seconds, len(resultdf.index.to_numpy())))
     return resultdf

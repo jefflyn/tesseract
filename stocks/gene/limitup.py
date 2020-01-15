@@ -51,7 +51,7 @@ def get_fire_date(date_list=None):
     :param date_list:
     :return: list of previous date
     """
-    begin_time = date_util.get_now()
+    begin_time = date_util.now()
     #print('begin from %s' % str(begin_time))
     if date_list is None:
         return list()
@@ -80,7 +80,7 @@ def get_fire_date(date_list=None):
             fire_date_list.append(date_list[index])
         elif continue_count > 3:
             fire_date_list.append(date_list[index + 1])
-    end_time = date_util.get_now()
+    end_time = date_util.now()
     #print("end to %s, total consume time: %s", str(end_time), str((end_time - begin_time).seconds))
     return fire_date_list
 

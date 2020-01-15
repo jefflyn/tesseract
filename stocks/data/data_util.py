@@ -3,6 +3,7 @@ import pandas as pd
 
 import tushare as ts
 from stocks.util import date_util
+from stocks.util import date_const
 from stocks.util.db_util import read_sql
 from stocks.util.db_util import read_query
 
@@ -494,7 +495,7 @@ def filter_basic(_basics=None, cyb=True, before=None):
     if before is not None:
         _basics = _basics[(_basics['list_date'] > 0) & (_basics['list_date'] <= before)]
     else:
-        before = _dt.DATE_BEFORE_7_DAYS_SIMP
+        before = date_const.DATE_BEFORE_7_DAYS_SIMP
         _basics = _basics[(_basics['list_date'] > 0) & (_basics['list_date'] <= int(before))]
     return _basics
 

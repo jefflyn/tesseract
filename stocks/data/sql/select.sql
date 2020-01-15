@@ -1,5 +1,5 @@
 select count(1) from select_result_all;
-select * from select_result_all where concepts like '%黄金%' and (wave_a < -50 and wave_b < 15 or wave_b <= -50)
+select * from select_result_all where concepts like '%军工%' and (wave_a < -50 and wave_b < 15 or wave_b <= -50)
 select * from select_result_all where code in ('000587','002437','300089');
 
 # 条件查询 selection data
@@ -66,4 +66,5 @@ where code in
   and pe_ttm is not null
 order by wave_a;
 
-
+select * from select_result_all where name like '%ST%' order by wave_a;
+select * from select_result_all where list_date > 20190114;
