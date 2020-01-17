@@ -6,9 +6,7 @@ from stocks.util import sms_util
 from stocks.util.redis_util import redis_client
 from stocks.data import data_util
 
-
 pre_key_today = data_util.todaystr + '_'
-
 
 if __name__ == '__main__':
     """
@@ -35,7 +33,9 @@ if __name__ == '__main__':
             prices = str.split(alert_prices, ',')
             changes = str.split(alert_changes, ',')
 
-            realtime_price_info = str(price) + ' ' + str(round(realtime_change, 2)) + '%'
+            realtime_change_str = '+' + str(round(realtime_change, 2)) if realtime_change > 0 \
+                else str(round(realtime_change, 2))
+            realtime_price_info = str(price) + ' ' + realtime_change_str + '%'
             print(' ', code, realtime_price_info, str(alert_prices), str(alert_changes), sep=' | ')
 
             if prices is None and prices != '':
