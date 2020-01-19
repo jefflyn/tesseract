@@ -305,7 +305,7 @@ def select_result(codeset=None, filename=''):
 
         # get maup data
         ma_df = ma_data_df[ma_data_df.code == code]
-        curt_data.append(ma_df.at[0, 'grade'] if ma_df.empty is False else 0)
+        curt_data.append(ma_df.iloc[0, 2] if ma_df.empty is False else 0)
 
         # curt_data.append(maupdf.at[0, 'isup'] if maupdf.empty is False else 0)
         # curt_data.append(maupdf.at[0, 'ma5'] if maupdf.empty is False else 0)
