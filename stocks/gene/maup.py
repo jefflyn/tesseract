@@ -7,7 +7,82 @@ from stocks.util import _utils
 from stocks.data import data_util as dt
 
 
-def get_ma(codes=None, start='2017-01-04', end=None):
+def get_ma_point(ma_arr=None):
+    price = ma_arr[0]
+    ma5 = ma_arr[1]
+    ma10 = ma_arr[2]
+    ma20 = ma_arr[3]
+    ma30 = ma_arr[4]
+    ma60 = ma_arr[5]
+    ma90 = ma_arr[6]
+    ma120 = ma_arr[7]
+    ma250 = ma_arr[8]
+    # ma_arr = (price, ma5, ma10, ma20, ma30, ma60, ma90, ma120, ma250)
+    # ma_std = np.nanstd(ma_arr)
+    # print(ma_arr, round(ma_std, 2))
+    # level: 987,654,321
+    grade = 0.0
+    grade_score = 0.1
+    if price >= ma5 >= ma10:
+        grade = 9
+        if ma10 >= ma20:
+            grade += grade_score
+        if ma10 >= ma20 >= ma30:
+            grade += grade_score
+        if ma10 >= ma20 >= ma30 >= ma60:
+            grade += grade_score
+        if ma10 >= ma20 >= ma30 >= ma60 >= ma90:
+            grade += grade_score
+        if ma10 >= ma20 >= ma30 >= ma60 >= ma90 >= ma120:
+            grade += grade_score
+        if ma10 >= ma20 >= ma30 >= ma60 >= ma90 >= ma120 >= ma250:
+            grade += grade_score
+    elif ma5 >= ma10 >= ma20:
+        grade = 8
+        if ma20 >= ma30:
+            grade += grade_score
+        if ma20 >= ma30 >= ma60:
+            grade += grade_score
+        if ma20 >= ma30 >= ma60 >= ma90:
+            grade += grade_score
+        if ma20 >= ma30 >= ma60 >= ma90 >= ma120:
+            grade += grade_score
+        if ma20 >= ma30 >= ma60 >= ma90 >= ma120 >= ma250:
+            grade += grade_score
+    elif ma10 >= ma20 >= ma30:
+        grade = 7
+        if ma30 >= ma60:
+            grade += grade_score
+        if ma30 >= ma60 >= ma90:
+            grade += grade_score
+        if ma30 >= ma60 >= ma90 >= ma120:
+            grade += grade_score
+        if ma30 >= ma60 >= ma90 >= ma120 >= ma250:
+            grade += grade_score
+    elif ma20 >= ma30 >= ma60:
+        grade = 6
+        if ma60 >= ma90:
+            grade += grade_score
+        if ma60 >= ma90 >= ma120:
+            grade += grade_score
+        if ma60 >= ma90 >= ma120 >= ma250:
+            grade += grade_score
+    elif ma30 >= ma60 >= ma90:
+        grade = 5
+        if ma90 >= ma120:
+            grade += grade_score
+        if ma90 >= ma120 >= ma250:
+            grade += grade_score
+    elif ma60 >= ma90 >= ma120:
+        grade = 4
+        if ma120 >= ma250:
+            grade += grade_score
+    elif ma90 >= ma120 >= ma250:
+        grade = 3
+    return grade
+
+
+def get_ma_data(codes=None, start='2017-01-04', end=None):
     starttime = datetime.datetime.now()
     # print("process ma data start at [%s]" % starttime)
     code_list = []
@@ -84,21 +159,9 @@ def get_ma(codes=None, start='2017-01-04', end=None):
     return ma_df
 
 
-# filter ma data
-def get_ma_up(madf=None):
-    if madf is None:
-        return madf
-    result = madf[(madf.ma5 >= madf.ma10) & (madf.ma10 >= madf.ma20) & (madf.ma20 >= madf.ma30)]
-    return result
-
-
 if __name__ == '__main__':
     basics = dt.get_basics(excludeCyb=True)
     codes = basics['code'].values
     codes = ['002620']
-
-    df = get_ma(codes, start='2017-01-01')
-    # data = maup.get_ma_up(df)
-
-    # data.to_csv("../data/tmp/maupx.csv", encoding='utf-8')
+    df = get_ma_data(codes, start='2017-01-01')
     print(df)

@@ -2,13 +2,14 @@ import datetime
 import time
 import tushare as ts
 from stocks.util.db_util import get_db
-
 from stocks.util.pro_util import pro
+from stocks.gene import maup
+
 import stocks.util.display
 
 if __name__ == '__main__':
     # 设定获取日线行情的初始日期和终止日期，其中终止日期设定为当天
-    time_temp = datetime.datetime.now() - datetime.timedelta(days=500)
+    time_temp = datetime.datetime.now() - datetime.timedelta(days=365 * 2)
     start_dt = time_temp.strftime('%Y%m%d')
     time_temp = datetime.datetime.now() - datetime.timedelta(days=0)
     end_dt = time_temp.strftime('%Y%m%d')
@@ -19,10 +20,10 @@ if __name__ == '__main__':
     cursor = db.cursor()
     total = cursor.execute("select ts_code from basic")
     if total == 0:
-        print("no stock found, process end!")
+        print("no stock basic found, process end!")
         exit(0)
-    cursor.execute("delete from hist_ma_day")
     stock_pool = [ts_code_tuple[0] for ts_code_tuple in cursor.fetchall()]
+    cursor.execute("delete from hist_ma_day")
     # 循环获取单个股票的日线行情
     # 1分钟不超过200次调用
     for i in range(len(stock_pool)):
@@ -41,7 +42,8 @@ if __name__ == '__main__':
             # 打印进度
             print('redo Seq: ' + str(i + 1) + ' of ' + str(total) + '   Code: ' + str(stock_pool[i]))
 
-        df = df.head(3)
+        df = df.head(1)
+        cols = df.columns
         c_len = df.shape[0]
         for j in range(c_len):
             resu0 = list(df.iloc[c_len - 1 - j])
@@ -53,6 +55,7 @@ if __name__ == '__main__':
                     resu.append(resu0[k])
             trade_date = (datetime.datetime.strptime(resu[1], "%Y%m%d")).strftime('%Y-%m-%d')
             try:
+                code = str(resu[0][0:6])
                 price = float(resu[5])
                 ma5 = float(resu[11])
                 ma10 = float(resu[13])
@@ -62,21 +65,12 @@ if __name__ == '__main__':
                 ma90 = float(resu[21])
                 ma120 = float(resu[23])
                 ma250 = float(resu[25])
-                rank = ''
-                if price - ma5 > 0 and ma5 - ma10 > 0 and ma10 - ma20 > 0 and ma20 - ma30 > 0 and ma30 - ma60 > 0:
-                    rank = 'a'
-                elif ma5 - ma10 > 0 and ma10 - ma20 > 0 and ma20 - ma30 > 0 and ma30 - ma60 > 0 and ma60 - ma90 > 0:
-                    rank = 'b'
-                elif ma10 - ma20 > 0 and ma20 - ma30 > 0 and ma30 - ma60 > 0 and ma60 - ma90 > 0 and ma90 - ma120 > 0:
-                    rank = 'c'
-                elif ma20 - ma30 > 0 and ma30 - ma60 > 0 and ma60 - ma90 > 0 and ma90 - ma120 > 0 and ma120 - ma250 > 0:
-                    rank = 'd'
-                if rank == '':
-                    continue
-                print('found up up up! insert to hist_ma_day >>>')
-                sql_insert = "INSERT INTO hist_ma_day(trade_date,ts_code,rank,price,ma5,ma10,ma20,ma30,ma60,ma90,ma120,ma250) " \
-                             "VALUES ('%s', '%s', '%s', '%.2f', '%.2f', '%.2f','%.2f','%.2f','%.2f','%.2f','%.2f','%.2f')" % (
-                                 trade_date, str(resu[0]), rank, price, ma5, ma10, ma20, ma30, ma60, ma90, ma120, ma250)
+                ma_arr = (price, ma5, ma10, ma20, ma30, ma60, ma90, ma120, ma250)
+                grade = maup.get_ma_point(ma_arr)
+
+                sql_insert = "INSERT INTO hist_ma_day(code,trade_date,grade,price,ma5,ma10,ma20,ma30,ma60,ma90,ma120,ma250) " \
+                             "VALUES ('%s', '%s', '%.1f', '%.2f', '%.2f', '%.2f','%.2f','%.2f','%.2f','%.2f','%.2f','%.2f')" % (
+                                 code, trade_date, grade, price, ma5, ma10, ma20, ma30, ma60, ma90, ma120, ma250)
                 cursor.execute(sql_insert)
                 db.commit()
             except Exception as err:

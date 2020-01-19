@@ -70,7 +70,7 @@ def generate_report2(title=None, filename=None, monitor=False):
     codes.reverse()
 
     # moving average prices of several crucial waves
-    madf = maup.get_ma(codes, start='2017-01-01')
+    madf = maup.get_ma_data(codes, start='2017-01-01')
 
     # limit-up of recent half year
     limitupdf = limitup.get_limitup_from_hist_k(codes, start='2017-01-01')
@@ -200,7 +200,7 @@ def generate_report(title=None, filename=None, monitor=False, uad=False, ma=Fals
     # 3.moving average prices of several crucial waves
     if ma is True:
         html_content += '<h4>3.moving average prices of several crucial waves:</h4>'
-        madf = maup.get_ma(codes, start='2017-01-01')
+        madf = maup.get_ma_data(codes, start='2017-01-01')
         # madf_html = madf.to_html(escape=False, index=False, sparsify=True, border=0, index_names=False, header=True)
         madf_html = HTML_with_style(madf)
         html_content += madf_html

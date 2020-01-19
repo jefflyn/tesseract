@@ -110,6 +110,7 @@ def select_result(codeset=None, filename=''):
     concepts = concept_service.get_concepts()
     fundamentals = fundamental_service.get_fundamental()
     wavedfset = pd.DataFrame(columns=['code', 'begin', 'end', 'status', 'begin_price', 'end_price', 'days', 'change'])
+    ma_data_df = data_util.get_ma_data()
     for index, row in hist_trade_df.iterrows():
         code = row['code']
         if str(code)[:3] == '688':
@@ -303,7 +304,9 @@ def select_result(codeset=None, filename=''):
         curt_data.append(round(c_week_gap, 2))
 
         # get maup data
-        # maupdf = maup.get_ma(code)
+        ma_df = ma_data_df[ma_data_df.code == code]
+        curt_data.append(ma_df.at[0, 'grade'] if ma_df.empty is False else 0)
+
         # curt_data.append(maupdf.at[0, 'isup'] if maupdf.empty is False else 0)
         # curt_data.append(maupdf.at[0, 'ma5'] if maupdf.empty is False else 0)
         # curt_data.append(maupdf.at[0, 'ma10'] if maupdf.empty is False else 0)
@@ -319,13 +322,14 @@ def select_result(codeset=None, filename=''):
                'price', 'pct', 'wave_detail', 'wave_a', 'a_days', 'wave_b', 'b_days', 'bottom', 'uspace', 'dspace', 'top', 'position',
                'buy1', 'buy2', 'buy3', 'count', 'count_', 'c30d', 'cq1', 'cq2', 'cq3', 'cq4', 'fdate', 'last_f_date',
                'call_price', 'call_diff', 'lup_low', 'lup_high', 'change_7d', 'gap', 'gap_space', 'sum_30d',
-               'updays', 'sumup', 'multi_vol', 'vol_rate', 'w_gap', 'c_gap']
+               'updays', 'sumup', 'multi_vol', 'vol_rate', 'w_gap', 'c_gap', 'map']
     resultdf = pd.DataFrame(data_list, columns=columns)
     # resultdf = resultdf.sort_values('sum_30d', axis=0, ascending=False, inplace=False, kind='quicksort', na_position='last')
 
     resultdf = resultdf[
         ['concepts', 'pe', 'pe_ttm', 'turnover_rate', 'code', 'name', 'industry', 'area', 'list_date',
-         'pct', 'wave_detail', 'a_days', 'wave_a', 'wave_b', 'b_days', 'bottom', 'uspace', 'dspace', 'top', 'position', 'w_gap','c_gap',
+         'pct', 'wave_detail', 'a_days', 'wave_a', 'wave_b', 'b_days', 'bottom', 'uspace', 'dspace', 'top', 'position',
+         'w_gap', 'c_gap', 'map',
          'gap', 'gap_space', 'sum_30d', 'count', 'count_', 'c30d', 'cq1', 'cq2', 'cq3', 'cq4',
          'fdate', 'last_f_date', 'price', 'call_price', 'call_diff', 'lup_low', 'lup_high',
          'buy1', 'buy2', 'buy3', 'change_7d', 'updays', 'sumup', 'vol_rate', 'multi_vol']]

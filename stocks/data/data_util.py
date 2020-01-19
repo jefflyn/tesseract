@@ -20,6 +20,24 @@ INDEX_LIST = ['000001.SH', '000300.SH', '000016.SH', '000905.SH', '399001.SZ', '
 basics = read_sql("select * from basic", params=None)
 
 
+def get_ma_data(code=None):
+    """
+    获取移动平均数据
+    :param code:
+    :return:
+    """
+    sql = 'select * from hist_ma_day where 1=1 '
+    if code is not None:
+        if isinstance(code, str):
+            codes = list()
+            codes.append(code)
+            code = codes
+        sql += 'and code in :code '
+    params = {'code': code}
+    df = read_sql(sql, params=params)
+    return df
+
+
 def get_codes_by_wave(from_date='2019-01-01', pct_change=100):
     """
     选波段
