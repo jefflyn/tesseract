@@ -38,7 +38,7 @@ if __name__ == '__main__':
             realtime_price_info = str(price) + ' ' + realtime_change_str + '%'
             print(' ', code, realtime_price_info, str(alert_prices), str(alert_changes), sep=' | ')
 
-            if prices is None and prices != '':
+            if prices is not None and prices != '':
                 for p in prices:
                     target_price = float(p)
                     if 0 < target_price <= price:
@@ -59,7 +59,7 @@ if __name__ == '__main__':
                             except Exception as e:
                                 print(e)
                     if target_price < 0 and price <= abs(target_price):
-                        redis_key = pre_key_today + code + '_price_' + abs(target_price)
+                        redis_key = pre_key_today + code + '_price_' + str(abs(target_price))
                         warn_times = redis_client.get(redis_key)
                         if warn_times is None:
                             content = name + ':' + code + ' down to ' + str(abs(target_price)) + ', please check!'

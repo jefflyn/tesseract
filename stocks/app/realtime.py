@@ -1,11 +1,13 @@
 import stocks.util.display
+import sys
 from sys import argv
+import time
+import pandas as pd
+
 import tushare as ts
 from tushare.stock import cons as ct
 from stocks.gene import wave
 from stocks.data import data_util as _dt
-import pandas as pd
-import time
 from stocks.util import date_util
 
 keys = ['pa', 'cf', 'df', 'sim', 'gap']
