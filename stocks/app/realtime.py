@@ -12,7 +12,7 @@ keys = ['pa', 'cf', 'df', 'sim', 'gap']
 
 INDEX_LIST_NEW = dict(zip(list(x[2:] for x in ct.INDEX_LIST.values()), ct.INDEX_LIST.keys()))
 
-pre_key_today = date_util.TODAY + '_'
+pre_key_today = date_util.get_today() + '_'
 
 
 def format_realtime(df):

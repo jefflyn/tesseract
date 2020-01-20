@@ -1,4 +1,4 @@
-create schema stocks collate utf8_unicode_ci;
+create schema stocks collate utf8mb4_0900_ai_ci;
 
 create table basic
 (
@@ -31,7 +31,7 @@ create table basic_daily
 	close double null,
 	turnover_rate double null,
 	turnover_rate_f double null,
-	volume_ratio double null,
+	volume_ratio text null,
 	pe double null,
 	pe_ttm double null,
 	pb double null,
@@ -54,9 +54,8 @@ create table cctv_news
 
 create table concept
 (
-	code varchar(20) not null
-		primary key,
-	name varchar(50) null,
+	code text null,
+	name text null,
 	src text null
 );
 
@@ -82,58 +81,6 @@ create table concepts
 		primary key,
 	concepts varchar(200) null
 );
-
-create table daily_gap_trace_a
-(
-	s_date varchar(10) null,
-	v_date varchar(10) null,
-	code varchar(6) null,
-	name varchar(10) null,
-	industry varchar(10) null,
-	cost decimal(10,2) null,
-	share int null,
-	bottom decimal(10,2) null,
-	b_up decimal(10,2) null,
-	position decimal(10,2) null,
-	gap decimal(10,2) null,
-	g_space decimal(10,2) null,
-	c30d int null,
-	vol decimal(10,2) null,
-	uds int null,
-	o_profit decimal(10,2) null comment '开盘价买入收益',
-	l_profit decimal(10,2) null comment '最低价买入收益',
-	constraint daily_gap_trace_pk
-		unique (s_date, code)
-);
-
-create index daily_gap_trace_a_v_date_code_index
-	on daily_gap_trace_a (v_date, code);
-
-create table daily_gap_trace_b
-(
-	s_date varchar(10) null,
-	v_date varchar(10) null,
-	code varchar(6) null,
-	name varchar(10) null,
-	industry varchar(10) null,
-	cost decimal(10,2) null,
-	share int null,
-	bottom decimal(10,2) null,
-	b_up decimal(10,2) null,
-	position decimal(10,2) null,
-	gap decimal(10,2) null,
-	g_space decimal(10,2) null,
-	c30d int null,
-	vol decimal(10,2) null,
-	uds int null,
-	o_profit decimal(10,2) null,
-	l_profit decimal(10,2) null,
-	constraint daily_gap_trace_b_pk
-		unique (s_date, code)
-);
-
-create index daily_gap_trace_b_v_date_code_index
-	on daily_gap_trace_b (v_date, code);
 
 create table hist_index_day
 (
@@ -166,8 +113,8 @@ create index ix_ts_code
 create table hist_ma_day
 (
 	trade_date varchar(10) null,
-	ts_code varchar(10) null,
-	`rank` varchar(3) null,
+	code varchar(10) not null,
+	grade varchar(3) null,
 	price decimal(10,2) null,
 	ma5 decimal(10,2) null,
 	ma10 decimal(10,2) null,
@@ -178,7 +125,7 @@ create table hist_ma_day
 	ma120 decimal(10,2) null,
 	ma250 decimal(10,2) null,
 	constraint hist_ma_day_pk
-		unique (trade_date, ts_code)
+		unique (trade_date, code)
 );
 
 create table hist_monthly
@@ -191,7 +138,7 @@ create table hist_monthly
 	close decimal(10,2) null comment '收盘价',
 	high decimal(10,2) null comment '最高价',
 	low decimal(10,2) null comment '最低价',
-	vol bigint null comment '交易量（手）',
+	vol mediumtext null comment '交易量（手）',
 	amount decimal(20,4) null comment '交易额（千）',
 	amt_change decimal(10,2) null comment '涨跌额',
 	pct_change decimal(10,4) null comment '涨跌幅',
@@ -227,6 +174,9 @@ create table hist_trade_day
 	primary key (trade_date, ts_code)
 )
 comment '每日交易数据（前复权）';
+
+create index hist_trade_day_date_index
+	on hist_trade_day (trade_date);
 
 create index ix_code
 	on hist_trade_day (code);
@@ -286,18 +236,18 @@ create table monitor_pool
 
 create table my_stock_pool
 (
-	alias varchar(4) null,
 	code varchar(6) not null,
-	concept varchar(20) null,
 	platform varchar(10) null,
+	share int default 100 not null,
 	cost decimal(10,3) null,
 	bottom decimal(10,2) null,
-	share int default 100 not null,
 	is_hold tinyint default 1 null,
 	grade varchar(3) default 'c' null,
 	hold_date date null,
 	close_date date null,
 	remark varchar(255) null,
+	alias varchar(4) null,
+	concept varchar(20) null,
 	constraint my_stock_pool_pk
 		unique (code, platform)
 );
@@ -316,31 +266,43 @@ create table profit_forecast
 
 create table select_result_
 (
+	concepts text null,
+	pe double null,
+	pe_ttm double null,
+	turnover_rate double null,
 	code text null,
 	name text null,
 	industry text null,
 	area text null,
-	list_date bigint null,
-	price double null,
+	list_date text null,
 	pct double null,
 	wave_detail text null,
+	a_days bigint null,
 	wave_a double null,
 	wave_b double null,
+	b_days bigint null,
 	bottom double null,
-	`uspace%` double null,
-	`dspace%` double null,
+	uspace double null,
+	dspace double null,
 	top double null,
-	`position%` double null,
-	gap double null,
-	gap_space double null,
+	position double null,
+	w_gap bigint null,
+	c_gap bigint null,
+	gap bigint null,
+	gap_space bigint null,
 	sum_30d double null,
 	count bigint null,
+	count_ bigint null,
 	c30d bigint null,
 	cq1 bigint null,
 	cq2 bigint null,
 	cq3 bigint null,
 	cq4 bigint null,
-	lldate text null,
+	fdate text null,
+	last_f_date text null,
+	price double null,
+	call_price text null,
+	call_diff bigint null,
 	lup_low double null,
 	lup_high double null,
 	buy1 double null,
@@ -348,7 +310,7 @@ create table select_result_
 	buy3 double null,
 	change_7d text null,
 	updays double null,
-	`sumup%` double null,
+	sumup double null,
 	vol_rate double null,
 	multi_vol text null,
 	trade_date text null,
@@ -357,6 +319,63 @@ create table select_result_
 
 create table select_result_all
 (
+	concepts text null,
+	pe double null,
+	pe_ttm double null,
+	turnover_rate double null,
+	code text null,
+	name text null,
+	industry text null,
+	area text null,
+	list_date text null,
+	pct double null,
+	wave_detail text null,
+	a_days bigint null,
+	wave_a double null,
+	wave_b double null,
+	b_days bigint null,
+	bottom double null,
+	uspace double null,
+	dspace double null,
+	top double null,
+	position double null,
+	w_gap double null,
+	c_gap double null,
+	gap double null,
+	gap_space double null,
+	sum_30d double null,
+	count bigint null,
+	count_ bigint null,
+	c30d bigint null,
+	cq1 bigint null,
+	cq2 bigint null,
+	cq3 bigint null,
+	cq4 bigint null,
+	fdate text null,
+	last_f_date text null,
+	price double null,
+	call_price text null,
+	call_diff double null,
+	lup_low double null,
+	lup_high double null,
+	buy1 double null,
+	buy2 double null,
+	buy3 double null,
+	change_7d text null,
+	updays double null,
+	sumup double null,
+	vol_rate double null,
+	multi_vol text null,
+	trade_date text null,
+	select_time datetime null
+);
+
+create table select_result_concept
+(
+	concepts text null,
+	pe double null,
+	pe_ttm double null,
+	turnover_rate double null,
 	code text null,
 	name text null,
 	industry text null,
@@ -376,12 +395,14 @@ create table select_result_all
 	gap_space double null,
 	sum_30d double null,
 	count bigint null,
+	count_ bigint null,
 	c30d bigint null,
 	cq1 bigint null,
 	cq2 bigint null,
 	cq3 bigint null,
 	cq4 bigint null,
-	lldate text null,
+	fdate text null,
+	call_price text null,
 	lup_low double null,
 	lup_high double null,
 	buy1 double null,
@@ -396,8 +417,12 @@ create table select_result_all
 	select_time datetime null
 );
 
-create table select_result_concept
+create table select_result_new
 (
+	concepts text null,
+	pe double null,
+	pe_ttm double null,
+	turnover_rate double null,
 	code text null,
 	name text null,
 	industry text null,
@@ -417,12 +442,14 @@ create table select_result_concept
 	gap_space double null,
 	sum_30d double null,
 	count bigint null,
+	count_ bigint null,
 	c30d bigint null,
 	cq1 bigint null,
 	cq2 bigint null,
 	cq3 bigint null,
 	cq4 bigint null,
-	lldate text null,
+	fdate text null,
+	call_price text null,
 	lup_low double null,
 	lup_high double null,
 	buy1 double null,
@@ -568,7 +595,7 @@ create table select_wave_
 	status text null,
 	begin_price double null,
 	end_price double null,
-	days double null,
+	days bigint null,
 	`change` double null
 );
 
@@ -580,11 +607,23 @@ create table select_wave_all
 	status text null,
 	begin_price double null,
 	end_price double null,
-	days double null,
+	days bigint null,
 	`change` double null
 );
 
 create table select_wave_concept
+(
+	code text null,
+	begin text null,
+	end text null,
+	status text null,
+	begin_price double null,
+	end_price double null,
+	days bigint null,
+	`change` double null
+);
+
+create table select_wave_new
 (
 	code text null,
 	begin text null,
@@ -679,18 +718,6 @@ create table wave_change_subnew_ref
 	avg_change double null,
 	min_change double null,
 	max_change double null
-);
-
-create table wave_data_2019
-(
-	code text null,
-	begin text null,
-	end text null,
-	status text null,
-	begin_price double null,
-	end_price double null,
-	days bigint null,
-	`change` double null
 );
 
 create table weekly_gap

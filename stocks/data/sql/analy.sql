@@ -224,8 +224,6 @@ select * from hist_index_day where code='000001' and
                                                  '2017-07-06','2017-07-07','2017-07-10',
                                                  '2018-11-29','2018-11-30','2018-12-03');
 
-select * from wave_data_2019 where `change` >= 100 order by end desc;
-select * from wave_data_2019 where code = 002118;
 
 select * from monitor_pool;
 select * from my_stock_pool;
