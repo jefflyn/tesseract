@@ -68,3 +68,15 @@ order by wave_a;
 
 select * from select_result_all where name like '%ST%' order by wave_a;
 select * from select_result_all where list_date > 20190114;
+
+select *
+from select_result_all
+where name not like '%ST%'
+  and list_date < 20190114
+  and (wave_a < -33 and wave_b < 15)
+  and map >= 8
+  and pe_ttm <= pe
+  and count > 0
+order by wave_a;
+
+select * from hist_ma_day where code='300072';

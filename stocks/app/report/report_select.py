@@ -35,6 +35,11 @@ if __name__ == '__main__':
                                   "order by wave_a"
     df_chance = _dt.read_query(sql_chance)
 
+    sql_nice = select_columns + r"from select_result_all where name not like :name " \
+                               r"and list_date < :list_date and (wave_a < -33 and wave_b < 15) " \
+                                r"and map >= 8 and pe_ttm <= pe and count > 0 order by wave_a"
+    df_nice = _dt.read_sql(sql_nice, params={"name": "%ST%", "list_date": one_year_ago})
+
     sql_all = select_columns + r"from select_result_all where name not like :name " \
                                r"and list_date < :list_date order by wave_a"
     df_all = _dt.read_sql(sql_all, params={"name": "%ST%", "list_date": one_year_ago})
@@ -49,9 +54,10 @@ if __name__ == '__main__':
     file_name = 'select_' + date_util.get_today(date_util.format_flat) + '.xlsx'
     writer = pd.ExcelWriter(file_name)
     df_index.to_excel(writer, sheet_name='index')
-    df_down.to_excel(writer, sheet_name='down')
+    df_nice.to_excel(writer, sheet_name='nice')
     df_active.to_excel(writer, sheet_name='active')
     df_chance.to_excel(writer, sheet_name='chance')
+    df_down.to_excel(writer, sheet_name='down')
     df_all.to_excel(writer, sheet_name='all')
     df_new.to_excel(writer, sheet_name='new')
     df_st.to_excel(writer, sheet_name='st')
