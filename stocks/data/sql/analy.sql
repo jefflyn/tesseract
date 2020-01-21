@@ -35,13 +35,9 @@ order by l.trade_date desc;
 select * from hist_weekly order by trade_date desc;
 select * from hist_weekly where code=600126 order by trade_date desc limit 2;
 
-
-
--- ma data
-select count(distinct ts_code) from hist_ma_day;
-select distinct ts_code from hist_ma_day order by ts_code;
-select * from hist_ma_day order by rank, ts_code;
-select rank, count(distinct ts_code) from hist_ma_day group by rank;
+# ma data
+select * from hist_ma_day order by rank;
+select * from hist_ma_day where code in ('000587', '600929');
 
 -- basic info
 select count(1) from basic;
@@ -127,9 +123,6 @@ select * from hist_trade_day where code='002895' order by trade_date desc;
 select avg(close), avg(high), avg(low) from hist_trade_day
 where ts_code='002895.SZ' and trade_date >= '2019-01-21' ;
 
--- forcast
-select * from profit_forecast where code='002895';
-
 select * from hist_trade_day h inner join basic b on h.ts_code = b.ts_code
 where h.trade_date >='2018-01-01' and h.close = round(h.pre_close * 1.1, 2);
 
@@ -146,35 +139,6 @@ select * from concept_detail where concept_code='TS14';
 select distinct d.code, c.name from concept c inner join concept_detail d
   on c.code = d.concept_code
 where c.name like '%化工%';
-
--- industry temp table
-drop table IF EXISTS temp_industry;
-CREATE TEMPORARY TABLE IF NOT EXISTS temp_industry
-select h.*, b.name, b.industry from hist_trade_day h join basic b on h.ts_code = b.ts_code
-where h.trade_date='2019-04-08' and h.pct_change > 6
-order by h.pct_change desc;
-
--- concept temp table
-drop table IF EXISTS temp_concept;
-CREATE TEMPORARY TABLE IF NOT EXISTS temp_concept
-select h.*, cd.name, c.name as concept from hist_trade_day h
-  join concept_detail cd on h.ts_code = cd.ts_code
-  join concept c on cd.concept_code = c.code
-where h.trade_date='2019-04-08' and h.pct_change > 8
-order by h.pct_change desc;
-
-select trade_date, industry, count(1) from temp_industry group by trade_date, industry order by count(1) desc;
-select trade_date, concept, count(1) from temp_concept group by trade_date, concept having count(1) > 3 order by count(1) desc;
-select * from temp_industry where industry='化工原料';
-select * from temp_concept;
-
-select * from basic where code='000820';
--- my pool
-select * from my_stock_pool;
-select * from monitor_pool;
-
-INSERT INTO stocks.my_stock_pool (alias, code, concept, platform, cost, bottom, share, is_hold, grade, hold_date, close_date, remark)
-VALUES ('银星能源', '000862', '电力', 'cf', 6.87, 9.89, 4400, 1, 'a', current_date(), null, null);
 
 select concat(round(sum(DATA_LENGTH/1024/1024),2),'M')
 from information_schema.tables where table_schema='stocks' and table_name='select_wave_all';
