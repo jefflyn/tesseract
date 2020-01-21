@@ -1,5 +1,6 @@
 import datetime
 import time
+import numpy as np
 import tushare as ts
 from stocks.util.db_util import get_db
 from stocks.util.pro_util import pro
@@ -9,12 +10,13 @@ import stocks.util.display
 
 if __name__ == '__main__':
     # 设定获取日线行情的初始日期和终止日期，其中终止日期设定为当天
-    time_temp = datetime.datetime.now() - datetime.timedelta(days=365 * 2)
+    time_temp = datetime.datetime.now() - datetime.timedelta(days=365*2)
     start_dt = time_temp.strftime('%Y%m%d')
     time_temp = datetime.datetime.now() - datetime.timedelta(days=0)
     end_dt = time_temp.strftime('%Y%m%d')
     ma = [5, 10, 20, 30, 60, 90, 120, 250]
     print("Collect ma data from " + start_dt + " to " + end_dt)
+
     # 建立数据库连接
     db = get_db()
     cursor = db.cursor()
@@ -66,7 +68,9 @@ if __name__ == '__main__':
                 ma90 = float(resu[21])
                 ma120 = float(resu[23])
                 ma250 = float(resu[25])
-                ma_arr = (price, ma5, ma10, ma20, ma30, ma60, ma90, ma120, ma250)
+                ma_arr = [price, ma5, ma10, ma20, ma30, ma60, ma90, ma120, ma250]
+                ma_arr = np.round(ma_arr, 2)
+                # np.set_printoptions(formatter={'float': '{: 0.2f}'.format})
                 grade = maup.get_ma_point(ma_arr)
 
                 sql_insert = "INSERT INTO hist_ma_day(code,trade_date,grade,price,ma5,ma10,ma20,ma30,ma60,ma90,ma120,ma250) " \

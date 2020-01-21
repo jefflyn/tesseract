@@ -3,8 +3,8 @@ import datetime
 import numpy as np
 import pandas as pd
 
-from stocks.util import _utils
-from stocks.data import data_util as dt
+from stocks import util
+from stocks.data import data_util
 
 
 def get_ma_point(ma_arr=None):
@@ -93,7 +93,7 @@ def get_ma_data(codes=None, start='2017-01-04', end=None):
 
     madfdata = []
     for code in code_list:
-        hist_data = dt.get_k_data(code, start=start)
+        hist_data = data_util.get_k_data(code, start=start)
         if hist_data is None or len(hist_data) == 0:
             continue
         latest = hist_data.tail(1)
@@ -101,7 +101,7 @@ def get_ma_data(codes=None, start='2017-01-04', end=None):
         price = latest.at[idx, 'close']
         latest_date_str = latest.at[idx, 'date']
         # excluding halting
-        if _utils.is_halting(code, latest_date_str):
+        if util.is_halting(code, latest_date_str):
             continue
 
         ma5 = hist_data.tail(5).mean()['close']
@@ -125,7 +125,7 @@ def get_ma_data(codes=None, start='2017-01-04', end=None):
 
         isup = (ma10 >= ma20) & (ma20 >= ma30)
 
-        row = dt.get_basics(code)
+        row = data_util.get_basics(code)
         idx = row.index.to_numpy()[0]
         malist = []
         malist.append(code)
@@ -160,8 +160,12 @@ def get_ma_data(codes=None, start='2017-01-04', end=None):
 
 
 if __name__ == '__main__':
-    basics = dt.get_basics(excludeCyb=True)
-    codes = basics['code'].values
-    codes = ['002620']
-    df = get_ma_data(codes, start='2017-01-01')
+    codes = ['600929']
+    # df = get_ma_data(codes, start='2017-01-01')
+    df = data_util.get_ma_data(codes)
     print(df)
+
+    ma_arr = (6.69, 6.71, 6.71, 6.63, 6.57, 6.59, 6.80, 6.92, 7.88)
+    print(get_ma_point(ma_arr))
+
+
