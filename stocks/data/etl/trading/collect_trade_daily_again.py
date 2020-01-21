@@ -44,7 +44,8 @@ def recollect_hist_daily(sql='select b.ts_code, b.code from select_result_all s 
     for i in range(len(ts_codes)):
         try:
             # 打印进度
-            print('Seq: ' + str(i + 1) + ' of ' + str(total) + '   Code: ' + str(ts_codes[i]))
+            if i % 200 == 0:
+                print('Seq: ' + str(i + 1) + ' of ' + str(total) + '   Code: ' + str(ts_codes[i]))
             if i > 0 and i % 198 == 0:
                 end_time = datetime.datetime.now()
                 time_diff = (end_time - begin_time).seconds

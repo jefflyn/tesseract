@@ -48,7 +48,8 @@ def collect_weekly():
     for i in range(len(stock_pool)):
         try:
             # 打印进度
-            print('Seq: ' + str(i + 1) + ' of ' + str(total) + '   Code: ' + str(stock_pool[i]))
+            if i % 200 == 0:
+                print('Seq: ' + str(i + 1) + ' of ' + str(total) + '   Code: ' + str(stock_pool[i]))
             if i > 0 and i % 118 == 0:
                 end_time = datetime.datetime.now()
                 time_diff = (end_time - begin_time).seconds
