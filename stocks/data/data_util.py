@@ -20,7 +20,7 @@ INDEX_LIST = ['000001.SH', '000300.SH', '000016.SH', '000905.SH', '399001.SZ', '
 basics = read_sql("select * from basic", params=None)
 
 
-def get_ma_data(code=None):
+def get_ma_data(code=None, trade_date=None):
     """
     获取移动平均数据
     :param code:
@@ -33,7 +33,9 @@ def get_ma_data(code=None):
             codes.append(code)
             code = codes
         sql += 'and code in :code '
-    params = {'code': code}
+    if trade_date is not None:
+        sql += 'and trade_date = :trade_date '
+    params = {'trade_date': trade_date, 'code': code}
     df = read_sql(sql, params=params)
     return df
 

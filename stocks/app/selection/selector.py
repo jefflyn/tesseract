@@ -94,10 +94,12 @@ def select_result(codeset=None, filename=''):
         return
     trade_date_list = date_util.get_latest_trade_date(4)
     hist_trade_df = None
+    curt_trade_date = None
     for trade_date in trade_date_list:
         hist_trade_df = data_util.get_hist_trade(code=codeset, start=trade_date, end=last_trade_date)
         if len(hist_trade_df) > 0:
             print('get latest trade: %s' % trade_date)
+            curt_trade_date = trade_date
             break
     size = 0
     if codeset is not None:
@@ -110,7 +112,7 @@ def select_result(codeset=None, filename=''):
     concepts = concept_service.get_concepts()
     fundamentals = fundamental_service.get_fundamental()
     wavedfset = pd.DataFrame(columns=['code', 'begin', 'end', 'status', 'begin_price', 'end_price', 'days', 'change'])
-    ma_data_df = data_util.get_ma_data()
+    ma_data_df = data_util.get_ma_data(trade_date=curt_trade_date)
     for index, row in hist_trade_df.iterrows():
         code = row['code']
         if str(code)[:3] == '688':

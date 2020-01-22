@@ -45,7 +45,7 @@ if __name__ == '__main__':
             # 打印进度
             print('redo Seq: ' + str(i + 1) + ' of ' + str(total) + '   Code: ' + str(stock_pool[i]))
 
-        df = df.head(1)
+        df = df.head(4)
         cols = df.columns
         c_len = df.shape[0]
         for j in range(c_len):

@@ -69,6 +69,7 @@ order by wave_a;
 select * from select_result_all where name like '%ST%' order by wave_a;
 select * from select_result_all where list_date > 20190114;
 
+-- nice
 select *
 from select_result_all
 where name not like '%ST%'
@@ -79,4 +80,4 @@ where name not like '%ST%'
   and count > 0
 order by wave_a;
 
-select * from hist_ma_day where code='300072';
+select * from hist_ma_day where code='600929';

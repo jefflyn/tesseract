@@ -54,7 +54,7 @@ def re_exe(hold_df=None, inc=2, show_wave=True, sortby=None):
     while True:
         real_df = get_realtime(hddf=hold_df, last_trade_data=last_trade_data, sortby=sortby)
         # filter
-        real_df = real_df[real_df.bid > '0.01']
+        # real_df = real_df[real_df.bid > '0.01']
         finaldf = format_realtime(real_df)
         # print(finaldf, end='')
         if show_wave is False:
