@@ -25,15 +25,15 @@ where 1 = 1
 #     having count(1) > 3) -- 时间区间的一字
 order by last_f_date desc, count desc, wave_a;
 
--- 1、超跌选股，包含次新股（低风险，长线投资）
+-- 1、超跌选股，不含次新股（低风险，长线投资）
 select *
 from select_result_all
-where list_date < 20190101
+where 1=1
+#   and list_date < 20190101
   and (pe_ttm is not null or pe is not null)
-#   and pe_ttm is not null
-#   and pe_ttm < pe
+  and pe_ttm < pe
   and (wave_a < -50 and wave_b < 15 or wave_b <= -50)
-  and count between 0 and 7
+#   and count between 0 and 7
 order by wave_a;
 
 -- 2、超跌活跃选股，不含次新股（中风险，适合中短线）
@@ -77,7 +77,7 @@ where name not like '%ST%'
   and (wave_a < -33 and wave_b < 15)
   and map >= 8
   and pe_ttm <= pe
-  and count > 0
+#   and count > 0
 order by wave_a;
 
 select * from hist_ma_day where code='600929';
