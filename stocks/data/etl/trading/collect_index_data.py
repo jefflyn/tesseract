@@ -20,6 +20,7 @@ if __name__ == '__main__':
         print(last_trade_date + " trade data existed")
         # sys.exit(0)
     last_trade_date = date_util.get_latest_trade_date()[0]
+    # df = pro.index_daily(ts_code=index_code, start_date=last_trade_date, end_date=last_trade_date)
     df = ts.pro_bar(api=pro, ts_code=index_code, asset='I', start_date=last_trade_date, end_date=last_trade_date)
     c_len = df.shape[0]
     if c_len == 0:  # 没有记录退出

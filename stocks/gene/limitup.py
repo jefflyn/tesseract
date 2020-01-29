@@ -16,6 +16,52 @@ sql = "select h.trade_date, b.code, h.close, h.open, h.high, h.low, h.pct_change
 histlimitup = db_util.read_query(sql)
 
 
+def get_today_up_limit_count():
+    """
+    统计连板数量
+    :return:
+    """
+    up_limit_data = get_today_up_limit()
+    data_list = []
+    for index, row in up_limit_data.iterrows():
+        code = row['code']
+        curt_up_limit = histlimitup[histlimitup.code == code]
+        up_limit_dates = list(curt_up_limit['trade_date'])
+        print(code, up_limit_dates)
+        total = len(up_limit_dates)
+        curt_data = [code]
+        continue_count = 1
+        if total < 2:
+            curt_data.append(continue_count)
+        else:
+            curt_trade_date = up_limit_dates[total - 1]
+            for i in range(total):
+                pre_trade_date = date_util.get_previous_trade_day(curt_trade_date)
+                pre_limit_date = up_limit_dates[total - (i + 2)]
+                if pre_trade_date == pre_limit_date:
+                    continue_count += 1
+                    curt_trade_date = pre_limit_date
+                    continue
+                curt_data.append(continue_count)
+                break
+        data_list.append(curt_data)
+    result_df = pd.DataFrame(data_list, columns=['code', 'up_limit_count'])
+    result_df = result_df.sort_values(['up_limit_count'], ascending=False)
+    return result_df
+
+
+
+def get_today_up_limit():
+    """
+    历史数据获取当天涨停股
+    :return:
+    """
+    latest_trade_data = data_util.get_hist_trade(start=date_util.get_latest_trade_date())
+    # up_limit_data1 = latest_trade_data[latest_trade_data['pct_change'] >= LIMITUP_MIN]
+    up_limit_data = latest_trade_data[latest_trade_data['close'] == round(latest_trade_data['pre_close'] * 1.1, 2)]
+    return up_limit_data
+
+
 def get_today_limitup():
     todayquo = data_util.get_totay_quotations()
     todayquo = todayquo[todayquo['p_change'] >= LIMITUP_MIN]
@@ -165,10 +211,10 @@ if __name__ == '__main__':
     #                '2019-02-14', '2019-02-15', '2019-06-17', '2019-06-19', '2019-06-20', '2019-06-21', '2019-11-28',
     #                '2019-11-29', '2019-12-02']))
     # print(get_fire_date(['2019-01-30', '2019-01-31', '2019-02-01']))
-    # print(get_today_limitup())
+    print(get_today_up_limit_count())
     # lpdf = get_limitup_from_hist_k(['002813'])
     # #print(lpdf)
-    df = get_limitup_from_hist_trade(['002813'])
+    # df = get_limitup_from_hist_trade(['002813'])
     #print(df)
-    df_count = count(df)
+    # df_count = count(df)
     #print(df_count)
