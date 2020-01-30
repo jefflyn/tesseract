@@ -83,10 +83,10 @@ def get_status():
         if float(row['change']) < -2:
             name_format = '：' + code + ' ' + row['name']
             price_format = str(round(float(row['change']), 2)) + '%'
-            warn_times = redis_client.get(date_util.TODAY + '_' + code)
+            warn_times = redis_client.get(date_util.get_today() + '_' + code)
             if warn_times is None:
                 sms.send_msg_with_tencent(code, name_format, price_format)
-                redis_client.set(date_util.TODAY + '_' + code, row['name'] + price_format)
+                redis_client.set(date_util.get_today() + '_' + code, row['name'] + price_format)
 
     columns = ['code', 'name', 'change', 'close', 'low', 'high', 'volume', 'amount', 'current', 'wave', 'bottom', 'uspace',
                'dspace', 'top', 'position', 'suggest']

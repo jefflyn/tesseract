@@ -1,7 +1,7 @@
 select count(1) from select_result_all;
 select * from select_result_all where concepts like '%军工%' and (wave_a < -50 and wave_b < 15 or wave_b <= -50)
 select * from select_result_all where code in ('000587','600929','300555');
-
+select * from hist_ma_day where code in ('000587','600929','300555');
 # 条件查询 selection data
 select *
 from select_result_all
@@ -81,3 +81,11 @@ where name not like '%ST%'
 order by wave_a;
 
 select * from hist_ma_day where code='600929';
+
+select *
+from select_result_all
+where code in (select code from select_wave_all where `change` <=-80);
+
+select * from select_wave_all where code in (select code
+from select_result_all
+where name like '%ST%' or code='000587')

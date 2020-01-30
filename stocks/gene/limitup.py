@@ -16,7 +16,7 @@ sql = "select h.trade_date, b.code, h.close, h.open, h.high, h.low, h.pct_change
 histlimitup = db_util.read_query(sql)
 
 
-def get_today_up_limit_count():
+def get_today_up_limit_count(count=None):
     """
     统计连板数量
     :return:
@@ -46,7 +46,9 @@ def get_today_up_limit_count():
                 break
         data_list.append(curt_data)
     result_df = pd.DataFrame(data_list, columns=['code', 'up_limit_count'])
-    result_df = result_df.sort_values(['up_limit_count'], ascending=False)
+    if count is not None:
+        result_df = result_df[result_df.up_limit_count >= count]
+    result_df = result_df.sort_values(['up_limit_count'])
     return result_df
 
 
@@ -211,7 +213,7 @@ if __name__ == '__main__':
     #                '2019-02-14', '2019-02-15', '2019-06-17', '2019-06-19', '2019-06-20', '2019-06-21', '2019-11-28',
     #                '2019-11-29', '2019-12-02']))
     # print(get_fire_date(['2019-01-30', '2019-01-31', '2019-02-01']))
-    print(get_today_up_limit_count())
+    print(get_today_up_limit_count(2))
     # lpdf = get_limitup_from_hist_k(['002813'])
     # #print(lpdf)
     # df = get_limitup_from_hist_trade(['002813'])
