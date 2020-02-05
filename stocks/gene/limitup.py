@@ -25,11 +25,12 @@ def get_today_up_limit_count(count=None):
     data_list = []
     for index, row in up_limit_data.iterrows():
         code = row['code']
+        trade_date = row['trade_date']
         curt_up_limit = histlimitup[histlimitup.code == code]
         up_limit_dates = list(curt_up_limit['trade_date'])
         print(code, up_limit_dates)
         total = len(up_limit_dates)
-        curt_data = [code]
+        curt_data = [trade_date, code]
         continue_count = 1
         if total < 2:
             curt_data.append(continue_count)
@@ -45,10 +46,11 @@ def get_today_up_limit_count(count=None):
                 curt_data.append(continue_count)
                 break
         data_list.append(curt_data)
-    result_df = pd.DataFrame(data_list, columns=['code', 'up_limit_count'])
+    result_df = pd.DataFrame(data_list, columns=['trade_date', 'code', 'up_limit_count'])
     if count is not None:
         result_df = result_df[result_df.up_limit_count >= count]
     result_df = result_df.sort_values(['up_limit_count'])
+    db_util.to_db(result_df, 'up_limit_daily', 'append')
     return result_df
 
 
