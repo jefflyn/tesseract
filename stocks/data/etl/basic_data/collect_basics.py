@@ -21,7 +21,7 @@ def collect_basics():
     stock_basics['code'] = stock_basics.index
     insert_values = []
     for index, row in stock_basics.iterrows():
-        insert_values.append((date_util.get_today(), row['code'], row['name'], row['industry'], row['area'], row['pe'],
+        insert_values.append((date_util.get_latest_trade_date(1)[0], row['code'], row['name'], row['industry'], row['area'], row['pe'],
                        row['outstanding'], row['totals'], row['totalAssets'], row['liquidAssets'], row['fixedAssets'],
                        row['reserved'], row['reservedPerShare'], row['esp'], row['bvps'], row['pb'], row['timeToMarket'],
                        row['undp'], row['perundp'], row['rev'], row['profit'], row['gpr'], row['npr'], row['holders']))

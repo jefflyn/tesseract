@@ -4,18 +4,18 @@ import tushare as ts
 
 if __name__ == '__main__':
     # stock.fundamental
-    stock_basics = ts.get_stock_basics()
-    print('get_stock_basics:', stock_basics)
+    # stock_basics = ts.get_stock_basics()
+    # print('check get_stock_basics:', stock_basics)
     # get_report_data,
     # get_profit_data,
-    # get_operation_data, ,
-    print(ts.get_growth_data(2019, 4))
+    # get_operation_data,
+    # print(ts.get_growth_data(2019, 4))
 
     # get_debtpaying_data, get_cashflow_data,
     # get_balance_sheet, get_profit_statement, get_cash_flow)
 
     # stock.trading
-    print(ts.get_hist_data(code='600373', start='2020-01-01', end=None, ktype='D'))
+    # print(ts.get_hist_data(code='600373', start='2020-01-01', end=None, ktype='D'))
     # print(ts.get_tick_data())
     # print(ts.get_today_all())
     # print(ts.get_realtime_quotes())
@@ -24,7 +24,7 @@ if __name__ == '__main__':
     print(ts.get_index())
     # print(ts.get_hists())
     print(ts.get_k_data(code='000001', start='2020-01-01', end='', ktype='D', autype='qfq', index=True))
-    print('get_day_all:', ts.get_day_all(date='2020-02-05'))
+    print('check get_day_all:', ts.get_day_all(date='2020-02-07'))
     # print(ts.get_sina_dd(code='600373'))
     # print(ts.bar())
     # print(ts.tick())
