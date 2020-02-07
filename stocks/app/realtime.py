@@ -70,6 +70,7 @@ def get_realtime(hddf=None, last_trade_data=None, sortby=None):
     for index, row in df.iterrows():
         code = row['code']
         code = INDEX_LIST_NEW[code] if code in INDEX_LIST_NEW.keys() else code
+        # print(code)
         pre_close = float(row['pre_close'])
         price = float(row['price'])
         open = float(row['open'])

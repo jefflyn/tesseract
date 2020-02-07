@@ -194,5 +194,9 @@ select * from my_stock_pool;
 select * from my_stock_pool where platform = 'cf';
 select * from my_stock_pool where platform = 'df';
 select * from my_stock_pool where platform = 'pa';
-
+insert into my_stock_pool(code, platform, share,cost, bottom)
+select code, 'df', 100, 1,1 from up_limit_daily where up_limit_count=2 and trade_date='2020-02-06' ;
 select * from hist_weekly where code='600876';
+
+select * from stocks.basics;
+

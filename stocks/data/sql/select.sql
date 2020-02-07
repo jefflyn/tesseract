@@ -1,11 +1,12 @@
-select count(1) from select_result_all;
+select * from select_result_all where code='000981';
+-- check
 select uld.trade_date,uld.up_limit_count as cc, sra.* from select_result_all sra
     join up_limit_daily uld on sra.code = uld.code
-where uld.trade_date='2020-02-04'
+where uld.trade_date='2020-02-07'
 order by sra.wave_a;
 select * from select_result_all where concepts like '%军工%' and (wave_a < -50 and wave_b < 15 or wave_b <= -50)
-select * from select_result_all where code in ('000587','600929','300555');
-select * from hist_ma_day where code in ('000587','600929','300555');
+select * from select_result_all where code in ('000587','600929','300555', '000862');
+select * from hist_ma_day where code in ('000587','600929','300555','000862');
 # 条件查询 selection data
 select *
 from select_result_all
