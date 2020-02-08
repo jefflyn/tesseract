@@ -45,7 +45,7 @@ if __name__ == '__main__':
     end_dt = time_temp.strftime('%Y%m%d')
     print("Collect trade data from " + start_dt + " to " + end_dt)
 
-    total = cursor.execute('select ts_code from basic')
+    total = cursor.execute('select ts_code from basics')
     if total == 0:
         print("no stock found, process end!")
         exit(0)

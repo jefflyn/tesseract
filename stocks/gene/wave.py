@@ -1,9 +1,9 @@
+import stocks.util.display
 from datetime import datetime
 import datetime as dt
 import numpy as np
 import pandas as pd
 import matplotlib
-import stocks.util.display
 matplotlib.use('TkAgg')
 matplotlib.rcParams['font.sans-serif'] = 'SimHei'
 import matplotlib.pyplot as plt
@@ -12,6 +12,16 @@ import tushare as ts
 from stocks.data import data_util
 
 todaystr = date_util.get_today()
+
+
+def get_wave_ab_by_code(code=None):
+    wave_df = get_wave(code)
+    if wave_df is None or wave_df.empty:
+        return None
+    wave_size = 10
+    wave_str = wave_to_str(wave_df, wave_size)
+    wave_ab = get_wave_ab(wave_str, 33)
+    return [wave_ab[0][0], wave_ab[1][0]]
 
 
 def get_bottom(df=None, limit=20):
@@ -77,11 +87,6 @@ def get_bottom(df=None, limit=20):
     endtime = datetime.now()
     # print("total time: %ds" % (endtime - starttime).seconds)
     return result
-
-
-"""
-df: code name date price
-"""
 
 
 def plot_wave(dflist=None, filename='wave.png', title='', columns=1):
@@ -264,7 +269,8 @@ def get_wave(codes=None, is_index=False, start=None, end=None, beginlow=True, du
         # print("   >>> done!")
 
     if perioddf_list is None or len(perioddf_list) == 0:
-        return 'result is empty, please check the code is exist!'
+        print(code, 'result is empty, please check the code is exist!')
+        return None
     result = pd.concat(perioddf_list, ignore_index=True)
     # result = result.sort_values(by=['code','begin'], axis=0, ascending=True, inplace=False, kind='quicksort', na_position='last')
 

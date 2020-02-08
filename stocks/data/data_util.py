@@ -243,12 +243,14 @@ def get_hist_trade_high_low(code=None, start=None, end=None):
     return df
 
 
-def get_hist_trade(code=None, is_index=False, start=None, end=None):
+def get_hist_trade(code=None, is_index=False, start=None, end=None, is_limit=False):
     """
     获取历史日k
     :param code:
+    :param is_index:
     :param start:
     :param end:
+    :param is_limit:
     :return:
     """
     table_name = 'hist_trade_day' if is_index is False else 'hist_index_day'
@@ -263,6 +265,8 @@ def get_hist_trade(code=None, is_index=False, start=None, end=None):
         sql += 'and trade_date >=:start '
     if end is not None:
         sql += 'and trade_date <=:end '
+    if is_limit:
+        sql += 'and close = round(pre_close * 1.1, 2) '
     params = {'code': code, 'start': start, 'end': end}
     df = read_sql(sql, params=params)
     return df

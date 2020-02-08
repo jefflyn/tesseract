@@ -22,6 +22,7 @@ def get_today_up_limit_count(count=None):
     :return:
     """
     up_limit_data = get_today_up_limit()
+    # print(up_limit_data)
     data_list = []
     for index, row in up_limit_data.iterrows():
         code = row['code']

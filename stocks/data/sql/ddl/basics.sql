@@ -3,6 +3,7 @@ create table stocks.basics
 	trade_date varchar(10) not null comment '交易日',
 	code varchar(6) not null comment '股票代码'
 		primary key,
+	ts_code varchar(10) not null comment '股票ts代码',
 	name varchar(8) not null comment '股票名称',
 	industry varchar(10) null comment '行业',
 	area varchar(8) null comment '地区',

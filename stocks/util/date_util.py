@@ -172,10 +172,11 @@ def get_latest_trade_date(days=1):
 
 def is_tradeday(query_date=None):
     hist_date = hist_date_list[(hist_date_list.hist_date == query_date) & (hist_date_list.is_trade == 1)]
-    return True if hist_date is not None else False
+    is_trade = False if (hist_date is None or hist_date.empty) else True
     # query_date = convert_to_date(query_date)
     # is_holiday = ts_dateu.is_holiday(query_date)
     # return is_holiday is False
+    return is_trade
 
 
 def today_is_tradeday():
@@ -190,7 +191,7 @@ def get_previous_trade_day(trade_date=None):
     :return: str 'yyyy-MM-dd'
     """
     if trade_date is None:
-        trade_date = now()
+        trade_date = get_today()
     hist_date = hist_date_list[hist_date_list.hist_date == trade_date]
     if hist_date.empty is True:
         print(trade_date)
@@ -201,8 +202,7 @@ def get_previous_trade_day(trade_date=None):
             return next_hist_date.iat[0]
 
 
-
-def get_next_trade_day(trade_date=today):
+def get_next_trade_day(trade_date=get_today()):
     """
     获取指定日期下个交易日
     :param trade_date:'yyyy-MM-dd'
@@ -292,14 +292,17 @@ def get_month_firstday_lastday(howmany=12):
     return result_list
 
 
-def shift_date(type='d', n=-1, format='YYYY-MM-DD'):
+def shift_date(type='d', from_date=None, n=-1, format='YYYY-MM-DD'):
     """
     :param type: d w m y
+    :param from_date:
     :param n:
     :param format:
     :return:
     """
     utc = arrow.utcnow()
+    if from_date is not None:
+        utc = utc.strptime(date_str=from_date, fmt='%Y-%m-%d')
     local = utc.to('local')
     if type == 'd':
         target = local.shift(days=n)

@@ -29,7 +29,7 @@ if __name__ == '__main__':
     total = cursor.execute(check_sql)
     if total > 0:
         print(last_trade_date + " trade data existed")
-        sys.exit(0)
+        # sys.exit(0)
     last_trade_date = date_util.get_latest_trade_date()[0].replace('-', '')
     df = ts.pro_bar(api=pro, ts_code=random_stocks[current], adj='qfq', start_date=last_trade_date, end_date=last_trade_date)
     c_len = df.shape[0]
@@ -45,7 +45,7 @@ if __name__ == '__main__':
     end_dt = time_temp.strftime('%Y%m%d')
     print("Collect trade data from " + start_dt + " to " + end_dt)
 
-    total = cursor.execute('select ts_code from basic')
+    total = cursor.execute("select ts_code from basics")
     if total == 0:
         print("no stock found, process end!")
         exit(0)
