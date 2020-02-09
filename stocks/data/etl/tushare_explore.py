@@ -25,7 +25,7 @@ if __name__ == '__main__':
     # print(ts.get_hists())
     print(ts.get_k_data(code='000001', start='2020-01-01', end='', ktype='D', autype='qfq', index=True))
 
-    get_day_all = ts.get_day_all(date='2020-02-07')
+    get_day_all = ts.get_day_all(date='2019-11-04').head(10)
     print('check get_day_all:', get_day_all)
     # print(ts.get_sina_dd(code='600373'))
     # print(ts.bar())

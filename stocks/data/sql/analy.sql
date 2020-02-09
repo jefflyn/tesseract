@@ -3,7 +3,7 @@ select distinct code from hist_trade_day where trade_date>='2019-10-01' and high
 select code, count(1) from hist_trade_day where trade_date>='2019-10-01' and high=low and pct_change>0
 group by code
 having count(1) > 2;
-select * from hist_trade_day where trade_date='2020-01-02' and pct_change > 9;
+select * from hist_trade_day where trade_date='2019-11-04' and pct_change > 9;
 select * from hist_trade_day where code='002477' order by trade_date desc;
 # 验证每天trade data etl
 select trade_date, count(1) from hist_trade_day where trade_date >= '2019-12-01' group by trade_date order by trade_date desc;
@@ -198,5 +198,5 @@ insert into my_stock_pool(code, platform, share,cost, bottom)
 select code, 'df', 100, 1,1 from up_limit_daily where up_limit_count=2 and trade_date='2020-02-06' ;
 select * from hist_weekly where code='600876';
 
-select * from stocks.basics;
+select * from stocks.limit_up_stat where trade_date='2019-11-04';
 

@@ -1,7 +1,7 @@
 select * from select_result_all where code='000981';
 -- check
-select uld.trade_date,uld.up_limit_count as cc, sra.* from select_result_all sra
-    join up_limit_daily uld on sra.code = uld.code
+select uld.trade_date,uld.combo_times as cc, sra.* from select_result_all sra
+    join limit_up_stat uld on sra.code = uld.code
 where uld.trade_date='2020-02-07'
 order by sra.wave_a;
 select * from select_result_all where concepts like '%军工%' and (wave_a < -50 and wave_b < 15 or wave_b <= -50)
@@ -94,3 +94,10 @@ where code in (select code from select_wave_all where `change` <=-80);
 select * from select_wave_all where code in (select code
 from select_result_all
 where name like '%ST%' or code='000587')
+
+
+select * from limit_up_stat where trade_date='2020-02-07' order by combo_times;
+
+select * from limit_up_stat where trade_date='2020-02-07' and pe > 0
+                              and (wave_a < -33 and wave_b < 30 or wave_b <= -33)
+order by wave_a;
