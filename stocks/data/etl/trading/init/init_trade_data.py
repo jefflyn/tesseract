@@ -50,7 +50,7 @@ if __name__ == '__main__':
         print("no stock found, process end!")
         exit(0)
     stock_pool = [ts_code_tuple[0] for ts_code_tuple in cursor.fetchall()]
-    # stock_pool = ['002414.SZ']
+    # stock_pool = ['002477.SZ']
     # 循环获取单个股票的日线行情
     # 1分钟不超过200次调用
     begin_time = datetime.datetime.now()

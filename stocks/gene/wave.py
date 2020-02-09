@@ -270,6 +270,7 @@ def get_wave(codes=None, is_index=False, start=None, end=None, beginlow=True, du
 
     if perioddf_list is None or len(perioddf_list) == 0:
         print(code, 'result is empty, please check the code is exist!')
+
         return None
     result = pd.concat(perioddf_list, ignore_index=True)
     # result = result.sort_values(by=['code','begin'], axis=0, ascending=True, inplace=False, kind='quicksort', na_position='last')
