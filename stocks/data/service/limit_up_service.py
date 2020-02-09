@@ -116,7 +116,7 @@ def get_limit_up_times(code_list, target_date=None):
 
 if __name__ == '__main__':
     # get_limit_up_times(code_list=['000716', '002105', '600513'], target_date='2020-01-01')
-    collect_limit_up_data(target_date='2020-01-02')
+    collect_limit_up_data(target_date='2019-01-02')
 
 
 
