@@ -15,7 +15,7 @@ create table stocks.basics
 	fixed_assets decimal(10,2) null comment '固定资产(万)',
 	reserved decimal(10,2) null comment '公积金',
 	reserved_per_share decimal(10,2) null comment '每股公积金(元)',
-	esp decimal(10,2) null comment '每股收益(元)',
+	esp decimal(10,4) null comment '每股收益(元)',
 	bvps decimal(10,2) null comment '每股净资产(元)',
 	bp decimal(10,2) null comment '市净率',
 	list_date int(8) null comment '上市日期',
