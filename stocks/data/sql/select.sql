@@ -35,8 +35,7 @@ select *
 from select_result_all
 where 1=1
 #   and list_date < 20190101
-  and (pe_ttm is not null or pe is not null)
-  and pe > 0
+  and pe > 0 and pe_ttm > 0
   and (wave_a < -50 and wave_b < 15 or wave_b <= -50)
 #   and count between 0 and 7
 order by wave_a;
@@ -45,7 +44,7 @@ order by wave_a;
 select *
 from select_result_all
 where list_date < 20190101
-  and pe > 0
+  and pe > 0 and pe_ttm > 0
   and (wave_a < -40 and wave_b < 15 or wave_b <= -40)
   and count >= 8
 order by wave_a;

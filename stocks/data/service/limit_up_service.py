@@ -325,7 +325,7 @@ if __name__ == '__main__':
     # get_limit_up_times(code_list=['000716', '002105', '600513'], target_date='2020-01-01')
     # collect_limit_up_stat(target_date='2019-04-01')
 
-    # collect_limit_up_stat(target_date=date_util.get_today())
-    # update_limit_up_stat(target_date=date_util.get_previous_trade_day(date_util.get_today()))
+    collect_limit_up_stat(target_date=date_util.get_today())
+    update_limit_up_stat(target_date=date_util.get_previous_trade_day(date_util.get_today()))
 
-    update_latest_limit_up_stat()
+    # update_latest_limit_up_stat()
