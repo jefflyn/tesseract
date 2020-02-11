@@ -6,9 +6,6 @@
 Created on 2019/02/07
 @author: guru
 """
-
-import pymysql
-
 import tushare as ts
 from stocks.util.db_util import get_db
 from stocks.util._utils import timer
@@ -20,10 +17,11 @@ def collect_basics():
     stock_basics = ts.get_stock_basics()
     stock_basics['code'] = stock_basics.index
     insert_values = []
+    trade_date = date_util.get_latest_trade_date(1)[0]
     for index, row in stock_basics.iterrows():
         code = row['code']
         ts_code = code + '.SH' if code[:1] == '6' else code + '.SZ'
-        insert_values.append((date_util.get_latest_trade_date(1)[0], code, ts_code, row['name'], row['industry'], row['area'], row['pe'],
+        insert_values.append((trade_date, code, ts_code, row['name'], row['industry'], row['area'], row['pe'],
                        row['outstanding'], row['totals'], row['totalAssets'], row['liquidAssets'], row['fixedAssets'],
                        row['reserved'], row['reservedPerShare'], row['esp'], row['bvps'], row['pb'], row['timeToMarket'],
                        row['undp'], row['perundp'], row['rev'], row['profit'], row['gpr'], row['npr'], row['holders']))
@@ -41,7 +39,7 @@ def collect_basics():
                                           'values(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,'
                                           '%s,%s,%s,%s,%s,%s,%s)', insert_values)
         db.commit()
-        print('All Finished! Total size: ' + str(total_size) + ' , ' + str(insert_count) + ' insert successfully.')
+        print(trade_date, 'All Finished! Total size: ' + str(total_size) + ' , ' + str(insert_count) + ' insert successfully.')
     except Exception as err:
         print('>>> failed!', err)
         db.rollback()

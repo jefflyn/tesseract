@@ -17,19 +17,19 @@ if __name__ == '__main__':
                      "count,count_,fdate,last_f_date,price,call_price,call_diff,concepts,select_time "
 
     sql_down = select_columns + "from select_result_all where list_date < :list_date " \
-                                "and pe_ttm < pe " \
+                                "and pe > 0 " \
                                 "and (wave_a < -50 and wave_b < 15 or wave_b <= -50) " \
                                 "order by wave_a"
     df_down = _dt.read_sql(sql_down, params={"list_date": one_year_ago})
 
     sql_active = select_columns + "from select_result_all where list_date < :list_date " \
-                                  "and (pe_ttm is not null or pe is not null) " \
+                                  "and pe > 0 " \
                                   "and (wave_a < -35 and wave_b < 15 or wave_b <= -40) " \
                                   "and count >= 8 order by wave_a"
     df_active = _dt.read_sql(sql_active, params={"list_date": one_year_ago})
 
     sql_chance = select_columns + "from select_result_all where list_date < :list_date " \
-                                  "and (pe_ttm is not null or pe is not null) " \
+                                  "and pe > 0 " \
                                   "and last_f_date <> '' " \
                                   "and (wave_a < -35 and wave_b < 15 or wave_b <= -40) " \
                                   "order by wave_a"
@@ -37,7 +37,7 @@ if __name__ == '__main__':
 
     sql_nice = select_columns + r"from select_result_all where name not like :name " \
                                r"and list_date < :list_date and (wave_a < -33 and wave_b < 15) " \
-                                r"and map >= 8 and pe_ttm <= pe and count > 0 order by wave_a"
+                                r"and map >= 8 and pe > 0 and count > 0 order by wave_a"
     df_nice = _dt.read_sql(sql_nice, params={"name": "%ST%", "list_date": one_year_ago})
 
     sql_all = select_columns + r"from select_result_all where name not like :name " \

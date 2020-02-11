@@ -17,7 +17,7 @@ INDEX_DICT = {'000001': '上证指数', '000016': '上证50', '000300': '沪深3
               '399001': '深证成指', '399005': '中小板指', '399006': '创业板指'}
 INDEX_LIST = ['000001.SH', '000300.SH', '000016.SH', '000905.SH', '399001.SZ', '399005.SZ', '399006.SZ', '399008.SZ']
 
-basics = read_sql("select * from basic", params=None)
+basics = read_sql("select * from basics", params=None)
 
 
 def get_ma_data(code=None, trade_date=None):
@@ -518,9 +518,9 @@ def filter_basic(_basics=None, cyb=True, before=None):
         _basics = _basics[_basics['code'].str.get(0) != '3']
     if before is not None:
         _basics = _basics[(_basics['list_date'] > 0) & (_basics['list_date'] <= before)]
-    else:
-        before = date_const.DATE_BEFORE_7_DAYS_SIMP
-        _basics = _basics[(_basics['list_date'] > 0) & (_basics['list_date'] <= int(before))]
+    # else:
+    #     before = date_const.DATE_BEFORE_7_DAYS_SIMP
+    #     _basics = _basics[(_basics['list_date'] > 0) & (_basics['list_date'] <= int(before))]
     return _basics
 
 

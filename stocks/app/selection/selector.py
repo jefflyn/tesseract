@@ -110,7 +110,8 @@ def select_result(codeset=None, filename=''):
     data_list = []
     # 概念信息
     concepts = concept_service.get_concepts()
-    fundamentals = fundamental_service.get_fundamental()
+    basics = data_util.get_basics()
+    # fundamentals = fundamental_service.get_fundamental()
     wavedfset = pd.DataFrame(columns=['code', 'begin', 'end', 'status', 'begin_price', 'end_price', 'days', 'change'])
     ma_data_df = data_util.get_ma_data(trade_date=curt_trade_date)
     for index, row in hist_trade_df.iterrows():
@@ -127,23 +128,22 @@ def select_result(codeset=None, filename=''):
         if open <= 0 or current_price <= 0:
             continue
 
-        basic = data_util.get_basics(code)
-        if basic is None or basic.empty is True:
-            continue
         curt_data = list()
         concept = concepts[concepts.code == code]
-        fundamental = fundamentals[fundamentals.code == code]
+        fundamental = basics[basics.code == code]
 
         curt_data.append(concept.loc[code, 'concepts'] if concept.empty is False else '')
         curt_data.append(round(fundamental.loc[code, 'pe'], 1) if fundamental.empty is False else 0)
-        curt_data.append(round(fundamental.loc[code, 'pe_ttm'], 1) if fundamental.empty is False else 0)
-        curt_data.append(fundamental.loc[code, 'turnover_rate'] if fundamental.empty is False else 0)
+        # curt_data.append(round(fundamental.loc[code, 'pe_ttm'], 1) if fundamental.empty is False else 0)
+        curt_data.append(fundamental.loc[code, 'profit'])  # pe_ttm
+        # curt_data.append(fundamental.loc[code, 'turnover_rate'] if fundamental.empty is False else 0)
+        curt_data.append(0)
 
         curt_data.append(code)
-        curt_data.append(basic.loc[code, 'name'])
-        curt_data.append(basic.loc[code, 'industry'])
-        curt_data.append(basic.loc[code, 'area'])
-        list_date = str(basic.loc[code, 'list_date'])
+        curt_data.append(fundamental.loc[code, 'name'])
+        curt_data.append(fundamental.loc[code, 'industry'])
+        curt_data.append(fundamental.loc[code, 'area'])
+        list_date = str(fundamental.loc[code, 'list_date'])
         curt_data.append(list_date)
         curt_data.append(current_price)
         curt_data.append(round(float(row['pct_change']), 2))
@@ -456,7 +456,7 @@ def get_warn_space(df):
 
 
 if __name__ == '__main__':
-    print(select_result('000587'))
+    print(select_result('002975'))
     if len(argv) < 2:
         print("Invalid args! At least 2 args like: python xxx.py code1[,code2,...]")
         sys.exit(0)

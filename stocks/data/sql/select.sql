@@ -36,7 +36,7 @@ from select_result_all
 where 1=1
 #   and list_date < 20190101
   and (pe_ttm is not null or pe is not null)
-  and pe_ttm < pe
+  and pe > 0
   and (wave_a < -50 and wave_b < 15 or wave_b <= -50)
 #   and count between 0 and 7
 order by wave_a;
@@ -45,7 +45,7 @@ order by wave_a;
 select *
 from select_result_all
 where list_date < 20190101
-  and (pe_ttm is not null or pe is not null)
+  and pe > 0
   and (wave_a < -40 and wave_b < 15 or wave_b <= -40)
   and count >= 8
 order by wave_a;
@@ -55,7 +55,7 @@ select *
 from select_result_all
 where list_date < 20190101
   and last_f_date <> ''
-  and (pe_ttm is not null or pe is not null)
+  and pe > 0
   and call_diff between -10 and 10
   and count > 3
   and count_ >= 2
@@ -68,7 +68,7 @@ where code in
       (select code from hist_trade_day where pct_change > 9.8 and code not like '688%' and trade_date >= '2019-08-01')
   and c30d > 2
   and list_date < 20190101
-  and pe_ttm is not null
+  and pe > 0
 order by wave_a;
 
 select * from select_result_all where name like '%ST%' order by wave_a;
@@ -81,7 +81,7 @@ where name not like '%ST%'
   and list_date < 20190114
   and (wave_a < -33 and wave_b < 15)
   and map >= 8
-  and pe_ttm <= pe
+  and pe > 0
 #   and count > 0
 order by wave_a;
 
@@ -96,8 +96,3 @@ from select_result_all
 where name like '%ST%' or code='000587')
 
 
-select * from limit_up_stat where trade_date='2020-02-07' order by combo_times;
-
-select * from limit_up_stat where trade_date='2020-02-07' and pe > 0
-                              and (wave_a < -33 and wave_b < 30 or wave_b <= -33)
-order by wave_a;
