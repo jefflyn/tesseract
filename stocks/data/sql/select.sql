@@ -1,4 +1,4 @@
-select * from select_result_all where code='000981';
+select * from select_result_all where code='300210';
 -- check
 select uld.trade_date,uld.combo_times as cc, sra.* from select_result_all sra
     join limit_up_stat uld on sra.code = uld.code
@@ -34,16 +34,17 @@ order by last_f_date desc, count desc, wave_a;
 select *
 from select_result_all
 where 1=1
-#   and list_date < 20190101
+  and list_date < 20190101
   and pe > 0 and pe_ttm > 0
   and (wave_a < -50 and wave_b < 15 or wave_b <= -50)
-#   and count between 0 and 7
+  and count between 1 and 7
 order by wave_a;
 
 -- 2、超跌活跃选股，不含次新股（中风险，适合中短线）
 select *
 from select_result_all
-where list_date < 20190101
+where 1 = 1
+  and list_date < 20190101
   and pe > 0 and pe_ttm > 0
   and (wave_a < -40 and wave_b < 15 or wave_b <= -40)
   and count >= 8
@@ -52,7 +53,7 @@ order by wave_a;
 -- 2.1
 select *
 from select_result_all
-where list_date < 20190101
+where list_date < 20190201
   and last_f_date <> ''
   and pe > 0
   and call_diff between -10 and 10
@@ -77,10 +78,10 @@ select * from select_result_all where list_date > 20190114;
 select *
 from select_result_all
 where name not like '%ST%'
-  and list_date < 20190114
+  and list_date < 20190101
   and (wave_a < -33 and wave_b < 15)
   and map >= 8
-  and pe > 0
+  and pe > 0 and pe_ttm > 0
 #   and count > 0
 order by wave_a;
 

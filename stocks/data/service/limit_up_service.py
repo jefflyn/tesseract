@@ -178,14 +178,14 @@ def update_limit_up_stat(target_date):
                     except Exception as err:
                         print('  >>>error:', err)
                         db.rollback()
+            # 关闭游标和数据库的连接
+            cursor.close()
+            db.close()
 
         next_trade_date = date_util.get_next_trade_day(target_date)
         if next_trade_date > date_util.get_today():
             break
         target_date = next_trade_date
-    # 关闭游标和数据库的连接
-    cursor.close()
-    db.close()
 
 
 def collect_limit_up_stat(target_date):
@@ -252,15 +252,14 @@ def collect_limit_up_stat(target_date):
             except Exception as err:
                 print('  >>>error:', err)
                 db.rollback()
+            # 关闭游标和数据库的连接
+            cursor.close()
+            db.close()
 
         next_trade_date = date_util.get_next_trade_day(target_date)
         if next_trade_date > date_util.get_today():
             break
         target_date = next_trade_date
-
-    # 关闭游标和数据库的连接
-    cursor.close()
-    db.close()
 
 
 def get_limit_up_times(code_list, target_date=None):

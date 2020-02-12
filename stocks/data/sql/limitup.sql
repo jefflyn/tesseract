@@ -9,8 +9,8 @@ VALUES ('2020-02-10', '399006.SZ', '399006', -0.29, now());
 # 不考虑【亏损股】、【B波涨幅过高】、【涨停数超过2】、【缩量】、【高开>4】（大盘较弱都要考虑不操作）
 # 1、选【涨停开盘、缩量、换手率<3】，去除【亏损股、最大涨停数】
 # 2、
-select trade_date 交易日期, code 代码, name 名称, industry 行业, area 地区, pe 市盈率, combo_times as 涨停数,
-       wave_a A波, wave_b B波, turnover_rate 换手率, vol_rate 量比,
+select stat.trade_date 交易日期, stat.code 代码, stat.name 名称, stat.industry 行业, stat.area 地区, stat.pe 市盈率, stat.combo_times as 涨停数,
+       stat.wave_a A波, stat.wave_b B波, stat.turnover_rate 换手率, stat.vol_rate 量比,
        case when vol_rate < 0.8 then '缩量（不活跃）'
            when vol_rate >= 0.8 and vol_rate < 1.5 then '正常水准（正常活动）'
            when vol_rate >= 1.5 and vol_rate < 2.5 then '柔和放量（相对健康）'
@@ -22,10 +22,10 @@ select trade_date 交易日期, code 代码, name 名称, industry 行业, area 
        open_change 开盘幅度,
        next_low_than_open 次日低价, next_open_change 次日开盘幅度, next_low_change 次日底价幅度, next_open_buy_change 次日开盘买入涨幅,
        next_low_buy_change 次日底价买入涨幅, ref_index_change 大盘幅度, update_time
-from limit_up_stat where trade_date='2020-02-10'
-and (wave_a < -33 and wave_b < 30 or wave_b <= -33)
-and pe > 0
-order by wave_a;
+from limit_up_stat stat inner join basics b on stat.code = b.code where stat.trade_date='2020-02-11'
+and b.pe > 0 and b.profit > 0
+# and (stat.wave_a < -33 and stat.wave_b < 30 or stat.wave_b <= -33)
+order by stat.wave_a;
 
 select *
 from limit_up_stat
