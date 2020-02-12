@@ -37,7 +37,9 @@ if __name__ == '__main__':
         print(last_trade_date + " no trade data found yet")
         # sys.exit(0)
     # 设定获取日线行情的初始日期和终止日期，其中终止日期设定为当天
-    time_temp = datetime.datetime.now() - datetime.timedelta(days=2)
+    # time_temp = datetime.datetime.now() - datetime.timedelta(days=2)
+    time_temp = datetime.datetime.now() - datetime.timedelta(days=0)
+
     start_dt = time_temp.strftime('%Y%m%d')
     if INIT_DATA:
         start_dt = INIT_DATA_START_DATE

@@ -34,6 +34,13 @@ where trade_date = '2020-02-07'
   and (wave_a < -33 and wave_b < 30 or wave_b <= -33)
 order by wave_a;
 
+-- 涨停汇总
+select lus.code, max(lus.name) name, count(lus.combo_times) total, max(lus.combo_times) max, c.concepts
+from limit_up_stat lus inner join basics b on lus.code = b.code left join concepts c on lus.code = c.code
+where b.list_date < 20190101 and lus.trade_date > '2020-02-01'
+group by lus.code
+having count(lus.combo_times) > 1
+order by total desc;
 
-
+select * from concepts where code in (603005,603880,000652,600200,000955,300264,002605,300235,300160,000078,600789,000518,300030,300578,300051,002838,300654,002385,300063,300343,603825,002160,300336,600327,300204,600215,600222,000016,603301,300363,002878,300707,603598,603920,000892,603888,300087,603305,300459,002635,300598,002837,002219,600267,300123,601999,002326,002551,603726);
 

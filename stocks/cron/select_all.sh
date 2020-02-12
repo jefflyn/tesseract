@@ -2,7 +2,7 @@
 
 source ~/.bash_profile
 
-python3 $STOCKS_HOME/data/service/limit_up_service.py.py
+python3 $STOCKS_HOME/data/service/limit_up_service.py
 python3 $STOCKS_HOME/app/selection/select_all.py
 python3 $STOCKS_HOME/app/report/report_select.py
 
