@@ -130,7 +130,7 @@ def update_limit_up_stat(target_date):
                         # 下一交易日指数情况
                         next_index_df = hist_index_df[(hist_index_df['trade_date'] == next_trade_date)]
                         if next_index_df is None or next_index_df.empty:
-                            print(next_trade_date, 'no index data found, please check!')
+                            print('>>> warn', next_trade_date, 'no index data found, please check!')
                         else:
                             next_index_map = {}
                             for idx, index_row in next_index_df.iterrows():
@@ -149,7 +149,7 @@ def update_limit_up_stat(target_date):
                         next_hist_df = hist_data_df[(hist_data_df['trade_date'] == next_trade_date)
                                                     & (hist_data_df['code'] == code)]
                         if next_hist_df is None or next_hist_df.empty:
-                            print('>>> failed', code, next_trade_date, 'no trade data found, please check!')
+                            print('  >>> failed', code, next_trade_date, 'no trade data found, please check!')
                         else:
                             next_trade_index = next_hist_df.index[0]
                             next_open = next_hist_df.loc[next_trade_index, 'open']
@@ -174,7 +174,7 @@ def update_limit_up_stat(target_date):
                                          "update_time = %s where trade_date = %s and code = %s"
                             cursor.execute(update_sql, values)
                             db.commit()
-                            print(target_date, code, 'Update limit up stat successfully.')
+                            # print('  >>>', target_date, code, 'Update limit up stat successfully.')
                     except Exception as err:
                         print('  >>>error:', err)
                         db.rollback()

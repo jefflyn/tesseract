@@ -36,11 +36,11 @@ select * from hist_weekly order by trade_date desc;
 select * from hist_weekly where code=600126 order by trade_date desc limit 2;
 
 # ma data
-select * from hist_ma_day order by rank;
+select * from hist_ma_day order by grade desc;
 select * from hist_ma_day where code in ('000587', '600929');
 
 -- basic info
-select count(1) from basic;
+select esp from basics;
 select min(list_date), max(list_date) from basic;
 select * from basic where list_date = (select min(list_date) from basic);
 select * from basic where name like '%远程%';
@@ -137,12 +137,6 @@ select concat(round(sum(DATA_LENGTH/1024/1024),2),'M')
 from information_schema.tables where table_schema='stocks' and table_name='select_wave_all';
 select * from basic where name like '%ST%';
 
--- forecast preview
-select * from profit_forecast;
-select * from profit_forecast where code='002895';
-select * from profit_forecast where type = '预盈' and name like '%ST%';
-select * from profit_forecast where type in ('预增', '预盈', '预升') and range_from > 100;
-
 -- up gap in a week
 select * from hist_trade_day where trade_date >= '2019-05-07';
 select * from hist_trade_day where code='002889' order by trade_date desc;
@@ -156,8 +150,6 @@ where a.code in('600126', '002895');
 
 select * from hist_weekly where code='000958' order by trade_date desc limit 20;
 select * from hist_monthly where code=000958;
-
-select * from weekly_gap where gap > 0 order by gap desc;
 
 select b.code,b.name,sc.province,sc.city,b.list_date
 from basic b inner join stock_company sc on b.ts_code = sc.ts_code

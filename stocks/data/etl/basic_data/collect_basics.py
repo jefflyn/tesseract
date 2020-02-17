@@ -7,7 +7,6 @@ Created on 2019/02/07
 @author: guru
 """
 import tushare as ts
-import pandas as pd
 from stocks.util.db_util import get_db
 from stocks.util._utils import timer
 from stocks.util import date_util
@@ -22,10 +21,11 @@ def collect_basics():
     import numpy as np
     for index, row in stock_basics.iterrows():
         code = row['code']
+        esp = round(row['esp'], 3)
         ts_code = code + '.SH' if code[:1] == '6' else code + '.SZ'
         curt_values = (trade_date, code, ts_code, row['name'], row['industry'], row['area'], row['pe'],
                        row['outstanding'], row['totals'], row['totalAssets'], row['liquidAssets'], row['fixedAssets'],
-                       row['reserved'], row['reservedPerShare'], row['esp'], row['bvps'], row['pb'], row['timeToMarket'],
+                       row['reserved'], row['reservedPerShare'], esp, row['bvps'], row['pb'], row['timeToMarket'],
                        row['undp'], row['perundp'], row['rev'], row['profit'], row['gpr'], row['npr'], row['holders'])
         insert_values.append(tuple(np.nan_to_num(curt_values)))
     total_size = len(insert_values)
