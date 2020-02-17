@@ -1,10 +1,13 @@
-select * from hist_index_day where trade_date >= '2020-02-03';
+-- index data
+select * from hist_index_day where trade_date >= '2020-02-03' order by trade_date desc;
 INSERT INTO stocks.hist_index_day (trade_date, ts_code, code, pct_change, update_time)
-VALUES ('2020-02-10', '000001.SH', '000001', -0.39, now());
+VALUES ('2020-02-17', '000001.SH', '000001', 2.28, now());
 INSERT INTO stocks.hist_index_day (trade_date, ts_code, code, pct_change, update_time)
-VALUES ('2020-02-10', '399001.SZ', '399001', -0.22, now());
+VALUES ('2020-02-17', '399001.SZ', '399001', 2.98, now());
 INSERT INTO stocks.hist_index_day (trade_date, ts_code, code, pct_change, update_time)
-VALUES ('2020-02-10', '399006.SZ', '399006', -0.29, now());
+VALUES ('2020-02-17', '399006.SZ', '399006', 3.72, now());
+
+select trade_date, count(1) from limit_up_stat group by trade_date order by trade_date desc ;
 
 # 不考虑【亏损股】、【B波涨幅过高】、【涨停数超过2】、【缩量】、【高开>4】（大盘较弱都要考虑不操作）
 # 1、选【涨停开盘、缩量、换手率<3】，去除【亏损股、最大涨停数】
@@ -22,14 +25,14 @@ select stat.trade_date 交易日期, stat.code 代码, stat.name 名称, stat.in
        open_change 开盘幅度,
        next_low_than_open 次日低价, next_open_change 次日开盘幅度, next_low_change 次日底价幅度, next_open_buy_change 次日开盘买入涨幅,
        next_low_buy_change 次日底价买入涨幅, ref_index_change 大盘幅度, update_time
-from limit_up_stat stat inner join basics b on stat.code = b.code where stat.trade_date='2020-02-11'
+from limit_up_stat stat inner join basics b on stat.code = b.code where stat.trade_date='2020-02-17'
 and b.pe > 0 and b.profit > 0
 # and (stat.wave_a < -33 and stat.wave_b < 30 or stat.wave_b <= -33)
 order by stat.wave_a;
 
 select *
 from limit_up_stat
-where trade_date = '2020-02-07'
+where trade_date = '2020-02-13'
   and pe > 0
   and (wave_a < -33 and wave_b < 30 or wave_b <= -33)
 order by wave_a;

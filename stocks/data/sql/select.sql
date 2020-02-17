@@ -1,5 +1,5 @@
 select * from select_result_all where code='300210';
-select * from select_result_all where name like '%风范%';
+select * from select_result_all where name like '%锆业%';
 select * from select_result_all where code in ('000587','600929','300555', '000862');
 -- 条件查询 selection data
 select *
@@ -48,10 +48,8 @@ order by wave_a;
 select *
 from select_result_all
 where code in
-      (select code from hist_trade_day where pct_change > 9.8 and code not like '688%' and trade_date >= '2019-08-01')
-  and c30d > 2
-  and list_date < 20190101
-  and pe > 0
+      (select code from limit_up_stat where trade_date='2020-02-17')
+  and pe > 0 and pe_ttm > 0
 order by wave_a;
 
 select * from select_result_all where name like '%ST%' order by wave_a;
@@ -62,8 +60,8 @@ select *
 from select_result_all
 where name not like '%ST%'
   and list_date < 20190101
-  and (wave_a < -33 and wave_b < 15)
-  and map >= 9.5
+  and (wave_a < -33 and wave_b < 15 or wave_b <= -33)
+  and map >= 9
   and pe > 0 and pe_ttm > 0
 #   and count > 0
 order by wave_a;

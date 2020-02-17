@@ -1,10 +1,11 @@
-import tushare as ts
 import pandas as pd
-from stocks.util.db_util import get_db
-from stocks.util import db_util
-from stocks.util import date_util
+import tushare as ts
+
 from stocks.data import data_util
 from stocks.gene import wave
+from stocks.util import date_util
+from stocks.util import db_util
+from stocks.util.db_util import get_db
 
 
 def update_latest_limit_up_stat():
@@ -117,7 +118,7 @@ def update_limit_up_stat(target_date):
                         next_trade_date = date_util.get_next_trade_day(row_trade_date)
                         # 下一个交易日没到，结束
                         if next_trade_date > date_util.get_today():
-                            print(trade_date, '已是最近一个交易日，下个交易日结束再执行')
+                            print(trade_date, '已是最近一个交易日，下个交易日结束再执行 end')
                             break
 
                         next_low_than_open = 0
@@ -130,7 +131,8 @@ def update_limit_up_stat(target_date):
                         # 下一交易日指数情况
                         next_index_df = hist_index_df[(hist_index_df['trade_date'] == next_trade_date)]
                         if next_index_df is None or next_index_df.empty:
-                            print('>>> warn', next_trade_date, 'no index data found, please check!')
+                            if index == 0:
+                                print('  >>> warn', next_trade_date, 'no index data found, please check!')
                         else:
                             next_index_map = {}
                             for idx, index_row in next_index_df.iterrows():
@@ -186,6 +188,8 @@ def update_limit_up_stat(target_date):
         if next_trade_date > date_util.get_today():
             break
         target_date = next_trade_date
+
+    print(target_date, 'Update limit up stat end ...')
 
 
 def collect_limit_up_stat(target_date):
@@ -322,7 +326,8 @@ def get_limit_up_stat(code=None, start=None, end=None):
 
 if __name__ == '__main__':
     # get_limit_up_times(code_list=['000716', '002105', '600513'], target_date='2020-01-01')
-    # collect_limit_up_stat(target_date='2019-04-01')
+    # collect_limit_up_stat(target_date='2020-02-12')
+    # update_limit_up_stat(target_date='2020-02-12')
 
     collect_limit_up_stat(target_date=date_util.get_today())
     update_limit_up_stat(target_date=date_util.get_previous_trade_day(date_util.get_today()))
