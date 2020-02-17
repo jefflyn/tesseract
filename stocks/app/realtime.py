@@ -101,7 +101,7 @@ def get_realtime(hddf=None, last_trade_data=None, sortby=None):
 
         index = list(hddf['code']).index(code)
         cost = hddf.loc[index, 'cost']
-        # cost = cost if cost > 1 else price
+        cost = cost if cost is not None and str(cost) != 'nan' else price
         share = hddf.loc[index, 'share']
         wavedf = wave.get_wave(code)
         wavestr = wave.wave_to_str(wavedf, 6)
@@ -113,7 +113,7 @@ def get_realtime(hddf=None, last_trade_data=None, sortby=None):
         bottom = hddf.loc[index, 'bottom']
         bottom_auto = bdf.loc[bdf.index[0], 'bottom']
         bottom_auto_flag = ''
-        if bottom is None or bottom_auto < bottom:
+        if bottom is None or str(bottom) == 'nan' or bottom_auto < bottom:
             bottom = bottom_auto
             bottom_auto_flag = 'A'
 

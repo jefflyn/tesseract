@@ -1,5 +1,6 @@
-import datetime
+import stocks.util.display
 
+import datetime
 import numpy as np
 import pandas as pd
 
@@ -160,7 +161,7 @@ def get_ma_data(codes=None, start='2017-01-04', end=None):
 
 
 if __name__ == '__main__':
-    codes = ['600929']
+    codes = ['002167']
     # df = get_ma_data(codes, start='2017-01-01')
     df = data_util.get_ma_data(codes)
     print(df)

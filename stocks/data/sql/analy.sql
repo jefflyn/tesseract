@@ -76,13 +76,6 @@ group by ts_code, substr(trade_date, 1 ,7);
 -- limitup data
 select * from hist_trade_day where trade_date='2019-04-12' and close >= round(pre_close * 1.1, 2);
 
-INSERT INTO limitup_stat (`code`,`period_type`,`period`,`times`)
-select substr(ts_code, 1, 6) as code, 'm', '2019-03', count(1)
-from hist_trade_day
-where trade_date >= '2019-03-01' and trade_date <= '2019-03-31'  and close = round(pre_close * 1.1, 2)
-group by ts_code
-order by count(1) desc;
-
 -- hist trade data
 select count(1) from hist_trade_day;
 select * from hist_trade_day where code='002895' order by trade_date desc;
@@ -194,9 +187,5 @@ select * from my_stock_pool;
 select * from my_stock_pool where platform = 'cf';
 select * from my_stock_pool where platform = 'df';
 select * from my_stock_pool where platform = 'pa';
-insert into my_stock_pool(code, platform, share,cost, bottom)
-select code, 'df', 100, 1,1 from up_limit_daily where up_limit_count=2 and trade_date='2020-02-06' ;
-select * from hist_weekly where code='600876';
-
 select * from stocks.limit_up_stat where trade_date='2019-11-04';
 

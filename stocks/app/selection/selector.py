@@ -329,12 +329,13 @@ def select_result(codeset=None, filename=''):
     # resultdf = resultdf.sort_values('sum_30d', axis=0, ascending=False, inplace=False, kind='quicksort', na_position='last')
 
     resultdf = resultdf[
-        ['concepts', 'pe', 'pe_ttm', 'turnover_rate', 'code', 'name', 'industry', 'area', 'list_date',
-         'pct', 'wave_detail', 'a_days', 'wave_a', 'wave_b', 'b_days', 'bottom', 'uspace', 'dspace', 'top', 'position',
-         'w_gap', 'c_gap', 'map',
-         'gap', 'gap_space', 'sum_30d', 'count', 'count_', 'c30d', 'cq1', 'cq2', 'cq3', 'cq4',
+        ['concepts', 'industry', 'code', 'name', 'area', 'list_date', 'pe', 'pe_ttm',
+         'pct', 'wave_a', 'wave_b', 'map', 'count', 'count_',
+         'wave_detail', 'a_days', 'b_days', 'bottom', 'uspace', 'dspace', 'top', 'position',
+         'w_gap', 'c_gap',
+         'gap', 'gap_space', 'sum_30d', 'c30d', 'cq1', 'cq2', 'cq3', 'cq4',
          'fdate', 'last_f_date', 'price', 'call_price', 'call_diff', 'lup_low', 'lup_high',
-         'buy1', 'buy2', 'buy3', 'change_7d', 'updays', 'sumup', 'vol_rate', 'multi_vol']]
+         'buy1', 'buy2', 'buy3', 'change_7d', 'updays', 'sumup', 'vol_rate', 'multi_vol', 'turnover_rate']]
     resultdf['trade_date'] = last_trade_date
     resultdf['select_time'] = dt.now()
     result_name = 'select_result_' + filename
