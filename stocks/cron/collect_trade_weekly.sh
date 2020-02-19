@@ -3,5 +3,7 @@
 source ~/.bash_profile
 
 cd $STOCKS_HOME/data/etl/trading
+
+echo -e "###### collect_trade_weekly start @ `date` \n"
 python3 ./collect_trade_weekly.py
-echo "finished collect_trade_weekly.py"
+echo -e "###### collect_trade_weekly end @ `date` \n"

@@ -49,7 +49,7 @@ select *
 from select_result_all
 where code in
       (select code from limit_up_stat where trade_date > '2020-01-01' group by code having max(combo_times) > 1)
-#   and pe > 0 and pe_ttm > 0
+  and pe > 0 and pe_ttm > 0
 order by wave_a;
 
 
