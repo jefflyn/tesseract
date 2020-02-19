@@ -1,5 +1,5 @@
 select * from select_result_all where code='300210';
-select * from select_result_all where name like '%锆业%';
+select * from select_result_all where name like '%博天%';
 select * from select_result_all where code in ('000587','600929','300555', '000862');
 -- 条件查询 selection data
 select *
@@ -44,16 +44,14 @@ where 1 = 1
   and count >= 8
 order by wave_a;
 
--- 3、本月涨停选股，不含次新股（高风险，适合超短线）
+-- 3、2020涨停选股（高风险，适合超短线）
 select *
 from select_result_all
 where code in
-      (select code from limit_up_stat where trade_date='2020-02-17')
-  and pe > 0 and pe_ttm > 0
+      (select code from limit_up_stat where trade_date > '2020-01-01' group by code having max(combo_times) > 1)
+#   and pe > 0 and pe_ttm > 0
 order by wave_a;
 
-select * from select_result_all where name like '%ST%' order by wave_a;
-select * from select_result_all where list_date > 20190114;
 
 -- 多头排列趋势
 select *
@@ -71,4 +69,7 @@ select * from select_wave_all where code in (select code
 from select_result_all
 where name like '%ST%' or code='000587')
 
-
+# 概念
+select * from select_result_all where code in (select code from concepts where concepts like '%食品%')
+and pe_ttm > 0
+order by wave_a;

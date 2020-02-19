@@ -173,7 +173,8 @@ select * from hist_index_day where code='000001' and
                                                  '2017-07-06','2017-07-07','2017-07-10',
                                                  '2018-11-29','2018-11-30','2018-12-03');
 
-
+update my_stock_pool p inner join concepts c on p.code=c.code set p.concept=c.concepts;
+update my_stock_pool p inner join select_result_all s on p.code=s.code set p.bottom=s.bottom, p.alias=s.name,p.grade=s.map,p.remark=s.industry;
 select * from monitor_pool;
 select * from my_stock_pool;
 select * from my_stock_pool where platform = 'cf';

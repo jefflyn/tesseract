@@ -1,13 +1,13 @@
-import stocks.util.display
 import sys
-from sys import argv
 import time
-import pandas as pd
+from sys import argv
 
+import pandas as pd
 import tushare as ts
 from tushare.stock import cons as ct
-from stocks.gene import wave
+
 from stocks.data import data_util as _dt
+from stocks.gene import wave
 from stocks.util import date_util
 
 keys = ['pa', 'cf', 'df', 'sim', 'gap']
@@ -30,7 +30,7 @@ def format_realtime(df):
     df['share'] = df['share'].apply(lambda x: str(x) + '>')
     df.insert(15, 'cost, share', df['cost'] + df['share'])
     df['change'] = df['change'].apply(lambda x: str(round(x, 2)) + '%')
-    df['amp'] = df['amp'].apply(lambda x: str(round(x, 2)) + '%')
+    # df['amp'] = df['amp'].apply(lambda x: str(round(x, 2)) + '%')
     # df['profit_perc'] = df['profit_perc'].apply(lambda x: str(round(x, 2)) + '%')
     df['uspace'] = df['uspace'].apply(lambda x: str(round(x, 2)) + '%')
     df['dspace'] = df['dspace'].apply(lambda x: str(round(x, 2)) + '%')
@@ -184,7 +184,7 @@ def get_realtime(hddf=None, last_trade_data=None, sortby=None):
         df = df.sort_values(['change'], axis=0, ascending=True, inplace=False, kind='quicksort', na_position='last')
 
     return df[
-        ['Y', 'code', 'name', 'price', 'o_gap', 'g_scale', 'g_space', 'change', 'amp', 'bid', 'ask', 'low', 'high',
+        ['Y', 'code', 'name', 'price', 'o_gap', 'g_scale', 'g_space', 'change', 'bid', 'ask', 'low', 'high',
          'current', 'wave', 'bottom', 'uspace', 'dspace', 'top', 'position', 'cost', 'share', 'capital', 'profit']]
 
 
