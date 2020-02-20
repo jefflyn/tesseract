@@ -1,5 +1,5 @@
 select * from select_result_all where code='300210';
-select * from select_result_all where name like '%博天%';
+select * from select_result_all where name like '%盐业%';
 select * from select_result_all where code in ('000587','600929','300555', '000862');
 -- 条件查询 selection data
 select *
@@ -8,16 +8,16 @@ where 1 = 1
   and name not like '%ST%'
 #   and code in ('300099')
 # and call_diff = ''
-  and last_f_date <> ''
+#   and last_f_date <> ''
 #     and call_diff
 # and industry like '%证券%'
 # and list_date < 20190101
-  and pe_ttm is not null
+#   and pe_ttm is not null
 # and name like '%三川%'
-# and c.concepts like '%油%'
+and concepts like '%黄金%'
 # and area like '%甘肃%'
 # and count > 0
-  and (wave_a <= -33 and wave_b < 15 or wave_b <= -33)
+#   and (wave_a <= -33 and wave_b < 15 or wave_b <= -33)
 # and code in (select code from my_stock_pool where platform in ('cf')) -- self position
 # and code in (select code from hist_trade_day where trade_date>='2019-09-01' and trade_date<='2019-12-31' and pct_change>9.9-- and high=low
 #     group by code
@@ -31,7 +31,7 @@ where 1=1
   and list_date < 20190101
   and pe > 0 and pe_ttm > 0
   and (wave_a < -50 and wave_b < 15 or wave_b <= -50)
-  and count between 1 and 7
+#   and count between 1 and 7
 order by wave_a;
 
 -- 2、超跌活跃选股，不含次新股（中风险，适合中短线）
@@ -48,8 +48,8 @@ order by wave_a;
 select *
 from select_result_all
 where code in
-      (select code from limit_up_stat where trade_date > '2020-01-01' group by code having max(combo_times) > 1)
-  and pe > 0 and pe_ttm > 0
+      (select code from limit_up_stat where trade_date > '2020-01-01' group by code having max(combo_times) > 1 or count(combo_times) > 3)
+#   and (pe > 0 and pe_ttm > 0 or pe_ttm = 0)
 order by wave_a;
 
 

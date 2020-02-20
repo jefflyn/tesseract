@@ -1,11 +1,10 @@
 # !/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import pymysql
+from datetime import timedelta
 
 import pandas as pd
 import tushare.util.dateu as ts_dateu
-from datetime import timedelta
 
 from stocks.util import date_util
 
@@ -54,11 +53,11 @@ def collect_trade_date(n=0):
     # insert_df = pd.DataFrame([date_list], columns=['hist_date', 'is_trade'])
     hist_date_df = insert_df.append(hist_date_df, ignore_index=True, sort=False)
     hist_date_df = hist_date_df[['hist_date', 'is_trade']]
-    print(hist_date_df.head(10))
+    print(hist_date_df.head(3))
     hist_date_df.to_csv('hist_trade_date.csv')
 
 
 if __name__ == '__main__':
-    collect_trade_date(33)
+    collect_trade_date(7)
     # init_trade_date_list()
     print('collect_trade_date %s finished!' % date_util.get_today())

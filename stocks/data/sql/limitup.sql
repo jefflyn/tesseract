@@ -32,7 +32,7 @@ order by stat.wave_a;
 
 select *
 from limit_up_stat
-where trade_date = '2020-02-13'
+where trade_date = '2020-02-19'
   and pe > 0
   and (wave_a < -33 and wave_b < 30 or wave_b <= -33)
 order by wave_a;
