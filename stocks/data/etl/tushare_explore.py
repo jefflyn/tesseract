@@ -1,5 +1,3 @@
-from stocks.util import display
-
 import tushare as ts
 
 if __name__ == '__main__':
@@ -15,18 +13,18 @@ if __name__ == '__main__':
     # get_balance_sheet, get_profit_statement, get_cash_flow)
 
     # stock.trading
-    # print(ts.get_hist_data(code='600373', start='2020-01-01', end=None, ktype='D'))
+    print('get_hist_data >>>', ts.get_hist_data(code='600373', start='2020-02-20', end=None, ktype='D'))
     # print(ts.get_tick_data())
-    # print(ts.get_today_all())
+    # print('get_today_all >>>', ts.get_today_all().head(10))
     # print(ts.get_realtime_quotes())
-    # print(ts.get_h_data(code='600848', start='2020-01-01', end='2020-03-01', autype='qfq', index=False))
+    # print('get_h_data >>>', ts.get_h_data(code='600848', start='2020-01-01', end='2020-03-01', autype='qfq', index=False))
     # print(ts.get_today_ticks())
-    print(ts.get_index())
+    # print(ts.get_index())
     # print(ts.get_hists())
-    print(ts.get_k_data(code='000001', start='2020-01-01', end='', ktype='D', autype='qfq', index=True))
+    print('get_k_data >>>', ts.get_k_data(code='000001', start='2020-01-01', end='', ktype='D', autype='qfq', index=True))
 
     get_day_all = ts.get_day_all(date='2020-02-14').head(10)
-    print('check get_day_all:', get_day_all)
+    print('get_day_all >>>', get_day_all)
     # print(ts.get_sina_dd(code='600373'))
     # print(ts.bar())
     # print(ts.tick())

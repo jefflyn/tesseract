@@ -1,5 +1,5 @@
 select * from select_result_all where code='300210';
-select * from select_result_all where name like '%盐业%';
+select * from select_result_all where name like '%轴承%';
 select * from select_result_all where code in ('000587','600929','300555', '000862');
 -- 条件查询 selection data
 select *
@@ -14,7 +14,7 @@ where 1 = 1
 # and list_date < 20190101
 #   and pe_ttm is not null
 # and name like '%三川%'
-and concepts like '%黄金%'
+and concepts like '%华为%'
 # and area like '%甘肃%'
 # and count > 0
 #   and (wave_a <= -33 and wave_b < 15 or wave_b <= -33)
@@ -48,9 +48,9 @@ order by wave_a;
 select *
 from select_result_all
 where code in
-      (select code from limit_up_stat where trade_date > '2020-01-01' group by code having max(combo_times) > 1 or count(combo_times) > 3)
+      (select code from limit_up_stat where trade_date > '2020-01-01' group by code having max(combo_times) >= 3 or count(combo_times) >= 4)
 #   and (pe > 0 and pe_ttm > 0 or pe_ttm = 0)
-order by wave_a;
+order by wave_b;
 
 
 -- 多头排列趋势
@@ -59,8 +59,8 @@ from select_result_all
 where name not like '%ST%'
   and list_date < 20190101
   and (wave_a < -33 and wave_b < 15 or wave_b <= -33)
-  and map >= 9
-  and pe > 0 and pe_ttm > 0
+  and map > 9
+#   and pe > 0 and pe_ttm > 0
 #   and count > 0
 order by wave_a;
 

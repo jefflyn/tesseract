@@ -2,9 +2,8 @@
 
 source ~/.bash_profile
 
-cd $STOCKS_HOME/data/etl/basic_data
 echo -e "###### collect_today_all start @ `date`"
-python3 ./collect_today_all.py
+python3 $STOCKS_HOME/data/etl/basic_data/collect_today_all.py
 echo -e "###### collect_today_all end @ `date` \n"
 
 echo -e "###### limit_up_service start @ `date`"

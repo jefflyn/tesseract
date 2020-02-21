@@ -37,7 +37,7 @@ if __name__ == '__main__':
 
     sql_nice = select_columns + r"from select_result_all where name not like :name " \
                                r"and list_date < :list_date and (wave_a < -33 and wave_b < 15) " \
-                                r"and map >= 8 and pe > 0 and pe_ttm > 0 and count > 0 order by wave_a"
+                                r"and map > 9 and count > 0 order by wave_a"
     df_nice = _dt.read_sql(sql_nice, params={"name": "%ST%", "list_date": one_year_ago})
 
     sql_all = select_columns + r"from select_result_all where name not like :name " \
@@ -60,11 +60,11 @@ if __name__ == '__main__':
                    "when vol_rate >= 10 then '巨量（反向操作）' when vol_rate >= 20 then '极端放量（死亡）' end as 量比解读, " \
                    "open_change 开盘幅度,update_time from limit_up_stat stat inner join basics b on stat.code = b.code " \
                    "where stat.trade_date=:trade_date order by stat.wave_a;"
-    df_limit_up = _dt.read_sql(sql_limit_up, params={"trade_date": date_util.get_today()})
+    # df_limit_up = _dt.read_sql(sql_limit_up, params={"trade_date": date_util.get_today()})
 
     file_name = 'select_' + date_util.get_today(date_util.format_flat) + '.xlsx'
     writer = pd.ExcelWriter(file_name)
-    df_limit_up.to_excel(writer, sheet_name='limit')
+    # df_limit_up.to_excel(writer, sheet_name='limit')
     df_nice.to_excel(writer, sheet_name='nice')
     df_active.to_excel(writer, sheet_name='active')
     df_chance.to_excel(writer, sheet_name='chance')
