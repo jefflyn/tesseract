@@ -1,17 +1,16 @@
-import stocks.util.display
-from datetime import datetime
 import datetime as dt
+from datetime import datetime
+
+import matplotlib
 import numpy as np
 import pandas as pd
-import matplotlib
+
 matplotlib.use('TkAgg')
 matplotlib.rcParams['font.sans-serif'] = 'SimHei'
 import matplotlib.pyplot as plt
 from stocks.util import date_util
 import tushare as ts
 from stocks.data import data_util
-
-todaystr = date_util.get_today()
 
 
 def get_wave_ab_by_code(code=None):
@@ -20,7 +19,7 @@ def get_wave_ab_by_code(code=None):
         return None
     wave_size = 10
     wave_str = wave_to_str(wave_df, wave_size)
-    wave_ab = get_wave_ab(wave_str, 33)
+    wave_ab = get_wave_ab_fast(wave_str, 33)
     return [wave_ab[0][0], wave_ab[1][0]]
 
 
@@ -223,6 +222,8 @@ def get_wave(codes=None, is_index=False, start=None, end=None, beginlow=True, du
     if is_index is True:
         index_realtime = ts.get_index()
     perioddf_list = []
+
+    last_trade_date = date_util.get_latest_trade_date(1)[0]
     for code in code_list:
         hist_data = data_util.get_hist_trade(code=code, is_index=is_index, start=start, end=end)
         # hist_data = data_util.get_hist_week(code=code, start=start, end=end)
@@ -230,8 +231,8 @@ def get_wave(codes=None, is_index=False, start=None, end=None, beginlow=True, du
         if hist_data is None or len(hist_data) == 0:
             continue
         hist_data['date'] = hist_data['trade_date']
-        latestdate = hist_data.tail(1).at[hist_data.tail(1).index.to_numpy()[0], 'date']
-        if todaystr != latestdate:  # not the latest record
+        latest_date = hist_data.tail(1).at[hist_data.tail(1).index.to_numpy()[0], 'date']
+        if last_trade_date != latest_date:  # not the latest record
             if is_index is False:
                 # get today data from [get_realtime_quotes(code)]
                 realtime = ts.get_realtime_quotes(code)
@@ -239,7 +240,7 @@ def get_wave(codes=None, is_index=False, start=None, end=None, beginlow=True, du
                     continue
                 todaylow = float(realtime.at[0, 'low'])
                 if todaylow > 0:
-                    newone = {'date': todaystr, 'open': float(realtime.at[0, 'open']),
+                    newone = {'date': last_trade_date, 'open': float(realtime.at[0, 'open']),
                               'close': float(realtime.at[0, 'price']), 'high': float(realtime.at[0, 'high']),
                               'low': todaylow, 'vol': int(float(realtime.at[0, 'volume']) / 100), 'code': code}
                     newdf = pd.DataFrame(newone, index=[0])
@@ -251,7 +252,7 @@ def get_wave(codes=None, is_index=False, start=None, end=None, beginlow=True, du
                 index = indexdf.index.values[0]
                 todaylow = float(indexdf.at[index, 'low'])
                 if todaylow > 0:
-                    newone = {'date': todaystr, 'open': float(indexdf.at[index, 'open']),
+                    newone = {'date': last_trade_date, 'open': float(indexdf.at[index, 'open']),
                               'close': round(float(indexdf.at[index, 'close']), 2),
                               'high': round(float(indexdf.at[index, 'high']), 2),
                               'low': todaylow, 'vol': int(float(indexdf.at[index, 'volume'])), 'code': code}
@@ -362,6 +363,53 @@ def wavefrom(code, df, beginlow, direction='left', duration=0, pchange=0):
     return period_data
 
 
+def get_wave_ab_fast(wave_str, pct_limit=33):
+    wavestr_ab = wave_str.split('\n')[0].split('|')
+    wavestr_ab_list = list(wavestr_ab)
+    wavestr_ab_list = [float(i) for i in wavestr_ab_list[1:len(wavestr_ab_list)]]
+    wave_day_ab = wave_str.split('\n')[1].split('|')
+    wave_day_ab_list = list(wave_day_ab)
+    wave_day_ab_list = [int(i) for i in wave_day_ab_list[1:len(wave_day_ab_list)]]
+
+    a_pct = 0.0
+    a_day = 0
+    b_pct = 0.0
+    b_day = 0
+    if len(wavestr_ab_list) == 1:
+        a_pct = wavestr_ab_list.pop()
+        a_day = wave_day_ab_list.pop()
+    elif len(wavestr_ab_list) == 2:
+        a_pct = wavestr_ab_list[0]
+        b_pct = wavestr_ab_list[1]
+        a_day = wave_day_ab_list[0]
+        b_day = wave_day_ab_list[1]
+    else:
+        while len(wavestr_ab_list) > 0:
+            pct = wavestr_ab_list.pop()
+            day = wave_day_ab_list.pop()
+            if (pct < 0 and abs(pct) >= pct_limit) or (pct > 0 and pct >= 50):
+                if b_pct == 0:
+                    b_pct = pct
+                    b_day = day
+                else:
+                    if abs(b_pct + pct) == abs(b_pct) + abs(pct):
+                        b_pct += pct
+                        b_day += day
+                    else:
+                        a_pct = pct
+                        a_day = day
+                break
+            else:
+                b_pct += pct
+                b_day += day
+        if len(wavestr_ab_list) > 0 and a_pct == 0:
+            a_pct = wavestr_ab_list.pop()
+            a_day = wave_day_ab_list.pop()
+    print(a_pct, b_pct)
+    print(a_day, b_day)
+    return [(a_pct, a_day), (b_pct, b_day)]
+
+
 def get_wave_ab(wavestr=None, pct_limit=33):
     if wavestr is None:
         return
@@ -371,6 +419,7 @@ def get_wave_ab(wavestr=None, pct_limit=33):
     wave_day_ab = wavestr.split('\n')[1].split('|')
     wave_day_ab_list = list(reversed(wave_day_ab))
     wave_day_ab_list = [int(i) for i in wave_day_ab_list[0:len(wave_day_ab_list) - 1]]
+
     a_index = -1
     for idx, pct in enumerate(wavestr_ab_list):
         if pct == '':
@@ -473,13 +522,15 @@ def try_bottom():
 
 if __name__ == '__main__':
     # try_bottom()
-    code_list = ['300157']
+    code_list = ['000587']
     # code_list = data_util.get_normal_codes()
     result = get_wave(code_list, is_index=False, start='2018-01-01')
+    print(result)
     wave_str = wave_to_str(result)
     print(wave_str)
     wave_ab = get_wave_ab(wave_str, 33)
     print(wave_ab)
+    print('get_wave_ab_fast', get_wave_ab_fast(wave_str))
 
     # _dt.to_db(result, 'wave_data_2019')
     # bottom = get_bottom(result, 15)

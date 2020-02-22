@@ -1,22 +1,19 @@
-from stocks.util import display
-
 import datetime
 import sys
 from datetime import datetime as dt
 from sys import argv
 
 import pandas as pd
-import stocks.util.db_util as _dt
 import tushare as ts
 
+import stocks.util.db_util as _dt
 from stocks.data import data_util
 from stocks.data.service import concept_service
-from stocks.data.service import fundamental_service
-from stocks.util import date_util
-from stocks.util import date_const
 from stocks.gene import limitup
 from stocks.gene import upnday
 from stocks.gene import wave
+from stocks.util import date_const
+from stocks.util import date_util
 
 LIMITUP = 'limitup'
 BOTTOM = 'bottom'
@@ -155,7 +152,7 @@ def select_result(codeset=None, filename=''):
         # if filename == 'subnew':
         #     wave_size = 10
         wavestr = wave.wave_to_str(wavedf, wave_size)
-        wave_ab = wave.get_wave_ab(wavestr, 33)
+        wave_ab = wave.get_wave_ab_fast(wavestr, 33)
         wave_a = wave_ab[0][0]
         wave_b = wave_ab[1][0]
         wavedfset = wavedfset.append(wavedf)

@@ -105,7 +105,7 @@ def get_realtime(hddf=None, last_trade_data=None, sortby=None):
         share = hddf.loc[index, 'share']
         wavedf = wave.get_wave(code)
         wavestr = wave.wave_to_str(wavedf, 6)
-        wave_ab = wave.get_wave_ab(wavestr, 33)
+        wave_ab = wave.get_wave_ab_fast(wavestr, 33)
         wave_a = wave_ab[0][0]
         wave_b = wave_ab[1][0]
 
