@@ -371,6 +371,7 @@ def get_wave_ab_fast(wave_str, pct_limit=33):
     wave_day_ab_list = list(wave_day_ab)
     wave_day_ab_list = [int(i) for i in wave_day_ab_list[1:len(wave_day_ab_list)]]
 
+    max_incr = max(wavestr_ab_list)
     a_pct = 0.0
     a_day = 0
     b_pct = 0.0
@@ -387,7 +388,9 @@ def get_wave_ab_fast(wave_str, pct_limit=33):
         while len(wavestr_ab_list) > 0:
             pct = wavestr_ab_list.pop()
             day = wave_day_ab_list.pop()
-            if (pct < 0 and abs(pct) >= pct_limit) or (pct > 0 and pct >= 50):
+            if (pct < 0 and abs(pct) >= pct_limit) or (pct < 0 and abs(pct) >= 20) or \
+                    (pct > 0 and max_incr < 50 and pct >= pct_limit) or \
+                    (pct > 0 and pct >= 50):
                 if b_pct == 0:
                     b_pct = pct
                     b_day = day
@@ -405,8 +408,8 @@ def get_wave_ab_fast(wave_str, pct_limit=33):
         if len(wavestr_ab_list) > 0 and a_pct == 0:
             a_pct = wavestr_ab_list.pop()
             a_day = wave_day_ab_list.pop()
-    print(a_pct, b_pct)
-    print(a_day, b_day)
+    # print(a_pct, b_pct)
+    # print(a_day, b_day)
     return [(a_pct, a_day), (b_pct, b_day)]
 
 
@@ -522,9 +525,9 @@ def try_bottom():
 
 if __name__ == '__main__':
     # try_bottom()
-    code_list = ['000587']
+    code_list = ['603826']
     # code_list = data_util.get_normal_codes()
-    result = get_wave(code_list, is_index=False, start='2018-01-01')
+    result = get_wave(code_list, is_index=False)
     print(result)
     wave_str = wave_to_str(result)
     print(wave_str)

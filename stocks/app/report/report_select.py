@@ -17,21 +17,21 @@ if __name__ == '__main__':
                      "count,count_,fdate,last_f_date,price,call_price,call_diff,select_time "
 
     sql_down = select_columns + "from select_result_all where list_date < :list_date " \
-                                "and pe > 0 and pe_ttm > 0 " \
-                                "and (wave_a < -50 and wave_b < 15 or wave_b <= -50) " \
+                                "and pe > 0 " \
+                                "and (wave_a <= -50 and wave_b < 15 or wave_b <= -50) " \
                                 "order by wave_a"
     df_down = _dt.read_sql(sql_down, params={"list_date": one_year_ago})
 
     sql_active = select_columns + "from select_result_all where list_date < :list_date " \
-                                  "and pe > 0 and pe_ttm > 0 " \
-                                  "and (wave_a < -35 and wave_b < 15 or wave_b <= -40) " \
+                                  "and pe > 0 " \
+                                  "and (wave_a <= -40 and wave_b < 15 or wave_b <= -40) " \
                                   "and count >= 8 order by wave_a"
     df_active = _dt.read_sql(sql_active, params={"list_date": one_year_ago})
 
     sql_chance = select_columns + "from select_result_all where list_date < :list_date " \
-                                  "and pe > 0 and pe_ttm > 0 " \
+                                  "and pe > 0 " \
                                   "and last_f_date <> '' " \
-                                  "and (wave_a < -35 and wave_b < 15 or wave_b <= -40) " \
+                                  "and (wave_a < -40 and wave_b < 15 or wave_b <= -40) " \
                                   "order by wave_a"
     df_chance = _dt.read_sql(sql_chance, params={"list_date": one_year_ago})
 
@@ -50,24 +50,15 @@ if __name__ == '__main__':
     sql_new = select_columns + "from select_result_all where list_date >= :list_date order by wave_a"
     df_new = _dt.read_sql(sql_new, params={"list_date": one_year_ago})
 
-    sql_limit_up = "select stat.trade_date 交易日期, stat.code 代码, stat.name 名称, stat.industry 行业, stat.area 地区, " \
-                   "stat.pe 市盈率, stat.combo_times as 涨停数,stat.wave_a A波, stat.wave_b B波, stat.turnover_rate 换手率, " \
-                   "stat.vol_rate 量比, case when vol_rate < 0.8 then '缩量（不活跃）' " \
-                   "when vol_rate >= 0.8 and vol_rate < 1.5 then '正常水准（正常活动）' " \
-                   "when vol_rate >= 1.5 and vol_rate < 2.5 then '柔和放量（相对健康）' " \
-                   "when vol_rate >= 2.5 and vol_rate < 5 then '明显放量（突破机会）' " \
-                   "when vol_rate >= 5 and vol_rate < 10 then '剧烈放量（低位好信号）' " \
-                   "when vol_rate >= 10 then '巨量（反向操作）' when vol_rate >= 20 then '极端放量（死亡）' end as 量比解读, " \
-                   "open_change 开盘幅度,update_time from limit_up_stat stat inner join basics b on stat.code = b.code " \
-                   "where stat.trade_date=:trade_date order by stat.wave_a;"
-    # df_limit_up = _dt.read_sql(sql_limit_up, params={"trade_date": date_util.get_today()})
+    sql_limit_up = select_columns + "from select_result_all where code in (select code from limit_up_stat where trade_date > :target_date group by code having max(combo_times) >= 2) order by wave_b"
+    df_limit_up = _dt.read_sql(sql_limit_up, params={"target_date": date_util.get_last_2month_start()})
 
     file_name = 'select_' + date_util.get_today(date_util.format_flat) + '.xlsx'
     writer = pd.ExcelWriter(file_name)
-    # df_limit_up.to_excel(writer, sheet_name='limit')
-    df_nice.to_excel(writer, sheet_name='nice')
+    df_limit_up.to_excel(writer, sheet_name='limitup')
+    # df_nice.to_excel(writer, sheet_name='nice')
     df_active.to_excel(writer, sheet_name='active')
-    df_chance.to_excel(writer, sheet_name='chance')
+    # df_chance.to_excel(writer, sheet_name='chance')
     df_down.to_excel(writer, sheet_name='down')
     df_all.to_excel(writer, sheet_name='all')
     df_new.to_excel(writer, sheet_name='new')
