@@ -1,15 +1,13 @@
-from stocks.util import display
-
 import datetime
-import time
-import sys
 import random
+import sys
+import time
+
 import tushare as ts
-from stocks.util.db_util import get_db
 
-from stocks.util.pro_util import pro
 from stocks.util import date_util
-
+from stocks.util.db_util import get_db
+from stocks.util.pro_util import pro
 
 # 设定获取日线行情的初始日期和终止日期，其中终止日期设定为当天
 
@@ -40,7 +38,7 @@ def calc_weekly_gap():
     if c_len == 0:
         print(last_trade_date + " no trade data found yet")
         sys.exit(0)
-    total = cursor.execute('select ts_code from basic')
+    total = cursor.execute('select ts_code from basics')
     if total == 0:
         print("no stock found, process end!")
         exit(0)

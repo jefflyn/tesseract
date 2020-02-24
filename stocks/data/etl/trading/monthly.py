@@ -1,11 +1,11 @@
 import datetime
-import time
-import sys
 import random
-from stocks.util.db_util import get_db
+import sys
+import time
 
-from stocks.util.pro_util import pro
 from stocks.util import date_util
+from stocks.util.db_util import get_db
+from stocks.util.pro_util import pro
 
 if __name__ == '__main__':
     # 建立数据库连接
@@ -36,7 +36,7 @@ if __name__ == '__main__':
     end_dt = time_temp.strftime('%Y%m%d')
     print("Collect trade data from " + start_dt + " to " + end_dt)
 
-    total = cursor.execute('select ts_code from basic')
+    total = cursor.execute('select ts_code from basics')
     if total == 0:
         print("no stock found, process end!")
         exit(0)

@@ -1,11 +1,11 @@
 import datetime
-import pandas as pd
 
+import pandas as pd
 import tushare as ts
+
 from stocks.util import date_util
-from stocks.util import date_const
-from stocks.util.db_util import read_sql
 from stocks.util.db_util import read_query
+from stocks.util.db_util import read_sql
 
 todaystr = datetime.datetime.now().strftime('%Y-%m-%d')
 yeardays = datetime.timedelta(days=-365)
@@ -56,8 +56,7 @@ def get_codes_by_region(region=''):
     查询省或市的stocks code
     :return:
     """
-    sql = 'select b.code from basic b inner join stock_company sc on b.ts_code = sc.ts_code ' \
-          'where sc.province like :region or sc.city like :region'
+    sql = 'select code from basics where area like :region'
     params = {'region': '%' + region + '%'}
     df = read_sql(sql, params)
     return list(df['code'])
@@ -68,7 +67,7 @@ def get_normal_codes():
     常规stocks code, 不含st和次新
     :return:
     """
-    sql = 'select code from basic where name not like :st and list_date < :list_date'
+    sql = 'select code from basics where name not like :st and list_date < :list_date'
     params = {'st': '%ST%', 'list_date': oneyearago}
     df = read_sql(sql, params)
     return list(df['code'])
@@ -90,7 +89,7 @@ def get_normal_wave_data():
     :return:
     """
     sql = 'select * from select_wave_all where ' \
-          'code in (select code from basic where name not like :st and list_date < :list_date)'
+          'code in (select code from basics where name not like :st and list_date < :list_date)'
     params = {'st': '%ST%', 'list_date': oneyearago}
     df = read_sql(sql, params)
     return df
@@ -101,7 +100,7 @@ def get_subnew_wave_data():
     次新stocks wave
     :return:
     """
-    sql = 'select * from select_wave_all where code in (select code from basic where list_date >= :list_date)'
+    sql = 'select * from select_wave_all where code in (select code from basics where list_date >= :list_date)'
     params = {'list_date': oneyearago}
     df = read_sql(sql, params)
     return df
@@ -112,7 +111,7 @@ def get_st_wave_data():
     st stocks wave
     :return:
     """
-    sql = 'select * from select_wave_all where code in (select code from basic where name like :st)'
+    sql = 'select * from select_wave_all where code in (select code from basics where name like :st)'
     params = {'st': '%ST%'}
     df = read_sql(sql, params)
     return df

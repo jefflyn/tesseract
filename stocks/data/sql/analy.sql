@@ -6,8 +6,9 @@ having count(1) > 2;
 select * from hist_trade_day where trade_date='2019-11-04' and pct_change > 9;
 select * from hist_trade_day where code='002477' order by trade_date desc;
 # 验证每天trade data etl
-select trade_date, count(1) from hist_trade_day where trade_date >= '2019-12-01' group by trade_date order by trade_date desc;
-select trade_date, count(1) from hist_index_day where trade_date >= '2019-12-01' group by trade_date order by trade_date desc;
+select trade_date, count(1) from hist_trade_day where trade_date >= '2020-02-01' group by trade_date order by trade_date desc;
+select trade_date, count(1) from hist_ma_day where trade_date >= '2020-02-01' group by trade_date order by trade_date desc;
+select trade_date, count(1) from hist_index_day where trade_date >= '2020-02-01' group by trade_date order by trade_date desc;
 -- daily market data
 select l.*, i.hz, i.sz50, i.scz, i.zxb, i.cyb
 from

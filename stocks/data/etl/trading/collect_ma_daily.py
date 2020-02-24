@@ -1,12 +1,12 @@
 import datetime
 import time
+
 import numpy as np
 import tushare as ts
+
+from stocks.gene import maup
 from stocks.util.db_util import get_db
 from stocks.util.pro_util import pro
-from stocks.gene import maup
-
-import stocks.util.display
 
 if __name__ == '__main__':
     # 设定获取日线行情的初始日期和终止日期，其中终止日期设定为当天
@@ -20,7 +20,7 @@ if __name__ == '__main__':
     # 建立数据库连接
     db = get_db()
     cursor = db.cursor()
-    total = cursor.execute("select ts_code from basic")
+    total = cursor.execute("select ts_code from basics")
     if total == 0:
         print("no stock basic found, process end!")
         exit(0)

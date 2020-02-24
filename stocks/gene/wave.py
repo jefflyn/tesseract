@@ -226,8 +226,6 @@ def get_wave(codes=None, is_index=False, start=None, end=None, beginlow=True, du
     last_trade_date = date_util.get_latest_trade_date(1)[0]
     for code in code_list:
         hist_data = data_util.get_hist_trade(code=code, is_index=is_index, start=start, end=end)
-        # hist_data = data_util.get_hist_week(code=code, start=start, end=end)
-
         if hist_data is None or len(hist_data) == 0:
             continue
         hist_data['date'] = hist_data['trade_date']

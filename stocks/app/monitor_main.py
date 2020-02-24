@@ -1,15 +1,17 @@
-import tushare as ts
-import time
 import datetime
+import time
 
+import tushare as ts
+
+from stocks.data import data_util
 from stocks.util import sms_util
 from stocks.util.redis_util import redis_client
-from stocks.data import data_util
 
 pre_key_today = data_util.todaystr + '_'
 
 if __name__ == '__main__':
     """
+    nohup /usr/local/bin/redis-server /usr/local/etc/redis.conf &
     nohup /usr/local/bin/redis-server /etc/redis.conf &
     """
     while True:
