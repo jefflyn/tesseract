@@ -50,7 +50,10 @@ if __name__ == '__main__':
     sql_new = select_columns + "from select_result_all where list_date >= :list_date order by wave_a"
     df_new = _dt.read_sql(sql_new, params={"list_date": one_year_ago})
 
-    sql_limit_up = select_columns + "from select_result_all where code in (select code from limit_up_stat where trade_date > :target_date group by code having max(combo_times) >= 2) order by wave_b"
+    sql_limit_up = select_columns + "from select_result_all where code in (select code from limit_up_stat where " \
+                                    "trade_date > :target_date group by code having max(combo_times) >= 2) and " \
+                                    "(wave_b < -33 or (wave_b > 0 and wave_b < 20) or (wave_a < -50 and wave_b < 30)) " \
+                                    "order by wave_b"
     df_limit_up = _dt.read_sql(sql_limit_up, params={"target_date": date_util.get_last_2month_start()})
 
     file_name = 'select_' + date_util.get_today(date_util.format_flat) + '.xlsx'

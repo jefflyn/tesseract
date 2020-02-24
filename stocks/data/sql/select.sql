@@ -50,6 +50,7 @@ from select_result_all
 where code in
       (select code from limit_up_stat where trade_date > '2020-01-01' group by code having max(combo_times) >= 2)
 #   and (pe > 0 and pe_ttm > 0 or pe_ttm = 0)
+and (wave_b < -33 or (wave_b > 0 and wave_b < 20) or (wave_a < -50 and wave_b < 30))
 order by wave_b;
 
 
