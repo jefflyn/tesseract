@@ -10,7 +10,7 @@ from stocks.data import data_util as _dt
 from stocks.gene import wave
 from stocks.util import date_util
 
-keys = ['pa', 'cf', 'df', 'sim', 'gap']
+keys = ['pos', 'pa', 'cf', 'df', 'sim']
 
 INDEX_LIST_NEW = dict(zip(list(x[2:] for x in ct.INDEX_LIST.values()), ct.INDEX_LIST.keys()))
 

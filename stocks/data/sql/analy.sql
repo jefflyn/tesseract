@@ -178,8 +178,10 @@ update my_stock_pool p inner join concepts c on p.code=c.code set p.concept=c.co
 update my_stock_pool p inner join select_result_all s on p.code=s.code set p.bottom=s.bottom, p.alias=s.name,p.grade=s.map,p.remark=s.industry;
 select * from monitor_pool;
 select * from my_stock_pool;
+select * from my_stock_pool where platform = 'pos';
 select * from my_stock_pool where platform = 'cf';
 select * from my_stock_pool where platform = 'df';
 select * from my_stock_pool where platform = 'pa';
+select * from my_stock_pool where platform = 'sim';
 select * from stocks.limit_up_stat where trade_date='2019-11-04';
 

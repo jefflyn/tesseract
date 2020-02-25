@@ -16,32 +16,26 @@ if __name__ == '__main__':
     select_columns = "select code,name,industry,concepts,pe,pe_ttm as profit,pct,list_date,a_days,wave_a,wave_b,b_days,w_gap,c_gap,map," \
                      "count,count_,fdate,last_f_date,price,call_price,call_diff,select_time "
 
-    sql_down = select_columns + "from select_result_all where list_date < :list_date " \
-                                "and pe > 0 " \
+    sql_down = select_columns + "from select_result_all where list_date < :list_date and name not like :name " \
+                                "and pe > 0 and count > 0 " \
                                 "and (wave_a <= -50 and wave_b < 15 or wave_b <= -50) " \
                                 "order by wave_a"
-    df_down = _dt.read_sql(sql_down, params={"list_date": one_year_ago})
+    df_down = _dt.read_sql(sql_down, params={"list_date": one_year_ago, "name": "%ST%"})
 
-    sql_active = select_columns + "from select_result_all where list_date < :list_date " \
-                                  "and pe > 0 " \
+    sql_active = select_columns + "from select_result_all where list_date < :list_date and name not like :name " \
+                                  "and pe > 0 and count >= 8 " \
                                   "and (wave_a <= -40 and wave_b < 15 or wave_b <= -40) " \
-                                  "and count >= 8 order by wave_a"
-    df_active = _dt.read_sql(sql_active, params={"list_date": one_year_ago})
-
-    sql_chance = select_columns + "from select_result_all where list_date < :list_date " \
-                                  "and pe > 0 " \
-                                  "and last_f_date <> '' " \
-                                  "and (wave_a < -40 and wave_b < 15 or wave_b <= -40) " \
                                   "order by wave_a"
-    df_chance = _dt.read_sql(sql_chance, params={"list_date": one_year_ago})
+    df_active = _dt.read_sql(sql_active, params={"list_date": one_year_ago, "name": "%ST%"})
 
-    sql_nice = select_columns + r"from select_result_all where name not like :name " \
-                               r"and list_date < :list_date and (wave_a < -33 and wave_b < 15) " \
-                                r"and map > 9 and count > 0 order by wave_a"
-    df_nice = _dt.read_sql(sql_nice, params={"name": "%ST%", "list_date": one_year_ago})
+    sql_limit_up = select_columns + "from select_result_all where code in (select code from limit_up_stat where " \
+                                    "trade_date > :target_date group by code having max(combo_times) >= 2) and " \
+                                    "(wave_b < -33 or (wave_b > 0 and wave_b < 20) or (wave_a < -50 and wave_b < 30)) " \
+                                    "order by wave_b"
+    df_limit_up = _dt.read_sql(sql_limit_up, params={"target_date": date_util.get_last_2month_start()})
 
-    sql_all = select_columns + r"from select_result_all where name not like :name " \
-                               r"and list_date < :list_date order by wave_a"
+
+    sql_all = select_columns + "from select_result_all where name not like :name and list_date < :list_date order by wave_a"
     df_all = _dt.read_sql(sql_all, params={"name": "%ST%", "list_date": one_year_ago})
 
     sql_st = select_columns + r"from select_result_all where name like :name order by wave_a"
@@ -50,18 +44,10 @@ if __name__ == '__main__':
     sql_new = select_columns + "from select_result_all where list_date >= :list_date order by wave_a"
     df_new = _dt.read_sql(sql_new, params={"list_date": one_year_ago})
 
-    sql_limit_up = select_columns + "from select_result_all where code in (select code from limit_up_stat where " \
-                                    "trade_date > :target_date group by code having max(combo_times) >= 2) and " \
-                                    "(wave_b < -33 or (wave_b > 0 and wave_b < 20) or (wave_a < -50 and wave_b < 30)) " \
-                                    "order by wave_b"
-    df_limit_up = _dt.read_sql(sql_limit_up, params={"target_date": date_util.get_last_2month_start()})
-
     file_name = 'select_' + date_util.get_today(date_util.format_flat) + '.xlsx'
     writer = pd.ExcelWriter(file_name)
     df_limit_up.to_excel(writer, sheet_name='limitup')
-    # df_nice.to_excel(writer, sheet_name='nice')
     df_active.to_excel(writer, sheet_name='active')
-    # df_chance.to_excel(writer, sheet_name='chance')
     df_down.to_excel(writer, sheet_name='down')
     df_all.to_excel(writer, sheet_name='all')
     df_new.to_excel(writer, sheet_name='new')
