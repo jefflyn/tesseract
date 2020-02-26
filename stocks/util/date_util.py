@@ -1,13 +1,13 @@
 # coding=utf-8
-import os
 import calendar
 import datetime
+import os
 from datetime import timedelta
+
+import arrow
+import pandas as pd
 from dateutil.relativedelta import relativedelta
 from dateutil.rrule import *
-import pandas as pd
-import arrow
-
 
 hist_date_list = pd.read_csv(os.getenv('STOCKS_HOME') + '/data/etl/basic_data/' + 'hist_trade_date.csv')
 
@@ -76,20 +76,20 @@ def get_today(format=default_format):
 
 # 本周第一天和最后一天
 def get_this_week_start(format=default_format):
-    return now() - timedelta(days=now().weekday()).strftime(format)
+    return (now() - timedelta(days=now().weekday())).strftime(format)
 
 
 def get_this_week_end(format=default_format):
-    return now() + timedelta(days=6 - now().weekday()).strftime(format)
+    return (now() + timedelta(days=6 - now().weekday())).strftime(format)
 
 
 # 上周第一天和最后一天
 def get_last_week_start(format=default_format):
-    return now() - timedelta(days=now().weekday() + 7).strftime(format)
+    return (now() - timedelta(days=now().weekday() + 7)).strftime(format)
 
 
 def get_last_week_end(format=default_format):
-    return now() - timedelta(days=now().weekday() + 1).strftime(format)
+    return (now() - timedelta(days=now().weekday() + 1)).strftime(format)
 
 
 # 本月第一天和最后一天

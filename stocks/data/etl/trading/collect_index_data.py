@@ -1,12 +1,12 @@
 import datetime
 import time
-import sys
-import tushare as ts
-from stocks.util.db_util import get_db
 
-from stocks.util.pro_util import pro
+import tushare as ts
+
 from stocks.data.data_util import INDEX_LIST
 from stocks.util import date_util
+from stocks.util.db_util import get_db
+from stocks.util.pro_util import pro
 
 if __name__ == '__main__':
     # 建立数据库连接
@@ -19,7 +19,6 @@ if __name__ == '__main__':
     if total > 0:
         print(last_trade_date + " trade data existed")
         # sys.exit(0)
-    last_trade_date = date_util.get_latest_trade_date()[0]
     # df = pro.index_daily(ts_code=index_code, start_date=last_trade_date, end_date=last_trade_date)
     df = ts.pro_bar(api=pro, ts_code=index_code, asset='I', start_date=last_trade_date, end_date=last_trade_date)
     c_len = df.shape[0]

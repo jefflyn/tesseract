@@ -17,7 +17,7 @@ if __name__ == '__main__':
     # print(ts.get_tick_data())
     # print('get_today_all >>>', ts.get_today_all().head(10))
     # print(ts.get_realtime_quotes())
-    # print('get_h_data >>>', ts.get_h_data(code='600848', start='2020-01-01', end='2020-03-01', autype='qfq', index=False))
+    # print('get_h_data >>>', ts.get_h_data(code='000001', start='2020-01-01', end='2020-03-01', autype='qfq', index=True))
     # print(ts.get_today_ticks())
     # print(ts.get_index())
     # print(ts.get_hists())

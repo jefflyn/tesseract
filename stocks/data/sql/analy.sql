@@ -9,6 +9,8 @@ select * from hist_trade_day where code='002477' order by trade_date desc;
 select trade_date, count(1) from hist_trade_day where trade_date >= '2020-02-01' group by trade_date order by trade_date desc;
 select trade_date, count(1) from hist_ma_day where trade_date >= '2020-02-01' group by trade_date order by trade_date desc;
 select trade_date, count(1) from hist_index_day where trade_date >= '2020-02-01' group by trade_date order by trade_date desc;
+select trade_date, count(1) from index_hist_k where trade_date >= '2020-02-01' group by trade_date order by trade_date desc;
+
 -- daily market data
 select l.*, i.hz, i.sz50, i.scz, i.zxb, i.cyb
 from
@@ -19,16 +21,16 @@ from
        count(case when pct_change = 0 then 1 else null end) as flat,
        count(case when pct_change < 0 then 1 else null end) as down
 from hist_trade_day
-where trade_date >= '2019-12-01'
+where trade_date >= '2020-01-01'
 group by trade_date) as l
 left join
     (select trade_date,
-       sum(case ts_code when '000001.SH' then pct_change else 0 end) 'hz',
-       sum(case ts_code when '000016.SH' then pct_change else 0 end) 'sz50',
-       sum(case ts_code when '399001.SZ' then pct_change else 0 end) 'scz',
-       sum(case ts_code when '399005.SZ' then pct_change else 0 end) 'zxb',
-       sum(case ts_code when '399006.SZ' then pct_change else 0 end) 'cyb'
-      from hist_index_day where trade_date >= '2019-06-01' group by trade_date) as i
+       sum(case code when '000001' then pct_change else 0 end) 'hz',
+       sum(case code when '000016' then pct_change else 0 end) 'sz50',
+       sum(case code when '399001' then pct_change else 0 end) 'scz',
+       sum(case code when '399005' then pct_change else 0 end) 'zxb',
+       sum(case code when '399006' then pct_change else 0 end) 'cyb'
+      from index_hist_k where trade_date >= '2020-01-01' group by trade_date) as i
 on l.trade_date = i.trade_date
 order by l.trade_date desc;
 

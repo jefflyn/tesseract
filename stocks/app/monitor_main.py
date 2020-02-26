@@ -98,7 +98,7 @@ if __name__ == '__main__':
                         except Exception as e:
                             print(e)
 
-                if 0 > float(p) >= realtime_change:
+                if 0 > float(p) >= realtime_change >= -20:
                     redis_key = pre_key_today + code + '_change_' + p
                     warn_times = redis_client.get(redis_key)
                     if warn_times is None:
