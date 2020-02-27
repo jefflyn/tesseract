@@ -13,8 +13,8 @@ import tushare as ts
 from stocks.data import data_util
 
 
-def get_wave_ab_by_code(code=None):
-    wave_df = get_wave(code)
+def get_wave_ab_by_code(code=None, start=None, end=None):
+    wave_df = get_wave(code, start=start, end=end)
     if wave_df is None or wave_df.empty:
         return None
     wave_size = 10
@@ -230,7 +230,7 @@ def get_wave(codes=None, is_index=False, start=None, end=None, beginlow=True, du
             continue
         hist_data['date'] = hist_data['trade_date']
         latest_date = hist_data.tail(1).at[hist_data.tail(1).index.to_numpy()[0], 'date']
-        if last_trade_date != latest_date:  # not the latest record
+        if end is None and last_trade_date != latest_date:  # not the latest record
             if is_index is False:
                 # get today data from [get_realtime_quotes(code)]
                 realtime = ts.get_realtime_quotes(code)
@@ -537,8 +537,10 @@ if __name__ == '__main__':
     print(wave_ab)
     print('get_wave_ab_fast', get_wave_ab_fast(wave_str))
 
-    # _dt.to_db(result, 'wave_data_2019')
-    # bottom = get_bottom(result, 15)
-    # print(wave_to_str(result))
-    # print(result)
-    # print(bottom)
+    result = get_wave(code_list, is_index=False, end='2020-02-25')
+    print(result)
+    wave_str = wave_to_str(result)
+    print(wave_str)
+    wave_ab = get_wave_ab(wave_str, 33)
+    print(wave_ab)
+    print('get_wave_ab_fast', get_wave_ab_fast(wave_str))

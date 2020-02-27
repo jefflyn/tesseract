@@ -228,7 +228,7 @@ def collect_limit_up_stat(target_date):
                 else:
                     print(code, 'limit up not found in hist data, trade date', target_date)
 
-                wave_ab = wave.get_wave_ab_by_code(code)
+                wave_ab = wave.get_wave_ab_by_code(code, end=target_date)
                 if wave_ab is None:
                     continue
                 wave_a = round(wave_ab[0], 2)

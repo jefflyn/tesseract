@@ -1,5 +1,6 @@
 import tushare as ts
 
+
 if __name__ == '__main__':
     # stock.fundamental
     # stock_basics = ts.get_stock_basics()
@@ -13,9 +14,11 @@ if __name__ == '__main__':
     # get_balance_sheet, get_profit_statement, get_cash_flow)
 
     # stock.trading
-    print('get_hist_data >>>', ts.get_hist_data(code='600373', start='2020-02-20', end=None, ktype='D'))
+    # print('get_hist_data >>>', ts.get_hist_data(code='600373', start='2020-02-20', end=None, ktype='D'))
     # print(ts.get_tick_data())
-    # print('get_today_all >>>', ts.get_today_all().head(10))
+    today_all_df = ts.get_today_all()
+    today_all_df = today_all_df[today_all_df.changepercent > 9.9]
+    print('get_today_all >>>', today_all_df)
     # print(ts.get_realtime_quotes())
     # print('get_h_data >>>', ts.get_h_data(code='000001', start='2020-01-01', end='2020-03-01', autype='qfq', index=True))
     # print(ts.get_today_ticks())
