@@ -38,7 +38,7 @@ select stat.trade_date 交易日期, stat.code 代码, stat.name 名称, stat.in
        next_low_than_open 次日低价, next_open_change 次日开盘幅度, next_low_change 次日底价幅度, next_open_buy_change 次日开盘买入涨幅,
        next_low_buy_change 次日底价买入涨幅, ref_index_change 大盘幅度, update_time
 from limit_up_stat stat inner join basics b on stat.code = b.code
-where stat.trade_date = '2020-02-26'
+where stat.trade_date = '2020-02-27'
 # and b.pe > 0 and b.profit > 0
 # and (stat.wave_a < -33 and stat.wave_b < 30 or stat.wave_b <= -33)
 and b.list_date < 20190601

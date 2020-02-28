@@ -1,19 +1,20 @@
 # coding: utf-8
 import time
 from sys import argv
+
 import pandas as pd
 import tushare as ts
-from stocks.gene import wave
-import stocks.util.sms_util as sms
-from stocks.util.redis_util import redis_client
-from stocks.util import date_util, _utils
 
+import stocks.util.sms_util as sms
+from stocks.gene import wave
+from stocks.util import date_util, _utils
+from stocks.util.redis_util import redis_client
 
 INDEX_SH = ['000001', '000016', '000300']
 INDEX_SZ = ['399001', '399005']
 INDEX_CYB = ['399006']
 
-target = ['000001', '000016', '000300', '399001', '399005', '399006']
+target = ['000001', '000016', '399001', '399005', '399006']
 
 
 def format_index(df):
@@ -80,13 +81,15 @@ def get_status():
         result_data.append(row_data)
 
         # 告警短信:价格、涨跌幅等
-        if float(row['change']) < -2:
+        pct_chage = float(row['change'])
+        if pct_chage < -2 or pct_chage < -3 or pct_chage < -4:
+            key = date_util.get_today() + '_index_' + code + '_' + str(int(pct_chage, 0))
             name_format = '：' + code + ' ' + row['name']
             price_format = str(round(float(row['change']), 2)) + '%'
-            warn_times = redis_client.get(date_util.get_today() + '_' + code)
+            warn_times = redis_client.get(key)
             if warn_times is None:
                 sms.send_msg_with_tencent(code, name_format, price_format)
-                redis_client.set(date_util.get_today() + '_' + code, row['name'] + price_format)
+                redis_client.set(key, row['name'] + price_format)
 
     columns = ['code', 'name', 'change', 'close', 'low', 'high', 'volume', 'amount', 'current', 'wave', 'bottom', 'uspace',
                'dspace', 'top', 'position', 'suggest']
@@ -103,9 +106,9 @@ def suggest_by_position(code, position):
             return 'suck'
         elif _utils.is_inrange(position, 11, 30):
             return 'buy'
-        elif   _utils.is_inrange(position, 30, 40):
+        elif _utils.is_inrange(position, 30, 40):
             return 'hold'
-        elif   _utils.is_inrange(position, 40, 55):
+        elif _utils.is_inrange(position, 40, 55):
             return 'sell'
         elif _utils.is_inrange(position, 55):
             return 'out'
@@ -114,9 +117,9 @@ def suggest_by_position(code, position):
             return 'suck'
         elif _utils.is_inrange(position, 20, 35):
             return 'buy'
-        elif   _utils.is_inrange(position, 35, 60):
+        elif _utils.is_inrange(position, 35, 60):
             return 'hold'
-        elif   _utils.is_inrange(position, 60, 75):
+        elif _utils.is_inrange(position, 60, 75):
             return 'sell'
         elif _utils.is_inrange(position, 75):
             return 'out'
@@ -125,9 +128,9 @@ def suggest_by_position(code, position):
             return 'suck'
         elif _utils.is_inrange(position, 30, 50):
             return 'buy'
-        elif   _utils.is_inrange(position, 50, 65):
+        elif _utils.is_inrange(position, 50, 65):
             return 'hold'
-        elif   _utils.is_inrange(position, 65, 75):
+        elif _utils.is_inrange(position, 65, 75):
             return 'sell'
         elif _utils.is_inrange(position, 75):
             return 'out'

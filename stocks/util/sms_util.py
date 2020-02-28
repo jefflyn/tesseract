@@ -29,7 +29,7 @@ def send_msg_with_twilio(msg='', to=''):
     return message
 
 
-def send_msg_with_tencent(code=None, name='', price=''):
+def send_msg_with_tencent(code=None, name='', price='', to=phone_numbers[0]):
     result = ''
     try:
         if code is None:
@@ -40,7 +40,7 @@ def send_msg_with_tencent(code=None, name='', price=''):
         if code in send_counter.keys() and send_counter[code] > 3:
             print('%s提醒超过3次，今天不再提醒！')
             return
-        result = ssender.send_with_param(86, phone_numbers[0], template_id, params, sign=sms_sign, extend="", ext="")
+        result = ssender.send_with_param(86, to, template_id, params, sign=sms_sign, extend="", ext="")
         send_counter[code] += 1
     except HTTPError as e:
         print(e)

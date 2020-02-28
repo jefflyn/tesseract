@@ -56,7 +56,7 @@ if __name__ == '__main__':
                                 price_format = str(round(price, 2)) + change_str
                                 # send msg
                                 # t_msg = sms_util.send_msg_with_twilio(msg=content, to=receive_mobile)
-                                t_msg = sms_util.send_msg_with_tencent(code, name_format, price_format)
+                                t_msg = sms_util.send_msg_with_tencent(code, name_format, price_format, to=receive_mobile)
                                 print(t_msg)
                             except Exception as e:
                                 print(e)
@@ -73,7 +73,7 @@ if __name__ == '__main__':
                                 price_format = str(round(price, 2)) + change_str
                                 # send msg
                                 # t_msg = sms_util.send_msg_with_twilio(msg=content, to=receive_mobile)
-                                t_msg = sms_util.send_msg_with_tencent(code, name_format, price_format)
+                                t_msg = sms_util.send_msg_with_tencent(code, name_format, price_format, to=receive_mobile)
                                 print(t_msg)
                             except Exception as e:
                                 print(e)
@@ -93,7 +93,7 @@ if __name__ == '__main__':
                             price_format = str(round(price, 2)) + change_str
                             # send msg
                             # t_msg = sms_util.send_msg_with_twilio(msg=content, to=receive_mobile)
-                            t_msg = sms_util.send_msg_with_tencent(code, name_format, price_format)
+                            t_msg = sms_util.send_msg_with_tencent(code, name_format, price_format, to=receive_mobile)
                             print(t_msg)
                         except Exception as e:
                             print(e)
@@ -112,7 +112,7 @@ if __name__ == '__main__':
                             price_format = str(round(price, 2)) + change_str
                             # send msg
                             # t_msg = sms_util.send_msg_with_twilio(msg=content, to=receive_mobile)
-                            t_msg = sms_util.send_msg_with_tencent(code, name_format, price_format)
+                            t_msg = sms_util.send_msg_with_tencent(code, name_format, price_format, to=receive_mobile)
                             print(t_msg)
                         except Exception as e:
                             print(e)

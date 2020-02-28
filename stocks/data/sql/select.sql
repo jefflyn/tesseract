@@ -2,7 +2,7 @@
 select * from select_result_all where code='300210';
 select * from select_result_all where name like '%三五%';
 select * from select_result_all where code in ('000587','600929','300555', '000862');
-select * from select_result_all where concepts like '%黄金%' and pe > 0 order by wave_a;
+select * from select_result_all where concepts like '%区块链%' order by wave_a;
 select * from select_result_all where list_date > 20190224;
 -- 1、超跌机会，不含次新（低风险、适合长线）
 select *
