@@ -13,17 +13,19 @@ select hist.trade_date, hist.code, s.name, s.industry, s.area, 1 combo, s.pe,
        ifnull(s.wave_a,0), ifnull(s.wave_b,0), a.turnover, round(a.volratio,2) volratio, round((hist.open-hist.pre_close)/hist.pre_close * 100,2) open_change
 from hist_trade_day hist
 left join select_result_all s on hist.code=s.code left join today_all a on hist.code = a.code
-where hist.trade_date='2020-02-25' and (hist.close = round(hist.pre_close * 1.1, 2) or hist.pct_change >= 9.9);
+where hist.trade_date='2020-02-28' and (hist.close = round(hist.pre_close * 1.1, 2) or hist.pct_change >= 9.9);
+
+delete from limit_up_daily where trade_date='2020-02-28';
 
 -- 每天涨停数统计
-select trade_date, count(1) from limit_up_stat group by trade_date order by trade_date desc ;
+select trade_date, count(1) from limit_up_daily group by trade_date order by trade_date desc ;
 -- 更新基本信息
+update limit_up_daily l inner join basics b on l.code = b.code set l.name=b.name where l.name='';
 update limit_up_stat l inner join basics b on l.code = b.code set l.name=b.name, l.industry=b.industry, l.area=b.area, l.pe=b.pe
 where l.name is null;
 
 # 不考虑【亏损股】、【B波涨幅过高】、【涨停数超过2】、【缩量】、【高开>4】（大盘较弱都要考虑不操作）
 # 1、选【涨停开盘、缩量、换手率<3】，去除【亏损股、最大涨停数】
-#
 select stat.trade_date 交易日期, stat.code 代码, stat.name 名称, stat.industry 行业, stat.area 地区, stat.pe 市盈率, stat.combo_times as 次数,
        stat.wave_a A波, stat.wave_b B波, stat.turnover_rate 换手率, stat.vol_rate 量比,
        case when vol_rate < 0.8 then '缩量（不活跃）'
@@ -45,7 +47,9 @@ and b.list_date < 20190601
 order by stat.wave_a;
 
 # ############################################
-select * from limit_up_stat where code '688%';
+select distinct code from limit_up_daily where combo > 1;
+insert into limit_up_daily select l.trade_date,l.code,l.name,l.open_change,h.pct_change,l.combo_times,now()
+from limit_up_stat l left join hist_trade_day h on l.trade_date=h.trade_date and l.code=h.code where l.trade_date > '2020-01-01';
 
 select *
 from limit_up_stat

@@ -2,7 +2,6 @@ import pandas as pd
 import tushare as ts
 
 from stocks.data import data_util
-from stocks.gene import wave
 from stocks.util import date_util
 from stocks.util import db_util
 from stocks.util.db_util import get_db
@@ -205,16 +204,9 @@ def collect_limit_up_stat(target_date):
         target_date = date_util.get_next_trade_day(target_date)
     while True:
         print(target_date, 'Collect limit up stat start ...')
-        day_all_df = None
-        try:
-            day_all_df = ts.get_day_all(date=target_date)
-        except Exception as err:
-            print('  >>> get day all error:', err)
+        limit_up_df = data_util.get_hist_trade(start=target_date, end=target_date, is_limit=True)
 
-        if day_all_df is not None:
-            # close = round(pre_close * 1.1, 2)
-            limit_up_df = day_all_df[
-                (day_all_df['price'] == round(day_all_df['preprice'] * 1.1, 2)) & (day_all_df['p_change'] > 9)]
+        if limit_up_df is not None:
             codes = list(limit_up_df['code'])
             limit_up_count = get_limit_up_times(code_list=codes, target_date=target_date)
             limit_up_count_codes = list(limit_up_count['code'])
@@ -224,21 +216,15 @@ def collect_limit_up_stat(target_date):
                 combo_times = 1
                 if code in limit_up_count_codes:
                     index = limit_up_count_codes.index(code)
-                    combo_times = limit_up_count.loc[index, 'combo_times']
+                    combo_times = limit_up_count.loc[index, 'combo']
                 else:
                     print(code, 'limit up not found in hist data, trade date', target_date)
 
-                wave_ab = wave.get_wave_ab_by_code(code, end=target_date)
-                if wave_ab is None:
-                    continue
-                wave_a = round(wave_ab[0], 2)
-                wave_b = round(wave_ab[1], 2)
+                close_change = round(row['pct_change'], 2)
                 open = row['open']
-                pre_close = row['preprice']
+                pre_close = row['pre_close']
                 open_change = round((open - pre_close) / pre_close * 100, 2)
-                insert_values.append((target_date, code, row['name'], row['industry'], row['area'], row['pe'],
-                                      int(combo_times), float(wave_a), float(wave_b),
-                                      row['turnover'], row['volratio'], float(open_change), date_util.now()))
+                insert_values.append((target_date, code, '', open_change, close_change, int(combo_times)))
             total_size = len(insert_values)
             # 建立数据库连接
             db = get_db()
@@ -247,11 +233,11 @@ def collect_limit_up_stat(target_date):
             try:
                 # 注意这里使用的是executemany而不是execute，下边有对executemany的详细说明
                 insert_count = cursor.executemany(
-                    'insert into limit_up_stat(trade_date, code, name, industry, area, pe, combo_times, wave_a, wave_b, '
-                    'turnover_rate, vol_rate, open_change, create_time) '
-                    'values(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)', insert_values)
+                    'insert into limit_up_daily(trade_date, code, name, open_change, close_change, combo) '
+                    'values(%s, %s, %s, %s, %s, %s)', insert_values)
+                cursor.execute("update limit_up_daily l inner join basics b on l.code = b.code set l.name=b.name where l.name=''")
                 db.commit()
-                print(target_date, 'Collect limit up stat finished! Total size: '
+                print(target_date, 'Collect limit up daily finished! Total size: '
                       + str(total_size) + ' , ' + str(insert_count) + ' insert successfully.')
             except Exception as err:
                 print('  >>>error:', err)
@@ -302,7 +288,7 @@ def get_limit_up_times(code_list, target_date=None):
                 break
         data_list.append(curt_data)
 
-    result_df = pd.DataFrame(data_list, columns=['trade_date', 'code', 'combo_times'])
+    result_df = pd.DataFrame(data_list, columns=['trade_date', 'code', 'combo'])
     return result_df
 
 

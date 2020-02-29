@@ -12,7 +12,7 @@ if __name__ == '__main__':
     # 设定获取日线行情的初始日期和终止日期，其中终止日期设定为当天
     time_temp = datetime.datetime.now() - datetime.timedelta(days=365*2)
     start_dt = time_temp.strftime('%Y%m%d')
-    time_temp = datetime.datetime.now() - datetime.timedelta(days=0)
+    time_temp = datetime.datetime.now() - datetime.timedelta(days=1)
     end_dt = time_temp.strftime('%Y%m%d')
     ma = [5, 10, 20, 30, 60, 90, 120, 250]
     print("Collect ma data from " + start_dt + " to " + end_dt)

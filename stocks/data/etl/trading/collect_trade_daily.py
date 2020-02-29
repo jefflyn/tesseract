@@ -1,12 +1,12 @@
 import datetime
-import time
-import sys
 import random
-import tushare as ts
-from stocks.util.db_util import get_db
+import time
 
-from stocks.util.pro_util import pro
+import tushare as ts
+
 from stocks.util import date_util
+from stocks.util.db_util import get_db
+from stocks.util.pro_util import pro
 
 INIT_DATA = False
 INIT_DATA_START_DATE = '20100101'
@@ -38,7 +38,7 @@ if __name__ == '__main__':
         # sys.exit(0)
     # 设定获取日线行情的初始日期和终止日期，其中终止日期设定为当天
     # time_temp = datetime.datetime.now() - datetime.timedelta(days=2)
-    time_temp = datetime.datetime.now() - datetime.timedelta(days=0)
+    time_temp = datetime.datetime.now() - datetime.timedelta(days=1)
 
     start_dt = time_temp.strftime('%Y%m%d')
     if INIT_DATA:
