@@ -1,7 +1,7 @@
 import pandas as pd
-import tushare as ts
 
 from stocks.data import data_util
+from stocks.gene import wave
 from stocks.util import date_util
 from stocks.util import db_util
 from stocks.util.db_util import get_db
@@ -12,11 +12,10 @@ def update_latest_limit_up_stat():
     实时指定日期涨停信息
     :return:
     '''
-    latest_trade_date = date_util.get_latest_trade_date(1)[0]
-    target_date = date_util.get_previous_trade_day(latest_trade_date)
-    print(target_date, 'Update limit up stat start ...')
-    limit_up_stat_df = get_limit_up_stat(start=target_date, end=target_date)
+    target_date = date_util.get_this_year_start()
+    limit_up_stat_df = get_limit_up_stat(start=target_date)
     if limit_up_stat_df is not None:
+        basics = data_util.get_basics()
         # 建立数据库连接
         db = get_db()
         # 使用cursor()方法创建一个游标对象
@@ -25,63 +24,40 @@ def update_latest_limit_up_stat():
         if len(codes) == 0:
             print('>>> failed', target_date, 'no limit up stat found')
         else:
-            realtime_df = ts.get_realtime_quotes(codes)
-            index_df = ts.get_index()
-            index_df.index = index_df['code']
             for index, row in limit_up_stat_df.iterrows():
-                row_trade_date = row['trade_date']
                 code = row['code']
+                fire_date = row['fire_date']
+                late_date = row['late_date']
+                basic = basics[basics.code == code]
+                hist_trade = data_util.get_hist_trade(code=code, start=fire_date)[['trade_date', 'low', 'close']]
                 try:
-                    next_low_than_open = 0
-                    next_open_change = 0
-                    next_open_buy_change = 0
-                    next_low_change = 0
-                    next_low_buy_change = 0
-                    ref_index_change = 0
+                    industry = basic.loc[code, 'industry']
+                    fire_price = round(float(hist_trade.head(1).iloc[0, 1]), 2)
+                    price = round(float(hist_trade.tail(1).iloc[0, 2]), 2)
+                    wave_df = wave.get_wave(codes=code, start=fire_date)
+                    if wave_df.empty:
+                        print(code, 'no wave data found...')
+                        continue
+                    wave_str = wave.wave_to_str(wave_df)
+                    wave_ab = wave.get_wave_ab_fast(wave_str, pct_limit=20)
+                    wave_a = round(float(wave_ab[0][0]), 2)
+                    wave_b = round(float(wave_ab[1][0]), 2)
 
-                    # 下一交易日指数情况
-                    # 000001.SH  399001.SZ  399006.SZ
-                    if code[:1] == '6':
-                        ref_index_change = index_df.loc['000001', 'change']
-                    elif code[:1] == '0':
-                        ref_index_change = index_df.loc['399001', 'change']
-                    elif code[:1] == '3':
-                        ref_index_change = index_df.loc['399006', 'change']
-
-                    # 下一交易日实时个股情况
-                    next_hist_df = realtime_df[(realtime_df['code'] == code)]
-                    if next_hist_df is None or next_hist_df.empty:
-                        print('>>> failed', code, 'no trade data found, please check!')
-                    else:
-                        next_trade_index = next_hist_df.index[0]
-                        next_open = float(next_hist_df.loc[next_trade_index, 'open'])
-                        next_pre_close = float(next_hist_df.loc[next_trade_index, 'pre_close'])
-                        next_low = float(next_hist_df.loc[next_trade_index, 'low'])
-                        next_close = float(next_hist_df.loc[next_trade_index, 'price'])
-
-                        next_low_than_open = 1 if next_low < next_open else 0
-                        next_open_change = round((next_open - next_pre_close) / next_pre_close * 100, 2)
-                        next_low_change = round((next_low - next_pre_close) / next_pre_close * 100, 2)
-                        next_open_buy_change = round((next_close - next_open) / next_open * 100, 2)
-                        next_low_buy_change = round((next_close - next_low) / next_low * 100, 2)
-
-                    update_time = date_util.now()
-                    values = (int(next_low_than_open), float(next_open_change), float(next_open_buy_change),
-                              float(next_low_change), float(next_low_buy_change), float(ref_index_change),
-                              update_time, row_trade_date, code)
-                    update_sql = "update limit_up_stat set next_low_than_open = %s, next_open_change = %s, " \
-                                 "next_open_buy_change = %s, next_low_change = %s, next_low_buy_change = %s, ref_index_change = %s, " \
-                                 "update_time = %s where trade_date = %s and code = %s"
-                    cursor.execute(update_sql, values)
+                    insert_value = [(fire_date, late_date, code, row['name'], industry, fire_price, price,
+                                     row['combo'], row['total'], wave_a, wave_b, wave_str.split('\n')[0], date_util.now())]
+                    cursor.execute("delete from limit_up_stat where code='" + code + "'")
+                    cursor.executemany(
+                        'insert into limit_up_stat(fire_date, late_date, code, name, industry, fire_price, price, combo, '
+                        'count, wave_a, wave_b, wave_str, create_time) '
+                        'values(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)', insert_value)
                     db.commit()
-                    print(target_date, code, 'Update limit up stat successfully.')
+                    print(fire_date, code, 'Update limit up stat successfully.')
                 except Exception as err:
-                    print('  >>>error:', err)
+                    print('  >>>error:', code, err)
                     db.rollback()
-
-    # 关闭游标和数据库的连接
-    cursor.close()
-    db.close()
+        # 关闭游标和数据库的连接
+        cursor.close()
+        db.close()
 
 
 def update_limit_up_stat(target_date):
@@ -292,20 +268,18 @@ def get_limit_up_times(code_list, target_date=None):
     return result_df
 
 
-def get_limit_up_stat(code=None, start=None, end=None):
-    sql = 'select * from limit_up_stat where 1=1 '
-    if code is not None:
-        if isinstance(code, str):
-            codes = list()
-            codes.append(code)
-            code = codes
-        sql += 'and code in :code '
-    if start is not None:
-        sql += 'and trade_date >=:start '
-    if end is not None:
-        sql += 'and trade_date <=:end '
+def get_limit_up_stat(start=None, end=None):
+    where_sql = ' where 1=1 '
 
-    params = {'code': code, 'start': start, 'end': end}
+    if start is not None:
+        where_sql += 'and trade_date >=:start '
+    if end is not None:
+        where_sql += 'and trade_date <=:end '
+    sql = 'select code, name, min(trade_date) fire_date, max(trade_date) late_date, max(combo) combo, count(1) total ' \
+          'from limit_up_daily' + where_sql \
+          + ' group by code, name '
+
+    params = {'start': start, 'end': end}
     df = db_util.read_sql(sql, params=params)
     return df
 
@@ -313,9 +287,6 @@ def get_limit_up_stat(code=None, start=None, end=None):
 if __name__ == '__main__':
     # get_limit_up_times(code_list=['000716', '002105', '600513'], target_date='2020-01-01')
     # collect_limit_up_stat(target_date='2020-02-20')
-    # update_limit_up_stat(target_date='2020-02-01')
 
     collect_limit_up_stat(target_date=date_util.get_this_week_start())
-    update_limit_up_stat(target_date=date_util.get_previous_trade_day(date_util.get_this_week_start()))
-
-    # update_latest_limit_up_stat()
+    update_latest_limit_up_stat()
