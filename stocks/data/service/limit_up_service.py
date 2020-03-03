@@ -211,7 +211,8 @@ def collect_limit_up_stat(target_date):
                 insert_count = cursor.executemany(
                     'insert into limit_up_daily(trade_date, code, name, open_change, close_change, combo) '
                     'values(%s, %s, %s, %s, %s, %s)', insert_values)
-                cursor.execute("update limit_up_daily l inner join basics b on l.code = b.code set l.name=b.name where l.name=''")
+                cursor.execute("update limit_up_daily d inner join basics b on d.code = b.code "
+                               "set d.industry= b.industry where d.industry is null or d.industry=''")
                 db.commit()
                 print(target_date, 'Collect limit up daily finished! Total size: '
                       + str(total_size) + ' , ' + str(insert_count) + ' insert successfully.')

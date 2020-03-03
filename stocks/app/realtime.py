@@ -194,6 +194,18 @@ def calc_pct_change(df):
     return str(round((price - pre_close) / pre_close * 100, 2)) + '%'
 
 
+def calc_open_change(df):
+    price = float(df['price'])
+    open = float(df['open'])
+    return str(round((price - open) / open * 100, 2)) + '%'
+
+
+def calc_low_change(df):
+    price = float(df['price'])
+    low = float(df['low'])
+    return str(round((price - low) / low * 100, 2)) + '%'
+
+
 if __name__ == '__main__':
     """
     python realtime.py df 1 false p
@@ -210,7 +222,12 @@ if __name__ == '__main__':
         if df.empty or df is None:
             sys.exit(0)
         df['change'] = df.apply(calc_pct_change, axis=1)
-        print(df[['code', 'name', 'price', 'change', 'bid', 'ask', 'open', 'low', 'high', 'time']])
+        df['o_change'] = df.apply(calc_open_change, axis=1)
+        df['l_change'] = df.apply(calc_low_change, axis=1)
+        df['price'] = df['price'].apply(lambda x: str(round(float(x), 2)))
+        df['low'] = df['low'].apply(lambda x: '_' + str(round(float(x), 2)))
+        df['high'] = df['high'].apply(lambda x: '^' + str(round(float(x), 2)))
+        print(df[['code', 'name', 'price', 'change', 'o_change', 'l_change', 'bid', 'ask', 'open', 'low', 'high', 'time']])
         sys.exit(0)
     # hold = argv[2] if len(argv) > 2 else 1
     # display = True if (len(argv) > 3 and str(argv[3]).upper() == 'TRUE') else False

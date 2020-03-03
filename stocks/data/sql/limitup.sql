@@ -18,7 +18,7 @@ order by cow desc;
 -- 拣吓货
 select *
 from limit_up_stat
-where code in (select code from limit_up_daily where trade_date='2020-03-02' and combo <= 2)
+where code in (select code from limit_up_daily where trade_date='2020-03-03' and combo <= 2)
 # and industry in ('')
 order by wave_a;
 
