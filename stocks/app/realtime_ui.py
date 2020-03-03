@@ -1,21 +1,21 @@
+import time
 import tkinter
-import time
 from tkinter import *
-import stocks.app.realtime as realtime
-from stocks.data import data_util as _dt
 
-from tkinter import *
-import time
+import stocks.app.realtime as realtime
+from stocks.data import data_util
 
 
 def go():
-      for i in range(500):
-            text.delete('1.0', 'end')
-            hold_df = _dt.get_my_stock_pool('df', 1)
-            result = realtime.get_realtime(hold_df)
-            text.insert(END, str(result))
-            time.sleep(3)
-            text.update()
+    for i in range(500):
+        text.delete('1.0', 'end')
+        hold_df = data_util.get_my_stock_pool('pos', 1)
+        codes = list(hold_df['code'])
+        last_trade_data = data_util.get_last_trade_data(codes)
+        result = realtime.get_realtime(hold_df, last_trade_data)
+        text.insert(END, str(result))
+        time.sleep(3)
+        text.update()
 
 
 root = Tk()

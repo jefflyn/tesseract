@@ -1,3 +1,10 @@
+-- 验证basics
+select concat('collect basics: ', trade_date , ' total:' , count(1)) from basics group by trade_date;
+-- 验证每天trade data etl
+select concat('collect trade: ', trade_date , ' total:' , count(1)) from hist_trade_day where trade_date >= '2020-03-01' group by trade_date order by trade_date desc;
+select concat('collect ma: ', trade_date , ' total:' , count(1)) from hist_ma_day where trade_date >= '2020-03-01' group by trade_date order by trade_date desc;
+select concat('collect index: ', trade_date , ' total:' , count(1)) from index_hist_k where trade_date >= '2020-03-01' group by trade_date order by trade_date desc;
+
 
 select distinct code from hist_trade_day where trade_date>='2019-10-01' and high=low and pct_change>0;
 select code, count(1) from hist_trade_day where trade_date>='2019-10-01' and high=low and pct_change>0
@@ -5,11 +12,6 @@ group by code
 having count(1) > 2;
 select * from hist_trade_day where trade_date='2019-11-04' and pct_change > 9;
 select * from hist_trade_day where code='002477' order by trade_date desc;
-# 验证每天trade data etl
-select trade_date, count(1) from hist_trade_day where trade_date >= '2020-02-01' group by trade_date order by trade_date desc;
-select trade_date, count(1) from hist_ma_day where trade_date >= '2020-02-01' group by trade_date order by trade_date desc;
-select trade_date, count(1) from hist_index_day where trade_date >= '2020-02-01' group by trade_date order by trade_date desc;
-select trade_date, count(1) from index_hist_k where trade_date >= '2020-02-01' group by trade_date order by trade_date desc;
 
 -- daily market data
 select l.*, i.hz, i.sz50, i.scz, i.zxb, i.cyb
@@ -185,5 +187,5 @@ select * from my_stock_pool where platform = 'cf';
 select * from my_stock_pool where platform = 'df';
 select * from my_stock_pool where platform = 'pa';
 select * from my_stock_pool where platform = 'sim';
-select * from stocks.limit_up_stat where trade_date='2019-11-04';
+select * from stocks.limit_up_daily where trade_date='2019-11-04';
 

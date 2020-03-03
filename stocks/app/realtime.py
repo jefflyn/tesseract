@@ -188,6 +188,12 @@ def get_realtime(hddf=None, last_trade_data=None, sortby=None):
          'current', 'wave', 'bottom', 'uspace', 'dspace', 'top', 'position', 'cost', 'share', 'capital', 'profit']]
 
 
+def calc_pct_change(df):
+    pre_close = float(df['pre_close'])
+    price = float(df['price'])
+    return str(round((price - pre_close) / pre_close * 100, 2)) + '%'
+
+
 if __name__ == '__main__':
     """
     python realtime.py df 1 false p
@@ -200,6 +206,11 @@ if __name__ == '__main__':
     type = argv[1]
     if type not in keys:
         print("File name NOT found. Try the followings: " + str(keys))
+        df = ts.get_realtime_quotes(str(type).split(','))
+        if df.empty or df is None:
+            sys.exit(0)
+        df['change'] = df.apply(calc_pct_change, axis=1)
+        print(df[['code', 'name', 'price', 'change', 'bid', 'ask', 'open', 'low', 'high', 'time']])
         sys.exit(0)
     # hold = argv[2] if len(argv) > 2 else 1
     # display = True if (len(argv) > 3 and str(argv[3]).upper() == 'TRUE') else False
