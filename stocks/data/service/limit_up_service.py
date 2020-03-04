@@ -36,7 +36,7 @@ def update_latest_limit_up_stat():
                     price = round(float(hist_trade.tail(1).iloc[0, 2]), 2)
                     wave_df = wave.get_wave(codes=code, start=fire_date)
                     if wave_df.empty:
-                        print(code, 'no wave data found...')
+                        print(code, fire_date, 'no wave data found...')
                         continue
                     wave_str = wave.wave_to_str(wave_df)
                     wave_ab = wave.get_wave_ab_fast(wave_str, pct_limit=20)
@@ -58,113 +58,6 @@ def update_latest_limit_up_stat():
         # 关闭游标和数据库的连接
         cursor.close()
         db.close()
-
-
-def update_limit_up_stat(target_date):
-    '''
-    更新指定日期涨停信息
-    :param target_date: YYYY-MM-DD
-    :return:
-    '''
-    trade_date = date_util.get_latest_trade_date(1)[0]
-    if target_date is None or target_date > trade_date:
-        target_date = trade_date
-    if date_util.is_tradeday(target_date) is False:
-        target_date = date_util.get_next_trade_day(target_date)
-
-    while True:
-        print(target_date, 'Update limit up stat start ...')
-        limit_up_stat_df = get_limit_up_stat(start=target_date, end=target_date)
-        if limit_up_stat_df is not None:
-            # 建立数据库连接
-            db = get_db()
-            # 使用cursor()方法创建一个游标对象
-            cursor = db.cursor()
-            codes = set(limit_up_stat_df['code'])
-            if len(codes) == 0:
-                print('>>> failed', target_date, 'no limit up stat found')
-            else:
-                hist_data_df = data_util.get_hist_trade(code=codes, start=target_date)
-                hist_index_df = data_util.get_hist_trade(start=target_date, is_index=True)
-                for index, row in limit_up_stat_df.iterrows():
-                    row_trade_date = row['trade_date']
-                    code = row['code']
-                    try:
-                        next_trade_date = date_util.get_next_trade_day(row_trade_date)
-                        # 下一个交易日没到，结束
-                        if next_trade_date > date_util.get_today():
-                            print(trade_date, '已是最近一个交易日，下个交易日结束再执行 end')
-                            break
-
-                        next_low_than_open = 0
-                        next_open_change = 0
-                        next_open_buy_change = 0
-                        next_low_change = 0
-                        next_low_buy_change = 0
-                        ref_index_change = 0
-
-                        # 下一交易日指数情况
-                        next_index_df = hist_index_df[(hist_index_df['trade_date'] == next_trade_date)]
-                        if next_index_df is None or next_index_df.empty:
-                            if index == 0:
-                                print('  >>> warn', next_trade_date, 'no index data found, please check!')
-                        else:
-                            next_index_map = {}
-                            for idx, index_row in next_index_df.iterrows():
-                                # 000001.SH  399001.SZ  399006.SZ
-                                index_code = index_row['code']
-                                pct_change = index_row['pct_change']
-                                next_index_map[index_code] = pct_change
-                            if code[:1] == '6':
-                                ref_index_change = next_index_map.get('000001')
-                            elif code[:1] == '0':
-                                ref_index_change = next_index_map.get('399001')
-                            elif code[:1] == '3':
-                                ref_index_change = next_index_map.get('399006')
-
-                        # 下一交易日个股情况
-                        next_hist_df = hist_data_df[(hist_data_df['trade_date'] == next_trade_date)
-                                                    & (hist_data_df['code'] == code)]
-                        if next_hist_df is None or next_hist_df.empty:
-                            print('  >>> failed', code, next_trade_date, 'no trade data found, please check!')
-                        else:
-                            next_trade_index = next_hist_df.index[0]
-                            next_open = next_hist_df.loc[next_trade_index, 'open']
-                            next_pre_close = next_hist_df.loc[next_trade_index, 'pre_close']
-                            next_low = next_hist_df.loc[next_trade_index, 'low']
-                            next_close = next_hist_df.loc[next_trade_index, 'close']
-
-                            next_low_than_open = 1 if next_low < next_open else 0
-                            next_open_change = round((next_open - next_pre_close) / next_pre_close * 100, 2)
-                            next_low_change = round((next_low - next_pre_close) / next_pre_close * 100, 2)
-
-                            next_open_buy_change = round((next_close - next_open) / next_open * 100, 2)
-                            next_low_buy_change = round((next_close - next_low) / next_low * 100, 2)
-
-                            update_time = date_util.now()
-                            values = (int(next_low_than_open), float(next_open_change), float(next_open_buy_change),
-                                      float(next_low_change),
-                                      float(next_low_buy_change), float(ref_index_change), update_time, row_trade_date,
-                                      code)
-                            update_sql = "update limit_up_stat set next_low_than_open = %s, next_open_change = %s, " \
-                                         "next_open_buy_change = %s, next_low_change = %s, next_low_buy_change = %s, ref_index_change = %s, " \
-                                         "update_time = %s where trade_date = %s and code = %s"
-                            cursor.execute(update_sql, values)
-                            db.commit()
-                            # print('  >>>', target_date, code, 'Update limit up stat successfully.')
-                    except Exception as err:
-                        print('  >>>error:', err)
-                        db.rollback()
-            # 关闭游标和数据库的连接
-            cursor.close()
-            db.close()
-
-        next_trade_date = date_util.get_next_trade_day(target_date)
-        if next_trade_date > date_util.get_today():
-            break
-        target_date = next_trade_date
-
-    print(target_date, 'Update limit up stat end ...')
 
 
 def collect_limit_up_stat(target_date):

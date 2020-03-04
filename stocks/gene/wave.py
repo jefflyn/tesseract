@@ -527,7 +527,7 @@ def try_bottom():
 
 if __name__ == '__main__':
     # try_bottom()
-    code_list = ['603598']
+    code_list = ['000428']
     # code_list = data_util.get_normal_codes()
     result = get_wave(code_list, is_index=False, start='2020-01-02')
     print(result)

@@ -28,11 +28,9 @@ if __name__ == '__main__':
                                   "order by wave_a"
     df_active = _dt.read_sql(sql_active, params={"list_date": one_year_ago, "name": "%ST%"})
 
-    sql_limit_up = select_columns + "from select_result_all where code in (select code from limit_up_stat where " \
-                                    "trade_date > :target_date group by code having max(combo) >= 2) and " \
-                                    "(wave_b < -33 or (wave_b > 0 and wave_b < 20) or (wave_a < -50 and wave_b < 30)) " \
-                                    "order by wave_b"
-    df_limit_up = _dt.read_sql(sql_limit_up, params={"target_date": date_util.get_last_2month_start()})
+    sql_limit_up = "select * from limit_up_stat where code in (select code from limit_up_daily " \
+                   "where trade_date >= :target_date and combo <= 2) order by wave_a"
+    df_limit_up = _dt.read_sql(sql_limit_up, params={"target_date": date_util.get_this_week_start()})
 
 
     sql_all = select_columns + "from select_result_all where name not like :name and list_date < :list_date order by wave_a"
