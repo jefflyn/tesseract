@@ -4,8 +4,7 @@ select concat('collect basics: ', trade_date , ' total:' , count(1)) from basics
 select concat(trade_date, ' collect trade total: ' , count(1)) from hist_trade_day where trade_date >= '2020-03-01' group by trade_date order by trade_date desc;
 select concat(trade_date, ' collect ma total: ' , count(1)) from hist_ma_day where trade_date >= '2020-03-01' group by trade_date order by trade_date desc;
 select concat(trade_date, ' collect index total: ' , count(1)) from index_hist_k where trade_date >= '2020-03-01' group by trade_date order by trade_date desc;
-select concat(trade_date, ' collect index total: ' , count(1)) from index_hist_k where trade_date >= '2020-03-01' group by trade_date order by trade_date desc;
-select concat(trade_date, ' collect limit up total: ' , count(1)) from limit_up_daily where trade_date >= '2020-03-01' group by trade_date order by trade_date desc;
+select concat(trade_date, ' collect limit daily total: ' , count(1)) from limit_up_daily where trade_date >= '2020-03-01' group by trade_date order by trade_date desc;
 select * from limit_up_stat;
 
 select distinct code from hist_trade_day where trade_date>='2019-10-01' and high=low and pct_change>0;

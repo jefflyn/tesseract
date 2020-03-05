@@ -326,7 +326,7 @@ def select_result(codeset=None, filename=''):
     # resultdf = resultdf.sort_values('sum_30d', axis=0, ascending=False, inplace=False, kind='quicksort', na_position='last')
 
     resultdf = resultdf[
-        ['concepts', 'industry', 'code', 'name', 'area', 'list_date', 'pe', 'pe_ttm',
+        ['concepts',  'code', 'name', 'industry', 'area', 'list_date', 'pe', 'pe_ttm',
          'pct', 'wave_a', 'wave_b', 'map', 'count', 'count_',
          'wave_detail', 'a_days', 'b_days', 'bottom', 'uspace', 'dspace', 'top', 'position',
          'w_gap', 'c_gap',

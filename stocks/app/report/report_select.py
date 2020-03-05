@@ -15,35 +15,47 @@ if __name__ == '__main__':
 
     select_columns = "select code,name,industry,concepts,pe,pe_ttm as profit,pct,list_date,a_days,wave_a,wave_b,b_days,w_gap,c_gap,map," \
                      "count,count_,fdate,last_f_date,price,call_price,call_diff,select_time "
-
+    # 超跌
     sql_down = select_columns + "from select_result_all where list_date < :list_date and name not like :name " \
                                 "and pe > 0 and count > 0 " \
                                 "and (wave_a <= -50 and wave_b < 15 or wave_b <= -50) " \
                                 "order by wave_a"
     df_down = _dt.read_sql(sql_down, params={"list_date": one_year_ago, "name": "%ST%"})
 
+    # 活跃
     sql_active = select_columns + "from select_result_all where list_date < :list_date and name not like :name " \
                                   "and pe > 0 and count >= 8 " \
                                   "and (wave_a <= -40 and wave_b < 15 or wave_b <= -40) " \
                                   "order by wave_a"
     df_active = _dt.read_sql(sql_active, params={"list_date": one_year_ago, "name": "%ST%"})
 
-    sql_limit_up = "select * from limit_up_stat where code in (select code from limit_up_daily " \
-                   "where trade_date >= :target_date and combo <= 2) order by wave_a"
-    df_limit_up = _dt.read_sql(sql_limit_up, params={"target_date": date_util.get_this_week_start()})
-
-
+    # all
     sql_all = select_columns + "from select_result_all where name not like :name and list_date < :list_date order by wave_a"
     df_all = _dt.read_sql(sql_all, params={"name": "%ST%", "list_date": one_year_ago})
 
+    # st
     sql_st = select_columns + r"from select_result_all where name like :name order by wave_a"
     df_st = _dt.read_sql(sql_st, params={"name": "%ST%"})
 
+    # new
     sql_new = select_columns + "from select_result_all where list_date >= :list_date order by wave_a"
     df_new = _dt.read_sql(sql_new, params={"list_date": one_year_ago})
 
+    # combo
+    sql_combo = select_columns + "from select_result_all where pe > 0 " \
+                               "and (wave_b < -33 or (wave_b > 0 and wave_b < 20) or (wave_a < -40 and wave_b < 30)) " \
+                               "and code in (select code from limit_up_stat where fire_date >= :target_date and combo > 1) " \
+                               "order by wave_a;"
+    df_combo = _dt.read_sql(sql_combo, params={"target_date": date_util.get_last_2month_start()})
+
+    #
+    sql_limit_up = "select * from limit_up_stat where 1=1 and price <= fire_price * 1.05 and combo > 1 " \
+                   "and fire_date >= :target_date order by wave_a;"
+    df_limit_up = _dt.read_sql(sql_limit_up, params={"target_date": date_util.get_last_month_start()})
+
     file_name = 'select_' + date_util.get_today(date_util.format_flat) + '.xlsx'
     writer = pd.ExcelWriter(file_name)
+    df_combo.to_excel(writer, sheet_name='combo')
     df_limit_up.to_excel(writer, sheet_name='limitup')
     df_active.to_excel(writer, sheet_name='active')
     df_down.to_excel(writer, sheet_name='down')

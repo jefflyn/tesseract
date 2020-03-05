@@ -30,22 +30,28 @@ order by wave_a;
 -- 3、两月内至少连续涨停2次（高风险，适合超短线）
 select *
 from select_result_all
-where list_date < 20190202 and
-      code in (select code from limit_up_stat where trade_date > '2020-01-01' group by code having max(combo_times) >= 2)
-#   and (pe > 0 and pe_ttm > 0 or pe_ttm = 0)
-and (wave_b < -33 or (wave_b > 0 and wave_b < 20) or (wave_a < -40 and wave_b < 30))
-order by wave_b;
+where 1 = 1
+#     and list_date < 20190202
+  and code in (select code from limit_up_stat where fire_date > '2020-01-01' and combo > 1)
+  and pe > 0
+  and (wave_b < -33 or (wave_b > 0 and wave_b < 20) or (wave_a < -40 and wave_b < 30))
+order by wave_a;
 
-
--- 多头排列趋势
+-- 4、指定交易日涨停
 select *
 from select_result_all
-where name not like '%ST%'
-  and list_date < 20190101
-  and (wave_a < -33 and wave_b < 15 or wave_b <= -33)
-  and map > 9
-#   and pe > 0 and pe_ttm > 0
-#   and count > 0
+where 1=1
+    and code in (select code from limit_up_stat where late_date = '2020-03-03')
+    and (wave_b < -33 or (wave_b > 0 and wave_b < 20) or (wave_a < -40 and wave_b < 30))
+order by wave_a;
+
+-- 5、跌落涨停价下方的
+select *
+from limit_up_stat
+where 1=1
+    and price <= fire_price * 1.05
+    and combo > 1
+    and fire_date >= '2020-02-01'
 order by wave_a;
 
 
