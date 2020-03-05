@@ -36,12 +36,14 @@ def update_latest_limit_up_stat():
                     price = round(float(hist_trade.tail(1).iloc[0, 2]), 2)
                     wave_df = wave.get_wave(codes=code, start=fire_date)
                     if wave_df.empty:
-                        print(code, fire_date, 'no wave data found...')
-                        continue
-                    wave_str = wave.wave_to_str(wave_df)
-                    wave_ab = wave.get_wave_ab_fast(wave_str, pct_limit=20)
-                    wave_a = round(float(wave_ab[0][0]), 2)
-                    wave_b = round(float(wave_ab[1][0]), 2)
+                        wave_str = 10
+                        wave_a = 10
+                        wave_b = 0
+                    else:
+                        wave_str = wave.wave_to_str(wave_df)
+                        wave_ab = wave.get_wave_ab_fast(wave_str, pct_limit=20)
+                        wave_a = round(float(wave_ab[0][0]), 2)
+                        wave_b = round(float(wave_ab[1][0]), 2)
 
                     insert_value = [(fire_date, late_date, code, row['name'], industry, fire_price, price,
                                      row['combo'], row['total'], wave_a, wave_b, wave_str.split('\n')[0], date_util.now())]
@@ -78,6 +80,8 @@ def collect_limit_up_stat(target_date):
         if limit_up_df is not None:
             codes = list(limit_up_df['code'])
             limit_up_count = get_limit_up_times(code_list=codes, target_date=target_date)
+            if limit_up_count is None:
+                break
             limit_up_count_codes = list(limit_up_count['code'])
             insert_values = []
             for index, row in limit_up_df.iterrows():

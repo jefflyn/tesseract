@@ -6,7 +6,7 @@ select code, name, min(trade_date), max(trade_date), max(combo), count(1) from l
 -- 更新基本信息
 delete from limit_up_daily where trade_date='2020-02-28';
 update limit_up_daily d inner join basics b on d.code = b.code set d.industry= b.industry where d.industry is null or d.industry='';
-# update limit_up_stat l inner join basics b on l.code = b.code set l.name=b.name, l.industry=b.industry where l.name is null;
+# update limit_up_stat l inner join basics b on l.code = b.code set l.name=b.name, l.industry=b.industry where l.name is null or l.name='';
 
 -- 边嗰好耶吖？
 select trade_date, industry, count(1) cow from limit_up_daily

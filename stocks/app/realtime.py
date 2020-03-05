@@ -218,17 +218,18 @@ if __name__ == '__main__':
     type = argv[1]
     if type not in keys:
         print("File name NOT found. Try the followings: " + str(keys))
-        df = ts.get_realtime_quotes(str(type).split(','))
-        if df.empty or df is None:
-            sys.exit(0)
-        df['change'] = df.apply(calc_pct_change, axis=1)
-        df['o_change'] = df.apply(calc_open_change, axis=1)
-        df['l_change'] = df.apply(calc_low_change, axis=1)
-        df['price'] = df['price'].apply(lambda x: str(round(float(x), 2)))
-        df['low'] = df['low'].apply(lambda x: '_' + str(round(float(x), 2)))
-        df['high'] = df['high'].apply(lambda x: '^' + str(round(float(x), 2)))
-        print(df[['code', 'name', 'price', 'change', 'o_change', 'l_change', 'bid', 'b1_v', 'ask', 'a1_v', 'open', 'low', 'high', 'time']])
-        sys.exit(0)
+        while True:
+            df = ts.get_realtime_quotes(str(type).split(','))
+            if df.empty or df is None:
+                sys.exit(0)
+            df['change'] = df.apply(calc_pct_change, axis=1)
+            df['o_change'] = df.apply(calc_open_change, axis=1)
+            df['l_change'] = df.apply(calc_low_change, axis=1)
+            df['price'] = df['price'].apply(lambda x: str(round(float(x), 2)))
+            df['low'] = df['low'].apply(lambda x: '_' + str(round(float(x), 2)))
+            df['high'] = df['high'].apply(lambda x: '^' + str(round(float(x), 2)))
+            print(df[['code', 'name', 'price', 'change', 'o_change', 'l_change', 'bid', 'b1_v', 'ask', 'a1_v', 'open', 'low', 'high', 'time']])
+            time.sleep(60)
     # hold = argv[2] if len(argv) > 2 else 1
     # display = True if (len(argv) > 3 and str(argv[3]).upper() == 'TRUE') else False
     sort = argv[2] if len(argv) > 2 else None
