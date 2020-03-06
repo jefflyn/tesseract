@@ -6,6 +6,7 @@ from stocks.util import date_util
 from utils.mail import mail_util
 
 if __name__ == '__main__':
+
     content = 'Please find the attaches for the selection report details.'
 
     one_year_ago = date_const.ONE_YEAR_AGO_YYYYMMDD

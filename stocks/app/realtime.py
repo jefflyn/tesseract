@@ -220,7 +220,7 @@ if __name__ == '__main__':
         print("File name NOT found. Try the followings: " + str(keys))
         while True:
             df = ts.get_realtime_quotes(str(type).split(','))
-            if df.empty or df is None:
+            if df is None or df.empty:
                 sys.exit(0)
             df['change'] = df.apply(calc_pct_change, axis=1)
             df['o_change'] = df.apply(calc_open_change, axis=1)

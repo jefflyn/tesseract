@@ -41,8 +41,10 @@ order by wave_a;
 select *
 from select_result_all
 where 1=1
-    and code in (select code from limit_up_stat where late_date = '2020-03-03')
-    and (wave_b < -33 or (wave_b > 0 and wave_b < 20) or (wave_a < -40 and wave_b < 30))
+    and code in (
+        select code from limit_up_stat where industry='电气设备' -- late_date = '2020-03-05'
+        )
+    -- and (wave_b < -33 or (wave_b > 0 and wave_b < 20) or (wave_a < -40 and wave_b < 30))
 order by wave_a;
 
 -- 5、跌落涨停价下方的

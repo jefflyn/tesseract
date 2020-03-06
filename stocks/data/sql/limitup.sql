@@ -11,7 +11,7 @@ update limit_up_daily d inner join basics b on d.code = b.code set d.name = b.na
 -- 边嗰行业掂吖？
 select trade_date, industry, count(1) cow
 from limit_up_daily
-where trade_date = '2020-03-03'
+where trade_date = '2020-03-05'
   and combo = 1
 group by trade_date, industry
 order by cow desc;
