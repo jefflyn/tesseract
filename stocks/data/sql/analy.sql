@@ -5,6 +5,9 @@ select concat(trade_date, ' collect trade total: ' , count(1)) from hist_trade_d
 select concat(trade_date, ' collect ma total: ' , count(1)) from hist_ma_day where trade_date >= '2020-03-01' group by trade_date order by trade_date desc;
 select concat(trade_date, ' collect index total: ' , count(1)) from index_hist_k where trade_date >= '2020-03-01' group by trade_date order by trade_date desc;
 select concat(trade_date, ' collect limit daily total: ' , count(1)) from limit_up_daily where trade_date >= '2020-03-01' group by trade_date order by trade_date desc;
+select concat(late_date, ' update limit stat total: ' , count(1)) from limit_up_stat where late_date >= '2020-03-01' group by late_date order by late_date desc;
+select concat(trade_date, ' select_result_all total: ' , count(1)) from select_result_all group by trade_date;
+
 select * from limit_up_stat;
 
 select distinct code from hist_trade_day where trade_date>='2019-10-01' and high=low and pct_change>0;
@@ -42,7 +45,7 @@ select * from hist_weekly order by trade_date desc;
 select * from hist_weekly where code=600126 order by trade_date desc limit 2;
 
 # ma data
-select * from hist_ma_day order by grade desc;
+select * from hist_ma_day where trade_date='2020-03-02' order by grade desc;
 select * from hist_ma_day where code in ('000587', '600929');
 
 -- basic info
@@ -56,12 +59,11 @@ select * from basic_daily where pe is null;
 select * from basic_daily where code='002692';
 
 -- index hist data
-select distinct ts_code from hist_index_day;
-select count(1) from hist_index_day;
 -- 000001.SH 000016.SH 000300.SH 000905.SH
 -- 399001.SZ 399005.SZ 399006.SZ 399008.SZ
-select * from hist_index_day where trade_date between '2019-07-01' and '2019-08-30' order by trade_date desc;
-select * from hist_index_day where code='000001' and trade_date='2019-08-28' order by trade_date desc;
+select * from index_hist_k where trade_date >='2020-02-03' order by code, trade_date;
+
+select * from index_hist_k where code in ('000001','399001','399006') order by code, trade_date;
 
 select trade_date,
        sum(case ts_code when '000001.SH' then pct_change else 0 end) 'hz',
@@ -74,10 +76,10 @@ where trade_date >= '2019-01-01'
 group by trade_date
 order by trade_date desc;
 
-select ts_code, substr(trade_date, 1 ,7) as month, sum(pct_change) as total
-from hist_index_day
-where trade_date >= '2018-01-01' and ts_code='000001.SH'
-group by ts_code, substr(trade_date, 1 ,7);
+select code, substr(trade_date, 1 ,7) as month, sum(pct_change) as total
+from index_hist_k
+where trade_date >= '2019-01-01'
+group by code, substr(trade_date, 1 ,7);
 
 -- limitup data
 select * from hist_trade_day where trade_date='2019-04-12' and close >= round(pre_close * 1.1, 2);
@@ -179,8 +181,8 @@ select * from hist_index_day where code='000001' and
                                                  '2017-07-06','2017-07-07','2017-07-10',
                                                  '2018-11-29','2018-11-30','2018-12-03');
 
-update my_stock_pool p inner join concepts c on p.code=c.code set p.concept=c.concepts where p.concept is null;
-update my_stock_pool p inner join select_result_all s on p.code=s.code set p.bottom=s.bottom, p.alias=s.name,p.grade=s.map,p.remark=s.industry where p.alias is null;
+update my_stock_pool p inner join concepts c on p.code=c.code set p.concept=c.concepts where p.concept is null or p.concept = '';
+update my_stock_pool p inner join select_result_all s on p.code=s.code set p.bottom=s.bottom, p.alias=s.name,p.grade=s.map,p.remark=s.industry where p.alias is null or p.alias = '';
 select * from monitor_pool;
 select * from my_stock_pool;
 select * from my_stock_pool where platform = 'pos';
@@ -190,3 +192,5 @@ select * from my_stock_pool where platform = 'pa';
 select * from my_stock_pool where platform = 'sim';
 select * from stocks.limit_up_daily where trade_date='2019-11-04';
 
+8000000
+56000000

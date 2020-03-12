@@ -11,8 +11,8 @@ from dateutil.rrule import *
 
 hist_date_list = pd.read_csv(os.getenv('STOCKS_HOME') + '/data/etl/basic_data/' + 'hist_trade_date.csv')
 
-default_format = '%Y-%m-%d'
-format_flat = '%Y%m%d'
+FORMAT_DEFAULT = '%Y-%m-%d'
+FORMAT_FLAT = '%Y%m%d'
 
 # 今天
 today = datetime.datetime.now()
@@ -70,94 +70,94 @@ def now():
 
 
 # 本周第一天和最后一天
-def get_today(format=default_format):
+def get_today(format=FORMAT_DEFAULT):
     return now().strftime(format)
 
 
 # 本周第一天和最后一天
-def get_this_week_start(format=default_format):
+def get_this_week_start(format=FORMAT_DEFAULT):
     return (now() - timedelta(days=now().weekday())).strftime(format)
 
 
-def get_this_week_end(format=default_format):
+def get_this_week_end(format=FORMAT_DEFAULT):
     return (now() + timedelta(days=6 - now().weekday())).strftime(format)
 
 
 # 上周第一天和最后一天
-def get_last_week_start(format=default_format):
+def get_last_week_start(format=FORMAT_DEFAULT):
     return (now() - timedelta(days=now().weekday() + 7)).strftime(format)
 
 
-def get_last_week_end(format=default_format):
+def get_last_week_end(format=FORMAT_DEFAULT):
     return (now() - timedelta(days=now().weekday() + 1)).strftime(format)
 
 
 # 本月第一天和最后一天
-def get_this_month_start(format=default_format):
+def get_this_month_start(format=FORMAT_DEFAULT):
     return this_month_start.strftime(format)
 
 
-def get_this_month_end(format=default_format):
+def get_this_month_end(format=FORMAT_DEFAULT):
     return this_month_end.strftime(format)
 
 
 # 上月第一天和最后一天
-def get_last_month_start(format=default_format):
+def get_last_month_start(format=FORMAT_DEFAULT):
     return last_month_start.strftime(format)
 
 
-def get_last_month_end(format=default_format):
+def get_last_month_end(format=FORMAT_DEFAULT):
     return last_month_end.strftime(format)
 
 
-def get_last_2month_start(format=default_format):
+def get_last_2month_start(format=FORMAT_DEFAULT):
     return last_2month_start.strftime(format)
 
 
 # 本季第一天和最后一天
-def get_this_quarter_start(format=default_format):
+def get_this_quarter_start(format=FORMAT_DEFAULT):
     return this_quarter_start.strftime(format)
 
 
-def get_this_quarter_end(format=default_format):
+def get_this_quarter_end(format=FORMAT_DEFAULT):
     return this_quarter_end.strftime(format)
 
 
 # 上季第一天和最后一天
-def get_last_quarter_start(format=default_format):
+def get_last_quarter_start(format=FORMAT_DEFAULT):
     return last_quarter_start.strftime(format)
 
 
-def get_last_quarter_end(format=default_format):
+def get_last_quarter_end(format=FORMAT_DEFAULT):
     return last_quarter_end.strftime(format)
 
 
 # 本年第一天和最后一天
-def get_this_year_start(format=default_format):
+def get_this_year_start(format=FORMAT_DEFAULT):
     return this_year_start.strftime(format)
 
 
-def get_this_year_end(format=default_format):
+def get_this_year_end(format=FORMAT_DEFAULT):
     return this_year_end.strftime(format)
 
 
 # 去年第一天和最后一天
-def get_last_year_start(format=default_format):
+def get_last_year_start(format=FORMAT_DEFAULT):
     return last_year_start.strftime(format)
 
 
-def get_last_year_end(format=default_format):
+def get_last_year_end(format=FORMAT_DEFAULT):
     return last_year_end.strftime(format)
 
 
-def parse_date_str(date_str, format=default_format):
+def parse_date_str(date_str, format=FORMAT_DEFAULT):
     c_date = convert_to_date(date_str)
     return c_date.strftime(format)
 
 
 def convert_to_date(date_str):
-    query_date = datetime.datetime.strptime(date_str, default_format) if len(date_str) > 8 \
-        else datetime.datetime.strptime(date_str, format_flat)
+    query_date = datetime.datetime.strptime(date_str, FORMAT_DEFAULT) if len(date_str) > 8 \
+        else datetime.datetime.strptime(date_str, FORMAT_FLAT)
     return query_date
 
 
@@ -227,15 +227,15 @@ def get_trade_day(nday=-4):
     n_trade_day_pair = []
     n = 1
     while True:
-        target_date = (today - timedelta(days=n)).strftime(format_flat)
+        target_date = (today - timedelta(days=n)).strftime(FORMAT_FLAT)
         if is_tradeday(target_date):
             start_date = today - timedelta(days=n)
-            to_date = (today - timedelta(days=n)).strftime(default_format)
+            to_date = (today - timedelta(days=n)).strftime(FORMAT_DEFAULT)
             from_date = None
             for i in range(1, 10):
-                target_from_date = (start_date - timedelta(days=i)).strftime(format_flat)
+                target_from_date = (start_date - timedelta(days=i)).strftime(FORMAT_FLAT)
                 if is_tradeday(target_from_date):
-                    from_date = (start_date - timedelta(days=i)).strftime(default_format)
+                    from_date = (start_date - timedelta(days=i)).strftime(FORMAT_DEFAULT)
                     break
             n_trade_day_pair.append([from_date, to_date])
         n += 1
@@ -254,7 +254,7 @@ def get_week_firstday_lastday(which=-1):
         which = 1
     monday = today + relativedelta(weekday=MO(which))
     friday = today + relativedelta(weekday=FR(which))
-    return [monday.strftime(default_format), friday.strftime(default_format)]
+    return [monday.strftime(FORMAT_DEFAULT), friday.strftime(FORMAT_DEFAULT)]
 
 
 def get_month_firstday_lastday(howmany=12):
@@ -283,11 +283,11 @@ def get_month_firstday_lastday(howmany=12):
     current_begin = datetime.date(year=year, month=month, day=1)
     current_end = datetime.date(year=year, month=month, day=monthRange)
 
-    result_list = [(format(current_begin, default_format), format(current_end, default_format))]
+    result_list = [(format(current_begin, FORMAT_DEFAULT), format(current_end, FORMAT_DEFAULT))]
     for i in range(howmany - 1):
         current_end = current_begin - timedelta(days=1)
         current_begin = datetime.date(current_end.year, current_end.month, 1)
-        result_list.append((format(current_begin, default_format), format(current_end, default_format)))
+        result_list.append((format(current_begin, FORMAT_DEFAULT), format(current_end, FORMAT_DEFAULT)))
     result_list = result_list[::-1]
     return result_list
 

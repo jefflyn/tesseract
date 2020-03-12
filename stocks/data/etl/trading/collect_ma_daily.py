@@ -1,19 +1,17 @@
-import datetime
 import time
 
 import numpy as np
 import tushare as ts
 
 from stocks.gene import maup
+from stocks.util import date_util
 from stocks.util.db_util import get_db
 from stocks.util.pro_util import pro
 
 if __name__ == '__main__':
     # 设定获取日线行情的初始日期和终止日期，其中终止日期设定为当天
-    time_temp = datetime.datetime.now() - datetime.timedelta(days=365*2)
-    start_dt = time_temp.strftime('%Y%m%d')
-    time_temp = datetime.datetime.now() - datetime.timedelta(days=0)
-    end_dt = time_temp.strftime('%Y%m%d')
+    start_dt = date_util.shift_date(type='y', n=-2, format='YYYYMMDD')
+    end_dt = date_util.get_today(format=date_util.FORMAT_FLAT)
     ma = [5, 10, 20, 30, 60, 90, 120, 250]
     print("Collect ma data from " + start_dt + " to " + end_dt)
 
@@ -29,23 +27,31 @@ if __name__ == '__main__':
     # 循环获取单个股票的日线行情
     # 1分钟不超过200次调用
     for i in range(len(stock_pool)):
+        ts_code = stock_pool[i]
         try:
             # 打印进度
             if i % 200 == 0:
-                print('Seq: ' + str(i + 1) + ' of ' + str(total) + '   Code: ' + str(stock_pool[i]))
+                print('Seq: ' + str(i + 1) + ' of ' + str(total) + '   Code: ' + ts_code)
             # 前复权行情
-            df = ts.pro_bar(api=pro, ts_code=stock_pool[i], adj='qfq', ma=ma, start_date=start_dt, end_date=end_dt)
+            df = ts.pro_bar(api=pro, ts_code=ts_code, adj='qfq', ma=ma, start_date=start_dt, end_date=end_dt)
             if df is None:
                 continue
         except Exception as e:
             print(e)
             print('No DATA Code: ' + str(i))
             time.sleep(60)
-            df = ts.pro_bar(api=pro, ts_code=stock_pool[i], adj='qfq', ma=ma, start_date=start_dt, end_date=end_dt)
+            df = ts.pro_bar(api=pro, ts_code=ts_code, adj='qfq', ma=ma, start_date=start_dt, end_date=end_dt)
             # 打印进度
-            print('redo Seq: ' + str(i + 1) + ' of ' + str(total) + '   Code: ' + str(stock_pool[i]))
+            print('redo Seq: ' + str(i + 1) + ' of ' + str(total) + '   Code: ' + ts_code)
 
         df = df.head(4)
+        if df is None or df.empty:
+            print('  >>>', ts_code, 'no hist data found ...')
+            continue
+        late_date = max(list(df['trade_date']))
+        if late_date < end_dt:
+            print('  >>>', ts_code, 'has been suspended ...')
+            continue
         cols = df.columns
         c_len = df.shape[0]
         for j in range(c_len):
@@ -56,7 +62,7 @@ if __name__ == '__main__':
                     resu.append(-1)
                 else:
                     resu.append(resu0[k])
-            trade_date = (datetime.datetime.strptime(resu[1], "%Y%m%d")).strftime('%Y-%m-%d')
+            trade_date = date_util.parse_date_str(resu[1])
             try:
                 code = str(resu[0][0:6])
                 price = float(resu[5])
@@ -73,13 +79,13 @@ if __name__ == '__main__':
                 # np.set_printoptions(formatter={'float': '{: 0.2f}'.format})
                 grade = maup.get_ma_point(ma_arr)
 
-                sql_insert = "INSERT INTO hist_ma_day(code,trade_date,grade,price,ma5,ma10,ma20,ma30,ma60,ma90,ma120,ma250) " \
-                             "VALUES ('%s', '%s', '%.1f', '%.2f', '%.2f', '%.2f','%.2f','%.2f','%.2f','%.2f','%.2f','%.2f')" % (
-                                 code, trade_date, grade, price, ma5, ma10, ma20, ma30, ma60, ma90, ma120, ma250)
+                sql_insert = "INSERT INTO hist_ma_day(code,trade_date,grade,price,ma5,ma10,ma20,ma30,ma60,ma90,ma120,ma250,create_time) " \
+                             "VALUES ('%s', '%s', '%.1f', '%.2f', '%.2f', '%.2f','%.2f','%.2f','%.2f','%.2f','%.2f','%.2f','%s')" % (
+                                 code, trade_date, grade, price, ma5, ma10, ma20, ma30, ma60, ma90, ma120, ma250, date_util.now())
                 cursor.execute(sql_insert)
                 db.commit()
             except Exception as err:
-                print(err)
+                print('  >>> error:', err)
                 continue
     cursor.close()
     db.close()

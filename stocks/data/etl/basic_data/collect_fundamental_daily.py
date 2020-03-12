@@ -1,11 +1,11 @@
 # !/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import sys
+
 from stocks.util import date_util
 from stocks.util import db_util
 from stocks.util.pro_util import pro
-
-import sys
 
 if __name__ == '__main__':
     """
@@ -36,7 +36,7 @@ if __name__ == '__main__':
         sys.exit(0)
     trade_date_list = date_util.get_latest_trade_date(2)
     for i in range(len(trade_date_list)):
-        trade_date = date_util.parse_date_str(trade_date_list[i], format=date_util.format_flat)
+        trade_date = date_util.parse_date_str(trade_date_list[i], format=date_util.FORMAT_FLAT)
         df = pro.query('daily_basic', ts_code='', trade_date=trade_date,
                        fields='ts_code,trade_date,close,turnover_rate,turnover_rate_f,volume_ratio,pe,pe_ttm,pb,ps,'
                               'ps_ttm,total_share,float_share,free_share,total_mv,circ_mv')

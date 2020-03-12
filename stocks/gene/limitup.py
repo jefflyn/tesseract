@@ -1,10 +1,10 @@
-from stocks.util import display
-
 import datetime
+
 import pandas as pd
+
 from stocks.data import data_util
-from stocks.util import db_util
 from stocks.util import date_util
+from stocks.util import db_util
 
 LIMITUP_MIN = 9.9
 LIMITUP_FROM_DAYS = -365
@@ -216,10 +216,10 @@ if __name__ == '__main__':
     #                '2019-02-14', '2019-02-15', '2019-06-17', '2019-06-19', '2019-06-20', '2019-06-21', '2019-11-28',
     #                '2019-11-29', '2019-12-02']))
     # print(get_fire_date(['2019-01-30', '2019-01-31', '2019-02-01']))
-    print(get_today_up_limit_count(2))
+    # print(get_today_up_limit_count(2))
     # lpdf = get_limitup_from_hist_k(['002813'])
     # #print(lpdf)
-    # df = get_limitup_from_hist_trade(['002813'])
-    #print(df)
+    df = get_limitup_from_hist_trade(['603109'])
+    print(df)
     # df_count = count(df)
     #print(df_count)

@@ -46,7 +46,7 @@ def update_latest_limit_up_stat():
                         wave_b = round(float(wave_ab[1][0]), 2)
 
                     insert_value = [(fire_date, late_date, code, row['name'], industry, fire_price, price,
-                                     row['combo'], row['total'], wave_a, wave_b, wave_str.split('\n')[0], date_util.now())]
+                                     row['combo'], row['total'], wave_a, wave_b, str(wave_str).split('\n')[0], date_util.now())]
                     cursor.execute("delete from limit_up_stat where code='" + code + "'")
                     cursor.executemany(
                         'insert into limit_up_stat(fire_date, late_date, code, name, industry, fire_price, price, combo, '
@@ -55,7 +55,7 @@ def update_latest_limit_up_stat():
                     db.commit()
                     print(fire_date, code, 'Update limit up stat successfully.')
                 except Exception as err:
-                    print('  >>>error:', code, err)
+                    print('  >>>update_latest_limit_up_stat error:', code, err)
                     db.rollback()
         # 关闭游标和数据库的连接
         cursor.close()

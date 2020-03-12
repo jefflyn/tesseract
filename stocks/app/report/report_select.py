@@ -60,7 +60,7 @@ if __name__ == '__main__':
                    "and fire_date >= :target_date order by wave_a;"
     df_limit_up = _dt.read_sql(sql_limit_up, params={"target_date": date_util.get_last_month_start()})
 
-    file_name = 'select_' + date_util.get_today(date_util.format_flat) + '.xlsx'
+    file_name = 'select_' + date_util.get_today(date_util.FORMAT_FLAT) + '.xlsx'
     writer = pd.ExcelWriter(file_name)
     df_today_limit_up.to_excel(writer, sheet_name='today')
     df_combo.to_excel(writer, sheet_name='combo')

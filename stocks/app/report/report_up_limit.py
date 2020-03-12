@@ -1,10 +1,9 @@
-from utils.mail import mail_util
 import pandas as pd
-from stocks.util import date_util
-from stocks.util import db_util
 
 from stocks.gene import limitup
-
+from stocks.util import date_util
+from stocks.util import db_util
+from utils.mail import mail_util
 
 if __name__ == '__main__':
     content = 'Please find the attaches for today up limit report details.'
@@ -19,7 +18,7 @@ if __name__ == '__main__':
     df_up_limit = db_util.read_sql(sql_up_limit, params={"codes": codes})
     df_up_limit.index = df_up_limit['code']
 
-    file_name = 'up_limit_' + date_util.get_today(date_util.format_flat) + '.xlsx'
+    file_name = 'up_limit_' + date_util.get_today(date_util.FORMAT_FLAT) + '.xlsx'
     writer = pd.ExcelWriter(file_name)
     # df.to_excel(writer, sheet_name='up_limit')
     df = df.drop('code', 1)
