@@ -4,7 +4,7 @@ import time
 import tushare as ts
 
 from stocks.data import data_util
-from stocks.util import sms_util
+from stocks.util import sms_util, date_const
 from stocks.util.redis_util import redis_client
 
 pre_key_today = data_util.todaystr + '_'
@@ -49,7 +49,7 @@ if __name__ == '__main__':
                         if warn_times is None:
                             content = name + ':' + code + ' up to ' + str(target_price) + ', please check!'
                             try:
-                                redis_client.set(redis_key, name + str(price))
+                                redis_client.set(redis_key, name + str(price), ex=date_const.ONE_MONTH * 3)
                                 name_format = '：' + code + ' ' + name
                                 change_str = str(round(realtime_change, 2)) + '%' if realtime_change < 0 else '+' + str(
                                     round(realtime_change, 2)) + '%'
@@ -66,7 +66,7 @@ if __name__ == '__main__':
                         if warn_times is None:
                             content = name + ':' + code + ' down to ' + str(abs(target_price)) + ', please check!'
                             try:
-                                redis_client.set(redis_key, name + str(price))
+                                redis_client.set(redis_key, name + str(price), ex=date_const.ONE_MONTH * 3)
                                 name_format = '：' + code + ' ' + name
                                 change_str = str(round(realtime_change, 2)) + '%' if realtime_change < 0 else '+' + str(
                                     round(realtime_change, 2)) + '%'
@@ -86,7 +86,7 @@ if __name__ == '__main__':
                         content = name + ' ' + code + ' change to +' + p + '%, please check!'
                         value = name + ':' + str(price) + ' +' + str(round(realtime_change, 2)) + '%'
                         try:
-                            redis_client.set(redis_key, value)
+                            redis_client.set(redis_key, value, ex=date_const.ONE_MONTH * 3)
                             name_format = '：' + code + ' ' + name
                             change_str = str(round(realtime_change, 2)) + '%' if realtime_change < 0 else '+' + str(
                                 round(realtime_change, 2)) + '%'
@@ -105,7 +105,7 @@ if __name__ == '__main__':
                         content = name + ':' + code + ' change to ' + p + '%, please check!'
                         value = name + ' ' + str(price) + ' ' + str(round(realtime_change, 2)) + '%'
                         try:
-                            redis_client.set(redis_key, value)
+                            redis_client.set(redis_key, value, ex=date_const.ONE_MONTH * 3)
                             name_format = '：' + code + ' ' + name
                             change_str = str(round(realtime_change, 2)) + '%' if realtime_change < 0 else '+' + str(
                                 round(realtime_change, 2)) + '%'

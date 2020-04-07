@@ -45,5 +45,3 @@ order by sra.wave_a asc;
 select count(1) from limit_up_stat where combo > 1;
 select count(1) from limit_up_stat where count > 2;
 
-198176 0
-176198 0

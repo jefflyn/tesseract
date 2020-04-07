@@ -3,6 +3,12 @@ import arrow
 utc = arrow.utcnow()
 local = utc.to('local')
 
+ONE_MINUTE = 60 * 60
+ONE_HOUR = ONE_MINUTE * 60
+ONE_DAY = ONE_HOUR * 24
+ONE_WEEK = ONE_DAY * 7
+ONE_MONTH = ONE_DAY * 30
+
 DATE_FORMAT_MONTH = 'YYYY-MM'
 DATE_FORMAT_SIMPLE = 'YYYYMMDD'
 DATE_FORMAT_DEFAULT = 'YYYY-MM-DD'
