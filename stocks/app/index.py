@@ -82,7 +82,7 @@ def get_status():
 
         # 告警短信:价格、涨跌幅等
         pct_chage = float(row['change']) if row['change'] is not None else 0
-        if pct_chage < -2 or pct_chage < -3 or pct_chage < -4:
+        if pct_chage > -11 and (pct_chage < -2 or pct_chage < -3 or pct_chage < -4):
             key = date_util.get_today() + '_index_' + code + '_' + str(int(pct_chage))
             name_format = '：' + code + ' ' + row['name']
             price_format = str(round(float(row['change']), 2)) + '%'
