@@ -4,6 +4,7 @@ select concat('collect basics: ', trade_date , ' total:' , count(1)) from basics
 select concat(trade_date, ' collect trade total: ' , count(1)) from hist_trade_day where trade_date >= '2020-03-01' group by trade_date order by trade_date desc;
 select concat(trade_date, ' collect ma total: ' , count(1)) from hist_ma_day where trade_date >= '2020-03-01' group by trade_date order by trade_date desc;
 select concat(trade_date, ' collect index total: ' , count(1)) from index_hist_k where trade_date >= '2020-03-01' group by trade_date order by trade_date desc;
+select concat(trade_date, ' limit up daily total: ' , count(1)) from hist_trade_day where trade_date >= '2020-03-01' and close >= round(pre_close * 1.1, 2) group by trade_date order by trade_date desc;;
 select concat(trade_date, ' collect limit daily total: ' , count(1)) from limit_up_daily where trade_date >= '2020-03-01' group by trade_date order by trade_date desc;
 select concat(late_date, ' update limit stat total: ' , count(1)) from limit_up_stat where late_date >= '2020-03-01' group by late_date order by late_date desc;
 select concat(trade_date, ' select_result_all total: ' , count(1)) from select_result_all group by trade_date;
@@ -45,8 +46,8 @@ select * from hist_weekly order by trade_date desc;
 select * from hist_weekly where code=600126 order by trade_date desc limit 2;
 
 # ma data
-select * from hist_ma_day where trade_date='2020-03-02' order by grade desc;
-select * from hist_ma_day where code in ('000587', '600929');
+select * from hist_ma_day where trade_date='2020-03-03' order by grade desc;
+select * from hist_ma_day where code in ('300070', '600929');
 
 -- basic info
 select esp from basics;
@@ -61,7 +62,7 @@ select * from basic_daily where code='002692';
 -- index hist data
 -- 000001.SH 000016.SH 000300.SH 000905.SH
 -- 399001.SZ 399005.SZ 399006.SZ 399008.SZ
-select * from index_hist_k where trade_date >='2020-02-03' order by code, trade_date;
+select * from index_hist_k where trade_date >='2020-02-03' order by code, trade_date desc;
 
 select * from index_hist_k where code in ('000001','399001','399006') order by code, trade_date;
 
@@ -192,5 +193,5 @@ select * from my_stock_pool where platform = 'pa';
 select * from my_stock_pool where platform = 'sim';
 select * from stocks.limit_up_daily where trade_date='2019-11-04';
 
-8000000
+select * from hist_trade_day where code='600197' order by trade_date desc;
 56000000

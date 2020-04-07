@@ -1,8 +1,8 @@
 -- 条件查询 selection data
 select * from select_result_all where code='300210';
-select * from select_result_all where name like '%动力%';
+select * from select_result_all where name like '%黑芝麻%';
 select * from select_result_all where code in ('000587','600929','300555', '000862');
-select * from select_result_all where concepts like '%宁德%' order by wave_a;
+select * from select_result_all where concepts like '%肉%' order by wave_a;
 select * from select_result_all where list_date > 20190224;
 -- 1、超跌机会，不含次新（低风险、适合长线）
 select *
