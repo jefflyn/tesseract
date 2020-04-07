@@ -100,6 +100,9 @@ def re_exe(type, interval=30, sortby=None):
                 df = df.sort_values(['change'])
 
             final_df = format_realtime(df)
+            if final_df.empty:
+                print('no data, exit!')
+                break
             print(final_df)
             time.sleep(interval)
 

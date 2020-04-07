@@ -10,6 +10,7 @@ PRECIOUS_METAL = {
 }
 
 FERROUS_METAL = {
+    "I0": "铁矿石",
     "RB0": "螺纹",
     "SF0": "硅铁"
 }
@@ -44,9 +45,9 @@ AGRICULTURAL_PRODUCTS = {
 }
 
 FINANCIAL = {
-    "IC0": "中证",
-    "IF0": "沪深",
-    "IH0": "上证"
+    "IC2005": "中证",
+    "IF2005": "沪深",
+    "IH2005": "上证"
 }
 
 
