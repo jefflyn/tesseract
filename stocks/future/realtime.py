@@ -7,8 +7,8 @@ import requests
 
 from stocks.future import future_const
 
-KEYS = ['my', 'ec', 'pm', 'fm', 'nfm', 'ap', 'fp']
-FOCUS = ['C2009', 'EG2005', 'CF2009']
+KEYS = ['my', 'ec', 'pm', 'fm', 'nfm', 'ap', 'fp', 'all']
+FOCUS = ['C2009', 'EG2005', 'EB2005', 'CF2009']
 
 
 def get_contract_keys(key_type=None):
@@ -25,7 +25,9 @@ def get_contract_keys(key_type=None):
         targets = ','.join(future_const.AGRICULTURAL_PRODUCTS.keys())
     elif type == 'fp':
         targets = ','.join(future_const.FINANCIAL.keys())
-
+    elif type == 'all':
+        all_keys = future_const.ENERGY_CHEMICAL.keys() | future_const.PRECIOUS_METAL.keys() | future_const.FERROUS_METAL.keys() | future_const.NON_FERROUS_METAL.keys() | future_const.AGRICULTURAL_PRODUCTS.keys()
+        targets = ','.join(all_keys)
     return targets
 
 
