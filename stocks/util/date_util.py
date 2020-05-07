@@ -18,6 +18,10 @@ FORMAT_FLAT = '%Y%m%d'
 today = datetime.datetime.now()
 
 open_time = datetime.datetime(today.year, today.month, today.day, hour=9, minute=30, second=0)
+mid_close_time = datetime.datetime(today.year, today.month, today.day, hour=11, minute=30, second=0)
+mid_open_time = datetime.datetime(today.year, today.month, today.day, hour=13, minute=00, second=0)
+close_time = datetime.datetime(today.year, today.month, today.day, hour=15, minute=00, second=0)
+
 
 # 昨天
 yesterday = today - timedelta(days=1)
