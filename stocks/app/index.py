@@ -37,11 +37,12 @@ def format_index(df):
 
 
 def get_status():
-    indexdf = ts.get_index()
-    indexdf = indexdf[indexdf['code'].isin(target)]
-
+    index_df = ts.get_index()
+    index_df = index_df[index_df['code'].isin(target)]
+    open_time = date_util.open_time
+    seconds = round((date_util.now() - open_time).seconds)
     result_data = []
-    for index, row in indexdf.iterrows():
+    for index, row in index_df.iterrows():
         row_data = []
         code = row['code']
         row_data.append(code)
@@ -54,7 +55,10 @@ def get_status():
         row_data.append(low)
         row_data.append(high)
         row_data.append(row['volume'])
-        row_data.append(row['amount'])
+        trade_amount = row['amount']
+        row_data.append(trade_amount)
+        pre_amount = round(trade_amount / seconds * 60 * 60 * 4, 4)
+        row_data.append(pre_amount)
 
         # get wave data and bottom top
         wavedf = wave.get_wave(code, is_index=True)
@@ -91,12 +95,12 @@ def get_status():
                 sms.send_msg_with_tencent(code, name_format, price_format)
                 redis_client.set(key, row['name'] + price_format, ex=date_const.ONE_MONTH * 3)
 
-    columns = ['code', 'name', 'change', 'close', 'low', 'high', 'volume', 'amount', 'current', 'wave', 'bottom', 'uspace',
+    columns = ['code', 'name', 'change', 'close', 'low', 'high', 'volume', 'amount', 'famout', 'current', 'wave', 'bottom', 'uspace',
                'dspace', 'top', 'position', 'suggest']
-    resultdf = pd.DataFrame(result_data, columns=columns)
-    resultdf = resultdf.sort_values('change', axis=0, ascending=True, inplace=False, kind='quicksort', na_position='last')
+    result_df = pd.DataFrame(result_data, columns=columns)
+    result_df = result_df.sort_values('change')
 
-    return resultdf
+    return result_df
 
 
 def suggest_by_position(code, position):

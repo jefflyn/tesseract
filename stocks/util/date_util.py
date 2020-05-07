@@ -17,6 +17,8 @@ FORMAT_FLAT = '%Y%m%d'
 # 今天
 today = datetime.datetime.now()
 
+open_time = datetime.datetime(today.year, today.month, today.day, hour=9, minute=30, second=0)
+
 # 昨天
 yesterday = today - timedelta(days=1)
 
@@ -290,6 +292,13 @@ def get_month_firstday_lastday(howmany=12):
         result_list.append((format(current_begin, FORMAT_DEFAULT), format(current_end, FORMAT_DEFAULT)))
     result_list = result_list[::-1]
     return result_list
+
+
+def date_diff(begin_date=now(), end_date=now(), type='days'):
+    if type == 'days':
+        return (end_date - begin_date).days
+    elif type == 'minutes':
+        return (end_date - begin_date).minutes
 
 
 def shift_date(type='d', from_date=None, n=-1, format='YYYY-MM-DD'):

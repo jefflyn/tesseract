@@ -229,7 +229,7 @@ if __name__ == '__main__':
             df['low'] = df['low'].apply(lambda x: '_' + str(round(float(x), 2)))
             df['high'] = df['high'].apply(lambda x: '^' + str(round(float(x), 2)))
             print(df[['code', 'name', 'price', 'change', 'o_change', 'l_change', 'bid', 'b1_v', 'ask', 'a1_v', 'open', 'low', 'high', 'time']])
-            time.sleep(60)
+            time.sleep(5)
     # hold = argv[2] if len(argv) > 2 else 1
     # display = True if (len(argv) > 3 and str(argv[3]).upper() == 'TRUE') else False
     sort = argv[2] if len(argv) > 2 else None
