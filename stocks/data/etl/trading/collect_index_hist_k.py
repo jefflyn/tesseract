@@ -38,6 +38,7 @@ def collect_index_hist_k(start=None):
                 pre_trade_index = ts.get_k_data(code=code, start=pre_trade_date, end=pre_trade_date,
                                         ktype='D', autype='qfq', index=True)
             if pre_trade_index.empty is True:
+                print(code, pre_trade_date, 'no pre-date index data found, continue...')
                 continue
             pre_close = float(pre_trade_index.loc[pre_trade_index.index[0], 'close'])
             close = float(row['close'])
@@ -62,5 +63,5 @@ def collect_index_hist_k(start=None):
 
 
 if __name__ == '__main__':
-    collect_index_hist_k()
+    collect_index_hist_k(start='2020-05-06')
 

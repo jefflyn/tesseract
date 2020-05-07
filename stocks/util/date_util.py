@@ -168,17 +168,17 @@ def get_latest_trade_date(days=1):
     :param days:
     :return: [yyyy-MM-dd]
     """
-    trade_dates = hist_date_list[(hist_date_list.is_trade == 1) & (hist_date_list.hist_date <= get_today())].head(days)
+    trade_dates = hist_date_list[(hist_date_list.is_open == 1) & (hist_date_list.hist_date <= get_today())].head(days)
     return list(trade_dates['hist_date'])
 
 
 def is_tradeday(query_date=None):
-    hist_date = hist_date_list[(hist_date_list.hist_date == query_date) & (hist_date_list.is_trade == 1)]
-    is_trade = False if (hist_date is None or hist_date.empty) else True
+    hist_date = hist_date_list[(hist_date_list.hist_date == query_date) & (hist_date_list.is_open == 1)]
+    is_open = False if (hist_date is None or hist_date.empty) else True
     # query_date = convert_to_date(query_date)
     # is_holiday = ts_dateu.is_holiday(query_date)
     # return is_holiday is False
-    return is_trade
+    return is_open
 
 
 def today_is_tradeday():
@@ -199,7 +199,7 @@ def get_previous_trade_day(trade_date=None):
         print(trade_date)
     index = hist_date.index.to_numpy()[0]
     for i in range(1, 15):
-        next_hist_date = hist_date_list.loc[index + i, ['hist_date', 'is_trade']]
+        next_hist_date = hist_date_list.loc[index + i, ['hist_date', 'is_open']]
         if next_hist_date[1] == 1:
             return next_hist_date.iat[0]
 
@@ -215,7 +215,7 @@ def get_next_trade_day(trade_date=get_today()):
     for i in range(1, 15):
         if index - i < 0:
             break
-        next_hist_date = hist_date_list.loc[index - i, ['hist_date', 'is_trade']]
+        next_hist_date = hist_date_list.loc[index - i, ['hist_date', 'is_open']]
         if next_hist_date[1] == 1:
             return next_hist_date.iat[0]
 

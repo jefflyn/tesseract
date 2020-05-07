@@ -3,61 +3,45 @@
 
 from datetime import timedelta
 
-import pandas as pd
-import tushare.util.dateu as ts_dateu
-
 from stocks.util import date_util
+from stocks.util.pro_util import pro
 
 
 def init_trade_date_list():
-    n = 0
-    result = list()
-    while True:
-        target_date = (date_util.now() - timedelta(days=n)).strftime(date_util.FORMAT_DEFAULT)
-        is_holiday = ts_dateu.is_holiday(target_date)
-        if is_holiday is False:
-            date_list = [target_date, 1]
-        else:
-            date_list = [target_date, 0]
-        result.append(date_list)
-        print(date_list)
-
-        n += 1
-        if n == 1800:
-            break
-    result_df = pd.DataFrame(result, columns=['hist_date', 'is_trade'])
-    print(result_df)
+    '''
+    exchange: 交易所 SSE上交所 SZSE深交所
+    cal_date: 日历日期
+    is_open: 是否交易 0=休市 1=交易
+    :return:
+    '''
+    curt_date = date_util.now().strftime(date_util.FORMAT_FLAT)
+    result_df = pro.trade_cal(start_date='20180101', end_date=curt_date)
+    result_df = result_df.sort_values('cal_date', ascending=False)
+    result_df['hist_date'] = result_df['cal_date'].apply(lambda x: date_util.parse_date_str(x, date_util.FORMAT_DEFAULT))
+    result_df = result_df.reset_index()
     result_df.to_csv("hist_trade_date.csv")
 
 
 def collect_trade_date(n=0):
-    result = list()
-    while n >= 0:
-        # target_date = date_util.get_today()
-        target_date = (date_util.now() + timedelta(days=n)).strftime(date_util.FORMAT_DEFAULT)
-        hist_date_df = date_util.hist_date_list
-        target_df = hist_date_df[hist_date_df.hist_date == target_date]
+    hist_date_df = date_util.hist_date_list
+    target_date = (date_util.now() + timedelta(days=n)).strftime(date_util.FORMAT_DEFAULT)
+    target_df = hist_date_df[hist_date_df.hist_date == target_date]
 
-        if target_df.empty is True:
-            # query_date = date_util.convert_to_date(target_date)
-            is_holiday = ts_dateu.is_holiday(target_date)
-            if is_holiday is False:
-                date_list = [target_date, 1]
-            else:
-                date_list = [target_date, 0]
-            result.append(date_list)
-        else:
-            print('collect_trade_date %s existed!' % target_date)
-        n -= 1
-    insert_df = pd.DataFrame(result, columns=['hist_date', 'is_trade'])
-    # insert_df = pd.DataFrame([date_list], columns=['hist_date', 'is_trade'])
-    hist_date_df = insert_df.append(hist_date_df, ignore_index=True, sort=False)
-    hist_date_df = hist_date_df[['hist_date', 'is_trade']]
-    print(hist_date_df.head(3))
-    hist_date_df.to_csv('hist_trade_date.csv')
+    if target_df.empty is True:
+        start_date = hist_date_df.head(1).loc[0, 'cal_date']
+        end_date = (date_util.now() + timedelta(days=n)).strftime(date_util.FORMAT_FLAT)
+        result_df = pro.trade_cal(start_date=start_date, end_date=end_date)
+        result_df = result_df.sort_values('cal_date', ascending=False)
+        result_df['hist_date'] = result_df['cal_date'].apply(
+            lambda x: date_util.parse_date_str(x, date_util.FORMAT_DEFAULT))
+        hist_date_df = result_df.append(hist_date_df, ignore_index=True, sort=False)
+        print(hist_date_df.head(3))
+        hist_date_df.to_csv('hist_trade_date.csv')
+    else:
+        print('collect_trade_date %s existed!' % target_date)
 
 
 if __name__ == '__main__':
-    collect_trade_date(7)
-    # init_trade_date_list()
+    init_trade_date_list()
+    # collect_trade_date(7)
     print('collect_trade_date %s finished!' % date_util.get_today())
