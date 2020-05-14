@@ -72,6 +72,7 @@ def get_realtime(hddf=None, last_trade_data=None, sortby=None):
         code = INDEX_LIST_NEW[code] if code in INDEX_LIST_NEW.keys() else code
         # print(code)
         pre_close = float(row['pre_close'])
+        up_limit = round(pre_close * 1.1, 2)
         price = float(row['price'])
         open = float(row['open'])
         high = float(row['high'])
@@ -162,13 +163,14 @@ def get_realtime(hddf=None, last_trade_data=None, sortby=None):
         curt_data.append(position)
         curt_data.append(share)
         curt_data.append(price * share)
+        curt_data.append(up_limit)
         data_list.append(curt_data)
 
     df_append = pd.DataFrame(data_list,
                              columns=['Y', 'o_gap', 'g_scale', 'g_space', 'change', 'amp', 'cost',
                                       'profit_amt', 'profit_perc', 'profit', 'wave', 'bottom',
                                       'uspace', 'dspace', 'top', 'current', 'position',
-                                      'share', 'capital'])
+                                      'share', 'capital', 'up_limit'])
     df = df.join(df_append)
 
     df = df[df.price > '1']
@@ -184,7 +186,7 @@ def get_realtime(hddf=None, last_trade_data=None, sortby=None):
         df = df.sort_values(['change'], axis=0, ascending=True, inplace=False, kind='quicksort', na_position='last')
 
     return df[
-        ['Y', 'code', 'name', 'price', 'o_gap', 'g_scale', 'g_space', 'change', 'bid', 'ask', 'low', 'high',
+        ['Y', 'code', 'name', 'price', 'o_gap', 'g_scale', 'g_space', 'change', 'bid', 'ask', 'low', 'high', 'up_limit',
          'current', 'wave', 'bottom', 'uspace', 'dspace', 'top', 'position', 'cost', 'share', 'capital', 'profit']]
 
 

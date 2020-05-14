@@ -16,15 +16,16 @@ if __name__ == '__main__':
     # stock.trading
     # print('get_hist_data >>>', ts.get_hist_data(code='600373', start='2020-02-20', end=None, ktype='D'))
     # print(ts.get_tick_data())
-    today_all_df = ts.get_today_all()
-    today_all_df = today_all_df[today_all_df.changepercent > 9.9]
-    print('get_today_all >>>', today_all_df)
+    # today_all_df = ts.get_today_all()
+    # today_all_df = today_all_df[today_all_df.changepercent > 9.9]
+    # print('get_today_all >>>', today_all_df)
     # print(ts.get_realtime_quotes())
     # print('get_h_data >>>', ts.get_h_data(code='000001', start='2020-01-01', end='2020-03-01', autype='qfq', index=True))
     # print(ts.get_today_ticks())
     # print(ts.get_index())
     # print(ts.get_hists())
-    print('get_k_data >>>', ts.get_k_data(code='000001', start='2020-01-01', end='', ktype='D', autype='qfq', index=True))
+    # date  open  close  high   low     volume    code
+    print('get_k_data >>>', ts.get_k_data(code='300169', start='2020-03-01', end='2020-04-01', ktype='M', autype='qfq', index=False))
 
     get_day_all = ts.get_day_all(date='2020-02-14').head(10)
     print('get_day_all >>>', get_day_all)

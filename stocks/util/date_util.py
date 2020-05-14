@@ -116,6 +116,19 @@ def get_last_month_end(format=FORMAT_DEFAULT):
     return last_month_end.strftime(format)
 
 
+def get_previous_month_end(date=None, format=FORMAT_DEFAULT):
+    """
+    获取指定日期上个月底
+    :param date:
+    :param format:
+    :return:
+    """
+    this_date = convert_to_date(date)
+    month_start = datetime.datetime(this_date.year, this_date.month, 1)
+    previous_month_end = month_start - timedelta(days=1)
+    return previous_month_end.strftime(format)
+
+
 def get_last_2month_start(format=FORMAT_DEFAULT):
     return last_2month_start.strftime(format)
 
@@ -332,10 +345,9 @@ if __name__ == '__main__':
     print(get_next_trade_day('2019-12-06'))
     print(get_previous_trade_day('2019-12-08'))
     # init_trade_date_list()
-
     print(get_latest_trade_date(5))
     # print(get_month_firstday_lastday(8))
-    # print(this_month_start)
+    print(get_previous_month_end('2020-12-31'))
     # print(get_week_firstday_lastday(-8))
     # print(get_week_firstday_lastday(-7))
     # print(get_week_firstday_lastday(-6))

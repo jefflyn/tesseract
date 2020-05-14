@@ -71,18 +71,20 @@ create table hist_monthly
 (
 	trade_date varchar(10) default '' not null comment '交易日',
 	ts_code varchar(10) default '' not null comment 'ts code',
-	code varchar(6) null,
+	code varchar(6) not null comment '代码',
 	pre_close decimal(10,2) null comment '上一个交易日收盘价',
 	open decimal(10,2) null comment '开盘价',
 	close decimal(10,2) null comment '收盘价',
 	high decimal(10,2) null comment '最高价',
 	low decimal(10,2) null comment '最低价',
-	vol mediumtext null comment '交易量（手）',
+	volume int null comment '交易量（手）',
 	amount decimal(20,4) null comment '交易额（千）',
 	amt_change decimal(10,2) null comment '涨跌额',
 	pct_change decimal(10,4) null comment '涨跌幅',
-	update_time timestamp default CURRENT_TIMESTAMP null,
-	primary key (trade_date, ts_code)
+	create_time timestamp default CURRENT_TIMESTAMP null,
+	primary key (trade_date, ts_code),
+	constraint idx_hist_monthly_date_code
+		unique (trade_date, code)
 )
 comment '周交易数据（前复权）';
 
@@ -94,6 +96,8 @@ create index ix_pct_change
 
 create index ix_ts_code
 	on hist_monthly (ts_code);
+
+
 
 create table hist_trade_day
 (
