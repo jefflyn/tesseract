@@ -6,9 +6,9 @@ from stocks.util.db_util import get_db
 
 def collect_monthly(start_time=None, end_time=None):
     if start_time is None:
-        start_time = date_util.get_last_month_end()
+        start_k_time = date_util.get_last_month_start()
     else:
-        start_time = date_util.get_previous_month_end(start_time)
+        start_k_time = date_util.get_previous_month_trade_end(start_time)
     if end_time is None:
         end_time = date_util.get_this_month_end()
     # 建立数据库连接
@@ -20,10 +20,10 @@ def collect_monthly(start_time=None, end_time=None):
         print("no stock found, process end!")
         exit(0)
     stock_pool = [ts_code_tuple[0] for ts_code_tuple in cursor.fetchall()]
-    print("Collect k data from " + start_time + " to " + end_time)
+    print(date_util.now(), " Collect k data from " + start_k_time + " to " + end_time)
 
     for code in stock_pool:
-        kdf = ts.get_k_data(code=code, start=start_time, end=end_time, ktype='M', autype='qfq', index=False)
+        kdf = ts.get_k_data(code=code, start=start_k_time, end=end_time, ktype='M', autype='qfq', index=False)
         if kdf is None or kdf.empty:
             continue
         kdf = kdf.sort_values(by='date', ascending=False)
@@ -33,8 +33,7 @@ def collect_monthly(start_time=None, end_time=None):
             code = str(row['code'])
             ts_code = code + '.SH' if code[0:1] == '6' else code + '.SZ'
             trade_date = row['date']
-            pre_trade_date = date_util.get_previous_month_end(trade_date)
-            pre_trade_date = pre_trade_date if date_util.is_tradeday(pre_trade_date) else date_util.get_previous_trade_day(pre_trade_date)
+            pre_trade_date = date_util.get_previous_month_trade_end(trade_date)
             pre_k = kdf[kdf.date == pre_trade_date]
             if pre_k is None or pre_k.empty:
                 print(code, pre_trade_date, 'no pre-date k data found, continue...')
@@ -49,7 +48,7 @@ def collect_monthly(start_time=None, end_time=None):
             insert_values.append(curt_values)
 
         try:
-            del_sql = "delete from hist_monthly where code='" + code + "' and trade_date > '" + start_time + "'"
+            del_sql = "delete from hist_monthly where code='" + code + "' and trade_date >= '" + start_time + "'"
             cursor.execute(del_sql)
             # 注意这里使用的是executemany而不是execute
             insert_count = cursor.executemany(
@@ -63,9 +62,9 @@ def collect_monthly(start_time=None, end_time=None):
             db.rollback()
     cursor.close()
     db.close()
-    print('All Finished!')
+    print(date_util.now(), ' All Finished!')
 
 
 if __name__ == '__main__':
-    collect_monthly(start_time='2020-03-01', end_time=None)
+    collect_monthly(start_time='2020-05-01', end_time=None)
 

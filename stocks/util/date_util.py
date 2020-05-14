@@ -22,7 +22,6 @@ mid_close_time = datetime.datetime(today.year, today.month, today.day, hour=11, 
 mid_open_time = datetime.datetime(today.year, today.month, today.day, hour=13, minute=00, second=0)
 close_time = datetime.datetime(today.year, today.month, today.day, hour=15, minute=00, second=0)
 
-
 # 昨天
 yesterday = today - timedelta(days=1)
 
@@ -127,6 +126,11 @@ def get_previous_month_end(date=None, format=FORMAT_DEFAULT):
     month_start = datetime.datetime(this_date.year, this_date.month, 1)
     previous_month_end = month_start - timedelta(days=1)
     return previous_month_end.strftime(format)
+
+
+def get_previous_month_trade_end(date=None, format=FORMAT_DEFAULT):
+    pre_month_end = get_previous_month_end(date, format)
+    return pre_month_end if is_tradeday(pre_month_end) else get_previous_trade_day(pre_month_end)
 
 
 def get_last_2month_start(format=FORMAT_DEFAULT):
