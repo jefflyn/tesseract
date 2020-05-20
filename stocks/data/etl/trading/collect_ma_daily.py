@@ -80,9 +80,9 @@ if __name__ == '__main__':
                 # np.set_printoptions(formatter={'float': '{: 0.2f}'.format})
                 grade = maup.get_ma_point(ma_arr)
 
-                curt_values = (code, trade_date, str(grade), str(price), str(ma5), str(ma10), str(ma20),
-                               str(ma30), str(ma60), str(ma90), str(ma120), str(ma250),
-                               date_util.get_today())
+                curt_values = (code, trade_date, str(round(grade, 2)), str(round(price, 2)), str(round(ma5, 2)), str(round(ma10, 2)),
+                               str(round(ma20, 2)), str(round(ma30, 2)), str(round(ma60, 2)), str(round(ma90, 2)), str(round(ma120, 2)),
+                               str(round(ma250, 2)), date_util.get_now())
                 insert_values.append(curt_values)
 
                 # sql_insert = "INSERT INTO hist_ma_day(code,trade_date,grade,price,ma5,ma10,ma20,ma30,ma60,ma90,ma120,ma250,create_time) " \
@@ -101,9 +101,9 @@ if __name__ == '__main__':
                 'INSERT INTO hist_ma_day(code, trade_date, grade, price, ma5, ma10, ma20, ma30, ma60, ma90, ma120, ma250, create_time)'
                 'values(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)', insert_values)
             db.commit()
-            print(code, trade_date, 'ma data insert successfully.')
+            # print(code, trade_date, 'ma data insert successfully.')
         except Exception as err:
-            print('>>> failed!', err)
+            print('>>> insert data failed!', err)
             db.rollback()
     cursor.close()
     db.close()

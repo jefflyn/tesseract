@@ -11,7 +11,7 @@ from dateutil.rrule import *
 
 hist_date_list = pd.read_csv(os.getenv('STOCKS_HOME') + '/data/etl/basic_data/' + 'hist_trade_date.csv')
 
-ISO_8601_DATETIME = '%Y-%m-%dT%H:%M:%SZ'
+FORMAT_DATETIME = '%Y-%m-%d %H:%M:%S'
 FORMAT_DEFAULT = '%Y-%m-%d'
 FORMAT_FLAT = '%Y%m%d'
 
@@ -73,6 +73,10 @@ last_year_start = datetime.datetime(last_year_end.year, 1, 1)
 
 def now():
     return datetime.datetime.now()
+
+
+def get_now():
+    return now().strftime(FORMAT_DATETIME)
 
 
 # 本周第一天和最后一天
@@ -347,6 +351,7 @@ def shift_date(type='d', from_date=None, n=-1, format='YYYY-MM-DD'):
 
 
 if __name__ == '__main__':
+    print(get_now())
     print(get_next_trade_day('2019-12-06'))
     print(get_previous_trade_day('2019-12-08'))
     # init_trade_date_list()
