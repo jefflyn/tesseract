@@ -80,7 +80,7 @@ if __name__ == '__main__':
                 grade = maup.get_ma_point(ma_arr)
 
                 sql_insert = "INSERT INTO hist_ma_day(code,trade_date,grade,price,ma5,ma10,ma20,ma30,ma60,ma90,ma120,ma250,create_time) " \
-                             "VALUES ('%s', '%s', '%.1f', '%.2f', '%.2f', '%.2f','%.2f','%.2f','%.2f','%.2f','%.2f','%.2f','%s')" % (
+                             "VALUES ('%s', '%s', '%.2f', '%.2f', '%.2f', '%.2f','%.2f','%.2f','%.2f','%.2f','%.2f','%.2f','%s')" % (
                                  code, trade_date, grade, price, ma5, ma10, ma20, ma30, ma60, ma90, ma120, ma250, date_util.now())
                 cursor.execute(sql_insert)
                 db.commit()

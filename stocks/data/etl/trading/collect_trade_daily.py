@@ -9,8 +9,8 @@ from stocks.util.db_util import get_db
 from stocks.util.pro_util import pro
 
 # 初始化数据True
-INIT_DATA = True
-INIT_DATA_START_DATE = '20100101'
+INIT_DATA = False
+INIT_DATA_START_DATE = '20150101'
 
 
 if __name__ == '__main__':

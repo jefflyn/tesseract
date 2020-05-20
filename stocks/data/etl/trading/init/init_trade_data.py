@@ -41,6 +41,7 @@ if __name__ == '__main__':
     start_dt = time_temp.strftime('%Y%m%d')
     if INIT_DATA:
         start_dt = INIT_DATA_START_DATE
+        cursor.execute('truncate table hist_trade_day')
     time_temp = datetime.datetime.now() - datetime.timedelta(days=0)
     end_dt = time_temp.strftime('%Y%m%d')
     print("Collect trade data from " + start_dt + " to " + end_dt)
@@ -49,8 +50,8 @@ if __name__ == '__main__':
     if total == 0:
         print("no stock found, process end!")
         exit(0)
-    # stock_pool = [ts_code_tuple[0] for ts_code_tuple in cursor.fetchall()]
-    stock_pool = ['300345.SZ', '600290.SH', '600966.SH', '600679.SH']
+    stock_pool = [ts_code_tuple[0] for ts_code_tuple in cursor.fetchall()]
+    # stock_pool = ['300345.SZ', '600290.SH', '600966.SH', '600679.SH']
     # 循环获取单个股票的日线行情
     # 1分钟不超过200次调用
     begin_time = datetime.datetime.now()
