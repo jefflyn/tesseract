@@ -41,7 +41,7 @@ def get_ma_point(ma_arr=None):
     grade = 0.0
     grade_score = 0.1
 
-    if ma5 >= ma10 >= ma20 >= ma30 >= ma60 >= ma90 >= ma120 >= ma250:
+    if ma5 >= ma10 >= ma20 >= ma30 >= ma60 >= ma90 >= ma120 >= ma250 > 0:
         grade = MA_GRADE_9
         if price >= ma5:
             grade = MA_GRADE_10
@@ -49,7 +49,7 @@ def get_ma_point(ma_arr=None):
         grade += point
         return grade
 
-    if price >= ma5 >= ma10:
+    if price >= ma5 >= ma10 > 0:
         grade = MA_GRADE_8
         if ma10 >= ma20:
             grade += grade_score
@@ -63,7 +63,7 @@ def get_ma_point(ma_arr=None):
             grade += grade_score
         if ma10 >= ma20 >= ma30 >= ma60 >= ma90 >= ma120 >= ma250:
             grade += grade_score
-    elif ma5 >= ma10 >= ma20:
+    elif ma5 >= ma10 >= ma20 > 0:
         grade = MA_GRADE_7
         if ma20 >= ma30:
             grade += grade_score
@@ -75,7 +75,7 @@ def get_ma_point(ma_arr=None):
             grade += grade_score
         if ma20 >= ma30 >= ma60 >= ma90 >= ma120 >= ma250:
             grade += grade_score
-    elif ma10 >= ma20 >= ma30:
+    elif ma10 >= ma20 >= ma30 > 0:
         grade = MA_GRADE_6
         if ma30 >= ma60:
             grade += grade_score
@@ -85,7 +85,7 @@ def get_ma_point(ma_arr=None):
             grade += grade_score
         if ma30 >= ma60 >= ma90 >= ma120 >= ma250:
             grade += grade_score
-    elif ma20 >= ma30 >= ma60:
+    elif ma20 >= ma30 >= ma60 > 0:
         grade = MA_GRADE_5
         if ma60 >= ma90:
             grade += grade_score
@@ -93,17 +93,17 @@ def get_ma_point(ma_arr=None):
             grade += grade_score
         if ma60 >= ma90 >= ma120 >= ma250:
             grade += grade_score
-    elif ma30 >= ma60 >= ma90:
+    elif ma30 >= ma60 >= ma90 > 0:
         grade = MA_GRADE_4
         if ma90 >= ma120:
             grade += grade_score
         if ma90 >= ma120 >= ma250:
             grade += grade_score
-    elif ma60 >= ma90 >= ma120:
+    elif ma60 >= ma90 >= ma120 > 0:
         grade = MA_GRADE_3
         if ma120 >= ma250:
             grade += grade_score
-    elif ma90 >= ma120 >= ma250:
+    elif ma90 >= ma120 >= ma250 > 0:
         grade = MA_GRADE_2
     return grade
 
