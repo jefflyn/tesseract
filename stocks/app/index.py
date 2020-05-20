@@ -51,8 +51,8 @@ def get_status():
     if date_util.mid_open_time < date_util.now() < date_util.close_time:
         afternoon_time = date_util.now()
 
-    morning_seconds = round((morning_time - date_util.open_time).seconds)
-    afternoon_seconds = round((afternoon_time - date_util.mid_open_time).seconds)
+    morning_seconds = round((morning_time - date_util.open_time).seconds / 60)
+    afternoon_seconds = round((afternoon_time - date_util.mid_open_time).seconds / 60)
 
     result_data = []
     for index, row in index_df.iterrows():
@@ -70,7 +70,7 @@ def get_status():
         row_data.append(row['volume'])
         trade_amount = row['amount']
         row_data.append(trade_amount)
-        pre_amount = round(trade_amount / (morning_seconds + afternoon_seconds) * 60 * 60 * 4, 4)
+        pre_amount = round(trade_amount / (morning_seconds + afternoon_seconds) * 60 * 4, 4)
         row_data.append(pre_amount)
 
         # get wave data and bottom top

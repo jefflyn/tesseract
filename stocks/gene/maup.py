@@ -1,14 +1,29 @@
-import stocks.util.display
-
 import datetime
+
 import numpy as np
 import pandas as pd
 
 from stocks import util
 from stocks.data import data_util
 
+MA_GRADE_9 = 9
+MA_GRADE_8 = 8
+MA_GRADE_7 = 7
+MA_GRADE_6 = 6
+MA_GRADE_5 = 5
+MA_GRADE_4 = 4
+MA_GRADE_3 = 3
+MA_GRADE_2 = 2
+MA_GRADE_1 = 1
+
+
 
 def get_ma_point(ma_arr=None):
+    """
+    获取移动平均等级
+    :param ma_arr:
+    :return:
+    """
     price = ma_arr[0]
     ma5 = ma_arr[1]
     ma10 = ma_arr[2]
@@ -24,8 +39,15 @@ def get_ma_point(ma_arr=None):
     # level: 987,654,321
     grade = 0.0
     grade_score = 0.1
+
+    if ma5 >= ma10 >= ma20 >= ma30 >= ma60 >= ma90 >= ma120 >= ma250:
+        grade = MA_GRADE_9
+        point = round(1 - (price - ma250) / ma250, 2)
+        grade += point
+        return grade
+
     if price >= ma5 >= ma10:
-        grade = 9
+        grade = MA_GRADE_8
         if ma10 >= ma20:
             grade += grade_score
         if ma10 >= ma20 >= ma30:
@@ -39,7 +61,7 @@ def get_ma_point(ma_arr=None):
         if ma10 >= ma20 >= ma30 >= ma60 >= ma90 >= ma120 >= ma250:
             grade += grade_score
     elif ma5 >= ma10 >= ma20:
-        grade = 8
+        grade = MA_GRADE_7
         if ma20 >= ma30:
             grade += grade_score
         if ma20 >= ma30 >= ma60:
@@ -51,7 +73,7 @@ def get_ma_point(ma_arr=None):
         if ma20 >= ma30 >= ma60 >= ma90 >= ma120 >= ma250:
             grade += grade_score
     elif ma10 >= ma20 >= ma30:
-        grade = 7
+        grade = MA_GRADE_6
         if ma30 >= ma60:
             grade += grade_score
         if ma30 >= ma60 >= ma90:
@@ -61,7 +83,7 @@ def get_ma_point(ma_arr=None):
         if ma30 >= ma60 >= ma90 >= ma120 >= ma250:
             grade += grade_score
     elif ma20 >= ma30 >= ma60:
-        grade = 6
+        grade = MA_GRADE_5
         if ma60 >= ma90:
             grade += grade_score
         if ma60 >= ma90 >= ma120:
@@ -69,17 +91,17 @@ def get_ma_point(ma_arr=None):
         if ma60 >= ma90 >= ma120 >= ma250:
             grade += grade_score
     elif ma30 >= ma60 >= ma90:
-        grade = 5
+        grade = MA_GRADE_4
         if ma90 >= ma120:
             grade += grade_score
         if ma90 >= ma120 >= ma250:
             grade += grade_score
     elif ma60 >= ma90 >= ma120:
-        grade = 4
+        grade = MA_GRADE_3
         if ma120 >= ma250:
             grade += grade_score
     elif ma90 >= ma120 >= ma250:
-        grade = 3
+        grade = MA_GRADE_2
     return grade
 
 
