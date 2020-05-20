@@ -12,7 +12,7 @@ if __name__ == '__main__':
     # 设定获取日线行情的初始日期和终止日期，其中终止日期设定为当天
     start_dt = date_util.shift_date(type='y', n=-2, format='YYYYMMDD')
     end_dt = date_util.get_today(format=date_util.FORMAT_FLAT)
-    end_dt = '20200520'
+    # end_dt = '20200520'
     ma = [5, 10, 20, 30, 60, 90, 120, 250]
     print("Collect ma data from " + start_dt + " to " + end_dt)
 
