@@ -141,7 +141,7 @@ create table hist_ma_day
 (
 	trade_date varchar(10) null,
 	code varchar(10) not null,
-	grade varchar(3) null,
+	grade varchar(10) null,
 	price decimal(10,2) null,
 	ma5 decimal(10,2) null,
 	ma10 decimal(10,2) null,

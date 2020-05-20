@@ -42,7 +42,7 @@ def get_ma_point(ma_arr=None):
 
     if ma5 >= ma10 >= ma20 >= ma30 >= ma60 >= ma90 >= ma120 >= ma250:
         grade = MA_GRADE_9
-        point = round(1 - (price - ma250) / ma250, 2)
+        point = 1 - round(abs(price - ma250) / ma250, 2)
         grade += point
         return grade
 
@@ -183,7 +183,7 @@ def get_ma_data(codes=None, start='2017-01-04', end=None):
 
 
 if __name__ == '__main__':
-    codes = ['002167']
+    codes = ['000061']
     # df = get_ma_data(codes, start='2017-01-01')
     df = data_util.get_ma_data(codes)
     print(df)
