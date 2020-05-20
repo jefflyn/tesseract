@@ -36,7 +36,7 @@ def collect_monthly(start_time=None, end_time=None):
             pre_trade_date = date_util.get_previous_month_trade_end(trade_date)
             pre_k = kdf[kdf.date == pre_trade_date]
             if pre_k is None or pre_k.empty:
-                print(code, pre_trade_date, 'no pre-date k data found, continue...')
+                # print(code, pre_trade_date, 'no pre-date k data found, continue...')
                 continue
 
             pre_close = float(pre_k.loc[pre_k.index[0], 'close'])
@@ -56,7 +56,7 @@ def collect_monthly(start_time=None, end_time=None):
                 'amt_change, pct_change, volume, amount)'
                 'values(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)', insert_values)
             db.commit()
-            print(code, trade_date, 'monthly k data insert successfully.')
+            print(code, start_time, 'monthly k data insert successfully.')
         except Exception as err:
             print('>>> failed!', err)
             db.rollback()

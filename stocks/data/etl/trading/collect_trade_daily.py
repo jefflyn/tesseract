@@ -8,7 +8,8 @@ from stocks.util import date_util
 from stocks.util.db_util import get_db
 from stocks.util.pro_util import pro
 
-INIT_DATA = False
+# 初始化数据True
+INIT_DATA = True
 INIT_DATA_START_DATE = '20100101'
 
 
@@ -43,6 +44,7 @@ if __name__ == '__main__':
     start_dt = time_temp.strftime('%Y%m%d')
     if INIT_DATA:
         start_dt = INIT_DATA_START_DATE
+        cursor.execute('truncate table hist_trade_day')
     time_temp = datetime.datetime.now() - datetime.timedelta(days=0)
     end_dt = time_temp.strftime('%Y%m%d')
     print("Collect trade data from " + start_dt + " to " + end_dt)
