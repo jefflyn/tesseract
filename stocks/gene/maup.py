@@ -6,6 +6,7 @@ import pandas as pd
 from stocks import util
 from stocks.data import data_util
 
+MA_GRADE_10 = 10
 MA_GRADE_9 = 9
 MA_GRADE_8 = 8
 MA_GRADE_7 = 7
@@ -42,6 +43,8 @@ def get_ma_point(ma_arr=None):
 
     if ma5 >= ma10 >= ma20 >= ma30 >= ma60 >= ma90 >= ma120 >= ma250:
         grade = MA_GRADE_9
+        if price >= ma5:
+            grade = MA_GRADE_10
         point = 1 - round(abs(price - ma250) / ma250, 2)
         grade += point
         return grade
