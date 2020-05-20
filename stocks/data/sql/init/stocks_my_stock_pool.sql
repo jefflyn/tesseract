@@ -1,8 +1,5 @@
 INSERT INTO stocks.my_stock_pool (code, platform, share, cost, bottom, is_hold, grade, hold_date, close_date, remark, alias, concept) VALUES ('000862', 'pos', 11400, 4.270, 4.01, 1, '0.0', '2019-12-10', null, '新型电力-2500', '银星能源', '风电
-强势人气股
-央企改革
-宁夏
-光伏');
+强势人气股 央企改革 宁夏 光伏');
 INSERT INTO stocks.my_stock_pool (code, platform, share, cost, bottom, is_hold, grade, hold_date, close_date, remark, alias, concept) VALUES ('002555', 'cf', 100, null, 8.78, 1, '7.4', null, null, '互联网-2w', '三七互娱', '游戏
 MSCI
 VR&AR
