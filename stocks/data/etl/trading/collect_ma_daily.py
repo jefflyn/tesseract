@@ -44,7 +44,7 @@ if __name__ == '__main__':
             # 打印进度
             print('redo Seq: ' + str(i + 1) + ' of ' + str(total) + '   Code: ' + ts_code)
 
-        df = df.head(4)
+        df = df.head(20)
         if df is None or df.empty:
             print('  >>>', ts_code, 'no hist data found ...')
             continue
