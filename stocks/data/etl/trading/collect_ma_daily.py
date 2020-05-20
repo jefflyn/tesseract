@@ -12,6 +12,7 @@ if __name__ == '__main__':
     # 设定获取日线行情的初始日期和终止日期，其中终止日期设定为当天
     start_dt = date_util.shift_date(type='y', n=-2, format='YYYYMMDD')
     end_dt = date_util.get_today(format=date_util.FORMAT_FLAT)
+    end_dt = '20200520'
     ma = [5, 10, 20, 30, 60, 90, 120, 250]
     print("Collect ma data from " + start_dt + " to " + end_dt)
 
@@ -23,7 +24,6 @@ if __name__ == '__main__':
         print("no stock basic found, process end!")
         exit(0)
     stock_pool = [ts_code_tuple[0] for ts_code_tuple in cursor.fetchall()]
-    cursor.execute("delete from hist_ma_day")
     # 循环获取单个股票的日线行情
     # 1分钟不超过200次调用
     for i in range(len(stock_pool)):
@@ -44,11 +44,12 @@ if __name__ == '__main__':
             # 打印进度
             print('redo Seq: ' + str(i + 1) + ' of ' + str(total) + '   Code: ' + ts_code)
 
-        df = df.head(20)
+        df = df.head(60)
         if df is None or df.empty:
             print('  >>>', ts_code, 'no hist data found ...')
             continue
         late_date = max(list(df['trade_date']))
+        insert_values = []
         if late_date < end_dt:
             print('  >>>', ts_code, 'has been suspended ...')
             continue
@@ -79,14 +80,31 @@ if __name__ == '__main__':
                 # np.set_printoptions(formatter={'float': '{: 0.2f}'.format})
                 grade = maup.get_ma_point(ma_arr)
 
-                sql_insert = "INSERT INTO hist_ma_day(code,trade_date,grade,price,ma5,ma10,ma20,ma30,ma60,ma90,ma120,ma250,create_time) " \
-                             "VALUES ('%s', '%s', '%.2f', '%.2f', '%.2f', '%.2f','%.2f','%.2f','%.2f','%.2f','%.2f','%.2f','%s')" % (
-                                 code, trade_date, grade, price, ma5, ma10, ma20, ma30, ma60, ma90, ma120, ma250, date_util.now())
-                cursor.execute(sql_insert)
-                db.commit()
+                curt_values = (code, trade_date, str(grade), str(price), str(ma5), str(ma10), str(ma20),
+                               str(ma30), str(ma60), str(ma90), str(ma120), str(ma250),
+                               date_util.get_today())
+                insert_values.append(curt_values)
+
+                # sql_insert = "INSERT INTO hist_ma_day(code,trade_date,grade,price,ma5,ma10,ma20,ma30,ma60,ma90,ma120,ma250,create_time) " \
+                #              "VALUES ('%s', '%s', '%.2f', '%.2f', '%.2f', '%.2f','%.2f','%.2f','%.2f','%.2f','%.2f','%.2f','%s')" % (
+                #                  code, trade_date, grade, price, ma5, ma10, ma20, ma30, ma60, ma90, ma120, ma250, date_util.now())
+                # cursor.execute(sql_insert)
+                # db.commit()
             except Exception as err:
                 print('  >>> error:', err)
                 continue
+
+        try:
+            cursor.execute("delete from hist_ma_day where code='" + code + "'")
+            # 注意这里使用的是executemany而不是execute
+            insert_count = cursor.executemany(
+                'INSERT INTO hist_ma_day(code, trade_date, grade, price, ma5, ma10, ma20, ma30, ma60, ma90, ma120, ma250, create_time)'
+                'values(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)', insert_values)
+            db.commit()
+            print(code, trade_date, 'ma data insert successfully.')
+        except Exception as err:
+            print('>>> failed!', err)
+            db.rollback()
     cursor.close()
     db.close()
     print('All Finished!')

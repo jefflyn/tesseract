@@ -45,7 +45,8 @@ def get_ma_point(ma_arr=None):
         grade = MA_GRADE_9
         if price >= ma5:
             grade = MA_GRADE_10
-        point = 1 - round(abs(price - ma250) / ma250, 2)
+        space = abs(price - ma250) / ma250
+        point = (1 - space) if space < 1 else 0
         grade += point
         return grade
 

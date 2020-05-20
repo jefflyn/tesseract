@@ -11,6 +11,7 @@ from dateutil.rrule import *
 
 hist_date_list = pd.read_csv(os.getenv('STOCKS_HOME') + '/data/etl/basic_data/' + 'hist_trade_date.csv')
 
+ISO_8601_DATETIME = '%Y-%m-%dT%H:%M:%SZ'
 FORMAT_DEFAULT = '%Y-%m-%d'
 FORMAT_FLAT = '%Y%m%d'
 
