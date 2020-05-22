@@ -8,7 +8,7 @@ import requests
 from stocks.future import future_const
 
 KEYS = ['my', 'ec', 'pm', 'fm', 'nfm', 'ap', 'fp', 'all']
-FOCUS = ['C2009', 'EG2009', 'EB2009', 'CF2009', 'EB2009', 'JD2006']
+FOCUS = ['C2009', 'EG2009', 'EB2009', 'CF2009', 'EB2009', 'JD2009']
 
 
 def get_contract_keys(key_type=None):
