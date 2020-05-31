@@ -49,11 +49,9 @@ if __name__ == '__main__':
     df_combo = _dt.read_sql(sql_combo, params={"target_date": date_util.get_last_2month_start()})
 
     # today limit up
-    sql_today_limit_up = select_columns + "from select_result_all where " \
-                                          "code in (select code from limit_up_stat where late_date =:today_str) " \
-                                          "and (wave_b < -33 or (wave_b > 0 and wave_b < 20) or (wave_a < -40 and wave_b < 30)) " \
-                                          "order by wave_a;"
-    df_today_limit_up = _dt.read_sql(sql_today_limit_up, params={"today_str": date_util.get_today()})
+    sql_today_ma = "select * from select_result_all where map > 9 and (wave_a + wave_b) < 50 " \
+                                          "order by map desc;"
+    df_today_ma = _dt.read_sql(sql_today_ma, params={"today_str": date_util.get_today()})
 
     # down to limit low stat
     sql_limit_up = "select * from limit_up_stat where 1=1 and price <= fire_price * 1.05 and combo > 1 " \
@@ -62,7 +60,7 @@ if __name__ == '__main__':
 
     file_name = 'select_' + date_util.get_today(date_util.FORMAT_FLAT) + '.xlsx'
     writer = pd.ExcelWriter(file_name)
-    df_today_limit_up.to_excel(writer, sheet_name='today')
+    df_today_ma.to_excel(writer, sheet_name='ma')
     df_combo.to_excel(writer, sheet_name='combo')
     df_limit_up.to_excel(writer, sheet_name='limitup')
     df_active.to_excel(writer, sheet_name='active')
