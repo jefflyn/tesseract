@@ -8,7 +8,7 @@ from stocks.util.pro_util import pro
 
 
 def recollect_hist_daily(sql='select b.ts_code, b.code from select_result_all s '
-                             'inner join basic b on s.code = b.code where abs(gap) > 12', all=False):
+                             'inner join basics b on s.code = b.code where abs(gap) > 12', all=False):
     """
         重新获取除权后的历史数据
         """

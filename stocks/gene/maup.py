@@ -42,9 +42,14 @@ def get_ma_point(ma_arr=None):
     grade_score = 0.1
 
     if ma5 >= ma10 >= ma20 >= ma30 >= ma60 >= ma90 >= ma120 >= ma250 > 0:
+        grade = MA_GRADE_10
+        space = abs(price - ma250) / ma250
+        point = (1 - space) if space < 1 else 0
+        grade += point
+        return grade
+
+    if ma10 >= ma20 >= ma30 >= ma60 >= ma90 >= ma120 >= ma250 > 0:
         grade = MA_GRADE_9
-        if price >= ma5:
-            grade = MA_GRADE_10
         space = abs(price - ma250) / ma250
         point = (1 - space) if space < 1 else 0
         grade += point

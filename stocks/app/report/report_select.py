@@ -41,30 +41,24 @@ if __name__ == '__main__':
     sql_new = select_columns + "from select_result_all where list_date >= :list_date order by wave_a"
     df_new = _dt.read_sql(sql_new, params={"list_date": one_year_ago})
 
-    # combo > 1 in last two months
+    # combo > 2 in last two months
     sql_combo = select_columns + "from select_result_all where pe > 0 " \
                                "and (wave_b < -33 or (wave_b > 0 and wave_b < 20) or (wave_a < -40 and wave_b < 30)) " \
-                               "and code in (select code from limit_up_stat where fire_date >= :target_date and combo > 1) " \
+                               "and code in (select code from limit_up_stat where fire_date >= :target_date and combo > 2) " \
                                "order by wave_a;"
     df_combo = _dt.read_sql(sql_combo, params={"target_date": date_util.get_last_2month_start()})
 
     # today limit up
-    sql_today_limit_up = select_columns + "from select_result_all where " \
-                                          "code in (select code from limit_up_stat where late_date =:today_str) " \
-                                          "and (wave_b < -33 or (wave_b > 0 and wave_b < 20) or (wave_a < -40 and wave_b < 30)) " \
-                                          "order by wave_a;"
-    df_today_limit_up = _dt.read_sql(sql_today_limit_up, params={"today_str": date_util.get_today()})
+    sql_today_ma = "select * from select_result_all where name not like :name and list_date < :list_date and map > 9 " \
+                   "and (wave_b < -33 or (wave_a < -33 and wave_b < 30)) " \
+                                          "order by map desc;"
+    df_today_ma = _dt.read_sql(sql_today_ma, params={"name": "%ST%", "list_date": one_year_ago})
 
-    # down to limit low stat
-    sql_limit_up = "select * from limit_up_stat where 1=1 and price <= fire_price * 1.05 and combo > 1 " \
-                   "and fire_date >= :target_date order by wave_a;"
-    df_limit_up = _dt.read_sql(sql_limit_up, params={"target_date": date_util.get_last_month_start()})
 
     file_name = 'select_' + date_util.get_today(date_util.FORMAT_FLAT) + '.xlsx'
     writer = pd.ExcelWriter(file_name)
-    df_today_limit_up.to_excel(writer, sheet_name='today')
+    df_today_ma.to_excel(writer, sheet_name='ma')
     df_combo.to_excel(writer, sheet_name='combo')
-    df_limit_up.to_excel(writer, sheet_name='limitup')
     df_active.to_excel(writer, sheet_name='active')
     df_down.to_excel(writer, sheet_name='down')
     df_all.to_excel(writer, sheet_name='all')

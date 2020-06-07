@@ -313,7 +313,7 @@ def get_limitup_code(period_type='m', period='2019-01', times=3):
 
 
 def get_ma_code(grade='a'):
-    sql = 'select distinct b.code from hist_ma_day m join basic b on m.ts_code = b.ts_code where rank=:grade'
+    sql = 'select distinct b.code from hist_ma_day m join basics b on m.ts_code = b.ts_code where rank=:grade'
     params = {'grade': grade}
     df = read_sql(sql, params=params)
     return df
