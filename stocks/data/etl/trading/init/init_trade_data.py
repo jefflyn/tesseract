@@ -9,7 +9,7 @@ from stocks.util.pro_util import pro
 
 INIT_DATA = True
 INIT_DATA_START_DATE = '20100101'
-INIT_CODES = ['603195']
+INIT_CODES = ['603208']
 
 
 if __name__ == '__main__':

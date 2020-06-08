@@ -1,3 +1,4 @@
+import stocks.data.service.hist_trade_service as hts
 from stocks.data import data_util
 from stocks.gene import wave
 from stocks.util import date_util
@@ -12,15 +13,18 @@ def get_wave_info(codes=[]):
     """
     """
     basics = data_util.get_basics()
+    open_date_map = hts.get_new_open_date()
+    size = len(codes)
     for code in codes:
+        size = size - 1
         fundamental = basics[basics.code == code]
         if fundamental is None:
             print(code, ' no basics info found')
             continue
-        list_date = fundamental.loc[code, 'list_date']
-        from_date = date_util.parse_date_str(str(list_date), date_util.FORMAT_DEFAULT)
-        wave_df = wave.get_wave(code, is_index=False, start=from_date)
-        print(code, ' get wave from ', from_date)
+        # list_date = fundamental.loc[code, 'list_date']
+        open_date = open_date_map[code]
+        wave_df = wave.get_wave(code, is_index=False, start=open_date)
+        print(str(size), code, ' get wave from ', open_date)
         wave_str = wave.wave_to_str(wave_df)
         wave_list = wave_str.split('\n')[0].split('|')
         # print(wave_list)
@@ -47,7 +51,7 @@ def get_wave_info(codes=[]):
             sql_insert = "INSERT INTO wave_info(code, from_date, to_date, wave_a, wave_b, wave_c, adays, bdays, cdays, " \
                          "update_time) " \
                          "VALUES ('%s', '%s', '%s', '%.2f', '%.2f','%.2f','%i','%i','%i','%s')" \
-                         % (code, from_date, date_util.get_today(), wa, wb, wc, d1, d2, d3, date_util.get_now())
+                         % (code, open_date, date_util.get_today(), wa, wb, wc, d1, d2, d3, date_util.get_now())
             cursor.execute(sql_insert)
             db.commit()
         except Exception as err:
@@ -56,12 +60,11 @@ def get_wave_info(codes=[]):
 
 
 if __name__ == '__main__':
-    get_code_sql = 'select code from basics where list_date between 20190101 and 20200101'
-    total = cursor.execute(get_code_sql)
-    if total == 0:
+    sql = "select code from basics where code not like '688%' and list_date between 20190101 and 20200101"
+    stock_pool = data_util.get_codes_from_sql(sql)
+    if len(stock_pool) == 0:
         print("no stock found, process end!")
         exit(0)
-    stock_pool = [ts_code_tuple[0] for ts_code_tuple in cursor.fetchall()]
     get_wave_info(stock_pool)
 
 
