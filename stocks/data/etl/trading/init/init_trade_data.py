@@ -3,16 +3,16 @@ import time
 
 import tushare as ts
 
+from stocks.data import data_util
 from stocks.util import date_util
 from stocks.util.db_util import get_db
 from stocks.util.pro_util import pro
 
 INIT_DATA = True
 INIT_DATA_START_DATE = '20100101'
-INIT_CODES = ['603208']
 
 
-if __name__ == '__main__':
+def init_hist_daily(codes=[]):
     """
     收集日交易数据，前复权
     """
@@ -25,16 +25,17 @@ if __name__ == '__main__':
     end_dt = date_util.get_today(date_util.FORMAT_FLAT)
     print("Collect trade data from " + start_dt + " to " + end_dt)
 
-    get_code_sql = 'select ts_code from basics '
-    if len(INIT_CODES) > 0:
-        code_str = ','.join(str(n) for n in INIT_CODES)
-        get_code_sql = get_code_sql + 'where code in (' + code_str + ')'
-    total = cursor.execute(get_code_sql)
+    # get_code_sql = 'select ts_code from basics '
+    # if len(codes) > 0:
+    #     code_str = ','.join(str(n) for n in codes)
+    #     get_code_sql = get_code_sql + 'where code in (' + code_str + ')'
+    # total = cursor.execute(get_code_sql)
+    total = len(codes)
     if total == 0:
         print("no stock found, process end!")
         exit(0)
-    stock_pool = [ts_code_tuple[0] for ts_code_tuple in cursor.fetchall()]
-
+    # stock_pool = [ts_code_tuple[0] for ts_code_tuple in cursor.fetchall()]
+    stock_pool = codes
     # 循环获取单个股票的日线行情
     # 1分钟不超过200次调用
     begin_time = datetime.datetime.now()
@@ -88,4 +89,73 @@ if __name__ == '__main__':
             db.rollback()
     cursor.close()
     db.close()
-    print('All Finished!')
+    print('init hist trade data finished!')
+
+
+if __name__ == '__main__':
+    sql = 'select ts_code from basics where name like :dr_name or name like :xd_name or name like :xr_name '
+    df = data_util.read_sql(sql, params={"dr_name": "DR%", "xd_name": "XD%", "xr_name": "XR%"})
+    init_codes = list(df['ts_code'])
+    init_codes = ['603080.SH',
+'600604.SH',
+'603260.SH',
+'603758.SH',
+'600803.SH',
+'603906.SH',
+'603722.SH',
+'600184.SH',
+'603118.SH',
+'600765.SH',
+'600724.SH',
+'603567.SH',
+'601012.SH',
+'600989.SH',
+'600516.SH',
+'603259.SH',
+'600305.SH',
+'603936.SH',
+'603033.SH',
+'603701.SH',
+'603713.SH',
+'603208.SH',
+'603915.SH',
+'603657.SH',
+'603683.SH',
+'600138.SH',
+'603739.SH',
+'601678.SH',
+'603218.SH',
+'603160.SH',
+'600019.SH',
+'600594.SH',
+'603063.SH',
+'600287.SH',
+'603585.SH',
+'603600.SH',
+'600330.SH',
+'603100.SH',
+'603811.SH',
+'600790.SH',
+'600854.SH',
+'603809.SH',
+'603306.SH',
+'600057.SH',
+'601789.SH',
+'601137.SH',
+'603093.SH',
+'603379.SH',
+'603838.SH',
+'600982.SH',
+'603429.SH',
+'603267.SH',
+'603868.SH',
+'600703.SH',
+'600575.SH',
+'603908.SH',
+'603676.SH',
+'603018.SH',
+'603801.SH',
+'603609.SH',
+'603551.SH',
+'603687.SH']
+    init_hist_daily(init_codes)

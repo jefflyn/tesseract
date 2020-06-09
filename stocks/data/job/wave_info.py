@@ -22,12 +22,16 @@ def get_wave_info(codes=[]):
             print(code, ' no basics info found')
             continue
         # list_date = fundamental.loc[code, 'list_date']
-        open_date = open_date_map[code]
-        wave_df = wave.get_wave(code, is_index=False, start=open_date)
+        try:
+            open_date = open_date_map[code]
+            wave_df = wave.get_wave(code, is_index=False, start=open_date, pchange=20)
+        except Exception:
+            print(code, "not open yet! continue...")
+            continue
         print(str(size), code, ' get wave from ', open_date)
-        wave_str = wave.wave_to_str(wave_df)
+        wave_str = wave.wave_to_str(wave_df, size=100)
+        print(wave_str)
         wave_list = wave_str.split('\n')[0].split('|')
-        # print(wave_list)
         day_list = wave_str.split('\n')[1].split('|')
         # print(day_list)
         wa = 0
@@ -60,11 +64,12 @@ def get_wave_info(codes=[]):
 
 
 if __name__ == '__main__':
-    sql = "select code from basics where code not like '688%' and list_date between 20190101 and 20200101"
+    sql = "select code from basics where code not like '688%' and list_date between 20200101 and 20210101"
     stock_pool = data_util.get_codes_from_sql(sql)
     if len(stock_pool) == 0:
         print("no stock found, process end!")
         exit(0)
+    stock_pool = ['300789']
     get_wave_info(stock_pool)
 
 
