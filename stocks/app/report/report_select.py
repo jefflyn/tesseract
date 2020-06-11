@@ -12,7 +12,8 @@ if __name__ == '__main__':
     one_year_ago = date_const.ONE_YEAR_AGO_YYYYMMDD
 
     select_columns = "select code, name, area, industry, concepts, list_date, pe, pe_ttm as profit, pct, map, a_days, " \
-                     "wave_a, wave_b, b_days, count, count_, wave_detail, concat(c30d,cq1,cq2,cq3,cq4) ct, select_time "
+                     "wave_a, wave_b, b_days, count, count_, wave_detail, " \
+                     "concat(c30d, ',', cq1, ',', cq2, ', ', cq3,', ',cq4) ct, select_time "
 
     # my stock pool
     sql_my_stock = select_columns + "from select_result_all where code in " \
@@ -24,7 +25,7 @@ if __name__ == '__main__':
     limit_up_codes = data_util.get_hist_trade(start=date_util.get_latest_trade_date()[0], is_limit=True)
     if limit_up_codes.empty:
         limit_up_codes = data_util.get_hist_trade(start=date_util.get_previous_trade_day(), is_limit=True)
-    sql_today_limitup = select_columns + "from select_result_all where list_date < :list_date and code in :codes" \
+    sql_today_limitup = select_columns + "from select_result_all where list_date < :list_date and code in :codes " \
                                          "order by wave_a"
     df_sql_today_limitup = _dt.read_sql(sql_today_limitup,
                                         params={"list_date": date_util.get_last_2month_start(),
