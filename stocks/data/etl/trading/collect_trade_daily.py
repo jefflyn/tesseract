@@ -36,13 +36,14 @@ if __name__ == '__main__':
     # 1分钟不超过200次调用
     begin_time = datetime.datetime.now()
     for i in range(len(stock_pool)):
+        act_start_date = start_dt
         ts_code = stock_pool[i][0]
         name = stock_pool[i][1]
         init_flat = ['DR', 'XD', 'XR']
         need_init = name[0:2] in init_flat
         if need_init:
             print(str(stock_pool[i]), ' init hist trade data')
-            start_dt = INIT_DATA_START_DATE
+            act_start_date = INIT_DATA_START_DATE
             cursor.execute("delete from hist_trade_day where ts_code='" + ts_code + "'")
         try:
             # 打印进度
@@ -57,7 +58,7 @@ if __name__ == '__main__':
                     time.sleep(sleep_time)
                 begin_time = datetime.datetime.now()
             # 前复权行情
-            df = ts.pro_bar(api=pro, ts_code=ts_code, adj='qfq', start_date=start_dt, end_date=end_dt)
+            df = ts.pro_bar(api=pro, ts_code=ts_code, adj='qfq', start_date=act_start_date, end_date=end_dt)
             if df is None:
                 continue
             c_len = df.shape[0]
@@ -65,7 +66,7 @@ if __name__ == '__main__':
             # print(e)
             print('No DATA Code: ' + str(i))
             time.sleep(60)
-            df = ts.pro_bar(api=pro, ts_code=ts_code, adj='qfq', start_date=start_dt, end_date=end_dt)
+            df = ts.pro_bar(api=pro, ts_code=ts_code, adj='qfq', start_date=act_start_date, end_date=end_dt)
             # 打印进度
             print('Redo Seq: ' + str(i + 1) + ' of ' + str(total) + '   Code: ' + str(stock_pool[i]))
             c_len = df.shape[0]
