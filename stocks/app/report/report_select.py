@@ -16,14 +16,16 @@ if __name__ == '__main__':
 
     # my stock pool
     sql_my_stock = select_columns + "from select_result_all where code in " \
-                                    "(select code from my_stock_pool where platform in :platform)"
+                                    "(select code from my_stock_pool where platform in :platform)" \
+                                    "order by wave_a"
     df_my_stock = _dt.read_sql(sql_my_stock, params={"platform": ['pos', 'pa', 'cf', 'df']})
 
     # today limit up
     limit_up_codes = data_util.get_hist_trade(start=date_util.get_latest_trade_date()[0], is_limit=True)
     if limit_up_codes.empty:
         limit_up_codes = data_util.get_hist_trade(start=date_util.get_previous_trade_day(), is_limit=True)
-    sql_today_limitup = select_columns + "from select_result_all where list_date < :list_date and code in :codes"
+    sql_today_limitup = select_columns + "from select_result_all where list_date < :list_date and code in :codes" \
+                                         "order by wave_a"
     df_sql_today_limitup = _dt.read_sql(sql_today_limitup,
                                         params={"list_date": date_util.get_last_2month_start(),
                                                 "codes": list(limit_up_codes['code'])})
@@ -59,15 +61,18 @@ if __name__ == '__main__':
 
     # all
     sql_all = select_columns + "from select_result_all where name not like :name " \
-                               "and list_date < :list_date order by wave_a"
+                               "and list_date < :list_date " \
+                               "order by wave_a"
     df_all = _dt.read_sql(sql_all, params={"name": "%ST%", "list_date": one_year_ago})
 
     # new
-    sql_new = select_columns + "from select_result_all where list_date >= :list_date order by wave_a"
+    sql_new = select_columns + "from select_result_all where list_date >= :list_date " \
+                               "order by wave_a"
     df_new = _dt.read_sql(sql_new, params={"list_date": one_year_ago})
 
     # st
-    sql_st = select_columns + "from select_result_all where name like :name order by wave_a"
+    sql_st = select_columns + "from select_result_all where name like :name " \
+                              "order by wave_a"
     df_st = _dt.read_sql(sql_st, params={"name": "%ST%"})
 
     file_name = 'select_' + date_util.get_today(date_util.FORMAT_FLAT) + '.xlsx'
