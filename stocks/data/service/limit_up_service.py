@@ -123,7 +123,7 @@ def collect_limit_up_stat(target_date):
             db.close()
 
         next_trade_date = date_util.get_next_trade_day(target_date)
-        if next_trade_date > date_util.get_today():
+        if next_trade_date is None or next_trade_date > date_util.get_today():
             break
         target_date = next_trade_date
 
