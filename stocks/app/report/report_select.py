@@ -32,7 +32,7 @@ if __name__ == '__main__':
                                                 "codes": list(limit_up_codes['code'])})
 
     # combo > 3
-    sql_combo = select_columns + "from select_result_all where list_date < :list_date and name not like :name " \
+    sql_combo = select_columns + "from select_result_all where pe > 0 and list_date < :list_date and name not like :name " \
                                  "and code in (select code from limit_up_stat where fire_date >= :target_date and combo > :combo) " \
                                  "and (wave_b <= -33 or (wave_b > 0 and wave_b < 20) or (wave_a <= -40 and wave_b < 30)) " \
                                  "order by wave_a"
