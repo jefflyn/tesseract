@@ -19,6 +19,8 @@ MA_GRADE_1 = 1
 
 
 def gap_between(a, b, gap=0.5):
+    if a >= b:
+        return True
     ab_gap = round((abs(b) - abs(a)) / abs(a) * 100, 2)
     return abs(ab_gap) <= gap
 
