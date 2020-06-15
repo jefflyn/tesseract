@@ -18,6 +18,10 @@ MA_GRADE_2 = 2
 MA_GRADE_1 = 1
 
 
+def gap_between(a, b, gap=0.5):
+    ab_gap = round((abs(b) - abs(a)) / abs(a) * 100, 2)
+    return abs(ab_gap) <= gap
+
 
 def get_ma_point(ma_arr=None):
     """
@@ -37,80 +41,21 @@ def get_ma_point(ma_arr=None):
     # ma_arr = (price, ma5, ma10, ma20, ma30, ma60, ma90, ma120, ma250)
     # ma_std = np.nanstd(ma_arr)
     # print(ma_arr, round(ma_std, 2))
-    # level: 987,654,321
     grade = 0.0
-    grade_score = 0.1
 
-    if ma5 >= ma10 >= ma20 >= ma30 >= ma60 >= ma90 >= ma120 >= ma250 > 0:
-        grade = MA_GRADE_10
-        space = abs(price - ma250) / ma250
-        point = (1 - space) if space < 1 else 0
-        grade += point
-        return grade
-
-    if ma10 >= ma20 >= ma30 >= ma60 >= ma90 >= ma120 >= ma250 > 0:
-        grade = MA_GRADE_9
-        space = abs(price - ma250) / ma250
-        point = (1 - space) if space < 1 else 0
-        grade += point
-        return grade
-
-    if price >= ma5 >= ma10 > 0:
+    if gap_between(ma10, ma20) and gap_between(ma20, ma30) and gap_between(ma30, ma60) \
+            and gap_between(ma60, ma90) and gap_between(ma90, ma120):
+    # if ma10 >= ma20 >= ma30 >= ma60 >= ma90 >= ma120 > 0:
         grade = MA_GRADE_8
-        if ma10 >= ma20:
-            grade += grade_score
-        if ma10 >= ma20 >= ma30:
-            grade += grade_score
-        if ma10 >= ma20 >= ma30 >= ma60:
-            grade += grade_score
-        if ma10 >= ma20 >= ma30 >= ma60 >= ma90:
-            grade += grade_score
-        if ma10 >= ma20 >= ma30 >= ma60 >= ma90 >= ma120:
-            grade += grade_score
-        if ma10 >= ma20 >= ma30 >= ma60 >= ma90 >= ma120 >= ma250:
-            grade += grade_score
-    elif ma5 >= ma10 >= ma20 > 0:
-        grade = MA_GRADE_7
-        if ma20 >= ma30:
-            grade += grade_score
-        if ma20 >= ma30 >= ma60:
-            grade += grade_score
-        if ma20 >= ma30 >= ma60 >= ma90:
-            grade += grade_score
-        if ma20 >= ma30 >= ma60 >= ma90 >= ma120:
-            grade += grade_score
-        if ma20 >= ma30 >= ma60 >= ma90 >= ma120 >= ma250:
-            grade += grade_score
-    elif ma10 >= ma20 >= ma30 > 0:
-        grade = MA_GRADE_6
-        if ma30 >= ma60:
-            grade += grade_score
-        if ma30 >= ma60 >= ma90:
-            grade += grade_score
-        if ma30 >= ma60 >= ma90 >= ma120:
-            grade += grade_score
-        if ma30 >= ma60 >= ma90 >= ma120 >= ma250:
-            grade += grade_score
-    elif ma20 >= ma30 >= ma60 > 0:
-        grade = MA_GRADE_5
-        if ma60 >= ma90:
-            grade += grade_score
-        if ma60 >= ma90 >= ma120:
-            grade += grade_score
-        if ma60 >= ma90 >= ma120 >= ma250:
-            grade += grade_score
-    elif ma30 >= ma60 >= ma90 > 0:
-        grade = MA_GRADE_4
-        if ma90 >= ma120:
-            grade += grade_score
-        if ma90 >= ma120 >= ma250:
-            grade += grade_score
-    elif ma60 >= ma90 >= ma120 > 0:
-        grade = MA_GRADE_3
-        if ma120 >= ma250:
-            grade += grade_score
-    elif ma90 >= ma120 >= ma250 > 0:
-        grade = MA_GRADE_2
+        if gap_between(ma120, ma250):
+            grade = MA_GRADE_9
+        if gap_between(ma5, ma10):
+            grade = MA_GRADE_10
+        space = abs(price - ma250) / ma250
+        point = (1 - space) if space < 1 else 0
+        grade += point
+        return grade
+
     return grade
 
 
@@ -192,6 +137,7 @@ def get_ma_data(codes=None, start='2017-01-04', end=None):
 
 
 if __name__ == '__main__':
+    print(gap_between(10, 10.054))
     codes = ['000061']
     # df = get_ma_data(codes, start='2017-01-01')
     df = data_util.get_ma_data(codes)
