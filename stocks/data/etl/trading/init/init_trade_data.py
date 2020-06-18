@@ -9,7 +9,7 @@ from stocks.util.pro_util import pro
 from stocks.util import date_util
 
 INIT_DATA = True
-INIT_DATA_START_DATE = '20150101'
+INIT_DATA_START_DATE = '20100101'
 
 
 if __name__ == '__main__':
