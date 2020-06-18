@@ -1,4 +1,4 @@
-create table stocks.my_stock_pool
+create table my_stock_pool
 (
 	code varchar(6) not null,
 	platform varchar(10) null,
@@ -6,12 +6,13 @@ create table stocks.my_stock_pool
 	cost decimal(10,3) null,
 	bottom decimal(10,2) null,
 	is_hold tinyint default 1 null,
-	grade varchar(3) default 'c' null,
+	grade decimal(10,2) null,
 	hold_date date null,
 	close_date date null,
 	remark varchar(255) null,
-	alias varchar(4) null,
-	concept varchar(20) null,
+	alias varchar(8) null,
+	industry varchar(10) null,
+	concept varchar(128) null,
 	constraint my_stock_pool_pk
 		unique (code, platform)
 );

@@ -141,7 +141,7 @@ create table hist_ma_day
 (
 	trade_date varchar(10) null,
 	code varchar(10) not null,
-	grade varchar(10) null,
+	grade decimal(10,2) null comment '等级分数（越高越靓）',
 	price decimal(10,2) null,
 	ma5 decimal(10,2) null,
 	ma10 decimal(10,2) null,
@@ -155,6 +155,11 @@ create table hist_ma_day
 	constraint hist_ma_day_pk
 		unique (trade_date, code)
 );
+
+create index idx_hist_ma_day_code
+	on hist_ma_day (code);
+
+
 
 create index idx_hist_ma_day_code
 	on hist_ma_day (code);

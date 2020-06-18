@@ -47,7 +47,7 @@ def collect_index_hist_k(start=None):
             insert_values = [curt_values]
 
             try:
-                # 注意这里使用的是executemany而不是execute，下边有对executemany的详细说明
+                # 注意这里使用的是executemany而不是execute
                 insert_count = cursor.executemany(
                     'insert into index_hist_k(trade_date,code,open,close,high,low,volume,pct_change)'
                     'values(%s,%s,%s,%s,%s,%s,%s,%s)', insert_values)

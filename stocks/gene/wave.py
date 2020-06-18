@@ -536,11 +536,3 @@ if __name__ == '__main__':
     wave_ab = get_wave_ab(wave_str, 33)
     print(wave_ab)
     print('get_wave_ab_fast', get_wave_ab_fast(wave_str))
-
-    result = get_wave(code_list, is_index=False, end='2020-02-25')
-    print(result)
-    wave_str = wave_to_str(result)
-    print(wave_str)
-    wave_ab = get_wave_ab(wave_str, 33)
-    print(wave_ab)
-    print('get_wave_ab_fast', get_wave_ab_fast(wave_str))

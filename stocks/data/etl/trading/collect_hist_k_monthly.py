@@ -66,5 +66,5 @@ def collect_monthly(start_time=None, end_time=None):
 
 
 if __name__ == '__main__':
-    collect_monthly(start_time='2020-05-01', end_time=None)
+    collect_monthly(start_time='2020-06-01', end_time=None)
 
