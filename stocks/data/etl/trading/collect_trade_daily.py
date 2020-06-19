@@ -3,6 +3,7 @@ import time
 
 import tushare as ts
 
+import stocks.data.service.hist_trade_service as hts
 from stocks.util import date_util
 from stocks.util.db_util import get_db
 from stocks.util.pro_util import pro
@@ -32,19 +33,20 @@ if __name__ == '__main__':
     # a = cursor.fetchall()
     stock_pool = [ts_code_tuple for ts_code_tuple in cursor.fetchall()]
     # stock_pool = ['002414.SZ']
+
+    # 获取上个交易日收盘价
+    last_close_df = hts.get_last_close()
     # 循环获取单个股票的日线行情
     # 1分钟不超过200次调用
     begin_time = datetime.datetime.now()
     for i in range(len(stock_pool)):
         act_start_date = start_dt
         ts_code = stock_pool[i][0]
+        code = ts_code[0:6]
+        exchange = ts_code[7:9]
         name = stock_pool[i][1]
         init_flat = ['DR', 'XD', 'XR']
-        need_init = name[0:2] in init_flat
-        if need_init:
-            print(str(stock_pool[i]), ' init hist trade data')
-            act_start_date = INIT_DATA_START_DATE
-            cursor.execute("delete from hist_trade_day where ts_code='" + ts_code + "'")
+
         try:
             # 打印进度
             if i % 200 == 0:
@@ -70,6 +72,26 @@ if __name__ == '__main__':
             # 打印进度
             print('Redo Seq: ' + str(i + 1) + ' of ' + str(total) + '   Code: ' + str(stock_pool[i]))
             c_len = df.shape[0]
+        #无记录
+        if df.empty:
+            continue
+
+        #是否需要初始化数据
+        need_init = False
+        is_big_gap = False
+        if exchange == 'SZ':
+            last_close_rd = last_close_df[last_close_df.code == code]
+            if last_close_rd.empty is False:
+                last_close = last_close_rd.loc[code, 'close']
+                latest_close = df.loc[0, 'close']
+                gap = abs(latest_close - last_close) / last_close * 100
+                if gap > 12:
+                    is_big_gap = True
+        need_init = name[0:2] in init_flat or is_big_gap
+        if need_init:
+            print(str(stock_pool[i]), ' init hist trade data')
+            act_start_date = INIT_DATA_START_DATE
+            cursor.execute("delete from hist_trade_day where ts_code='" + ts_code + "'")
 
         for j in range(c_len):
             resu0 = list(df.loc[c_len - 1 - j])
@@ -79,6 +101,7 @@ if __name__ == '__main__':
                     resu.append(-1)
                 else:
                     resu.append(resu0[k])
+
             trade_date = (datetime.datetime.strptime(resu[1], "%Y%m%d")).strftime('%Y-%m-%d')
             try:
                 sql_insert = "INSERT INTO hist_trade_day(trade_date, ts_code, code, pre_close, open, close, high, low, " \

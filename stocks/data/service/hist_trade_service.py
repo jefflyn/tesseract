@@ -20,6 +20,16 @@ def get_new_open_date(refresh=False):
         return eval(open_date_map)
 
 
+def get_last_close():
+    sql = "select h.trade_date, h.code, h.close from hist_trade_day h " \
+          "inner join (select code, max(trade_date) late_date from hist_trade_day where code like :sz or code like :cyb group by code) mt " \
+          "on h.code = mt.code and h.trade_date = mt.late_date"
+
+    df = db_util.read_sql(sql, params={"sz": "0%", "cyb": "3%"})
+    df.index = list(df['code'])
+    return df
+
+
 if __name__ == '__main__':
     result = get_new_open_date()
     print(result)

@@ -93,10 +93,10 @@ def init_hist_daily(codes=[]):
 
 
 if __name__ == '__main__':
-    sql = 'select ts_code from basics where name like :dr_name or name like :xd_name or name like :xr_name '
-    df = data_util.read_sql(sql, params={"dr_name": "DR%", "xd_name": "XD%", "xr_name": "XR%"})
-    # sql = 'select ts_code from basics where code like :sz_code or code like :cyb_code'
-    # df = data_util.read_sql(sql, params={"sz_code": "0%", "cyb_code": "3%"})
+    # sql = 'select ts_code from basics where name like :dr_name or name like :xd_name or name like :xr_name '
+    # df = data_util.read_sql(sql, params={"dr_name": "DR%", "xd_name": "XD%", "xr_name": "XR%"})
+    sql = 'select ts_code from basics where code like :sz_code or code like :cyb_code'
+    df = data_util.read_sql(sql, params={"sz_code": "0%", "cyb_code": "3%"})
     init_codes = list(df['ts_code'])
     # init_codes = ['000661.SZ']
     init_hist_daily(init_codes)
