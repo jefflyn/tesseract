@@ -40,7 +40,6 @@ if __name__ == '__main__':
     # 1分钟不超过200次调用
     begin_time = datetime.datetime.now()
     for i in range(len(stock_pool)):
-        act_start_date = start_dt
         ts_code = stock_pool[i][0]
         code = ts_code[0:6]
         exchange = ts_code[7:9]
@@ -60,20 +59,16 @@ if __name__ == '__main__':
                     time.sleep(sleep_time)
                 begin_time = datetime.datetime.now()
             # 前复权行情
-            df = ts.pro_bar(api=pro, ts_code=ts_code, adj='qfq', start_date=act_start_date, end_date=end_dt)
-            if df is None:
-                continue
-            c_len = df.shape[0]
+            df = ts.pro_bar(api=pro, ts_code=ts_code, adj='qfq', start_date=start_dt, end_date=end_dt)
         except Exception as e:
             # print(e)
             print('No DATA Code: ' + str(i))
             time.sleep(60)
-            df = ts.pro_bar(api=pro, ts_code=ts_code, adj='qfq', start_date=act_start_date, end_date=end_dt)
+            df = ts.pro_bar(api=pro, ts_code=ts_code, adj='qfq', start_date=start_dt, end_date=end_dt)
             # 打印进度
             print('Redo Seq: ' + str(i + 1) + ' of ' + str(total) + '   Code: ' + str(stock_pool[i]))
-            c_len = df.shape[0]
         #无记录
-        if df.empty:
+        if df is None or df.empty:
             continue
 
         #是否需要初始化数据
@@ -85,14 +80,15 @@ if __name__ == '__main__':
                 last_close = last_close_rd.loc[code, 'close']
                 latest_close = df.loc[0, 'close']
                 gap = abs(latest_close - last_close) / last_close * 100
-                if gap > 12:
+                if gap > 11:
                     is_big_gap = True
         need_init = name[0:2] in init_flat or is_big_gap
         if need_init:
             print(str(stock_pool[i]), ' init hist trade data')
-            act_start_date = INIT_DATA_START_DATE
             cursor.execute("delete from hist_trade_day where ts_code='" + ts_code + "'")
+            df = ts.pro_bar(api=pro, ts_code=ts_code, adj='qfq', start_date=INIT_DATA_START_DATE, end_date=end_dt)
 
+        c_len = df.shape[0]
         for j in range(c_len):
             resu0 = list(df.loc[c_len - 1 - j])
             resu = []
