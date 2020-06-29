@@ -50,7 +50,7 @@ if __name__ == '__main__':
             continue
         late_date = max(list(df['trade_date']))
         insert_values = []
-        if late_date < end_dt:
+        if late_date < date_util.get_latest_trade_date()[0]:
             print('  >>>', ts_code, 'has been suspended ...')
             continue
         cols = df.columns
