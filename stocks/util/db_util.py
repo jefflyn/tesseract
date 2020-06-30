@@ -3,19 +3,26 @@ import pymysql
 import sqlalchemy as sa
 from sqlalchemy import create_engine
 
-# engine = create_engine("mysql+pymysql://ruian:jefflyn0423@rm-bp1z8b6f51h4ujmz4co.mysql.rds.aliyuncs.com:3306/stocks?charset=UTF8MB4")
+engine_rds = create_engine("mysql+pymysql://ruian:jefflyn0423@rm-bp1z8b6f51h4ujmz4co.mysql.rds.aliyuncs.com:3306/stocks?charset=UTF8MB4")
 engine = create_engine("mysql+pymysql://linjingu:linjingu@127.0.0.1:3306/stocks?charset=UTF8MB4")
 
 
 def get_db():
-    # db = pymysql.connect(host='rm-bp1z8b6f51h4ujmz4co.mysql.rds.aliyuncs.com', user='ruian', passwd='jefflyn0423', db='stocks', charset='UTF8MB4')
     db = pymysql.connect(host='127.0.0.1', user='linjingu', passwd='linjingu', db='stocks', charset='UTF8MB4')
     return db
 
 
+def get_rds_db():
+    db = pymysql.connect(host='rm-bp1z8b6f51h4ujmz4co.mysql.rds.aliyuncs.com', user='ruian', passwd='jefflyn0423', db='stocks', charset='UTF8MB4')
+    return db
+
+
 # save to db
-def to_db(data=None, tbname=None, if_exists='replace'):
-    data.to_sql(name=tbname, con=engine, if_exists=if_exists, index=False, index_label=None)
+def to_db(data=None, tbname=None, if_exists='replace', db_engine=None):
+    if db_engine == 'rds':
+        data.to_sql(name=tbname, con=engine_rds, if_exists=if_exists, index=False, index_label=None)
+    else:
+        data.to_sql(name=tbname, con=engine, if_exists=if_exists, index=False, index_label=None)
 
 
 def read_table(tbname):

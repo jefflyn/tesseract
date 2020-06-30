@@ -1,3 +1,4 @@
+from stocks.util import date_const
 from stocks.util import db_util
 from stocks.util.redis_util import redis_client
 
@@ -14,7 +15,7 @@ def get_new_open_date(refresh=False):
             code = row['code']
             open_date = row['open_date']
             open_date_map[code] = open_date
-        redis_client.set(key, open_date_map)
+        redis_client.set(key, open_date_map, ex=date_const.ONE_WEEK * 2)
         return open_date_map
     else:
         return eval(open_date_map)

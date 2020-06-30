@@ -30,6 +30,8 @@ last_trade_date = date_util.get_latest_trade_date(1)[0]
 
 this_week_hist = data_util.get_hist_trade_high_low(start=date_const.FIRST_DAY_THIS_WEEK,
                                                            end=date_const.LAST_DAY_THIS_WEEK)
+from stocks.data.service import hist_trade_service
+open_date_map = hist_trade_service.get_new_open_date()
 
 
 def select_from_change_week():
@@ -69,6 +71,15 @@ def select_from_all(fname='all'):
     :return: 
     """
     select_result(filename=fname)
+
+
+def sync_select_rds():
+    '''
+    同步select到rds
+    :return:
+    '''
+    select_df = _dt.read_query("select * from select_result_all order by industry, wave_a")
+    _dt.to_db(data=select_df, tbname='select_result_all', db_engine='rds')
 
 
 def select_from_subnew(from_date=None, fname='subnew'):
@@ -141,22 +152,29 @@ def select_result(codeset=None, filename=''):
         curt_data.append(fundamental.loc[code, 'industry'])
         curt_data.append(fundamental.loc[code, 'area'])
         list_date = str(fundamental.loc[code, 'list_date'])
+        is_new = False
+        if list_date >= date_const.ONE_YEAR_AGO_YYYYMMDD:
+            is_new = True
         curt_data.append(list_date)
         curt_data.append(current_price)
         curt_data.append(round(float(row['pct_change']), 2))
         # get wave data and bottom top
-        wavedf = wave.get_wave(code)  # need to save
-        if wavedf is None or wavedf.empty is True:
+        if is_new:
+            open_date = open_date_map[code] if code in open_date_map.keys() else None
+            wave_df = wave.get_wave(code, start=open_date)
+        else:
+            wave_df = wave.get_wave(code)  # need to save
+        if wave_df is None or wave_df.empty is True:
             continue
         wave_size = 10
         # if filename == 'subnew':
         #     wave_size = 10
-        wavestr = wave.wave_to_str(wavedf, wave_size)
+        wavestr = wave.wave_to_str(wave_df, wave_size)
         wave_ab = wave.get_wave_ab_fast(wavestr, 33)
         wave_a = wave_ab[0][0]
         wave_b = wave_ab[1][0]
-        wavedfset = wavedfset.append(wavedf)
-        bottomdf = wave.get_bottom(wavedf)
+        wavedfset = wavedfset.append(wave_df)
+        bottomdf = wave.get_bottom(wave_df)
         if bottomdf is None or bottomdf.empty is True:
             continue
         bottom = bottomdf.at[0, 'bottom']
@@ -454,7 +472,7 @@ def get_warn_space(df):
 
 
 if __name__ == '__main__':
-    print(select_result('603826'))
+    print(select_result('300824'))
     if len(argv) < 2:
         print("Invalid args! At least 2 args like: python xxx.py code1[,code2,...]")
         sys.exit(0)

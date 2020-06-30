@@ -69,7 +69,7 @@ if __name__ == '__main__':
     if len(stock_pool) == 0:
         print("no stock found, process end!")
         exit(0)
-    stock_pool = ['300789']
+    # stock_pool = ['300789']
     get_wave_info(stock_pool)
 
 
