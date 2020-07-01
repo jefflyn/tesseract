@@ -56,13 +56,11 @@ where 1=1
     and fire_date >= '2020-02-01'
 order by wave_a;
 
-select * from limit_up_daily where code='300367';
-select * from limit_up_stat where code='300367';
-
+-- limit_up_service 174
 select sra.concepts, sra.code, sra.name, sra.industry ind, sra.area ar, sra.list_date issue, sra.pe,
        sra.wave_a wa, sra.wave_b wb, sra.a_days ad, sra.b_days bd, round((lus.price - lus.fire_price) / lus.fire_price * 100, 2) fs,
-       sra.map mp, lus.combo cb, sra.count c, sra.count_ c_, sra.wave_detail,
-       lus.fire_date, lus.late_date, lus.fire_price fprice, lus.price
+       sra.map mp, lus.combo cb, sra.count c, sra.count_ c_,
+       lus.fire_date, lus.late_date, lus.fire_price fprice, lus.price, sra.wave_detail
 from select_result_all sra join limit_up_stat lus on sra.code=lus.code
 where sra.name not like '%ST%' and sra.list_date < 20200101 and lus.combo >= 4;
 
