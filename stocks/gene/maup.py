@@ -18,7 +18,7 @@ MA_GRADE_2 = 2
 MA_GRADE_1 = 1
 
 
-def gap_between(a, b, gap=0.5):
+def gap_between(a, b, gap=0.2):
     if a >= b or b == -1:
         return True
     ab_gap = round((abs(b) - abs(a)) / abs(a) * 100, 2)
@@ -45,13 +45,11 @@ def get_ma_point(ma_arr=None):
     # print(ma_arr, round(ma_std, 2))
     grade = 0.0
 
-    if gap_between(ma10, ma20) and gap_between(ma20, ma30) and gap_between(ma30, ma60) \
+    if gap_between(ma5, ma10) and gap_between(ma10, ma20) and gap_between(ma20, ma30) and gap_between(ma30, ma60) \
             and gap_between(ma60, ma90) and gap_between(ma90, ma120):
     # if ma10 >= ma20 >= ma30 >= ma60 >= ma90 >= ma120 > 0:
-        grade = MA_GRADE_8
+        grade = MA_GRADE_9
         if gap_between(ma120, ma250):
-            grade = MA_GRADE_9
-        if gap_between(ma5, ma10):
             grade = MA_GRADE_10
         space_base = ma250
         index = len(ma_arr)

@@ -7,6 +7,31 @@ from stocks.util import db_util
 from stocks.util.db_util import get_db
 
 
+def sync_rds_limit_up_stat():
+    lus_df = db_util.read_query('select * from limit_up_stat')
+    rds = db_util.get_rds_db()
+    cursor = rds.cursor()
+    try:
+        if lus_df is None or lus_df.empty:
+            return
+        lus_df['create_time'] = lus_df['create_time'].apply(lambda x: str(x))
+
+        insert_values = lus_df.values.tolist()
+        cursor.execute("delete from limit_up_stat")
+        cursor.executemany(
+            'insert into limit_up_stat(fire_date, late_date, code, name, industry, fire_price, price, combo, '
+            'count, wave_a, wave_b, wave_str, create_time) '
+            'values(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)', insert_values)
+        rds.commit()
+        print('insert limit_up_stat successfully')
+    except Exception as err:
+        print('insert limit_up_stat error：', err)
+        rds.rollback()
+    # 关闭游标和数据库的连接
+    cursor.close()
+    rds.close()
+
+
 def update_latest_limit_up_stat():
     '''
     实时指定日期涨停信息
@@ -185,8 +210,8 @@ def get_limit_up_stat(start=None, end=None):
 
 
 if __name__ == '__main__':
-    # get_limit_up_times(code_list=['000716', '002105', '600513'], target_date='2020-01-01')
-    # collect_limit_up_stat(target_date='2020-02-20')
-
-    collect_limit_up_stat(target_date=date_util.get_this_week_start())
-    update_latest_limit_up_stat()
+    get_limit_up_times(code_list=['000716', '002105', '600513'], target_date='2020-01-01')
+    collect_limit_up_stat(target_date='2020-02-20')
+    # sync_rds_limit_up_stat()
+    # collect_limit_up_stat(target_date=date_util.get_this_week_start())
+    # update_latest_limit_up_stat()
