@@ -88,9 +88,14 @@ def update_latest_limit_up_stat():
 
 
 def collect_limit_up_stat(target_date):
+    # 建立数据库连接
+    db = get_db()
+    # 使用cursor()方法创建一个游标对象
+    cursor = db.cursor()
+
     '''
     采集指定日期涨停信息
-    :param target_date: YYYY-MM-DD
+    :param target_date: YYYY-MM-DD  从这天开始统计
     :return:
     '''
     trade_date = date_util.get_latest_trade_date(1)[0]
@@ -102,7 +107,7 @@ def collect_limit_up_stat(target_date):
         print(target_date, 'Collect limit up stat start ...')
         limit_up_df = data_util.get_hist_trade(start=target_date, end=target_date, is_limit=True)
 
-        if limit_up_df is not None:
+        if limit_up_df is not None and limit_up_df.empty is False:
             codes = list(limit_up_df['code'])
             limit_up_count = get_limit_up_times(code_list=codes, target_date=target_date)
             if limit_up_count is None:
@@ -112,9 +117,11 @@ def collect_limit_up_stat(target_date):
             for index, row in limit_up_df.iterrows():
                 code = row['code']
                 combo_times = 1
+                fire_date = target_date
                 if code in limit_up_count_codes:
                     index = limit_up_count_codes.index(code)
                     combo_times = limit_up_count.loc[index, 'combo']
+                    fire_date = limit_up_count.loc[index, 'fire_date']
                 else:
                     print(code, 'limit up not found in hist data, trade date', target_date)
 
@@ -122,17 +129,14 @@ def collect_limit_up_stat(target_date):
                 open = row['open']
                 pre_close = row['pre_close']
                 open_change = round((open - pre_close) / pre_close * 100, 2)
-                insert_values.append((target_date, code, '', open_change, close_change, int(combo_times)))
+                insert_values.append((target_date, code, '', open_change, close_change, int(combo_times), fire_date))
             total_size = len(insert_values)
-            # 建立数据库连接
-            db = get_db()
-            # 使用cursor()方法创建一个游标对象
-            cursor = db.cursor()
+
             try:
                 # 注意这里使用的是executemany而不是execute，下边有对executemany的详细说明
                 insert_count = cursor.executemany(
-                    'insert into limit_up_daily(trade_date, code, name, open_change, close_change, combo) '
-                    'values(%s, %s, %s, %s, %s, %s)', insert_values)
+                    'insert into limit_up_daily(trade_date, code, name, open_change, close_change, combo, fire_date) '
+                    'values(%s, %s, %s, %s, %s, %s, %s)', insert_values)
                 cursor.execute("update limit_up_daily d inner join basics b on d.code = b.code "
                                "set d.name = b.name, d.area = b.area, d.industry = b.industry "
                                "where d.industry is null or d.industry='' "
@@ -143,21 +147,22 @@ def collect_limit_up_stat(target_date):
             except Exception as err:
                 print('  >>>error:', err)
                 db.rollback()
-            # 关闭游标和数据库的连接
-            cursor.close()
-            db.close()
 
         next_trade_date = date_util.get_next_trade_day(target_date)
         if next_trade_date is None or next_trade_date > date_util.get_today():
             break
         target_date = next_trade_date
 
+    # 关闭游标和数据库的连接
+    cursor.close()
+    db.close()
+
 
 def get_limit_up_times(code_list, target_date=None):
     '''
     获取指定日期连续涨停次数
     :param code_list:
-    :param target_date:
+    :param target_date:取这天往前1个月的涨停数据
     :return: ['trade_date', 'code', 'combo_times']
     '''
     if len(code_list) == 0:
@@ -176,20 +181,27 @@ def get_limit_up_times(code_list, target_date=None):
         continue_count = 1
         if total < 2:
             curt_data.append(continue_count)
+            curt_data.append(target_date)
         else:
-            curt_trade_date = up_limit_dates[total - 1]
-            for i in range(total):
+            last_index = total - 1
+            curt_trade_date = up_limit_dates[last_index]
+            index = 0
+            while True and index < last_index:
+                index += 1
                 pre_trade_date = date_util.get_previous_trade_day(curt_trade_date)
-                pre_limit_date = up_limit_dates[total - (i + 2)]
+                pre_limit_date = up_limit_dates[last_index - index]
                 if pre_trade_date == pre_limit_date:
                     continue_count += 1
                     curt_trade_date = pre_limit_date
                     continue
-                curt_data.append(continue_count)
-                break
+                else:
+                    pre_limit_date = curt_trade_date
+                    break
+            curt_data.append(continue_count)
+            curt_data.append(pre_limit_date)
         data_list.append(curt_data)
 
-    result_df = pd.DataFrame(data_list, columns=['trade_date', 'code', 'combo'])
+    result_df = pd.DataFrame(data_list, columns=['trade_date', 'code', 'combo', 'fire_date'])
     return result_df
 
 
@@ -210,8 +222,8 @@ def get_limit_up_stat(start=None, end=None):
 
 
 if __name__ == '__main__':
-    get_limit_up_times(code_list=['000716', '002105', '600513'], target_date='2020-01-01')
-    collect_limit_up_stat(target_date='2020-02-20')
+    # get_limit_up_times(code_list=['000716', '002105', '600513'], target_date='2020-01-01')
+    collect_limit_up_stat(target_date='2020-01-01')
     # sync_rds_limit_up_stat()
     # collect_limit_up_stat(target_date=date_util.get_this_week_start())
     # update_latest_limit_up_stat()
