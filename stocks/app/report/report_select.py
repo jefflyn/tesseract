@@ -32,12 +32,13 @@ if __name__ == '__main__':
                                                 "codes": list(limit_up_codes['code'])})
 
     # combo > 3
-    sql_combo = select_columns + "from select_result_all where list_date < :list_date and name not like :name " \
-                                 "and code in (select code from limit_up_stat where fire_date >= :target_date and combo > :combo) " \
-                                 "and (wave_b <= -33 or (wave_b > 0 and wave_b < 20) or (wave_a <= -40 and wave_b < 30)) " \
-                                 "order by wave_a"
-    df_combo = _dt.read_sql(sql_combo, params={"list_date": one_year_ago, "name": "%ST%",
-                                               "target_date": date_util.get_this_year_start(), "combo": 3})
+    sql_combo = 'select sra.code,sra.name,sra.industry ind,sra.area ar,sra.list_date issue,sra.pe,' \
+                'sra.wave_a wa,sra.wave_b wb, sra.a_days ad, sra.b_days bd, ' \
+                'round((lus.price - lus.fire_price) / lus.fire_price * 100, 2) fspc, sra.map mp, lus.combo cbo, ' \
+                'sra.count c, sra.count_ c_, lus.fire_date, lus.late_date, lus.fire_price fprice, lus.price, ' \
+                'sra.wave_detail from select_result_all sra join limit_up_stat lus on sra.code=lus.code ' \
+                'where sra.name not like :name and sra.list_date < 20200101 and lus.combo >= 4 order by fspc'
+    df_combo = _dt.read_sql(sql_combo, params={"name": "%ST%"})
 
     # pretty ma
     sql_today_ma = select_columns + "from select_result_all where name not like :name " \
