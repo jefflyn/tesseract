@@ -1,12 +1,6 @@
 # !/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""
-股票基本数据，每7天采集一次
-Created on 2019/01/01
-@author: guru
-"""
-
 from stocks.util.pro_util import pro
 
 if __name__ == '__main__':
