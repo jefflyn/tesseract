@@ -207,14 +207,14 @@ def get_limit_up_times(code_list, target_date=None):
 
 def get_limit_up_stat(start=None, end=None):
     where_sql = ' where 1=1 '
-
     if start is not None:
         where_sql += 'and trade_date >=:start '
     if end is not None:
         where_sql += 'and trade_date <=:end '
-    sql = 'select code, name, min(trade_date) fire_date, max(trade_date) late_date, max(combo) combo, count(1) total ' \
-          'from limit_up_daily' + where_sql \
-          + ' group by code, name '
+    sql = 'select a.code, a.combo, b.fire_date, a.late_date from ' \
+          '(select code, max(combo) combo, max(trade_date) late_date from limit_up_daily' + where_sql +'group by code) a ' \
+          'inner join (select code, combo, max(fire_date) fire_date from limit_up_daily group by code, combo) b ' \
+          'on a.code=b.code and a.combo=b.combo'
 
     params = {'start': start, 'end': end}
     df = db_util.read_sql(sql, params=params)
