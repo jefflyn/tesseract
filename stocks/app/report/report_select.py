@@ -34,9 +34,10 @@ if __name__ == '__main__':
     # combo > 3
     sql_combo = 'select sra.code,sra.name,sra.industry ind,sra.area ar,sra.list_date issue,sra.pe,' \
                 'sra.wave_a wa,sra.wave_b wb, sra.a_days ad, sra.b_days bd, ' \
-                'round((lus.price - lus.fire_price) / lus.fire_price * 100, 2) fspc, sra.map mp, lus.combo cbo, ' \
+                'lus.combo cbo, round((lus.price - lus.fire_price) / lus.fire_price * 100, 2) fspc, sra.map mp, ' \
                 'sra.count c, sra.count_ c_, lus.fire_date, lus.late_date, lus.fire_price fprice, lus.price, ' \
-                'sra.wave_detail from select_result_all sra join limit_up_stat lus on sra.code=lus.code ' \
+                'sra.wave_detail, sra.concepts ' \
+                'from select_result_all sra join limit_up_stat lus on sra.code=lus.code ' \
                 'where sra.name not like :name and sra.list_date < 20200101 and lus.combo >= 4 order by fspc'
     df_combo = _dt.read_sql(sql_combo, params={"name": "%ST%"})
 
