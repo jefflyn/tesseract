@@ -1,10 +1,8 @@
-import datetime
 import sys
 from datetime import datetime as dt
 from sys import argv
 
 import pandas as pd
-import tushare as ts
 
 import stocks.util.db_util as _dt
 from stocks.data import data_util
@@ -15,53 +13,12 @@ from stocks.gene import wave
 from stocks.util import date_const
 from stocks.util import date_util
 
-LIMITUP = 'limitup'
-BOTTOM = 'bottom'
-UPNDAY = 'upnday'
-MAUP = 'maup'
-QUATO_WEIGHT = {
-    LIMITUP: 0.4,
-    BOTTOM: 0.3,
-    UPNDAY: 0.2,
-    MAUP: 0.1
-}
-
 last_trade_date = date_util.get_latest_trade_date(1)[0]
 
 this_week_hist = data_util.get_hist_trade_high_low(start=date_const.FIRST_DAY_THIS_WEEK,
                                                            end=date_const.LAST_DAY_THIS_WEEK)
 from stocks.data.service import hist_trade_service
 open_date_map = hist_trade_service.get_new_open_date()
-
-
-def select_from_change_week():
-    change_df = _dt.read_query('select * from hist_change_statis_week')
-    columns = change_df.columns
-    for col in columns[1::]:
-        print('hist_change_statis_week sorted by column %s' % col)
-        change_df = change_df.sort_values(by=col, ascending=False)
-        target_change = change_df[change_df[col] >= 15.0]
-        if target_change is None or target_change.empty is True:
-            continue
-        codes = list(target_change['code'])
-        select_result(codes, filename='week_' + col)
-    print('finished!')
-
-
-def select_from_change_month():
-    change_df = _dt.read_query('select * from hist_change_statis_month')
-    columns = change_df.columns
-    for col in columns[1::]:
-        if col != '2018-07':
-            continue
-        print('hist_change_statis sorted by column %s' % col)
-        change_df = change_df.sort_values(by=col, ascending=False)
-        target_change = change_df[change_df[col] >= 20.0]
-        if target_change is None or target_change.empty is True:
-            continue
-        codes = list(target_change['code'])
-        select_result(codes, filename='month_' + col)
-    print('finished!')
 
 
 def select_from_all(fname='all'):
@@ -82,20 +39,6 @@ def sync_select_rds():
     _dt.to_db(data=select_df, tbname='select_result_all', db_engine='rds')
 
 
-def select_from_subnew(from_date=None, fname='subnew'):
-    """
-    return specific subnew code list
-    fromTime: yyyymmdd
-    """
-    subnew = data_util.get_subnew(list_date=from_date)
-    codes = list(subnew['code'])
-    select_result(codes, filename=fname)
-
-
-def merge_select_result():
-    return None
-
-
 def select_result(codeset=None, filename=''):
     begin_time = date_util.now()
     if (codeset is None or len(codeset) == 0) and filename != 'all':
@@ -109,7 +52,7 @@ def select_result(codeset=None, filename=''):
             print('get latest trade: %s' % trade_date)
             curt_trade_date = trade_date
             break
-    size = 0
+
     if codeset is not None:
         size = len(codeset)
     else:
@@ -122,6 +65,7 @@ def select_result(codeset=None, filename=''):
     # fundamentals = fundamental_service.get_fundamental()
     wavedfset = pd.DataFrame(columns=['code', 'begin', 'end', 'status', 'begin_price', 'end_price', 'days', 'change'])
     ma_data_df = data_util.get_ma_data(trade_date=curt_trade_date)
+    issue_df = data_util.get_issue_price()
     for index, row in hist_trade_df.iterrows():
         code = row['code']
         if str(code)[:3] == '688':
@@ -152,11 +96,15 @@ def select_result(codeset=None, filename=''):
         curt_data.append(fundamental.loc[code, 'industry'])
         curt_data.append(fundamental.loc[code, 'area'])
         list_date = str(fundamental.loc[code, 'list_date'])
+        issue_price = issue_df.loc[code, 'issue_price']
+        issue_space = round((current_price - issue_price) / issue_price * 100, 2)
         is_new = False
         if list_date >= date_const.ONE_YEAR_AGO_YYYYMMDD:
             is_new = True
         curt_data.append(list_date)
+        curt_data.append(issue_price)
         curt_data.append(current_price)
+        curt_data.append(issue_space)
         curt_data.append(round(float(row['pct_change']), 2))
         # get wave data and bottom top
         if is_new:
@@ -335,8 +283,8 @@ def select_result(codeset=None, filename=''):
         # curt_data.append(maupdf.at[0, 'ma250'] if maupdf.empty is False else 0)
 
         data_list.append(curt_data)
-    columns = ['concepts', 'pe', 'pe_ttm', 'turnover_rate', 'code', 'name', 'industry', 'area', 'list_date',
-               'price', 'pct', 'wave_detail', 'wave_a', 'a_days', 'wave_b', 'b_days', 'bottom', 'uspace', 'dspace', 'top', 'position',
+    columns = ['concepts', 'pe', 'profit', 'turnover_rate', 'code', 'name', 'industry', 'area', 'list_date', 'issue_price'
+               'price', 'issue_space', 'pct', 'wave_detail', 'wave_a', 'a_days', 'wave_b', 'b_days', 'bottom', 'uspace', 'dspace', 'top', 'position',
                'buy1', 'buy2', 'buy3', 'count', 'count_', 'c30d', 'cq1', 'cq2', 'cq3', 'cq4', 'fdate', 'last_f_date',
                'call_price', 'call_diff', 'lup_low', 'lup_high', 'change_7d', 'gap', 'gap_space', 'sum_30d',
                'updays', 'sumup', 'multi_vol', 'vol_rate', 'w_gap', 'c_gap', 'map']
@@ -344,12 +292,12 @@ def select_result(codeset=None, filename=''):
     # resultdf = resultdf.sort_values('sum_30d', axis=0, ascending=False, inplace=False, kind='quicksort', na_position='last')
 
     resultdf = resultdf[
-        ['concepts',  'code', 'name', 'industry', 'area', 'list_date', 'pe', 'pe_ttm',
+        ['concepts',  'code', 'name', 'industry', 'area', 'list_date', 'issue_price', 'price', 'issue_space', 'pe', 'profit',
          'pct', 'wave_a', 'wave_b', 'map', 'count', 'count_',
          'wave_detail', 'a_days', 'b_days', 'bottom', 'uspace', 'dspace', 'top', 'position',
          'w_gap', 'c_gap',
          'gap', 'gap_space', 'sum_30d', 'c30d', 'cq1', 'cq2', 'cq3', 'cq4',
-         'fdate', 'last_f_date', 'price', 'call_price', 'call_diff', 'lup_low', 'lup_high',
+         'fdate', 'last_f_date', 'call_price', 'call_diff', 'lup_low', 'lup_high',
          'buy1', 'buy2', 'buy3', 'change_7d', 'updays', 'sumup', 'vol_rate', 'multi_vol', 'turnover_rate']]
     resultdf['trade_date'] = last_trade_date
     resultdf['select_time'] = dt.now()
@@ -370,109 +318,8 @@ def select_result(codeset=None, filename=''):
     return resultdf
 
 
-def score_limitup():
-    return QUATO_WEIGHT.get('limiup')
-
-
-def score_bottom(bspace):
-    return 5
-
-
-def score_upndays(days):
-    return 5
-
-
-def score_maup(malist):
-    return 0
-
-
-def select_subnew_issue_space():
-    starttime = dt.now()
-    days = datetime.timedelta(-99)
-    startstr = dt.strftime(starttime + days, '%Y-%m-%d')
-
-    sub_new_basic = data_util.get_subnew()
-    codes = list(sub_new_basic['code'])
-    # codes = ['601108']
-    # get the bottom price data
-    df = ts.get_realtime_quotes(codes)
-    sub_new_basic = sub_new_basic.set_index('code')
-
-    rowsize = df.index.size
-    data_list = []
-    for index, row in df.iterrows():
-        print(rowsize - index)
-        code = row['code']
-        current_price = float(row['price'])
-        timeToMarket = sub_new_basic.loc[code, 'timeToMarket']
-        if timeToMarket == 0 or current_price <= 0:
-            continue;
-        timeToMarket = str(timeToMarket)
-        timeToMarket = timeToMarket[0:4] + '-' + timeToMarket[4:6] + '-' + timeToMarket[6:8]
-        issuedays = (starttime - dt.strptime(timeToMarket, '%Y-%m-%d')).days
-
-        firstData = data_util.get_k_data(code, start=timeToMarket, end=timeToMarket)
-        issue_close_price = float(firstData.at[0, 'close'])
-        issue_space = (current_price - issue_close_price) / issue_close_price * 100
-
-        hist99 = data_util.get_k_data(code, start=startstr)
-        if hist99 is None:
-            continue
-        # var = hist99.var()['close']
-        std = hist99.std()['close']
-        avg = hist99.mean()['close']
-        # varrate = var / avg * 100
-        stdrate = std / avg * 100
-
-        curt_data = []
-        curt_data.append(code)
-        curt_data.append(row['name'])
-        curt_data.append(sub_new_basic.loc[code, 'industry'])
-        curt_data.append(sub_new_basic.loc[code, 'area'])
-        curt_data.append(sub_new_basic.loc[code, 'pe'])
-
-        curt_data.append(issuedays)
-        curt_data.append(issue_close_price)
-        curt_data.append(current_price)
-        curt_data.append(round(issue_space, 2))
-        curt_data.append(round(avg, 2))
-        # curt_data.append(var)
-        curt_data.append(round(std, 2))
-        # curt_data.append(varrate)
-        curt_data.append(round(stdrate, 2))
-
-        data_list.append(curt_data)
-    columns = ['code', 'name', 'industry', 'area', 'pe', 'liquid_assets', 'total_assets', 'issue_days', 'issue_price',
-               'current_price', 'issue_space', 'avg_99', 'std_99', 'stdrate']
-    resultdf = pd.DataFrame(data_list, columns=columns)
-
-    resultdf = resultdf.sort_values('issue_space', axis=0, ascending=True, inplace=False, kind='quicksort',
-                                    na_position='last')
-    resultdf['rank'] = [i + 1 for i in range(resultdf.index.size)]
-    _dt.to_db(resultdf, 'select_subnew_issue_space' + startstr)
-    resultdf['issue_space'] = resultdf['issue_space'].apply(lambda x: str(round(x, 2)) + '%')
-    # resultdf['varrate'] = resultdf['varrate'].apply(lambda x: str(round(x, 2)) + '%')
-    resultdf['stdrate'] = resultdf['stdrate'].apply(lambda x: str(round(x, 2)) + '%')
-    resultdf.to_csv('select_subnew_issue_space.csv')
-
-    wavedf = wave.get_wave(list(resultdf['code']))
-    _dt.to_db(wavedf, 'wave_subnew')
-
-
-def get_limitup_space(df):
-    price = float(df[0])
-    low = float(df[1])
-    return (price - low) / low * 100
-
-
-def get_warn_space(df):
-    price = float(df[0])
-    low = float(df[1])
-    return price - low
-
-
 if __name__ == '__main__':
-    print(select_result('300824'))
+    print(select_result('300837'))
     if len(argv) < 2:
         print("Invalid args! At least 2 args like: python xxx.py code1[,code2,...]")
         sys.exit(0)
