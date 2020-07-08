@@ -97,9 +97,9 @@ def get_status():
         row_data.append(suggest)
         result_data.append(row_data)
 
-        # 告警短信:价格、涨跌幅等
+        # 在(-11, -2]范围告警:价格、涨跌幅等
         pct_chage = float(row['change']) if row['change'] is not None else 0
-        if pct_chage > -11 and (pct_chage < -2 or pct_chage < -3 or pct_chage < -4):
+        if pct_chage > -11 and (pct_chage <= -2 or pct_chage < -3 or pct_chage < -4):
             key = date_util.get_today() + '_index_' + code + '_' + str(int(pct_chage))
             name_format = '：' + code + ' ' + row['name']
             price_format = str(round(float(row['change']), 2)) + '%'
@@ -117,7 +117,12 @@ def get_status():
 
 
 def suggest_by_position(code, position):
-    suggest = ''
+    '''
+    各市场水位建议
+    :param code:
+    :param position:
+    :return:
+    '''
     if code in INDEX_SH:
         if _utils.is_inrange(position, 0, 11):
             return 'suck'
@@ -162,13 +167,13 @@ if __name__ == '__main__':
             time.sleep(5)
     else:
         # format_index(get_status())
-        wavedf = wave.get_wave(codes=target, start='2015-01-01', is_index=True)
-        print(wavedf)
+        wave_df = wave.get_wave(codes=target, start='2015-01-01', is_index=True)
+        print(wave_df)
         # plot figure
-        listdf = []
+        list_df = []
         for code in target:
-            wdf = wavedf[wavedf.code == code]
-            listdf.append(wave.format_wave_data(wdf, is_index=True), )
+            wdf = wave_df[wave_df.code == code]
+            list_df.append(wave.format_wave_data(wdf, is_index=True), )
         # figure display
-        wave.plot_wave(listdf, filename='wave_index.png', columns=3)
+        wave.plot_wave(list_df, filename='wave_index.png', columns=3)
 
