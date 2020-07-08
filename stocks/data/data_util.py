@@ -20,6 +20,19 @@ INDEX_LIST = ['000001.SH', '000300.SH', '000016.SH', '000905.SH', '399001.SZ', '
 basics = read_sql("select * from basics", params=None)
 
 
+def get_issue_price():
+    '''
+    获取本地最早交易价格20100101后（发行价）
+    :return:
+    '''
+    sql = 'select ht.trade_date,ht.code,ht.pre_close issue_price from hist_trade_day ht inner join ' \
+          '(select code, min(trade_date) list_date from hist_trade_day group by code) hs ' \
+          'on ht.code=hs.code and ht.trade_date=hs.list_date'
+    df = read_query(sql)
+    df.index = df['code']
+    return df
+
+
 def get_ma_data(code=None, trade_date=None):
     """
     获取移动平均数据

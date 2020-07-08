@@ -98,5 +98,5 @@ if __name__ == '__main__':
     # sql = 'select ts_code from basics where code like :sz_code or code like :cyb_code'
     # df = data_util.read_sql(sql, params={"sz_code": "0%", "cyb_code": "3%"})
     # init_codes = list(df['ts_code'])
-    init_codes = ['300367.SZ']
+    init_codes = ['603229.SH']
     init_hist_daily(init_codes)

@@ -4,6 +4,11 @@ from stocks.util.redis_util import redis_client
 
 
 def get_new_open_date(refresh=False):
+    '''
+
+    :param refresh:
+    :return:
+    '''
     key = 'open_date_map'
     open_date_map = redis_client.get(key)
     if open_date_map is None or refresh is True:
