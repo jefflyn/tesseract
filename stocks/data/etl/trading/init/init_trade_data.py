@@ -24,7 +24,7 @@ def init_hist_daily(codes=[]):
     # 设定获取日线行情的初始日期和终止日期，其中终止日期设定为当天
     start_dt = INIT_DATA_START_DATE
     end_dt = date_util.get_today(date_util.FORMAT_FLAT)
-    print("Collect trade data from " + start_dt + " to " + end_dt, start_time)
+    print('Collect trade data from ', start_dt, ' to ', end_dt, ', @', start_time)
 
     # get_code_sql = 'select ts_code from basics '
     # if len(codes) > 0:
@@ -33,7 +33,7 @@ def init_hist_daily(codes=[]):
     # total = cursor.execute(get_code_sql)
     total = len(codes)
     if total == 0:
-        print("no stock found, process end!")
+        print('no stock found, process end!')
         exit(0)
     # stock_pool = [ts_code_tuple[0] for ts_code_tuple in cursor.fetchall()]
     stock_pool = codes
@@ -96,14 +96,14 @@ def init_hist_daily(codes=[]):
 
 
 if __name__ == '__main__':
-    # sql = 'select ts_code from basics where name like :dr_name or name like :xd_name or name like :xr_name '
-    # df = data_util.read_sql(sql, params={"dr_name": "DR%", "xd_name": "XD%", "xr_name": "XR%"})
+    sql = 'select ts_code from basics where name like :dr_name or name like :xd_name or name like :xr_name '
+    df = data_util.read_sql(sql, params={"dr_name": "DR%", "xd_name": "XD%", "xr_name": "XR%"})
 
     # sql = 'select ts_code from basics where code like :sh_code'
     # df = data_util.read_sql(sql, params={"sh_code": "6%"})
 
-    sql = 'select ts_code from basics where code like :sz_code'
-    df = data_util.read_sql(sql, params={"sz_code": "0%"})
+    # sql = 'select ts_code from basics where code like :sz_code'
+    # df = data_util.read_sql(sql, params={"sz_code": "0%"})
 
     # sql = 'select ts_code from basics where code like :cyb_code'
     # df = data_util.read_sql(sql, params={"cyb_code": "3%"})
