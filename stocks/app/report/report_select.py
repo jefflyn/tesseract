@@ -11,7 +11,7 @@ if __name__ == '__main__':
 
     one_year_ago = date_const.ONE_YEAR_AGO_YYYYMMDD
 
-    select_columns = "select code, name, area, industry, concepts, list_date, pe, pe_ttm as profit, pct, map, a_days, " \
+    select_columns = "select code, name, area, industry, concepts, list_date, pe, profit, pct, map, a_days, " \
                      "wave_a, wave_b, b_days, count, count_, wave_detail, " \
                      "concat(c30d, ',', cq1, ',', cq2, ', ', cq3,', ',cq4) ct, select_time "
 

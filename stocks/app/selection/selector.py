@@ -283,9 +283,10 @@ def select_result(codeset=None, filename=''):
         # curt_data.append(maupdf.at[0, 'ma250'] if maupdf.empty is False else 0)
 
         data_list.append(curt_data)
-    columns = ['concepts', 'pe', 'profit', 'turnover_rate', 'code', 'name', 'industry', 'area', 'list_date', 'issue_price'
-               'price', 'issue_space', 'pct', 'wave_detail', 'wave_a', 'a_days', 'wave_b', 'b_days', 'bottom', 'uspace', 'dspace', 'top', 'position',
-               'buy1', 'buy2', 'buy3', 'count', 'count_', 'c30d', 'cq1', 'cq2', 'cq3', 'cq4', 'fdate', 'last_f_date',
+    columns = ['concepts', 'pe', 'profit', 'turnover_rate', 'code', 'name', 'industry', 'area', 'list_date',
+               'issue_price', 'price', 'issue_space', 'pct', 'wave_detail', 'wave_a', 'a_days', 'wave_b', 'b_days',
+               'bottom', 'uspace', 'dspace', 'top', 'position', 'buy1', 'buy2', 'buy3', 'count', 'count_',
+               'c30d', 'cq1', 'cq2', 'cq3', 'cq4', 'fdate', 'last_f_date',
                'call_price', 'call_diff', 'lup_low', 'lup_high', 'change_7d', 'gap', 'gap_space', 'sum_30d',
                'updays', 'sumup', 'multi_vol', 'vol_rate', 'w_gap', 'c_gap', 'map']
     resultdf = pd.DataFrame(data_list, columns=columns)
