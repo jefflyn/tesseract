@@ -39,8 +39,8 @@ if __name__ == '__main__':
                 'sra.wave_detail, sra.concepts ' \
                 'from select_result_all sra join limit_up_stat lus on sra.code=lus.code ' \
                 'where sra.name not like :name and sra.list_date < 20200101 and lus.combo >= 4 ' \
-                'order by ind, cb desc, wa, fs'
-'
+                'order by ind, cbo desc, wa, fs'
+
     df_combo = _dt.read_sql(sql_combo, params={"name": "%ST%"})
 
     # pretty ma

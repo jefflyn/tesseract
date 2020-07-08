@@ -6,6 +6,7 @@ import pandas as pd
 import tushare as ts
 from tushare.stock import cons as ct
 
+from stocks.app import cost as cost_util
 from stocks.data import data_util as _dt
 from stocks.gene import wave
 from stocks.util import date_util
@@ -129,8 +130,10 @@ def get_realtime(hddf=None, last_trade_data=None, sortby=None):
             current = 100
         position = (price - bottom) / (top - bottom) * 100
 
+        sell_fee = cost_util.get_sell_fee(price, share)
+
         cost_diff = price - cost
-        profit = cost_diff * share if share > 0 else 0
+        profit = (cost_diff * share if share > 0 else 0) - sell_fee
 
         if profit < 0 < price:
             profit_perc = (cost / price - 1) * -100.0
