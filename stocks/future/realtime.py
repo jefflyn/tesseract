@@ -1,4 +1,3 @@
-import sys
 import time
 from sys import argv
 
@@ -8,8 +7,10 @@ import requests
 from stocks.future import future_util
 
 KEYS = ['code', 'type', 'night']
-FOCUS = ['C2009', 'EG2009', 'EB2009', 'CF2009', 'EB2009', 'JD2009', 'SA2009']
+FOCUS = ['AG2012', 'EG2009', 'EB2009', 'CF2009', 'EB2009', 'JD2009', 'SA2009']
 
+def get_contract_codes(codes=None):
+    return ','.join(codes)
 
 def get_contract_keys(key_type=None):
     targets = ','.join(FOCUS)
@@ -40,10 +41,10 @@ def format_realtime(df):
     return df
 
 
-def re_exe(type, interval=30, sortby=None):
+def re_exe(codes, interval=10, sortby=None):
     req_url = 'http://hq.sinajs.cn/list='
     while True:
-        result = requests.get(req_url + get_contract_keys(type))
+        result = requests.get(req_url + get_contract_keys(codes))
         txt = result.text
         # print(txt)
         if txt is not None and len(txt.split(';')) > 0:
@@ -115,16 +116,17 @@ if __name__ == '__main__':
     nohup /usr/local/bin/redis-server /usr/local/etc/redis.conf &
     nohup /usr/local/bin/redis-server /etc/redis.conf &
     """
-    if len(argv) > 1:
-        type = argv[1]
-        if type not in KEYS:
-            print("Contract Type NOT defined. Try the followings: " + str(KEYS))
-            sys.exit(0)
-    else:
-        type = 'my'
+    # if len(argv) > 1:
+    #     type = argv[1]
+    #     if type not in KEYS:
+    #         print("Contract Type NOT defined. Try the followings: " + str(KEYS))
+    #         sys.exit(0)
+    # else:
+    #     type = 'my'
+    #
     if len(argv) > 2 and argv[2] in ['c', 'p']:
         sort = argv[2]
     else:
         sort = 'c'
 
-    re_exe(type, 30, sortby=sort)
+    re_exe(FOCUS, 30, sortby=sort)

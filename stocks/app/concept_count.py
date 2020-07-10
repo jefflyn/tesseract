@@ -1,12 +1,14 @@
-from wordcloud import WordCloud, ImageColorGenerator
-import matplotlib.pyplot as plt
 import jieba
+import matplotlib.pyplot as plt
 import numpy as np
 from PIL import Image
+from wordcloud import WordCloud, ImageColorGenerator
+
 from stocks.util.base_util import home_path
 
 path_txt = 'concept_top.txt'
 font_path = home_path + "/simhei.ttf"
+
 
 def get_word_cloud():
     f = open(path_txt, 'r', encoding='UTF-8').read()
@@ -25,7 +27,7 @@ def get_word_cloud():
 
 
 def get_word_cloud_by_image():
-    path_img = "/Users/linjingu/Pictures/spider.jpeg"
+    path_img = "/Users/ruian/Pictures/dead.jpg"
     f = open(path_txt, 'r', encoding='UTF-8').read()
     background_image = np.array(Image.open(path_img))
     # 结巴分词，生成字符串，如果不通过分词，无法直接生成正确的中文词云,感兴趣的朋友可以去查一下，有多种分词模式
