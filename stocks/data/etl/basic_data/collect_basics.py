@@ -7,9 +7,10 @@ Created on 2019/02/07
 @author: guru
 """
 import tushare as ts
-from stocks.util.db_util import get_db
-from stocks.util._utils import timer
+
 from stocks.util import date_util
+from stocks.util._utils import timer
+from stocks.util.db_util import get_db
 
 
 @timer
@@ -42,6 +43,9 @@ def collect_basics():
                                           'esp,bvps,bp,list_date,undp,undp_per_share,revenue,profit,gpr,npr,holders) '
                                           'values(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,'
                                           '%s,%s,%s,%s,%s,%s,%s)', insert_values)
+        # 插入概念数据
+        concept_sql = 'insert into concepts select b.code, b.industry from basics b left join concepts c on b.code=c.code where c.code is null'
+        cursor.execute(concept_sql)
         db.commit()
         print(trade_date, 'All Finished! Total size: ' + str(total_size) + ' , ' + str(insert_count) + ' insert successfully.')
     except Exception as err:
