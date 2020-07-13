@@ -22,7 +22,11 @@ def format_realtime(df):
     # format data
     df['price'] = df['price'].apply(lambda x: str(round(float(x), 2)))
     df['bid'] = df['bid'].apply(lambda x: str(round(float(x), 2)))
-    df['ask'] = df['ask'].apply(lambda x: str(round(float(x), 2)))
+
+    df['ask'] = df['ask'].apply(lambda x: '【' + str(round(float(x), 2)) + ',')
+    df['a1_v'] = df['a1_v'].apply(lambda x: str(x) + ',')
+    df['a1v_r'] = df['a1v_r'].apply(lambda x: str(x) + '】')
+
     df['low'] = df['low'].apply(lambda x: '_' + str(round(float(x), 2)))
     df['high'] = df['high'].apply(lambda x: '^' + str(round(float(x), 2)))
     df['bottom'] = df['bottom'].apply(lambda x: '[' + str(x))
@@ -65,8 +69,16 @@ def re_exe(hold_df=None, inc=2, show_wave=True, sortby=None):
 
 
 def get_realtime(hddf=None, last_trade_data=None, sortby=None):
+    '''
+    实时行情
+    :param hddf:
+    :param last_trade_data:
+    :param sortby:
+    :return:
+    '''
     codes = list(hddf['code'])
     df = ts.get_realtime_quotes(codes)
+    df['a1v_r'] = df.apply(calc_a1v_ratio, axis=1)
     data_list = []
     for index, row in df.iterrows():
         code = row['code']
@@ -189,7 +201,8 @@ def get_realtime(hddf=None, last_trade_data=None, sortby=None):
         df = df.sort_values(['change'], axis=0, ascending=True, inplace=False, kind='quicksort', na_position='last')
 
     return df[
-        ['Y', 'code', 'name', 'price', 'o_gap', 'g_scale', 'g_space', 'change', 'bid', 'ask', 'low', 'high', 'up_limit',
+        ['Y', 'code', 'name', 'price', 'o_gap', 'g_scale', 'g_space', 'change', 'bid', 'ask', 'a1_v', 'a1v_r',
+         'low', 'high', 'up_limit',
          'current', 'wave', 'bottom', 'uspace', 'dspace', 'top', 'position', 'cost', 'share', 'capital', 'profit']]
 
 
@@ -214,7 +227,7 @@ def calc_low_change(df):
 def calc_a1v_ratio(df):
     a1_v = float(df['a1_v'])
     vol = float(df['volume'])
-    return str(round(a1_v * 100 / vol, 4)) + '%'
+    return str(round(a1_v * 100 / vol * 100, 2)) + '%'
 
 
 if __name__ == '__main__':
