@@ -24,7 +24,7 @@ def format_realtime(df):
     df['bid'] = df['bid'].apply(lambda x: str(round(float(x), 2)))
 
     df['ask'] = df['ask'].apply(lambda x: '【' + str(round(float(x), 2)) + ',')
-    df['a1_v'] = df['a1_v'].apply(lambda x: str(x) + ',')
+    df['a1_v'] = df['a1_v'].apply(lambda x: str(0 if x == '' else x) + ',')
     df['a1v_r'] = df['a1v_r'].apply(lambda x: str(x) + '】')
 
     df['low'] = df['low'].apply(lambda x: '_' + str(round(float(x), 2)))
@@ -225,7 +225,7 @@ def calc_low_change(df):
 
 
 def calc_a1v_ratio(df):
-    a1_v = float(df['a1_v'])
+    a1_v = float(0 if df['a1_v'] is None or df['a1_v'] == '' else df['a1_v'])
     vol = float(df['volume'])
     return str(round(a1_v * 100 / vol * 100, 2)) + '%'
 
@@ -255,7 +255,8 @@ if __name__ == '__main__':
             df['low'] = df['low'].apply(lambda x: '_' + str(round(float(x), 2)))
             df['high'] = df['high'].apply(lambda x: '^' + str(round(float(x), 2)))
             df['ask'] = df['ask'].apply(lambda x: '【' + str(round(float(x), 2)) + ',')
-            df['a1_v'] = df['a1_v'].apply(lambda x: str(x) + '】')
+            df['a1_v'] = df['a1_v'].apply(lambda x: str(0 if x == '' else x) + ',')
+            df['a1v_r'] = df['a1v_r'].apply(lambda x: str(x) + '】')
 
             print(df[['code', 'name', 'price', 'change', 'o_change', 'l_change', 'bid', 'b1_v', 'ask', 'a1_v', 'a1v_r',
                       'open', 'low', 'high', 'time']])
