@@ -211,6 +211,12 @@ def calc_low_change(df):
     return str(round((price - low) / low * 100, 2)) + '%'
 
 
+def calc_a1v_ratio(df):
+    a1_v = float(df['a1_v'])
+    vol = float(df['volume'])
+    return str(round(a1_v * 100 / vol, 4)) + '%'
+
+
 if __name__ == '__main__':
     """
     python realtime.py df 1 false p
@@ -230,10 +236,16 @@ if __name__ == '__main__':
             df['change'] = df.apply(calc_pct_change, axis=1)
             df['o_change'] = df.apply(calc_open_change, axis=1)
             df['l_change'] = df.apply(calc_low_change, axis=1)
+            df['a1v_r'] = df.apply(calc_a1v_ratio, axis=1)
+
             df['price'] = df['price'].apply(lambda x: str(round(float(x), 2)))
             df['low'] = df['low'].apply(lambda x: '_' + str(round(float(x), 2)))
             df['high'] = df['high'].apply(lambda x: '^' + str(round(float(x), 2)))
-            print(df[['code', 'name', 'price', 'change', 'o_change', 'l_change', 'bid', 'b1_v', 'ask', 'a1_v', 'open', 'low', 'high', 'time']])
+            df['ask'] = df['ask'].apply(lambda x: '【' + str(round(float(x), 2)) + ',')
+            df['a1_v'] = df['a1_v'].apply(lambda x: str(x) + '】')
+
+            print(df[['code', 'name', 'price', 'change', 'o_change', 'l_change', 'bid', 'b1_v', 'ask', 'a1_v', 'a1v_r',
+                      'open', 'low', 'high', 'time']])
             time.sleep(5)
     # hold = argv[2] if len(argv) > 2 else 1
     # display = True if (len(argv) > 3 and str(argv[3]).upper() == 'TRUE') else False

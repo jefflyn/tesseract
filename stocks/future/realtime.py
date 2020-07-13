@@ -5,6 +5,7 @@ import pandas as pd
 import requests
 
 from stocks.future import future_util
+from stocks.util import date_util
 
 KEYS = ['code', 'type', 'night']
 FOCUS = ['AG2012', 'EG2009', 'EB2009', 'CF2009', 'EB2009', 'JD2009', 'SA2009']
@@ -93,10 +94,10 @@ def re_exe(codes, interval=10, sortby=None):
                 elif high == low > price:
                     position = 100
 
-                row_list = [name, exchange, price, change, bid, ask, low, high, position, trade_date]
+                row_list = [name, exchange, price, change, bid, ask, low, high, position, trade_date, date_util.get_now()]
                 result_list.append(row_list)
             df = pd.DataFrame(result_list, columns=['contract', 'exchange', 'price', 'change',
-                                                    'bid1', 'ask1', 'low', 'high', 'position', 'date'])
+                                                    'bid1', 'ask1', 'low', 'high', 'position', 'date', 'time'])
             if sortby == 'p':
                 df = df.sort_values(['position'], ascending=False)
             else:
