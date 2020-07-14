@@ -11,8 +11,8 @@ if __name__ == '__main__':
 
     one_year_ago = date_const.ONE_YEAR_AGO_YYYYMMDD
 
-    select_columns = "select code, name, area, industry, concepts, list_date, pe, profit, pct, map, a_days, " \
-                     "wave_a, wave_b, b_days, count, count_, wave_detail, " \
+    select_columns = "select code, name, area, industry, concepts, pe, profit, list_date, issue_price, price, issue_space, pct, map, " \
+                     "wave_a, wave_b, count, count_, wave_detail, " \
                      "concat(c30d, ',', cq1, ',', cq2, ', ', cq3,', ',cq4) ct, select_time "
 
     # my stock pool
@@ -72,8 +72,8 @@ if __name__ == '__main__':
 
     # new
     sql_new = select_columns + "from select_result_all where list_date >= :list_date " \
-                               "order by wave_a"
-    df_new = _dt.read_sql(sql_new, params={"list_date": one_year_ago})
+                               "order by issue_space, wave_a"
+    df_new = _dt.read_sql(sql_new, params={"list_date": 20180101})
 
     # st
     sql_st = select_columns + "from select_result_all where name like :name " \
