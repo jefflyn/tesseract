@@ -196,6 +196,7 @@ def get_limit_up_times(code_list, target_date=None):
                     continue
                 else:
                     pre_limit_date = curt_trade_date
+                    # 这里可以控制允许的间隔天数参与计算，如果break就是必须连续交易日
                     break
             curt_data.append(continue_count)
             curt_data.append(pre_limit_date)

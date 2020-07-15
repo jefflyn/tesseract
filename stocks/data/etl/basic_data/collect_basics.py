@@ -22,11 +22,11 @@ def collect_basics():
     import numpy as np
     for index, row in stock_basics.iterrows():
         code = row['code']
-        esp = round(row['esp'], 3)
+        eps = round(row['esp'], 3)
         ts_code = code + '.SH' if code[:1] == '6' else code + '.SZ'
         curt_values = (trade_date, code, ts_code, row['name'], row['industry'], row['area'], row['pe'],
                        row['outstanding'], row['totals'], row['totalAssets'], row['liquidAssets'], row['fixedAssets'],
-                       row['reserved'], row['reservedPerShare'], esp, row['bvps'], row['pb'], row['timeToMarket'],
+                       row['reserved'], row['reservedPerShare'], eps, row['bvps'], row['pb'], row['timeToMarket'],
                        row['undp'], row['perundp'], row['rev'], row['profit'], row['gpr'], row['npr'], row['holders'])
         insert_values.append(tuple(np.nan_to_num(curt_values)))
     total_size = len(insert_values)
@@ -40,11 +40,12 @@ def collect_basics():
         # 注意这里使用的是executemany而不是execute，下边有对executemany的详细说明
         insert_count = cursor.executemany('insert into basics(trade_date,code,ts_code,name,industry,area,pe,circulate_shares,'
                                           'total_shares,total_assets,liquid_assets,fixed_assets,reserved,reserved_per_share,'
-                                          'esp,bvps,bp,list_date,undp,undp_per_share,revenue,profit,gpr,npr,holders) '
+                                          'eps,bvps,bp,list_date,undp,undp_per_share,revenue,profit,gpr,npr,holders) '
                                           'values(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,'
                                           '%s,%s,%s,%s,%s,%s,%s)', insert_values)
         # 插入概念数据
-        concept_sql = 'insert into concepts select b.code, b.industry from basics b left join concepts c on b.code=c.code where c.code is null'
+        concept_sql = 'insert into concepts select b.code, b.name, b.industry from basics b ' \
+                      'left join concepts c on b.code=c.code where c.code is null'
         cursor.execute(concept_sql)
         db.commit()
         print(trade_date, 'All Finished! Total size: ' + str(total_size) + ' , ' + str(insert_count) + ' insert successfully.')
