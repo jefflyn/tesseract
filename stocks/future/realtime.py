@@ -8,10 +8,12 @@ from stocks.future import future_util
 from stocks.util import date_util
 
 KEYS = ['code', 'type', 'night']
-FOCUS = ['AG2012', 'EG2009', 'EB2009', 'CF2009', 'EB2009', 'JD2009', 'SA2009']
+FOCUS = ['AG2012', 'CF2009']
+
 
 def get_contract_codes(codes=None):
     return ','.join(codes)
+
 
 def get_contract_keys(key_type=None):
     targets = ','.join(FOCUS)
