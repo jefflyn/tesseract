@@ -195,6 +195,11 @@ def get_limit_up_times(code_list, target_date=None):
                     curt_trade_date = pre_limit_date
                     continue
                 else:
+                    before_pre_trade_date = date_util.get_previous_trade_day(pre_trade_date)
+                    if before_pre_trade_date == pre_limit_date:
+                        continue_count += 1
+                        curt_trade_date = pre_limit_date
+                        continue
                     pre_limit_date = curt_trade_date
                     # 这里可以控制允许的间隔天数参与计算，如果break就是必须连续交易日
                     break
@@ -230,7 +235,7 @@ def get_limit_up_stat(start=None, end=None):
 
 
 if __name__ == '__main__':
-    # get_limit_up_times(code_list=['000716', '002105', '600513'], target_date='2020-01-01')
+    # get_limit_up_times(code_list=['300805', '600513'], target_date='2020-01-01')
     collect_limit_up_stat(target_date='2020-01-01')
     # sync_rds_limit_up_stat()
     # collect_limit_up_stat(target_date=date_util.get_this_week_start())
