@@ -20,6 +20,8 @@ def get_new_open_date(refresh=False):
             code = row['code']
             open_date = row['open_date']
             open_date_map[code] = open_date
+        # redis.exceptions.DataError: Invalid input of type: 'dict'. Convert to a byte, string or number first.
+        # pip install redis==2.10.6
         redis_client.set(key, open_date_map, ex=date_const.ONE_WEEK * 2)
         return open_date_map
     else:
