@@ -65,8 +65,8 @@ if __name__ == '__main__':
     writer = pd.ExcelWriter(file_name)
 
     df_sql_today_limitup.to_excel(writer, sheet_name='limitup')
-    df_today_ma.to_excel(writer, sheet_name='ma')
     df_combo.to_excel(writer, sheet_name='combo')
+    df_today_ma.to_excel(writer, sheet_name='ma')
     df_all.to_excel(writer, sheet_name='all')
     df_new.to_excel(writer, sheet_name='new')
     df_st.to_excel(writer, sheet_name='st')
