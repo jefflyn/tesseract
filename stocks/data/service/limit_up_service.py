@@ -237,6 +237,9 @@ def get_limit_up_stat(start=None, end=None):
 if __name__ == '__main__':
     # get_limit_up_times(code_list=['300805', '600513'], target_date='2020-01-01')
     collect_limit_up_stat(target_date='2020-01-01')
-    # sync_rds_limit_up_stat()
+    update_latest_limit_up_stat()
+    sync_rds_limit_up_stat()
+
     # collect_limit_up_stat(target_date=date_util.get_this_week_start())
     # update_latest_limit_up_stat()
+    # sync_rds_limit_up_stat()
