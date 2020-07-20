@@ -8,7 +8,7 @@ from stocks.future import future_util
 from stocks.util import date_util
 
 KEYS = ['code', 'type', 'night']
-FOCUS = ['AG2012', 'CF2009']
+FOCUS = ['AG2012', 'FU0','LU0']
 
 
 def get_contract_codes(codes=None):

@@ -15,12 +15,6 @@ if __name__ == '__main__':
                      "wave_a, wave_b, count, count_, wave_detail, " \
                      "concat(c30d, ',', cq1, ',', cq2, ', ', cq3,', ',cq4) ct, select_time "
 
-    # my stock pool
-    sql_my_stock = select_columns + "from select_result_all where code in " \
-                                    "(select code from my_stock_pool where platform in :platform)" \
-                                    "order by wave_a"
-    df_my_stock = _dt.read_sql(sql_my_stock, params={"platform": ['pos', 'pa', 'cf', 'df']})
-
     # today limit up
     limit_up_codes = data_util.get_hist_trade(start=date_util.get_latest_trade_date()[0], is_limit=True)
     if limit_up_codes.empty:
@@ -83,7 +77,6 @@ if __name__ == '__main__':
     file_name = 'select_' + date_util.get_today(date_util.FORMAT_FLAT) + '.xlsx'
     writer = pd.ExcelWriter(file_name)
 
-    df_my_stock.to_excel(writer, sheet_name='my')
     df_sql_today_limitup.to_excel(writer, sheet_name='limitup')
     df_today_ma.to_excel(writer, sheet_name='ma')
     df_combo.to_excel(writer, sheet_name='combo')
