@@ -1,7 +1,6 @@
 import pandas as pd
 
 import stocks.util.db_util as _dt
-from stocks.data import data_util
 from stocks.util import date_const
 from stocks.util import date_util
 from utils.mail import mail_util
@@ -15,48 +14,35 @@ if __name__ == '__main__':
                      "wave_a, wave_b, count, count_, wave_detail, " \
                      "concat(c30d, ',', cq1, ',', cq2, ', ', cq3,', ',cq4) ct, select_time "
 
-    # today limit up
-    limit_up_codes = data_util.get_hist_trade(start=date_util.get_latest_trade_date()[0], is_limit=True)
-    if limit_up_codes.empty:
-        limit_up_codes = data_util.get_hist_trade(start=date_util.get_previous_trade_day(), is_limit=True)
-    sql_today_limitup = select_columns + "from select_result_all where list_date < :list_date and code in :codes " \
-                                         "order by wave_a"
-    df_sql_today_limitup = _dt.read_sql(sql_today_limitup,
-                                        params={"list_date": date_util.get_last_2month_start(),
-                                                "codes": list(limit_up_codes['code'])})
 
-    # combo > 3
+    # today limit up
+    sql_today_limitup = "select lud.code,lud.name,lud.industry,sra.list_date issue,sra.pe,sra.map,lud.combo,sra.count," \
+                        "sra.wave_a,sra.wave_b, sra.wave_detail, sra.concepts " \
+                        "from limit_up_daily lud left join select_result_all sra on lud.code = sra.code " \
+                        "where lud.trade_date = :latest_date and sra.list_date < 20200301 and lud.code not like '688%' " \
+                        "order by sra.wave_a asc"
+    df_sql_today_limitup = _dt.read_sql(sql_today_limitup,
+                                        params={"latest_date": date_util.get_latest_trade_date()[0]})
+
+    # combo >= 4
     sql_combo = 'select sra.code,sra.name,sra.industry ind,sra.area ar,sra.list_date issue,sra.pe,' \
-                'sra.wave_a wa,sra.wave_b wb, sra.a_days ad, sra.b_days bd, ' \
+                'sra.wave_a wa,sra.wave_b wb,' \
                 'lus.combo cbo, round((lus.price - lus.fire_price) / lus.fire_price * 100, 2) fs, sra.map mp, ' \
                 'sra.count c, sra.count_ c_, lus.fire_date, lus.late_date, lus.fire_price fprice, lus.price, ' \
                 'sra.wave_detail, sra.concepts ' \
                 'from select_result_all sra join limit_up_stat lus on sra.code=lus.code ' \
-                'where sra.name not like :name and sra.list_date < 20200101 and lus.combo >= 4 ' \
-                'order by ind, cbo desc, wa, fs'
+                'where sra.name not like :name and sra.list_date < 20200301 and lus.combo >= 4 ' \
+                'and (sra.wave_a  < -33 and sra.wave_b  < 20 or sra.wave_b <= -33)' \
+                'order by cbo desc, wa, fs'
 
     df_combo = _dt.read_sql(sql_combo, params={"name": "%ST%"})
 
     # pretty ma
     sql_today_ma = select_columns + "from select_result_all where name not like :name " \
-                                    "and list_date < :list_date and map > 8 " \
-                                    "and (wave_b <= -33 or (wave_a <= -33 and wave_b < 30)) " \
-                                    "order by wave_a"
+                                    "and list_date < :list_date and map > 9 " \
+                                    "and map > 9 and (wave_a < 0 and wave_b < 30) " \
+                                    "order by map desc, wave_a"
     df_today_ma = _dt.read_sql(sql_today_ma, params={"name": "%ST%", "list_date": one_year_ago})
-
-    # oversold
-    sql_oversold = select_columns + "from select_result_all where list_date < :list_date and name not like :name " \
-                                    "and pe > 0 and count > 0 " \
-                                    "and (wave_a <= -50 and wave_b < 15 or wave_b <= -50) " \
-                                    "order by wave_a"
-    df_oversold = _dt.read_sql(sql_oversold, params={"list_date": one_year_ago, "name": "%ST%"})
-
-    # active
-    sql_active = select_columns + "from select_result_all where list_date < :list_date and name not like :name " \
-                                  "and pe > 0 and count >= 8 " \
-                                  "and (wave_a <= -40 and wave_b < 15 or wave_b <= -40) " \
-                                  "order by wave_a"
-    df_active = _dt.read_sql(sql_active, params={"list_date": one_year_ago, "name": "%ST%"})
 
     # all
     sql_all = select_columns + "from select_result_all where name not like :name " \
@@ -78,11 +64,9 @@ if __name__ == '__main__':
     writer = pd.ExcelWriter(file_name)
 
     df_sql_today_limitup.to_excel(writer, sheet_name='limitup')
-    df_today_ma.to_excel(writer, sheet_name='ma')
     df_combo.to_excel(writer, sheet_name='combo')
-    df_active.to_excel(writer, sheet_name='active')
+    df_today_ma.to_excel(writer, sheet_name='ma')
     df_all.to_excel(writer, sheet_name='all')
-    df_oversold.to_excel(writer, sheet_name='oversold')
     df_new.to_excel(writer, sheet_name='new')
     df_st.to_excel(writer, sheet_name='st')
 

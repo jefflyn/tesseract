@@ -113,5 +113,5 @@ if __name__ == '__main__':
     df = data_util.read_query(sql)
 
     init_codes = list(df['ts_code'])
-    # init_codes = ['601992.SH']
+    # init_codes = ['300805.SZ', '600513.SH']
     init_hist_daily(init_codes)
