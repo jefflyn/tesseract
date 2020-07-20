@@ -87,7 +87,12 @@ def update_latest_limit_up_stat():
         db.close()
 
 
-def collect_limit_up_stat(target_date):
+def collect_daily_limit_up(target_date):
+    '''
+    每日涨停信息
+    :param target_date:
+    :return:
+    '''
     # 建立数据库连接
     db = get_db()
     # 使用cursor()方法创建一个游标对象
@@ -235,8 +240,8 @@ def get_limit_up_stat(start=None, end=None):
 
 
 if __name__ == '__main__':
-    get_limit_up_times(code_list=['601599'], target_date='2020-01-01')
-    collect_limit_up_stat(target_date='2020-01-01')
+    # get_limit_up_times(code_list=['601599'], target_date='2020-01-01')
+    # collect_daily_limit_up(target_date='2020-01-01')
     update_latest_limit_up_stat()
     sync_rds_limit_up_stat()
 

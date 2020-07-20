@@ -278,7 +278,7 @@ def get_hist_trade(code=None, is_index=False, start=None, end=None, is_limit=Fal
     if end is not None:
         sql += 'and trade_date <=:end '
     if is_limit:
-        sql += 'and (close = round(pre_close * 1.1, 2)  or pct_change > 9.9) '
+        sql += "and code not like '688%' and (close = round(pre_close * 1.1, 2)  or pct_change > 9.9) "
     params = {'code': code, 'start': start, 'end': end}
     df = read_sql(sql, params=params)
     return df
