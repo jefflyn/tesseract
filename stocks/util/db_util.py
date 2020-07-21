@@ -19,10 +19,13 @@ def get_rds_db():
 
 # save to db
 def to_db(data=None, tbname=None, if_exists='replace', db_engine=None):
-    if db_engine == 'rds':
+    if db_engine == 'local':
+        data.to_sql(name=tbname, con=engine, if_exists=if_exists, index=False, index_label=None)
+    elif db_engine == 'rds':
         data.to_sql(name=tbname, con=engine_rds, if_exists=if_exists, index=False, index_label=None)
     else:
         data.to_sql(name=tbname, con=engine, if_exists=if_exists, index=False, index_label=None)
+        data.to_sql(name=tbname, con=engine_rds, if_exists=if_exists, index=False, index_label=None)
 
 
 def read_table(tbname):

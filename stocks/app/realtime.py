@@ -10,6 +10,7 @@ from stocks.app import cost as cost_util
 from stocks.data import data_util as _dt
 from stocks.gene import wave
 from stocks.util import date_util
+from stocks.util import db_util
 
 keys = ['pos', 'pa', 'cf', 'df', 'sim']
 
@@ -65,6 +66,7 @@ def re_exe(hold_df=None, inc=2, show_wave=True, sortby=None):
         if show_wave is False:
             del finaldf['wave']
         print(finaldf)
+        db_util.to_db(finaldf, tbname='realtime')
         time.sleep(inc)
 
 
