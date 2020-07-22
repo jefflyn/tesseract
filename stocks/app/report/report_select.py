@@ -33,14 +33,13 @@ if __name__ == '__main__':
                 'from select_result_all sra join limit_up_stat lus on sra.code=lus.code ' \
                 'where sra.name not like :name and sra.list_date < 20200301 and lus.combo >= 4 ' \
                 'and (sra.wave_a  < -33 and sra.wave_b  < 20 or sra.wave_b <= -33)' \
-                'order by cbo desc, wa, fs'
+                'order by wa, cbo desc, fs'
 
     df_combo = _dt.read_sql(sql_combo, params={"name": "%ST%"})
 
     # pretty ma
     sql_today_ma = select_columns + "from select_result_all where name not like :name " \
-                                    "and list_date < :list_date and map > 9 " \
-                                    "and map > 9 and (wave_a < 0 and wave_b < 30) " \
+                                    "and list_date < :list_date and map between 10 and 11 " \
                                     "order by map desc, wave_a"
     df_today_ma = _dt.read_sql(sql_today_ma, params={"name": "%ST%", "list_date": one_year_ago})
 

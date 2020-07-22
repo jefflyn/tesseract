@@ -45,6 +45,7 @@ def get_ma_point(ma_arr=None):
     # print(ma_arr, round(ma_std, 2))
     grade = 0.0
 
+    # 不关注现价
     if gap_between(ma5, ma10) and gap_between(ma10, ma20) and gap_between(ma20, ma30) and gap_between(ma30, ma60) \
             and gap_between(ma60, ma90) and gap_between(ma90, ma120):
     # if ma10 >= ma20 >= ma30 >= ma60 >= ma90 >= ma120 > 0:
