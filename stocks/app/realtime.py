@@ -43,9 +43,9 @@ def format_realtime(df):
     df['position'] = df['position'].apply(lambda x: str(round(x, 2)) + '%')
     df['current'] = df['current'].apply(lambda x: str(round(x, 2)) + '%')
     df['o_gap'] = df['o_gap'].apply(lambda x: '[' + str(round(x, 2)) + '%, ')
-    df['g_scale'] = df['g_scale'].apply(lambda x: str(round(x, 2)) + '%] ')
-    # df['g_space'] = df['g_space'].apply(lambda x: str(round(x, 2)) + '%]')
-    df = df.drop('g_space', 1)
+    df['hl_gap'] = df['hl_gap'].apply(lambda x: str(round(x, 2)) + '%] ')
+    # df['cp_gap'] = df['cp_gap'].apply(lambda x: str(round(x, 2)) + '%]')
+    # df = df.drop('cp_gap', 1)
     df = df.drop('cost', 1)
     df = df.drop('share', 1)
     return df
@@ -94,26 +94,28 @@ def get_realtime(hddf=None, last_trade_data=None, sortby=None):
         low = float(row['low'])
         last_high = last_trade_data.at[code, 'high']
         last_low = last_trade_data.at[code, 'low']
-        open_gap = 0
-        gap_scale = 0
-        gap_space = 0
-        if gap_scale == 0:
+        open_gap = 0  # open price gap
+        high_low_gap = 0  # high or low price gap | aways less then open_gap
+        curt_gap = 0  # close price gap
+        if high_low_gap == 0:
             # 向上跳空
             if open > last_high:
                 open_gap = round((open - last_high) / last_high * 100, 2)
                 if low - last_high > 0:
-                    gap_scale = round((low - last_high) / last_high * 100, 2)
+                    high_low_gap = round((low - last_high) / last_high * 100, 2)
                     # 计算缺口和现价的空间
-                    gap_space = round((price - last_high) / last_high * 100, 2)
+                    curt_gap = round((price - last_high) / last_high * 100, 2)
             # 向下跳空缺口
             elif open < last_low:
                 open_gap = round((open - last_low) / last_low * 100, 2)
                 if high - last_low < 0:
-                    gap_scale = round((high - last_low) / last_low * 100, 2)
+                    high_low_gap = round((high - last_low) / last_low * 100, 2)
                     # 计算缺口和现价的空间
-                    gap_space = round((price - last_low) / last_low * 100, 2)
+                    curt_gap = round((price - last_low) / last_low * 100, 2)
         price_diff = price - pre_close
         change = price_diff / pre_close * 100
+
+        low_profit = round((price - low) / low * 100, 2)
 
         index = list(hddf['code']).index(code)
         cost = hddf.loc[index, 'cost']
@@ -168,7 +170,7 @@ def get_realtime(hddf=None, last_trade_data=None, sortby=None):
         elif btm_diff <= 0 or low < bottom or bottom_auto_flag == 'A':
             warn_sign = '!'
 
-        curt_data = [warn_sign, open_gap, gap_scale, gap_space, change, amplitude, cost, profit, profit_perc]
+        curt_data = [warn_sign, open_gap, high_low_gap, curt_gap, low_profit, change, amplitude, cost, profit, profit_perc]
         profit_str = str(round(profit, 2)) + ', ' + str(round(profit_perc, 2)) + '%'
         curt_data.append(profit_str)
         curt_data.append(str(wave_a) + '|' + str(round(wave_b, 2)))
@@ -184,7 +186,7 @@ def get_realtime(hddf=None, last_trade_data=None, sortby=None):
         data_list.append(curt_data)
 
     df_append = pd.DataFrame(data_list,
-                             columns=['Y', 'o_gap', 'g_scale', 'g_space', 'change', 'amp', 'cost',
+                             columns=['Y', 'o_gap', 'hl_gap', 'cp_gap', 'low_pro', 'change', 'amp', 'cost',
                                       'profit_amt', 'profit_perc', 'profit', 'wave', 'bottom',
                                       'uspace', 'dspace', 'top', 'current', 'position',
                                       'share', 'capital', 'up_limit'])
@@ -197,13 +199,13 @@ def get_realtime(hddf=None, last_trade_data=None, sortby=None):
     elif sortby == 'b':
         df = df.sort_values(['uspace'], axis=0, ascending=False, inplace=False, kind='quicksort', na_position='last')
     elif sortby == 'g':
-        df = df.sort_values(['o_gap', 'g_scale', 'g_space'], axis=0, ascending=True, inplace=False, kind='quicksort',
+        df = df.sort_values(['o_gap', 'hl_gap', 'cp_gap'], axis=0, ascending=True, inplace=False, kind='quicksort',
                             na_position='last')
     else:
         df = df.sort_values(['change'], axis=0, ascending=True, inplace=False, kind='quicksort', na_position='last')
 
     return df[
-        ['Y', 'code', 'name', 'price', 'o_gap', 'g_scale', 'g_space', 'change', 'bid', 'ask', 'a1_v', 'a1v_r',
+        ['Y', 'code', 'name', 'price', 'o_gap', 'hl_gap', 'cp_gap', 'low_pro', 'change', 'bid', 'ask', 'a1_v', 'a1v_r',
          'low', 'high', 'up_limit',
          'current', 'wave', 'bottom', 'uspace', 'dspace', 'top', 'position', 'cost', 'share', 'capital', 'profit']]
 
