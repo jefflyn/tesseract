@@ -45,7 +45,10 @@ def format_realtime(df):
     df['o_gap'] = df['o_gap'].apply(lambda x: '[' + str(round(x, 2)) + '%, ')
     df['hl_gap'] = df['hl_gap'].apply(lambda x: str(round(x, 2)) + '%] ')
     # df['cp_gap'] = df['cp_gap'].apply(lambda x: str(round(x, 2)) + '%]')
-    # df = df.drop('cp_gap', 1)
+    df = df.drop('cp_gap', 1)
+    df['low_ch'] = df['low_ch'].apply(lambda x: '[' + str(round(x, 2)) + '% ')
+    df['low_pro'] = df['low_pro'].apply(lambda x: str(round(x, 2)) + '%] ')
+
     df = df.drop('cost', 1)
     df = df.drop('share', 1)
     return df
@@ -115,6 +118,7 @@ def get_realtime(hddf=None, last_trade_data=None, sortby=None):
         price_diff = price - pre_close
         change = price_diff / pre_close * 100
 
+        low_change = round((low - pre_close) / pre_close * 100, 2)
         low_profit = round((price - low) / low * 100, 2)
 
         index = list(hddf['code']).index(code)
@@ -170,7 +174,7 @@ def get_realtime(hddf=None, last_trade_data=None, sortby=None):
         elif btm_diff <= 0 or low < bottom or bottom_auto_flag == 'A':
             warn_sign = '!'
 
-        curt_data = [warn_sign, open_gap, high_low_gap, curt_gap, low_profit, change, amplitude, cost, profit, profit_perc]
+        curt_data = [warn_sign, open_gap, high_low_gap, curt_gap, low_change, low_profit, change, amplitude, cost, profit, profit_perc]
         profit_str = str(round(profit, 2)) + ', ' + str(round(profit_perc, 2)) + '%'
         curt_data.append(profit_str)
         curt_data.append(str(wave_a) + '|' + str(round(wave_b, 2)))
@@ -186,7 +190,7 @@ def get_realtime(hddf=None, last_trade_data=None, sortby=None):
         data_list.append(curt_data)
 
     df_append = pd.DataFrame(data_list,
-                             columns=['Y', 'o_gap', 'hl_gap', 'cp_gap', 'low_pro', 'change', 'amp', 'cost',
+                             columns=['Y', 'o_gap', 'hl_gap', 'cp_gap', 'low_ch', 'low_pro', 'change', 'amp', 'cost',
                                       'profit_amt', 'profit_perc', 'profit', 'wave', 'bottom',
                                       'uspace', 'dspace', 'top', 'current', 'position',
                                       'share', 'capital', 'up_limit'])
@@ -205,7 +209,7 @@ def get_realtime(hddf=None, last_trade_data=None, sortby=None):
         df = df.sort_values(['change'], axis=0, ascending=True, inplace=False, kind='quicksort', na_position='last')
 
     return df[
-        ['Y', 'code', 'name', 'price', 'o_gap', 'hl_gap', 'cp_gap', 'low_pro', 'change', 'bid', 'ask', 'a1_v', 'a1v_r',
+        ['Y', 'code', 'name', 'price', 'o_gap', 'hl_gap', 'cp_gap', 'low_ch', 'low_pro', 'change', 'bid', 'ask', 'a1_v', 'a1v_r',
          'low', 'high', 'up_limit',
          'current', 'wave', 'bottom', 'uspace', 'dspace', 'top', 'position', 'cost', 'share', 'capital', 'profit']]
 
