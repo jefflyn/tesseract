@@ -39,8 +39,8 @@ if __name__ == '__main__':
 
     # pretty ma
     sql_today_ma = select_columns + "from select_result_all where name not like :name " \
-                                    "and list_date < :list_date " \
-                                    "and (map > 10.85 or (map > 10 and wave_a < -33 and sra.wave_b < 40)" \
+                                    "and list_date < :list_date and count > 0 " \
+                                    "and (map > 10.85 or (map > 10 and wave_a < -33 and wave_b < 40)) " \
                                     "order by map desc, wave_a"
     df_today_ma = _dt.read_sql(sql_today_ma, params={"name": "%ST%", "list_date": one_year_ago})
 
