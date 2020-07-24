@@ -16,30 +16,31 @@ if __name__ == '__main__':
 
 
     # today limit up
-    sql_today_limitup = "select lud.code,lud.name,lud.industry,sra.list_date issue,sra.pe,sra.map,lud.combo,sra.count," \
-                        "sra.wave_a,sra.wave_b, sra.wave_detail, sra.concepts " \
+    sql_today_limitup = "select sra.concepts, lud.code,lud.name,lud.industry,sra.list_date issue,sra.pe,sra.map,lud.combo,sra.count," \
+                        "sra.wave_a,sra.wave_b, sra.wave_detail  " \
                         "from limit_up_daily lud left join select_result_all sra on lud.code = sra.code " \
                         "where lud.trade_date = :latest_date and sra.list_date < 20200301 and lud.code not like '688%' " \
-                        "order by sra.wave_a asc"
+                        "order by lud.industry, sra.wave_a asc"
     df_sql_today_limitup = _dt.read_sql(sql_today_limitup,
                                         params={"latest_date": date_util.get_latest_trade_date()[0]})
 
     # combo >= 4
-    sql_combo = 'select sra.code,sra.name,sra.industry ind,sra.area ar,sra.list_date issue,sra.pe,' \
+    sql_combo = 'select sra.concepts, sra.code,sra.name,sra.industry ind,sra.list_date issue,sra.pe,lus.combo cbo,' \
                 'sra.wave_a wa,sra.wave_b wb,' \
-                'lus.combo cbo, round((lus.price - lus.fire_price) / lus.fire_price * 100, 2) fs, sra.map mp, ' \
+                'round((lus.price - lus.fire_price) / lus.fire_price * 100, 2) fs, sra.map mp, ' \
                 'sra.count c, sra.count_ c_, lus.fire_date, lus.late_date, lus.fire_price fprice, lus.price, ' \
-                'sra.wave_detail, sra.concepts ' \
+                'sra.wave_detail ' \
                 'from select_result_all sra join limit_up_stat lus on sra.code=lus.code ' \
                 'where sra.name not like :name and sra.list_date < 20200301 and lus.combo >= 4 ' \
                 'and (sra.wave_a  < -33 and sra.wave_b  < 20 or sra.wave_b <= -33)' \
-                'order by wa, cbo desc, fs'
+                'order by wa'
 
     df_combo = _dt.read_sql(sql_combo, params={"name": "%ST%"})
 
     # pretty ma
     sql_today_ma = select_columns + "from select_result_all where name not like :name " \
-                                    "and list_date < :list_date and map between 10 and 11 " \
+                                    "and list_date < :list_date " \
+                                    "and (map > 10.85 or (map > 10 and wave_a < -33 and sra.wave_b < 40)" \
                                     "order by map desc, wave_a"
     df_today_ma = _dt.read_sql(sql_today_ma, params={"name": "%ST%", "list_date": one_year_ago})
 
