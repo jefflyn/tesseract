@@ -50,9 +50,10 @@ def get_ma_point(ma_arr=None):
             and gap_between(ma60, ma90) and gap_between(ma90, ma120):
     # if ma10 >= ma20 >= ma30 >= ma60 >= ma90 >= ma120 > 0:
         grade = MA_GRADE_10
-        # if gap_between(ma120, ma250):
-        #     grade = MA_GRADE_10
-        space_base = ma250
+        if gap_between(ma120, ma250):
+            space_base = ma250
+        else:
+            space_base = ma120
         index = len(ma_arr)
         while index > 0:
             if space_base > 0:
