@@ -53,7 +53,7 @@ if __name__ == '__main__':
     # new
     sql_new = select_columns + "from select_result_all where list_date >= :list_date " \
                                "order by issue_space, wave_a"
-    df_new = _dt.read_sql(sql_new, params={"list_date": 20180101})
+    df_new = _dt.read_sql(sql_new, params={"list_date": date_const.TWO_YEAR_AGO_YYYYMMDD})
 
     # st
     sql_st = select_columns + "from select_result_all where name like :name " \

@@ -79,6 +79,8 @@ FOUR_Q_THIS_YEAR = local.floor('year').shift(months=9).format(DATE_FORMAT_DEFAUL
 """
 # 一年前
 ONE_YEAR_AGO_YYYYMMDD = local.shift(years=-1).format(DATE_FORMAT_SIMPLE)
+TWO_YEAR_AGO_YYYYMMDD = local.shift(years=-2).format(DATE_FORMAT_SIMPLE)
+THREE_YEAR_AGO_YYYYMMDD = local.shift(years=-3).format(DATE_FORMAT_SIMPLE)
 # 今年第一天
 FIRST_DAY_THIS_YEAR = local.floor('year').format(DATE_FORMAT_DEFAULT)
 # 去年第一天
