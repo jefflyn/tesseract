@@ -61,6 +61,9 @@ LAST_DAY_LAST_MONTH = local.ceil('month').shift(months=-1).format(DATE_FORMAT_DE
 FIRST_DAY_6_MONTH = local.floor('month').shift(months=-6).format(DATE_FORMAT_DEFAULT)
 #6个月前最后一天
 LAST_DAY_6_MONTH = local.ceil('month').shift(months=-6).format(DATE_FORMAT_DEFAULT)
+#6个月前
+SIX_MONTHS_AGO_YYYYMMDD = local.shift(months=-6).format(DATE_FORMAT_SIMPLE)
+
 
 """
 季度

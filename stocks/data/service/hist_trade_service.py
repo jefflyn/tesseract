@@ -5,7 +5,7 @@ from stocks.util.redis_util import redis_client
 
 def get_new_open_date(refresh=False):
     '''
-
+    获取新股开板交易日
     :param refresh:
     :return:
     '''

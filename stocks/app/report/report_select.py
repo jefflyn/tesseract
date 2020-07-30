@@ -17,7 +17,7 @@ if __name__ == '__main__':
 
     # today limit up
     sql_today_limitup = "select sra.concepts, lud.code,lud.name,lud.industry,sra.list_date issue,sra.pe,sra.map,lud.combo,sra.count," \
-                        "sra.wave_a,sra.wave_b, sra.wave_detail  " \
+                        "sra.wave_a,sra.wave_b,sra.wave_detail  " \
                         "from limit_up_daily lud left join select_result_all sra on lud.code = sra.code " \
                         "where lud.trade_date = :latest_date and sra.list_date < 20200301 and lud.code not like '688%' " \
                         "order by lud.industry, sra.wave_a asc"
@@ -31,7 +31,7 @@ if __name__ == '__main__':
                 'sra.count c, sra.count_ c_, lus.fire_date, lus.late_date, lus.fire_price fprice, lus.price, ' \
                 'sra.wave_detail ' \
                 'from select_result_all sra join limit_up_stat lus on sra.code=lus.code ' \
-                'where sra.name not like :name and sra.list_date < 20200301 and lus.combo >= 4 ' \
+                'where sra.name not like :name and sra.list_date < 20200301 and lus.combo >= 5 ' \
                 'and (sra.wave_a  < -33 and sra.wave_b  < 20 or sra.wave_b <= -33)' \
                 'order by wa'
 
@@ -51,11 +51,14 @@ if __name__ == '__main__':
     df_all = _dt.read_sql(sql_all, params={"name": "%ST%", "list_date": one_year_ago})
 
     # new
-    sql_new = select_columns + "from select_result_all where list_date >= :list_date " \
-                               "order by issue_space, wave_a"
-    df_new = _dt.read_sql(sql_new, params={"list_date": date_const.TWO_YEAR_AGO_YYYYMMDD})
+    sql_new_select = "select concepts, code, name, area, industry, pe, list_date, issue_price, price, issue_space, " \
+                     "wave_a, wave_b, count, count_, wave_detail, select_time "
+    sql_new = sql_new_select + "from select_result_all where list_date >= :list_date " \
+                               "order by wave_a, issue_space "
+    df_new = _dt.read_sql(sql_new, params={"list_date": date_const.SIX_MONTHS_AGO_YYYYMMDD})
 
     # st
+    sql_st_select = "select concepts, code, name, area, industry, pe, wave_a, wave_b, count, count_, wave_detail, select_time "
     sql_st = select_columns + "from select_result_all where name like :name " \
                               "order by wave_a"
     df_st = _dt.read_sql(sql_st, params={"name": "%ST%"})

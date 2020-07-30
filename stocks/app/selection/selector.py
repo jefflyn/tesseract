@@ -17,8 +17,8 @@ last_trade_date = date_util.get_latest_trade_date(1)[0]
 
 this_week_hist = data_util.get_hist_trade_high_low(start=date_const.FIRST_DAY_THIS_WEEK,
                                                            end=date_const.LAST_DAY_THIS_WEEK)
-from stocks.data.service import hist_trade_service
-open_date_map = hist_trade_service.get_new_open_date()
+# from stocks.data.service import hist_trade_service
+# open_date_map = hist_trade_service.get_new_open_date()
 
 
 def select_from_all(fname='all'):
@@ -107,11 +107,11 @@ def select_result(codeset=None, filename=''):
         curt_data.append(issue_space)
         curt_data.append(round(float(row['pct_change']), 2))
         # get wave data and bottom top
-        if is_new:
-            open_date = open_date_map[code] if code in open_date_map.keys() else None
-            wave_df = wave.get_wave(code, start=open_date)
-        else:
-            wave_df = wave.get_wave(code)  # need to save
+        # if is_new:
+        #     open_date = open_date_map[code] if code in open_date_map.keys() else None
+        #     wave_df = wave.get_wave(code, start=open_date)
+        # else:
+        wave_df = wave.get_wave(code)  # need to save
         if wave_df is None or wave_df.empty is True:
             continue
         wave_size = 10
