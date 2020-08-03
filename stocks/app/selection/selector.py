@@ -12,6 +12,7 @@ from stocks.gene import upnday
 from stocks.gene import wave
 from stocks.util import date_const
 from stocks.util import date_util
+from stocks.util._utils import timer
 
 last_trade_date = date_util.get_latest_trade_date(1)[0]
 
@@ -20,7 +21,7 @@ this_week_hist = data_util.get_hist_trade_high_low(start=date_const.FIRST_DAY_TH
 # from stocks.data.service import hist_trade_service
 # open_date_map = hist_trade_service.get_new_open_date()
 
-
+@timer
 def select_from_all(fname='all'):
     """
     select all stocks
