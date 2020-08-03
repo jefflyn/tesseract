@@ -333,11 +333,14 @@ def get_ma_code(grade='a'):
 
 
 def get_my_stock_pool(type=None, hold=1):
-    if type == 'gap':
-        sql = 'select * from daily_gap_trace_a where 1=1 and s_date=:last_trade_date'
-        last_trade_date = date_util.get_latest_trade_date(2)[1]
-        params = {'last_trade_date': last_trade_date}
+    if type in ['combo', 'map', 'new']:
+        sql = 'select * from select_x where 1=1 and select_type=:select_type'
+        params = {'select_type': type}
         df = read_sql(sql, params)
+        if df is not None and df.empty is False:
+            df['cost'] = None
+            df['share'] = 100
+            df['bottom'] = df['fire_price']
         return df
     else:
         sql = 'select * from my_stock_pool where 1=1 and is_hold=:hold'

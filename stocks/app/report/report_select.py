@@ -7,13 +7,7 @@ from utils.mail import mail_util
 
 if __name__ == '__main__':
     content = 'Please find the attaches for the selection report details.'
-
     one_year_ago = date_const.ONE_YEAR_AGO_YYYYMMDD
-
-    select_columns = "select code, area, industry, concepts, pe, profit, list_date, issue_price, price, issue_space, " \
-                     "pct, map, name, wave_a, wave_b, count, count_, wave_detail, " \
-                     "concat(c30d, ',', cq1, ',', cq2, ', ', cq3,', ',cq4) ct, select_time "
-
 
     # today limit up
     sql_today_limitup = "select sra.concepts, lud.code,lud.industry,sra.list_date issue,sra.pe,lud.name,sra.map,lud.combo,sra.count," \
@@ -24,38 +18,26 @@ if __name__ == '__main__':
     df_sql_today_limitup = _dt.read_sql(sql_today_limitup,
                                         params={"latest_date": date_util.get_latest_trade_date()[0]})
 
-    # combo >= 4
-    sql_combo = 'select sra.concepts,sra.code,sra.industry ind,sra.list_date issue,sra.pe,sra.name,lus.combo cbo,' \
-                'sra.wave_a wa,sra.wave_b wb,' \
-                'round((lus.price - lus.fire_price) / lus.fire_price * 100, 2) fs, sra.map mp, ' \
-                'sra.count c, sra.count_ c_, lus.fire_date, lus.late_date, lus.fire_price fprice, lus.price, ' \
-                'sra.wave_detail ' \
-                'from select_result_all sra join limit_up_stat lus on sra.code=lus.code ' \
-                'where sra.name not like :name and sra.list_date < 20200301 and lus.combo >= 5 ' \
-                'and (sra.wave_a  < -33 and sra.wave_b  < 20 or sra.wave_b <= -33)' \
-                'order by wa'
+    # combo
+    sql_combo = "select * from select_x where select_type='combo'"
+    df_combo = _dt.read_query(sql_combo)
 
-    df_combo = _dt.read_sql(sql_combo, params={"name": "%ST%"})
+    # map
+    sql_today_ma = "select * from select_x where select_type='map'"
+    df_today_ma = _dt.read_query(sql_today_ma)
 
-    # pretty ma
-    sql_today_ma = select_columns + "from select_result_all where name not like :name " \
-                                    "and list_date < :list_date and count > 0 " \
-                                    "and (map > 10.85 or (map > 10 and wave_a < -33 and wave_b < 40)) " \
-                                    "order by map desc, wave_a"
-    df_today_ma = _dt.read_sql(sql_today_ma, params={"name": "%ST%", "list_date": one_year_ago})
+    # new
+    sql_new = "select * from select_x where select_type='new'"
+    df_new = _dt.read_query(sql_new)
 
+    select_columns = "select code, area, industry, concepts, pe, profit, list_date, issue_price, price, issue_space, " \
+                     "pct, map, name, wave_a, wave_b, count, count_, wave_detail, " \
+                     "concat(c30d, ',', cq1, ',', cq2, ', ', cq3,', ',cq4) ct, select_time "
     # all
     sql_all = select_columns + "from select_result_all where name not like :name " \
                                "and list_date < :list_date " \
                                "order by wave_a"
     df_all = _dt.read_sql(sql_all, params={"name": "%ST%", "list_date": one_year_ago})
-
-    # new
-    sql_new_select = "select concepts, code, area, industry, pe, list_date, issue_price, price, name, issue_space, " \
-                     "wave_a, wave_b, count, count_, wave_detail, select_time "
-    sql_new = sql_new_select + "from select_result_all where list_date >= :list_date " \
-                               "order by wave_a, issue_space "
-    df_new = _dt.read_sql(sql_new, params={"list_date": date_const.SIX_MONTHS_AGO_YYYYMMDD})
 
     # st
     sql_st_select = "select concepts, code, area, industry, pe, name, wave_a, wave_b, count, count_, wave_detail, select_time "
@@ -69,8 +51,8 @@ if __name__ == '__main__':
     df_sql_today_limitup.to_excel(writer, sheet_name='limitup')
     df_combo.to_excel(writer, sheet_name='combo')
     df_today_ma.to_excel(writer, sheet_name='ma')
-    df_all.to_excel(writer, sheet_name='all')
     df_new.to_excel(writer, sheet_name='new')
+    df_all.to_excel(writer, sheet_name='all')
     df_st.to_excel(writer, sheet_name='st')
 
     writer.save()
