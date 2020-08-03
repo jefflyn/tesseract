@@ -34,7 +34,7 @@ def format_realtime(df):
     df['top'] = df['top'].apply(lambda x: str(x) + ']')
     df['cost'] = df['cost'].apply(lambda x: '<' + str(round(x, 3)) + ', ')
     df['share'] = df['share'].apply(lambda x: str(x) + '>')
-    df.insert(15, 'cost, share', df['cost'] + df['share'])
+    df.insert(26, 'cost, share', df['cost'] + df['share'])
     df['change'] = df['change'].apply(lambda x: str(round(x, 2)) + '%')
     # df['amp'] = df['amp'].apply(lambda x: str(round(x, 2)) + '%')
     # df['profit_perc'] = df['profit_perc'].apply(lambda x: str(round(x, 2)) + '%')
@@ -54,13 +54,15 @@ def format_realtime(df):
     return df
 
 
-def re_exe(hold_df=None, inc=2, show_wave=True, sortby=None):
-    if hold_df is None or hold_df.empty:
-        print('no stock found!!!')
-        return
-    codes = list(hold_df['code'])
-    last_trade_data = _dt.get_last_trade_data(codes)
+def re_exe(hold_df=None, type='pos', inc=2, show_wave=True, sortby=None):
     while True:
+        hold_df = _dt.get_my_stock_pool(type)
+        if hold_df is None or hold_df.empty:
+            print("Stock NOT hold! Auto change to default mode.")
+            hold_df = _dt.get_my_stock_pool(type, 0)
+        codes = list(hold_df['code'])
+        last_trade_data = _dt.get_last_trade_data(codes)
+
         real_df = get_realtime(hddf=hold_df, last_trade_data=last_trade_data, sortby=sortby)
         # filter
         # real_df = real_df[real_df.bid > '0.01']
@@ -209,8 +211,8 @@ def get_realtime(hddf=None, last_trade_data=None, sortby=None):
         df = df.sort_values(['change'], axis=0, ascending=True, inplace=False, kind='quicksort', na_position='last')
 
     return df[
-        ['Y', 'code', 'name', 'price', 'o_gap', 'hl_gap', 'cp_gap', 'low_ch', 'low_pro', 'change', 'bid', 'ask', 'a1_v', 'a1v_r',
-         'low', 'high', 'up_limit',
+        ['Y', 'code', 'name', 'price', 'o_gap', 'hl_gap', 'cp_gap', 'low_ch', 'low_pro', 'change',
+         'bid', 'ask', 'a1_v', 'a1v_r', 'low', 'high', 'up_limit',
          'current', 'wave', 'bottom', 'uspace', 'dspace', 'top', 'position', 'cost', 'share', 'capital', 'profit']]
 
 
@@ -272,8 +274,8 @@ if __name__ == '__main__':
     # hold = argv[2] if len(argv) > 2 else 1
     # display = True if (len(argv) > 3 and str(argv[3]).upper() == 'TRUE') else False
     sort = argv[2] if len(argv) > 2 else None
-    hold_df = _dt.get_my_stock_pool(type)
-    if hold_df.empty:
-        print("Stock NOT hold! Auto change to default mode.")
-        hold_df = _dt.get_my_stock_pool(type, 0)
-    re_exe(hold_df, 3, sortby=sort)
+    # hold_df = _dt.get_my_stock_pool(type)
+    # if hold_df.empty:
+    #     print("Stock NOT hold! Auto change to default mode.")
+    #     hold_df = _dt.get_my_stock_pool(type, 0)
+    re_exe(3, type=type, sortby=sort)
