@@ -12,7 +12,7 @@ from stocks.gene import wave
 from stocks.util import date_util
 from stocks.util import db_util
 
-keys = ['pos', 'pa', 'cf', 'df', 'sim']
+keys = ['pos', 'pa', 'cf', 'df', 'sim', 'combo', 'map', 'new']
 
 INDEX_LIST_NEW = dict(zip(list(x[2:] for x in ct.INDEX_LIST.values()), ct.INDEX_LIST.keys()))
 
@@ -58,6 +58,8 @@ def re_exe(hold_df=None, type='pos', inc=2, show_wave=True, sortby=None):
     while True:
         hold_df = _dt.get_my_stock_pool(type)
         if hold_df is None or hold_df.empty:
+            print("Stock NOT found!")
+            sys.exit(0)
             print("Stock NOT hold! Auto change to default mode.")
             hold_df = _dt.get_my_stock_pool(type, 0)
         codes = list(hold_df['code'])
@@ -71,7 +73,7 @@ def re_exe(hold_df=None, type='pos', inc=2, show_wave=True, sortby=None):
         if show_wave is False:
             del finaldf['wave']
         print(finaldf)
-        db_util.to_db(finaldf, tbname='realtime')
+        db_util.to_db(finaldf, tbname='realtime_' + type)
         time.sleep(inc)
 
 

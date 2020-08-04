@@ -45,7 +45,7 @@ def select_combo():
                  "join limit_up_stat lus on sx.code=lus.code " \
                  "set sx.name=sra.name, sx.industry=sra.industry, sx.concept=sra.concepts," \
                  "sx.pe=sra.pe,sx.wave_a=sra.wave_a,sx.wave_b=sra.wave_b, sx.l_count=sra.count," \
-                 "sx.map=sra.map,sx.issue_date=sra.list_date,sx.issue_price=sra.issue_space,sx.combo=lus.combo, " \
+                 "sx.map=sra.map,sx.issue_date=sra.list_date,sx.issue_price=sra.issue_price,sx.combo=lus.combo, " \
                  "sx.fire_price=lus.fire_price,sx.fire_space=round((lus.price - lus.fire_price) / lus.fire_price * 100, 2), " \
                  "sx.on_target=case when (sra.wave_b < -33 or (sra.wave_b > 0 and sra.wave_b < 10) or (sra.wave_a < -40 and sra.wave_b < 15)) then 1 else 0 end, " \
                  "update_time=now(),sx.wave_str=sra.wave_detail where sx.select_type='combo';"
@@ -96,7 +96,7 @@ def select_map():
                  "join limit_up_stat lus on sx.code=lus.code " \
                  "set sx.name=sra.name, sx.industry=sra.industry, sx.concept=sra.concepts," \
                  "sx.pe=sra.pe,sx.wave_a=sra.wave_a,sx.wave_b=sra.wave_b, sx.l_count=sra.count," \
-                 "sx.map=sra.map,sx.issue_date=sra.list_date,sx.issue_price=sra.issue_space,sx.combo=lus.combo, " \
+                 "sx.map=sra.map,sx.issue_date=sra.list_date,sx.issue_price=sra.issue_price,sx.combo=lus.combo, " \
                  "sx.fire_price=lus.fire_price,sx.fire_space=round((lus.price - lus.fire_price) / lus.fire_price * 100, 2), " \
                  "sx.on_target=case when (sra.wave_b < -33 or (sra.wave_b > 0 and sra.wave_b < 10) or (sra.wave_a < -40 and sra.wave_b < 15)) then 1 else 0 end, " \
                  "update_time=now(),sx.wave_str=sra.wave_detail where sx.select_type='map';"
@@ -117,7 +117,7 @@ def select_new():
     select_sql = "select lus.code,lus.name,lus.industry,sra.concepts,sra.pe,lus.wave_a,lus.wave_b,lus.combo,lus.count," \
                  "sra.map,sra.list_date,sra.issue_price,sra.issue_space,lus.fire_price," \
                  "round((lus.price - lus.fire_price) / lus.fire_price * 100, 2) fs,1 on_target, sra.wave_detail, " \
-                 "'combo' select_type," \
+                 "'new' select_type," \
                  "sra.trade_date, sra.select_time as update_time " \
                  "from limit_up_stat lus left join select_result_all sra on lus.code = sra.code " \
                  "where sra.name not like :name and sra.list_date > :list_date and lus.code not like '688%' " \
@@ -147,7 +147,7 @@ def select_new():
                  "join limit_up_stat lus on sx.code=lus.code " \
                  "set sx.name=sra.name, sx.industry=sra.industry, sx.concept=sra.concepts," \
                  "sx.pe=sra.pe,sx.wave_a=sra.wave_a,sx.wave_b=sra.wave_b, sx.l_count=sra.count," \
-                 "sx.map=sra.map,sx.issue_date=sra.list_date,sx.issue_price=sra.issue_space,sx.combo=lus.combo, " \
+                 "sx.map=sra.map,sx.issue_date=sra.list_date,sx.issue_price=sra.issue_price,sx.combo=lus.combo, " \
                  "sx.fire_price=lus.fire_price,sx.fire_space=round((lus.price - lus.fire_price) / lus.fire_price * 100, 2), " \
                  "sx.on_target=case when (sra.wave_b < -33 or (sra.wave_b > 0 and sra.wave_b < 10) or (sra.wave_a < -40 and sra.wave_b < 15)) then 1 else 0 end, " \
                  "update_time=now(),sx.wave_str=sra.wave_detail where sx.select_type='new';"

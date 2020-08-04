@@ -334,7 +334,7 @@ def get_ma_code(grade='a'):
 
 def get_my_stock_pool(type=None, hold=1):
     if type in ['combo', 'map', 'new']:
-        sql = 'select * from select_x where 1=1 and select_type=:select_type'
+        sql = 'select * from select_x where 1=1 and on_target=1 and select_type=:select_type'
         params = {'select_type': type}
         df = read_sql(sql, params)
         if df is not None and df.empty is False:
