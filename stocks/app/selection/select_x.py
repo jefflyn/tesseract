@@ -158,6 +158,12 @@ def select_new():
     db.close()
 
 
+def select_x():
+    select_combo()
+    select_map()
+    select_new()
+
+
 if __name__ == '__main__':
     select_combo()
     select_map()

@@ -23,8 +23,8 @@ if __name__ == '__main__':
     df_combo = _dt.read_query(sql_combo)
 
     # map
-    sql_today_ma = "select * from select_x where select_type='map'"
-    df_today_ma = _dt.read_query(sql_today_ma)
+    sql_today_map = "select * from select_x where select_type='map'"
+    df_today_map = _dt.read_query(sql_today_map)
 
     # new
     sql_new = "select * from select_x where select_type='new'"
@@ -50,7 +50,7 @@ if __name__ == '__main__':
 
     df_sql_today_limitup.to_excel(writer, sheet_name='limitup')
     df_combo.to_excel(writer, sheet_name='combo')
-    df_today_ma.to_excel(writer, sheet_name='ma')
+    df_today_map.to_excel(writer, sheet_name='map')
     df_new.to_excel(writer, sheet_name='new')
     df_all.to_excel(writer, sheet_name='all')
     df_st.to_excel(writer, sheet_name='st')

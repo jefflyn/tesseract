@@ -38,6 +38,8 @@ def sync_select_rds():
     '''
     select_df = _dt.read_query("select * from select_result_all order by industry, wave_a")
     _dt.to_db(data=select_df, tbname='select_result_all', db_engine='rds')
+    select_x = _dt.read_query("select * from select_x")
+    _dt.to_db(data=select_x, tbname='select_x_sync', db_engine='rds')
 
 
 def select_result(codeset=None, filename=''):
