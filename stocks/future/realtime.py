@@ -7,33 +7,6 @@ import requests
 from stocks.future import future_util
 from stocks.util import date_util
 
-KEYS = ['code', 'type', 'night']
-FOCUS = ['AG2012', 'OI2009', 'P2009']
-
-
-def get_contract_codes(codes=None):
-    return ','.join(codes)
-
-
-def get_contract_keys(key_type=None):
-    targets = ','.join(FOCUS)
-    if type == 'ec':
-        targets = ','.join(future_util.ENERGY_CHEMICAL.keys())
-    elif type == 'pm':
-        targets = ','.join(future_util.PRECIOUS_METAL.keys())
-    elif type == 'fm':
-        targets = ','.join(future_util.FERROUS_METAL.keys())
-    elif type == 'nfm':
-        targets = ','.join(future_util.NON_FERROUS_METAL.keys())
-    elif type == 'ap':
-        targets = ','.join(future_util.AGRICULTURAL_PRODUCTS.keys())
-    elif type == 'fp':
-        targets = ','.join(future_util.FINANCIAL.keys())
-    elif type == 'all':
-        all_keys = future_util.ENERGY_CHEMICAL.keys() | future_util.PRECIOUS_METAL.keys() | future_util.FERROUS_METAL.keys() | future_util.NON_FERROUS_METAL.keys() | future_util.AGRICULTURAL_PRODUCTS.keys()
-        targets = ','.join(all_keys)
-    return targets
-
 
 def format_realtime(df):
     # format data
@@ -44,10 +17,13 @@ def format_realtime(df):
     return df
 
 
-def re_exe(codes, interval=10, sortby=None):
+def re_exe(interval=10, sortby=None):
+    on_target = (sortby == 'c')
+    future_res = future_util.get_future_basics(on_target=on_target)
+    codes = ','.join(list(future_res['symbol']))
     req_url = 'http://hq.sinajs.cn/list='
     while True:
-        result = requests.get(req_url + get_contract_keys(codes))
+        result = requests.get(req_url + codes)
         txt = result.text
         # print(txt)
         if txt is not None and len(txt.split(';')) > 0:
@@ -88,6 +64,13 @@ def re_exe(codes, interval=10, sortby=None):
                 # 17：日期
                 trade_date = info[17]
 
+                target_df = future_res.loc[future_res['name'].str.contains(alias)]
+                if target_df.empty:
+                    print(name, alias, 'empty')
+                for index, row in target_df.iterrows():
+                    amount_per_hand = row['amount']
+                    limit_in = row['limit']
+                total_value = round(float(price) * amount_per_hand, 2)
                 price_diff = float(price) - float(pre_settle)
                 change = round(price_diff / float(pre_settle) * 100, 2)
                 position = 0
@@ -96,10 +79,12 @@ def re_exe(codes, interval=10, sortby=None):
                 elif high == low > price:
                     position = 100
 
-                row_list = [name, exchange, price, change, bid, ask, low, high, position, trade_date, date_util.get_now()]
+                row_list = [name, exchange, price, change, bid, ask, low, high, position, str(limit_in) + '%',
+                            total_value,
+                            trade_date, date_util.get_now()]
                 result_list.append(row_list)
-            df = pd.DataFrame(result_list, columns=['contract', 'exchange', 'price', 'change',
-                                                    'bid1', 'ask1', 'low', 'high', 'position', 'date', 'time'])
+            df = pd.DataFrame(result_list, columns=['contract', 'exchange', 'price', 'change', 'bid1', 'ask1', 'low',
+                                                    'high', 'position', 'limit', 'total_value', 'date', 'time'])
             if sortby == 'p':
                 df = df.sort_values(['position'], ascending=False)
             else:
@@ -127,9 +112,8 @@ if __name__ == '__main__':
     # else:
     #     type = 'my'
     #
-    if len(argv) > 2 and argv[2] in ['c', 'p']:
-        sort = argv[2]
+    if len(argv) > 1 and argv[1] in ['a', 'c', 'p']:
+        sort = argv[1]
     else:
         sort = 'c'
-
-    re_exe(FOCUS, 30, sortby=sort)
+    re_exe(5, sortby=sort)

@@ -9,8 +9,10 @@ AGRICULTURAL_PRODUCTS = '农产品'
 FINANCIAL = '金融板块'
 
 
-def get_future_basics(code=None, type=None, night=None):
+def get_future_basics(code=None, type=None, night=None, on_target=None):
     sql = 'select * from future_basics where 1=1 '
+    if on_target is True:
+        sql += 'and on_target = :on_target '
     if code is not None:
         if isinstance(code, str):
             codes = list()
@@ -21,7 +23,7 @@ def get_future_basics(code=None, type=None, night=None):
         sql += 'and goods_type = :type '
     if night is not None:
         sql += 'and night = :night '
-    params = {'code': code, 'type': type, 'night': night}
+    params = {'code': code, 'type': type, 'night': night, 'on_target': 1}
     df = read_sql(sql, params=params)
     return df
 
