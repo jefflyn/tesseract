@@ -6,6 +6,7 @@ import requests
 
 from stocks.future import future_util
 from stocks.util import date_util
+from stocks.util import db_util
 
 
 def format_realtime(df):
@@ -14,6 +15,8 @@ def format_realtime(df):
     df['high'] = df['high'].apply(lambda x: '^' + str(round(float(x), 2)))
     df['change'] = df['change'].apply(lambda x: str(round(x, 2)) + '%')
     df['position'] = df['position'].apply(lambda x: str(round(x, 2)) + '%')
+    df['limit'] = df['limit'].apply(lambda x: str(round(x, 2)) + '%')
+
     return df
 
 
@@ -79,7 +82,7 @@ def re_exe(interval=10, sortby=None):
                 elif high == low > price:
                     position = 100
 
-                row_list = [name, exchange, price, change, bid, ask, low, high, position, str(limit_in) + '%',
+                row_list = [name, exchange, price, change, bid, ask, low, high, round(position, 2), round(limit_in, 2),
                             total_value,
                             trade_date, date_util.get_now()]
                 result_list.append(row_list)
@@ -89,6 +92,8 @@ def re_exe(interval=10, sortby=None):
                 df = df.sort_values(['position'], ascending=False)
             else:
                 df = df.sort_values(['change'])
+
+            db_util.to_db(df, tbname='future_realtime')
 
             final_df = format_realtime(df)
             if final_df.empty:

@@ -44,7 +44,7 @@ def collect_basics():
                                           'values(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,'
                                           '%s,%s,%s,%s,%s,%s,%s)', insert_values)
         # 插入概念数据
-        concept_sql = 'insert into concepts select b.code, b.name, b.industry from basics b ' \
+        concept_sql = 'insert into concepts select b.code, b.name, b.industry, now() from basics b ' \
                       'left join concepts c on b.code=c.code where c.code is null'
         cursor.execute(concept_sql)
         db.commit()

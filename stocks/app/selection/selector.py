@@ -86,12 +86,14 @@ def select_result(codeset=None, filename=''):
         curt_data = list()
         concept = concepts[concepts.code == code]
         fundamental = basics[basics.code == code]
+        if fundamental.empty:
+            continue
 
         curt_data.append(concept.loc[code, 'concepts'] if concept.empty is False else '')
-        curt_data.append(round(fundamental.loc[code, 'pe'], 1) if fundamental.empty is False else 0)
-        # curt_data.append(round(fundamental.loc[code, 'pe_ttm'], 1) if fundamental.empty is False else 0)
+        curt_data.append(round(fundamental.loc[code, 'pe'], 1))
+        # curt_data.append(round(fundamental.loc[code, 'pe_ttm'], 1))
         curt_data.append(fundamental.loc[code, 'profit'])  # pe_ttm
-        # curt_data.append(fundamental.loc[code, 'turnover_rate'] if fundamental.empty is False else 0)
+        # curt_data.append(fundamental.loc[code, 'turnover_rate'])
         curt_data.append(0)
 
         curt_data.append(code)
@@ -199,7 +201,7 @@ def select_result(codeset=None, filename=''):
         if len(fire_dates) > 0:
             last_f_date = fire_dates[-1]
             call_diff = round((current_price - call_price) / current_price * 100, 2)
-            if (date_util.convert_to_date(list_date) - date_util.convert_to_date(last_f_date)).days == 0:
+            if list_date == 0 or (date_util.convert_to_date(list_date) - date_util.convert_to_date(last_f_date)).days == 0:
                 fire_dates = ''
                 last_f_date = ''
                 call_prices = ''
