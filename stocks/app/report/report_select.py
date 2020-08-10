@@ -8,15 +8,20 @@ from utils.mail import mail_util
 if __name__ == '__main__':
     content = 'Please find the attaches for the selection report details.'
     one_year_ago = date_const.ONE_YEAR_AGO_YYYYMMDD
+    half_year_ago = date_const.SIX_MONTHS_AGO_YYYYMMDD
 
     # today limit up
-    sql_today_limitup = "select sra.concepts, lud.code,lud.industry,sra.list_date issue,sra.pe,lud.name,sra.map,lud.combo,sra.count," \
-                        "sra.wave_a,sra.wave_b,sra.wave_detail  " \
+    sql_today_limitup = "select sra.concepts,lud.name,sra.pe,lud.combo,sra.wave_a,sra.wave_b,sra.map," \
+                        "lud.code,lud.industry,sra.list_date issue," \
+                        "sra.count,sra.wave_detail  " \
                         "from limit_up_daily lud left join select_result_all sra on lud.code = sra.code " \
-                        "where lud.trade_date = :latest_date and sra.list_date < 20200301 and lud.code not like '688%' " \
-                        "order by lud.industry, sra.wave_a asc"
+                        "where lud.trade_date = :latest_date " \
+                        "and sra.list_date < :list_date " \
+                        "and lud.code not like '688%' and combo >=3 " \
+                        "order by combo desc, sra.wave_a"
     df_sql_today_limitup = _dt.read_sql(sql_today_limitup,
-                                        params={"latest_date": date_util.get_latest_trade_date()[0]})
+                                        params={"latest_date": date_util.get_latest_trade_date()[0],
+                                                "list_date": half_year_ago})
 
     # combo
     sql_combo = "select * from select_x where select_type='combo'"
