@@ -12,7 +12,7 @@ def select_combo():
     db = _dt.get_db()
     # 使用cursor()方法创建一个游标对象
     cursor = db.cursor()
-    select_sql = "select lus.code,lus.name,lus.industry,sra.concepts,sra.pe,lus.wave_a,lus.wave_b,lus.combo,lus.count," \
+    select_sql = "select lus.code,lus.name,lus.industry,sra.concepts,sra.pe,sra.wave_a,sra.wave_b,lus.combo,lus.count," \
                  "sra.map,sra.list_date,sra.issue_price,sra.issue_space,lus.fire_price," \
                  "round((lus.price - lus.fire_price) / lus.fire_price * 100, 2) fs,1 on_target, sra.wave_detail, " \
                  "'combo' select_type," \
@@ -20,7 +20,7 @@ def select_combo():
                  "from limit_up_stat lus left join select_result_all sra on lus.code = sra.code where lus.combo > 4 " \
                  "and sra.name not like :name and sra.list_date < :list_date and lus.code not like '688%' " \
                  "and (sra.wave_b < -33 or (sra.wave_b > 0 and sra.wave_b < 10) or (sra.wave_a < -40 and sra.wave_b < 15)) " \
-                 "order by lus.wave_a asc;"
+                 "order by lus.wave_a;"
     params = {"name": "%ST%", "list_date": one_year_ago}
     select_df = _dt.read_sql(select_sql, params)
     if select_df.empty is True:
@@ -63,7 +63,7 @@ def select_map():
     db = _dt.get_db()
     # 使用cursor()方法创建一个游标对象
     cursor = db.cursor()
-    select_sql = "select lus.code,lus.name,lus.industry,sra.concepts,sra.pe,lus.wave_a,lus.wave_b,lus.combo,lus.count," \
+    select_sql = "select lus.code,lus.name,lus.industry,sra.concepts,sra.pe,sra.wave_a,sra.wave_b,lus.combo,lus.count," \
                  "sra.map,sra.list_date,sra.issue_price,sra.issue_space,lus.fire_price," \
                  "round((lus.price - lus.fire_price) / lus.fire_price * 100, 2) fs,1 on_target, sra.wave_detail, " \
                  "'map' select_type," \
@@ -115,7 +115,7 @@ def select_new():
     db = _dt.get_db()
     # 使用cursor()方法创建一个游标对象
     cursor = db.cursor()
-    select_sql = "select lus.code,lus.name,lus.industry,sra.concepts,sra.pe,lus.wave_a,lus.wave_b,lus.combo,lus.count," \
+    select_sql = "select lus.code,lus.name,lus.industry,sra.concepts,sra.pe,sra.wave_a,sra.wave_b,lus.combo,lus.count," \
                  "sra.map,sra.list_date,sra.issue_price,sra.issue_space,lus.fire_price," \
                  "round((lus.price - lus.fire_price) / lus.fire_price * 100, 2) fs,1 on_target, sra.wave_detail, " \
                  "'new' select_type," \
@@ -123,7 +123,7 @@ def select_new():
                  "from limit_up_stat lus left join select_result_all sra on lus.code = sra.code " \
                  "where sra.name not like :name and sra.list_date > :list_date and lus.code not like '688%' " \
                  "    and (sra.issue_space < 15 or (sra.wave_b < -33 or (sra.wave_b > 0 and sra.wave_b < 10) or (sra.wave_a < -40 and sra.wave_b < 15))) " \
-                 "order by lus.wave_a asc;"
+                 "order by lus.wave_a;"
     params = {"name": "%ST%", "list_date": date_const.SIX_MONTHS_AGO_YYYYMMDD}
     select_df = _dt.read_sql(select_sql, params)
     if select_df.empty is True:
