@@ -99,7 +99,7 @@ def select_map():
                  "sx.pe=sra.pe,sx.wave_a=sra.wave_a,sx.wave_b=sra.wave_b, sx.l_count=sra.count," \
                  "sx.map=sra.map,sx.issue_date=sra.list_date,sx.issue_price=sra.issue_price,sx.combo=lus.combo, " \
                  "sx.fire_price=lus.fire_price,sx.fire_space=round((lus.price - lus.fire_price) / lus.fire_price * 100, 2), " \
-                 "sx.on_target=case when (sra.wave_b < -33 or (sra.wave_b > 0 and sra.wave_b < 10) or (sra.wave_a < -40 and sra.wave_b < 15)) then 1 else 0 end, " \
+                 "sx.on_target=case when (sra.map > 10.85 or (sra.map > 10 and sra.wave_a < -33 and sra.wave_b < 40)) then 1 else 0 end, " \
                  "update_time=now(),sx.wave_str=sra.wave_detail where sx.select_type='map';"
     print('update select map:', cursor.execute(update_sql))
     db.commit()
