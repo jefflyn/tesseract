@@ -11,8 +11,8 @@ if __name__ == '__main__':
     half_year_ago = date_const.SIX_MONTHS_AGO_YYYYMMDD
 
     # today limit up
-    sql_today_limitup = "select sra.concepts,lud.name,sra.pe,lud.combo,sra.wave_a,sra.wave_b,sra.map," \
-                        "lud.code,lud.industry,sra.list_date issue," \
+    sql_today_limitup = "select lud.name,sra.pe,lud.combo,sra.wave_a,sra.wave_b,sra.map," \
+                        "lud.code,lud.industry,sra.concepts,sra.list_date issue," \
                         "sra.count,sra.wave_detail  " \
                         "from limit_up_daily lud left join select_result_all sra on lud.code = sra.code " \
                         "where lud.trade_date = :latest_date " \
@@ -24,15 +24,15 @@ if __name__ == '__main__':
                                                 "list_date": half_year_ago})
 
     # combo
-    sql_combo = "select * from select_x where select_type='combo'"
+    sql_combo = "select * from select_x where select_type='combo' order by wave_a"
     df_combo = _dt.read_query(sql_combo)
 
     # map
-    sql_today_map = "select * from select_x where select_type='map'"
+    sql_today_map = "select * from select_x where select_type='map' order by wave_a"
     df_today_map = _dt.read_query(sql_today_map)
 
     # new
-    sql_new = "select * from select_x where select_type='new'"
+    sql_new = "select * from select_x where select_type='new' order by wave_a"
     df_new = _dt.read_query(sql_new)
 
     select_columns = "select code, area, industry, concepts, pe, profit, list_date, issue_price, price, issue_space, " \
