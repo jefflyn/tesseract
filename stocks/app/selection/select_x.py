@@ -70,8 +70,8 @@ def select_map():
                  "sra.trade_date, sra.select_time as update_time " \
                  "from limit_up_stat lus left join select_result_all sra on lus.code = sra.code " \
                  "where sra.name not like :name and sra.list_date > 0 and sra.list_date < :list_date " \
-                 "and lus.code not like '688%' " \
-                 "and (sra.map > 10.85 or (sra.map > 10 and sra.wave_a < -33 and sra.wave_b < 40)) " \
+                 "and lus.code not like '688%' and lus.count > 1" \
+                 "and (sra.map > 10.9 or (sra.map > 10 and sra.wave_a < -33 and sra.wave_b < 40)) " \
                  "order by sra.map desc;"
     params = {"name": "%ST%", "list_date": one_year_ago}
     select_df = _dt.read_sql(select_sql, params)
@@ -99,7 +99,7 @@ def select_map():
                  "sx.pe=sra.pe,sx.wave_a=sra.wave_a,sx.wave_b=sra.wave_b, sx.l_count=sra.count," \
                  "sx.map=sra.map,sx.issue_date=sra.list_date,sx.issue_price=sra.issue_price,sx.combo=lus.combo, " \
                  "sx.fire_price=lus.fire_price,sx.fire_space=round((lus.price - lus.fire_price) / lus.fire_price * 100, 2), " \
-                 "sx.on_target=case when (sra.map > 10.85 or (sra.map > 10 and sra.wave_a < -33 and sra.wave_b < 40)) then 1 else 0 end, " \
+                 "sx.on_target=case when (sra.map > 10.9 or (sra.map > 10 and sra.wave_a < -33 and sra.wave_b < 40)) then 1 else 0 end, " \
                  "update_time=now(),sx.wave_str=sra.wave_detail where sx.select_type='map';"
     print('update select map:', cursor.execute(update_sql))
     db.commit()
