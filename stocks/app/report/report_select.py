@@ -3,6 +3,7 @@ import pandas as pd
 import stocks.util.db_util as _dt
 from stocks.util import date_const
 from stocks.util import date_util
+from stocks.util import db_util
 from utils.mail import mail_util
 
 if __name__ == '__main__':
@@ -52,6 +53,12 @@ if __name__ == '__main__':
 
     file_name = 'select_' + date_util.get_today(date_util.FORMAT_FLAT) + '.xlsx'
     writer = pd.ExcelWriter(file_name)
+
+    db_util.to_db(df_sql_today_limitup, 'select_limitup')
+    db_util.to_db(df_combo, 'select_combo')
+    db_util.to_db(df_new, 'select_new')
+    db_util.to_db(df_today_map, 'select_map')
+    db_util.to_db(df_st, 'select_st')
 
     df_sql_today_limitup.to_excel(writer, sheet_name='limitup')
     df_combo.to_excel(writer, sheet_name='combo')
