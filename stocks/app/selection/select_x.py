@@ -70,7 +70,7 @@ def select_map():
                  "sra.trade_date, sra.select_time as update_time " \
                  "from limit_up_stat lus left join select_result_all sra on lus.code = sra.code " \
                  "where sra.name not like :name and sra.list_date > 0 and sra.list_date < :list_date " \
-                 "and lus.code not like '688%' and lus.count > 1" \
+                 "and lus.code not like '688%' and lus.count > 1 " \
                  "and (sra.map > 10.9 or (sra.map > 10 and sra.wave_a < -33 and sra.wave_b < 40)) " \
                  "order by sra.map desc;"
     params = {"name": "%ST%", "list_date": one_year_ago}
