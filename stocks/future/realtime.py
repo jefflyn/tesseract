@@ -71,9 +71,11 @@ def re_exe(interval=10, sortby=None):
                 # 17：日期
                 trade_date = info[17]
                 future_from_sina.append(alias)
+                # print(alias)
                 # 清除可以查询的商品
-                if alias in future_name_list:
-                    future_name_list.remove(alias)
+                for goods_name in future_name_list:
+                    if goods_name.startswith(alias):
+                        future_name_list.remove(goods_name)
 
                 target_df = future_basics.loc[future_basics['name'].str.contains(alias)]
                 if target_df.empty:
@@ -118,8 +120,8 @@ def re_exe(interval=10, sortby=None):
                 print('no data, exit!')
                 break
             print(final_df)
-            print(future_from_sina, '可查')
-            print(future_name_list, '查无结果')
+            # print(future_from_sina, '可查')
+            print(tuple(future_name_list), '查无结果!')
             time.sleep(interval)
 
 
