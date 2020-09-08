@@ -32,8 +32,8 @@ def send_msg_with_twilio(msg='', to=''):
 def send_msg_with_tencent(code=None, name='', price='', to=phone_numbers[0]):
     result = ''
     try:
-        if code is None:
-            return
+        # if code is None:
+        #     return
         # 当模板没参数时，`params = []`，数组具体的元素个数和模板中变量个数必须一致，例如事例中templateId:5678对应一个变量，参数数组中元素个数也必须是一个
         params = [name, price]
         # 签名参数未提供或者为空时，会使用默认签名发送短信
