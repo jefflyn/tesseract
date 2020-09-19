@@ -173,11 +173,11 @@ def alert_trigger(symbol=None, realtime_price=None, prices=None, realtime_change
                         print(t_msg)
                     except Exception as e:
                         print(e)
-
+    print(changes)
     for p in changes:
         redis_key = date_util.get_today() + symbol + '_change_' + p
         warn_times = redis_client.get(redis_key)
-
+        print(p)
         if 0 < float(p) <= realtime_change:
             if warn_times is None:
                 value = symbol + ':' + str(realtime_price) + ' +' + str(round(realtime_change, 2)) + '%'
