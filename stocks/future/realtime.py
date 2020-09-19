@@ -97,8 +97,9 @@ def re_exe(interval=10, sortby=None):
                     alert_prices = target_df.loc[index, 'alert_price']
                     alert_changes = target_df.loc[index, 'alert_change']
                     receive_mobile = target_df.loc[index, 'alert_mobile']
-                    prices = str.split(alert_prices, ',') if alert_prices is not None else ''
-                    changes = str.split(alert_changes, ',') if alert_changes is not None else ''
+                    prices = str.split(alert_prices, ',') if alert_prices is not None else None
+                    changes = str.split(alert_changes, ',') if alert_changes is not None and alert_changes != '' \
+                        else None
 
                 value_per_contract = round(float(price) * amount_per_contract, 2)
                 margin_per_contract = round(value_per_contract * margin_rate / 100, 2)
@@ -173,40 +174,42 @@ def alert_trigger(symbol=None, realtime_price=None, prices=None, realtime_change
                         print(t_msg)
                     except Exception as e:
                         print(e)
-    print(changes)
-    for p in changes:
-        redis_key = date_util.get_today() + symbol + '_change_' + p
-        warn_times = redis_client.get(redis_key)
-        print(p)
-        if 0 < float(p) <= realtime_change:
-            if warn_times is None:
-                value = symbol + ':' + str(realtime_price) + ' +' + str(round(realtime_change, 2)) + '%'
-                try:
-                    redis_client.set(redis_key, value, ex=date_const.ONE_MONTH * 3)
-                    name_format = '：' + symbol
-                    change_str = str(round(realtime_change, 2)) + '%' if realtime_change < 0 else '+' + str(
-                        round(realtime_change, 2)) + '%'
-                    price_format = str(round(realtime_price)) + ' ' + change_str
-                    # send msg
-                    t_msg = sms_util.send_msg_with_tencent(name=name_format, price=price_format, to=receive_mobile)
-                    print(t_msg)
-                except Exception as e:
-                    print(e)
 
-        if 0 > float(p) >= realtime_change >= -20:
-            if warn_times is None:
-                value = symbol + ' ' + str(realtime_price) + ' ' + str(round(realtime_change, 2)) + '%'
-                try:
-                    redis_client.set(redis_key, value, ex=date_const.ONE_MONTH * 3)
-                    name_format = '：' + code + ' ' + name
-                    change_str = str(round(realtime_change, 2)) + '%' if realtime_change < 0 else '+' + str(
-                        round(realtime_change, 2)) + '%'
-                    price_format = str(round(realtime_price)) + ' ' + change_str
-                    # send msg
-                    t_msg = sms_util.send_msg_with_tencent(name=name_format, price=price_format, to=receive_mobile)
-                    print(t_msg)
-                except Exception as e:
-                    print(e)
+    if changes is not None and changes != '':
+        print(changes)
+
+        for p in changes:
+            redis_key = date_util.get_today() + symbol + '_change_' + p
+            warn_times = redis_client.get(redis_key)
+            if 0 < float(p) <= realtime_change:
+                if warn_times is None:
+                    value = symbol + ':' + str(realtime_price) + ' +' + str(round(realtime_change, 2)) + '%'
+                    try:
+                        redis_client.set(redis_key, value, ex=date_const.ONE_MONTH * 3)
+                        name_format = '：' + symbol
+                        change_str = str(round(realtime_change, 2)) + '%' if realtime_change < 0 else '+' + str(
+                            round(realtime_change, 2)) + '%'
+                        price_format = str(round(realtime_price)) + ' ' + change_str
+                        # send msg
+                        t_msg = sms_util.send_msg_with_tencent(name=name_format, price=price_format, to=receive_mobile)
+                        print(t_msg)
+                    except Exception as e:
+                        print(e)
+
+            if 0 > float(p) >= realtime_change >= -20:
+                if warn_times is None:
+                    value = symbol + ' ' + str(realtime_price) + ' ' + str(round(realtime_change, 2)) + '%'
+                    try:
+                        redis_client.set(redis_key, value, ex=date_const.ONE_MONTH * 3)
+                        name_format = '：' + code + ' ' + name
+                        change_str = str(round(realtime_change, 2)) + '%' if realtime_change < 0 else '+' + str(
+                            round(realtime_change, 2)) + '%'
+                        price_format = str(round(realtime_price)) + ' ' + change_str
+                        # send msg
+                        t_msg = sms_util.send_msg_with_tencent(name=name_format, price=price_format, to=receive_mobile)
+                        print(t_msg)
+                    except Exception as e:
+                        print(e)
 
 
 if __name__ == '__main__':
