@@ -100,10 +100,14 @@ def re_exe(interval=10, sortby=None):
                     prices = str.split(alert_prices, ',') if alert_prices is not None else None
                     changes = str.split(alert_changes, ',') if alert_changes is not None and alert_changes != '' \
                         else None
-
                 value_per_contract = round(float(price) * amount_per_contract, 2)
                 margin_per_contract = round(value_per_contract * margin_rate / 100, 2)
-                margin_for_1m = round((int(1000000 / value_per_contract) + 1) * value_per_contract * margin_rate / 100, 2)
+                try:
+                    contract_num_for_1m = int(1000000 / value_per_contract) + 1
+                    margin_for_1m = round(contract_num_for_1m * value_per_contract * margin_rate / 100, 2)
+                except:
+                    print(name, "数据有误:", info)
+
                 price_diff = float(price) - float(pre_settle)
                 change = round(price_diff / float(pre_settle) * 100, 2)
                 position = 0
@@ -118,7 +122,8 @@ def re_exe(interval=10, sortby=None):
                 alert_trigger(symbol=name, realtime_price=price, prices=prices, realtime_change=change, changes=changes)
 
                 row_list = [name, alias, exchange, price, change, bid, ask, low, high, round(position, 2), limit_in,
-                            value_per_contract, margin_per_contract, margin_for_1m, trade_date, date_util.get_now()]
+                            value_per_contract, margin_per_contract, str(contract_num_for_1m) + '-' + str(margin_for_1m),
+                            trade_date, date_util.get_now()]
                 result_list.append(row_list)
             df = pd.DataFrame(result_list, columns=['contract', 'alias', 'exchange', 'price', 'change',
                                                     'bid1', 'ask1', 'low', 'high', 'position',
@@ -143,6 +148,8 @@ def re_exe(interval=10, sortby=None):
 def alert_trigger(symbol=None, realtime_price=None, prices=None, realtime_change=None, changes=None, receive_mobile='18507550586'):
     if prices is not None and prices != '':
         for p in prices:
+            if p == '':
+                continue
             target_price = round(float(p), 0)
             if 0 < target_price <= realtime_price:
                 redis_key = date_util.get_today() + symbol + '_price_' + str(target_price)
@@ -176,9 +183,9 @@ def alert_trigger(symbol=None, realtime_price=None, prices=None, realtime_change
                         print(e)
 
     if changes is not None and changes != '':
-        print(changes)
-
         for p in changes:
+            if p == '':
+                continue
             redis_key = date_util.get_today() + symbol + '_change_' + p
             warn_times = redis_client.get(redis_key)
             if 0 < float(p) <= realtime_change:
