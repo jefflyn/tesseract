@@ -7,6 +7,8 @@ import requests
 from stocks.future import future_util
 from stocks.util import date_util
 from stocks.util import db_util
+from stocks.util import sms_util, date_const
+from stocks.util.redis_util import redis_client
 
 
 def format_realtime(df):
@@ -16,16 +18,28 @@ def format_realtime(df):
     df['change'] = df['change'].apply(lambda x: str(round(x, 2)) + '%')
     df['position'] = df['position'].apply(lambda x: str(round(x, 2)) + '%')
     df['limit'] = df['limit'].apply(lambda x: str(round(x, 2)) + '%')
+    df['one_value'] = df['one_value'].apply(lambda x: '[' + str(x) + ',')
+    df['one_margin'] = df['one_margin'].apply(lambda x: str(x) + ',')
+    df['onem_margin'] = df['onem_margin'].apply(lambda x: str(x) + ']')
 
     return df
 
 
 def re_exe(interval=10, sortby=None):
+    """
+    http://hq.sinajs.cn/list=EB0,IC0,IF0,IH0,LU0,NR0,PG0,PM0,RR0,SA0,SS0,T0,TF0,TS0,UR0
+    :param interval:
+    :param sortby:
+    :return:
+    """
     on_target = (sortby == 'c')
-    future_res = future_util.get_future_basics(on_target=on_target)
-    codes = ','.join(list(future_res['symbol']))
-    req_url = 'http://hq.sinajs.cn/list='
+
     while True:
+        future_basics = future_util.get_future_basics(on_target=on_target)
+        future_name_list = list(future_basics['name'])
+        codes = ','.join(list(future_basics['symbol']))
+        req_url = 'http://hq.sinajs.cn/list='
+        future_from_sina = []
         result = requests.get(req_url + codes)
         txt = result.text
         # print(txt)
@@ -66,14 +80,34 @@ def re_exe(interval=10, sortby=None):
                 alias = info[16]
                 # 17：日期
                 trade_date = info[17]
+                future_from_sina.append(alias)
+                # print(alias)
+                # 清除可以查询的商品
+                for goods_name in future_name_list:
+                    if goods_name.startswith(alias):
+                        future_name_list.remove(goods_name)
 
-                target_df = future_res.loc[future_res['name'].str.contains(alias)]
+                target_df = future_basics.loc[future_basics['name'].str.contains(alias)]
                 if target_df.empty:
                     print(name, alias, 'empty')
                 for index, row in target_df.iterrows():
-                    amount_per_hand = row['amount']
+                    amount_per_contract = row['amount']
                     limit_in = row['limit']
-                total_value = round(float(price) * amount_per_hand, 2)
+                    margin_rate = row['margin_rate']
+                    alert_prices = target_df.loc[index, 'alert_price']
+                    alert_changes = target_df.loc[index, 'alert_change']
+                    receive_mobile = target_df.loc[index, 'alert_mobile']
+                    prices = str.split(alert_prices, ',') if alert_prices is not None else None
+                    changes = str.split(alert_changes, ',') if alert_changes is not None and alert_changes != '' \
+                        else None
+                value_per_contract = round(float(price) * amount_per_contract, 2)
+                margin_per_contract = round(value_per_contract * margin_rate / 100, 2)
+                try:
+                    contract_num_for_1m = int(1000000 / value_per_contract) + 1
+                    margin_for_1m = round(contract_num_for_1m * value_per_contract * margin_rate / 100, 2)
+                except:
+                    print(name, "数据有误:", info)
+
                 price_diff = float(price) - float(pre_settle)
                 change = round(price_diff / float(pre_settle) * 100, 2)
                 position = 0
@@ -82,12 +116,18 @@ def re_exe(interval=10, sortby=None):
                 elif high == low > price:
                     position = 100
 
-                row_list = [name, exchange, price, change, bid, ask, low, high, round(position, 2), round(limit_in, 2),
-                            total_value,
+                realtime_change_str = '+' + str(round(change, 2)) if change > 0 else str(round(change, 2))
+                realtime_price_info = str(price) + ' ' + realtime_change_str + '%'
+                # print(' ', name, realtime_price_info, str(alert_prices), str(alert_changes), sep=' | ')
+                alert_trigger(symbol=name, realtime_price=price, prices=prices, realtime_change=change, changes=changes)
+
+                row_list = [name, alias, exchange, price, change, bid, ask, low, high, round(position, 2), limit_in,
+                            value_per_contract, margin_per_contract, str(contract_num_for_1m) + '-' + str(margin_for_1m),
                             trade_date, date_util.get_now()]
                 result_list.append(row_list)
-            df = pd.DataFrame(result_list, columns=['contract', 'exchange', 'price', 'change', 'bid1', 'ask1', 'low',
-                                                    'high', 'position', 'limit', 'total_value', 'date', 'time'])
+            df = pd.DataFrame(result_list, columns=['contract', 'alias', 'exchange', 'price', 'change',
+                                                    'bid1', 'ask1', 'low', 'high', 'position',
+                                                    'limit', 'one_value', 'one_margin', 'onem_margin', 'date', 'time'])
             if sortby == 'p':
                 df = df.sort_values(['position'], ascending=False)
             else:
@@ -100,7 +140,83 @@ def re_exe(interval=10, sortby=None):
                 print('no data, exit!')
                 break
             print(final_df)
+            # print(future_from_sina, '可查')
+            print(tuple(future_name_list), '查无结果!')
             time.sleep(interval)
+
+
+def alert_trigger(symbol=None, realtime_price=None, prices=None, realtime_change=None, changes=None, receive_mobile='18507550586'):
+    if prices is not None and prices != '':
+        for p in prices:
+            if p == '':
+                continue
+            target_price = round(float(p), 0)
+            if 0 < target_price <= realtime_price:
+                redis_key = date_util.get_today() + symbol + '_price_' + str(target_price)
+                warn_times = redis_client.get(redis_key)
+                if warn_times is None:
+                    try:
+                        redis_client.set(redis_key, symbol + str(realtime_price), ex=date_const.ONE_MONTH * 3)
+                        name_format = '：' + symbol
+                        change_str = str(round(realtime_change, 2)) + '%' if realtime_change < 0 else '+' + str(
+                            round(realtime_change, 2)) + '%'
+                        price_format = str(round(realtime_price)) + ' ' + change_str
+                        # send msg
+                        t_msg = sms_util.send_msg_with_tencent(name=name_format, price=price_format, to=receive_mobile)
+                        print(t_msg)
+                    except Exception as e:
+                        print(e)
+            if target_price < 0 and realtime_price <= abs(target_price):
+                redis_key = date_util.get_today() + symbol + '_price_' + str(abs(target_price))
+                warn_times = redis_client.get(redis_key)
+                if warn_times is None:
+                    try:
+                        redis_client.set(redis_key, symbol + str(realtime_price), ex=date_const.ONE_MONTH * 3)
+                        name_format = '：' + symbol
+                        change_str = str(round(realtime_change, 2)) + '%' if realtime_change < 0 else '+' + str(
+                            round(realtime_change, 2)) + '%'
+                        price_format = str(round(realtime_price)) + ' ' + change_str
+                        # send msg
+                        t_msg = sms_util.send_msg_with_tencent(name=name_format, price=price_format, to=receive_mobile)
+                        print(t_msg)
+                    except Exception as e:
+                        print(e)
+
+    if changes is not None and changes != '':
+        for p in changes:
+            if p == '':
+                continue
+            redis_key = date_util.get_today() + symbol + '_change_' + p
+            warn_times = redis_client.get(redis_key)
+            if 0 < float(p) <= realtime_change:
+                if warn_times is None:
+                    value = symbol + ':' + str(realtime_price) + ' +' + str(round(realtime_change, 2)) + '%'
+                    try:
+                        redis_client.set(redis_key, value, ex=date_const.ONE_MONTH * 3)
+                        name_format = '：' + symbol
+                        change_str = str(round(realtime_change, 2)) + '%' if realtime_change < 0 else '+' + str(
+                            round(realtime_change, 2)) + '%'
+                        price_format = str(round(realtime_price)) + ' ' + change_str
+                        # send msg
+                        t_msg = sms_util.send_msg_with_tencent(name=name_format, price=price_format, to=receive_mobile)
+                        print(t_msg)
+                    except Exception as e:
+                        print(e)
+
+            if 0 > float(p) >= realtime_change >= -20:
+                if warn_times is None:
+                    value = symbol + ' ' + str(realtime_price) + ' ' + str(round(realtime_change, 2)) + '%'
+                    try:
+                        redis_client.set(redis_key, value, ex=date_const.ONE_MONTH * 3)
+                        name_format = '：' + code + ' ' + name
+                        change_str = str(round(realtime_change, 2)) + '%' if realtime_change < 0 else '+' + str(
+                            round(realtime_change, 2)) + '%'
+                        price_format = str(round(realtime_price)) + ' ' + change_str
+                        # send msg
+                        t_msg = sms_util.send_msg_with_tencent(name=name_format, price=price_format, to=receive_mobile)
+                        print(t_msg)
+                    except Exception as e:
+                        print(e)
 
 
 if __name__ == '__main__':

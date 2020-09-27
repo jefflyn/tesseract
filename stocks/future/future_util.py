@@ -10,7 +10,15 @@ FINANCIAL = '金融板块'
 
 
 def get_future_basics(code=None, type=None, night=None, on_target=None):
-    sql = 'select * from future_basics where 1=1 '
+    '''
+    查询商品合约详情，不包含金融产品
+    :param code:
+    :param type:
+    :param night:
+    :param on_target:
+    :return:
+    '''
+    sql = "select * from future_basics where 1=1 and deleted = 0 "
     if on_target is True:
         sql += 'and on_target = :on_target '
     if code is not None:
