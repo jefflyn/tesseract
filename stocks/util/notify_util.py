@@ -12,7 +12,7 @@ def notify(title=None, subtitle=None, content=None):
     :return:
     '''
     if title is None:
-        title = '通知'
+        title = '通知📢'
     if subtitle is None:
         subtitle = ''
     if content is None:
@@ -40,7 +40,7 @@ def alert(title=None, message=None):
     print(alert_script)
     notice = """osascript -e 'display notification "%s" with title "%s" sound name "Glass"'""" % (message, title)
     os.system(notice)
-    os.system(alert_script)
+    # os.system(alert_script)
 
 
 if __name__ == '__main__':
