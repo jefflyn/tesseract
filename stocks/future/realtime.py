@@ -121,13 +121,13 @@ def re_exe(interval=10, sortby=None):
                 # print(' ', name, realtime_price_info, str(alert_prices), str(alert_changes), sep=' | ')
                 alert_trigger(symbol=name, realtime_price=price, prices=prices, realtime_change=change, changes=changes)
 
-                row_list = [name, alias, exchange, price, change, bid, ask, low, high, round(position, 2), limit_in,
+                row_list = [name, alias, exchange, price, change, limit_in, bid, ask, low, high, round(position, 2),
                             value_per_contract, margin_per_contract, str(contract_num_for_1m) + '-' + str(margin_for_1m),
                             trade_date, date_util.get_now()]
                 result_list.append(row_list)
-            df = pd.DataFrame(result_list, columns=['contract', 'alias', 'exchange', 'price', 'change',
+            df = pd.DataFrame(result_list, columns=['contract', 'alias', 'exchange', 'price', 'change', 'limit',
                                                     'bid1', 'ask1', 'low', 'high', 'position',
-                                                    'limit', 'one_value', 'one_margin', 'onem_margin', 'date', 'time'])
+                                                    'one_value', 'one_margin', 'onem_margin', 'date', 'time'])
             if sortby == 'p':
                 df = df.sort_values(['position'], ascending=False)
             else:
