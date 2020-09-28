@@ -7,8 +7,19 @@ import requests
 from stocks.future import future_util
 from stocks.util import date_util
 from stocks.util import db_util
+from stocks.util import notify_util
 from stocks.util import sms_util, date_const
 from stocks.util.redis_util import redis_client
+
+
+def notify_trigger(symbol=None, price=None, change=None, alert=True):
+    if symbol is not None and symbol == '鲜苹果2101':
+        prices = [7366, 7380, 7385, 7390, 7395, 7400, 7405, 7410]
+        msg_content = symbol + '到达' + str(price)
+        if price in prices:
+            notify_util.notify(content=msg_content)
+        if alert and price == prices[-1]:
+            notify_util.alert(message=msg_content)
 
 
 def format_realtime(df):
@@ -120,12 +131,13 @@ def re_exe(interval=10, sortby=None):
                 realtime_price_info = str(price) + ' ' + realtime_change_str + '%'
                 # print(' ', name, realtime_price_info, str(alert_prices), str(alert_changes), sep=' | ')
                 alert_trigger(symbol=name, realtime_price=price, prices=prices, realtime_change=change, changes=changes)
+                notify_trigger(symbol=name, price=price, change=change, alert=True)
 
                 row_list = [name, alias, exchange, price, change, limit_in, bid, ask, low, high, round(position, 2),
                             value_per_contract, margin_per_contract, str(contract_num_for_1m) + '-' + str(margin_for_1m),
                             trade_date, date_util.get_now()]
                 result_list.append(row_list)
-            df = pd.DataFrame(result_list, columns=['contract', 'alias', 'exchange', 'price', 'change', 'limit',
+            df = pd.DataFrame(result_list, columns=['name', 'alias', 'exchange', 'price', 'change', 'limit',
                                                     'bid1', 'ask1', 'low', 'high', 'position',
                                                     'one_value', 'one_margin', 'onem_margin', 'date', 'time'])
             if sortby == 'p':
