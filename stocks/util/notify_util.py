@@ -4,7 +4,8 @@ import os
 def notify(title=None, subtitle=None, content=None):
     '''
     右侧通知消息
-    os.system("""osascript -e 'display notification "content" with title "title" subtitle "subtitle"'""")
+    os.system("""osascript -e 'display notification "content" with title "title"
+                subtitle "subtitle" sound name "Submarine"'""")
     :param title: 标题
     :param subtitle: 副标题
     :param content: 通知内容
@@ -38,6 +39,7 @@ def alert(title=None, message=None):
     script = """osascript -e 'display alert "%s" message "%s"'""" % (title, message)
     print(script)
     os.system(script)
+    os.system("""osascript -e 'display notification "content" with title "title" sound name "Submarine"'""")
 
 
 if __name__ == '__main__':
