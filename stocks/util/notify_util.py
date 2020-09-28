@@ -36,10 +36,11 @@ def alert(title=None, message=None):
         title = '警告⚠️'
     if message is None:
         return
-    script = """osascript -e 'display alert "%s" message "%s"'""" % (title, message)
-    print(script)
-    os.system(script)
-    os.system("""osascript -e 'display notification "content" with title "title" sound name "Submarine"'""")
+    alert_script = """osascript -e 'display alert "%s" message "%s"'""" % (title, message)
+    print(alert_script)
+    notice = """osascript -e 'display notification "%s" with title "%s" sound name "Glass"'""" % (message, title)
+    os.system(notice)
+    os.system(alert_script)
 
 
 if __name__ == '__main__':
