@@ -11,14 +11,24 @@ from stocks.util import notify_util
 from stocks.util import sms_util, date_const
 from stocks.util.redis_util import redis_client
 
+NOTIFY_CONTRACT_NAME = '鲜苹果2101'
+NOTIFY_PRICES = [7366, 7380, 7385, 7390, 7395, 7400, 7405, 7410]
+
 
 def notify_trigger(symbol=None, price=None, change=None, alert=True):
-    if symbol is not None and symbol == '鲜苹果2101':
-        prices = [7366, 7380, 7385, 7390, 7395, 7400, 7405, 7410]
+    '''
+    手动设置提醒告警条件
+    :param symbol:
+    :param price:
+    :param change:
+    :param alert:
+    :return:
+    '''
+    if symbol is not None and symbol == NOTIFY_CONTRACT_NAME:
         msg_content = symbol + '到达' + str(price)
-        if price in prices:
+        if price in NOTIFY_PRICES:
             notify_util.notify(content=msg_content)
-        if alert and price == prices[-1]:
+        if alert and price == NOTIFY_PRICES[len(NOTIFY_PRICES) - 1]:
             notify_util.alert(message=msg_content)
 
 
