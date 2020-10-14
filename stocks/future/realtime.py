@@ -11,8 +11,10 @@ from stocks.util import notify_util
 from stocks.util import sms_util, date_const
 from stocks.util.redis_util import redis_client
 
-NOTIFY_CONTRACT_NAME = '鲜苹果2101'
-NOTIFY_PRICES = [7230, 7380, 7385, 7388, 7390, 7393, 7395, 7397, 7400, 7405, 7410]
+MONITOR_SYMBOL_MAP = {
+    '鲜苹果2101': [-7880, -7885, -7890, -7895, -7900, -7905, -7910, -7915],
+    '棉花2101': [-13900, -13925, -13950, -13975, -14000, -14025, -14050, -14100]
+}
 
 
 def notify_trigger(symbol=None, price=None, change=None, alert=True):
@@ -24,12 +26,19 @@ def notify_trigger(symbol=None, price=None, change=None, alert=True):
     :param alert:
     :return:
     '''
-    if symbol is not None and symbol == NOTIFY_CONTRACT_NAME:
+    symbol_list = MONITOR_SYMBOL_MAP.keys()
+    if symbol is not None and symbol in symbol_list:
         msg_content = symbol + '到达' + str(price)
-        if price in NOTIFY_PRICES:
+        target_prices = MONITOR_SYMBOL_MAP.get(symbol)
+        if price in target_prices:
             notify_util.notify(content=msg_content)
-        if alert and (price <= NOTIFY_PRICES[0] or price >= NOTIFY_PRICES[len(NOTIFY_PRICES) - 3]):
-            notify_util.alert(message=msg_content)
+        if alert:
+            if target_prices[0] < 0:
+                if price <= abs(target_prices[0]) or price <= abs(target_prices[len(target_prices) - 3]):
+                    notify_util.alert(message=msg_content)
+            else:
+                if price <= target_prices[0] or price >= target_prices[len(target_prices) - 3]:
+                    notify_util.alert(message=msg_content)
 
 
 def format_realtime(df):
