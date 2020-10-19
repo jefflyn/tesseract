@@ -9,10 +9,11 @@ from stocks.util import date_util
 from stocks.util import db_util
 from stocks.util import notify_util
 from stocks.util import sms_util, date_const
+from stocks.util.db_util import get_db
 from stocks.util.redis_util import redis_client
 
 MONITOR_SYMBOL_MAP = {
-    '鲜苹果2101': [-7880, -7885, -7890, -7895, -7900, -7905, -7910, -7915],
+    '鲜苹果2101': [-7950, -8000, -8020, -8050, -8080, -8100, -8150],
     '棉花2101': [-13900, -13925, -13950, -13975, -14000, -14025, -14050, -14100]
 }
 
@@ -30,7 +31,8 @@ def notify_trigger(symbol=None, price=None, change=None, alert=True):
     if symbol is not None and symbol in symbol_list:
         msg_content = symbol + '到达' + str(price)
         target_prices = MONITOR_SYMBOL_MAP.get(symbol)
-        if price in target_prices:
+        notify_prices = [abs(e) for e in target_prices]
+        if price in notify_prices:
             notify_util.notify(content=msg_content)
         if alert:
             if target_prices[0] < 0:
@@ -63,6 +65,10 @@ def re_exe(interval=10, sortby=None):
     :return:
     """
     on_target = (sortby == 'c')
+    # 建立数据库连接
+    db = get_db()
+    # 使用cursor()方法创建一个游标对象
+    cursor = db.cursor()
 
     while True:
         future_basics = future_util.get_future_basics(on_target=on_target)
@@ -82,12 +88,15 @@ def re_exe(interval=10, sortby=None):
                 info = content.split('=')[1].replace('"', '').strip().split(',')
                 if len(info) < 18:
                     continue
-                name = info[0]  # 0：名字
+                # 0：名字
+                name = info[0]
                 # 1：不明数字
-                open = float(info[2])  # 2：开盘价
-                high = float(info[3])  # 3：最高价
+                # 2：开盘价
+                open = float(info[2])
+                # 3：最高价
+                high = round(float(info[3]), 2)
                 # 4：最低价
-                low = float(info[4])
+                low = round(float(info[4]), 2)
                 # 5：昨日收盘价
                 pre_close = float(info[5])
                 # 6：买价，即“买一”报价
@@ -127,16 +136,39 @@ def re_exe(interval=10, sortby=None):
                     alert_prices = target_df.loc[index, 'alert_price']
                     alert_changes = target_df.loc[index, 'alert_change']
                     receive_mobile = target_df.loc[index, 'alert_mobile']
+                    hist_low = target_df.loc[index, 'low']
+                    hist_high = target_df.loc[index, 'high']
+
                     prices = str.split(alert_prices, ',') if alert_prices is not None else None
                     changes = str.split(alert_changes, ',') if alert_changes is not None and alert_changes != '' \
                         else None
+
+                # 合约高低涨跌幅
+                wave_str = '[]'
+                if hist_high > hist_low > 0:
+                    low_change = round((float(price) - float(hist_low)) / float(hist_low) * 100, 2)
+                    high_change = round((float(price) - float(hist_high)) / float(hist_high) * 100, 2)
+                    wave_str = '[' + str(round(hist_low, 0)) + ' +' + str(low_change) + '%, ' \
+                               + str(round(hist_high, 0)) + ' ' + str(high_change) + '%]'
                 value_per_contract = round(float(price) * amount_per_contract, 2)
                 margin_per_contract = round(value_per_contract * margin_rate / 100, 2)
                 try:
                     contract_num_for_1m = int(1000000 / value_per_contract) + 1
                     margin_for_1m = round(contract_num_for_1m * value_per_contract * margin_rate / 100, 2)
-                except:
-                    print(name, "数据有误:", info)
+
+                    if float(price) < float(hist_low) or float(hist_low) == 0:
+                        update_low_sql = "update future_basics set low=%.2f where name like '%s'" % (low, '%' + alias + '%')
+                        cursor.execute(update_low_sql)
+                        db.commit()
+                        print(name, '更新合约历史最低价成功!')
+                    if float(price) > float(hist_high):
+                        update_high_sql = "update future_basics set high=%.2f where name like '%s'" % (high, '%' + alias + '%')
+                        cursor.execute(update_high_sql)
+                        db.commit()
+                        print(name, '更新合约历史最高价成功!')
+                except Exception as err:
+                    print("  >>>error:", name, "数据有误:", info, err)
+                    db.rollback()
 
                 price_diff = float(price) - float(pre_settle)
                 change = round(price_diff / float(pre_settle) * 100, 2)
@@ -152,11 +184,12 @@ def re_exe(interval=10, sortby=None):
                 alert_trigger(symbol=name, realtime_price=price, prices=prices, realtime_change=change, changes=changes)
                 notify_trigger(symbol=name, price=price, change=change, alert=True)
 
-                row_list = [name, alias, exchange, price, change, limit_in, bid, ask, low, high, round(position, 2),
-                            value_per_contract, margin_per_contract, str(contract_num_for_1m) + '-' + str(margin_for_1m),
+                row_list = [name, alias, exchange, price, wave_str, change, limit_in, bid, ask, low, high,
+                            round(position, 2), value_per_contract, margin_per_contract,
+                            str(contract_num_for_1m) + '-' + str(margin_for_1m),
                             trade_date, date_util.get_now()]
                 result_list.append(row_list)
-            df = pd.DataFrame(result_list, columns=['name', 'alias', 'exchange', 'price', 'change', 'limit',
+            df = pd.DataFrame(result_list, columns=['name', 'alias', 'exchange', 'price', 'wave', 'change', 'limit',
                                                     'bid1', 'ask1', 'low', 'high', 'position',
                                                     'one_value', 'one_margin', 'onem_margin', 'date', 'time'])
             if sortby == 'p':
@@ -175,6 +208,9 @@ def re_exe(interval=10, sortby=None):
             print(tuple(future_name_list), '查无结果!')
             time.sleep(interval)
 
+    # 关闭游标和数据库的连接
+    cursor.close()
+    db.close()
 
 def alert_trigger(symbol=None, realtime_price=None, prices=None, realtime_change=None, changes=None, receive_mobile='18507550586'):
     if prices is not None and prices != '':
