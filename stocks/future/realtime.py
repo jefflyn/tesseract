@@ -12,14 +12,16 @@ from stocks.util import sms_util, date_const
 from stocks.util.db_util import get_db
 from stocks.util.redis_util import redis_client
 
+group_list = ['all', 'ag', 'om', 'ch', 'co', 'en', 'pm', 'fm', 'nfm', 'fi']
+
 MONITOR_SYMBOL_MAP = {
-    '鲜苹果2101': [-7950, -8000, -8020, -8050, -8080, -8100, -8150],
+    '鲜苹果2101': [-7950, -8000, -8020, -8050],  #, -8080, -8100, -8120],
     '棉花2101': [-13900, -13925, -13950, -13975, -14000, -14025, -14050, -14100]
 }
 
 
 def notify_trigger(symbol=None, price=None, change=None, alert=True):
-    '''
+    '''z
     手动设置提醒告警条件
     :param symbol:
     :param price:
@@ -49,7 +51,7 @@ def format_realtime(df):
     df['high'] = df['high'].apply(lambda x: '^' + str(round(float(x), 2)))
     df['change'] = df['change'].apply(lambda x: str(round(x, 2)) + '%')
     df['position'] = df['position'].apply(lambda x: str(round(x, 2)) + '%')
-    df['limit'] = df['limit'].apply(lambda x: str(round(x, 2)) + '%')
+    df['limit'] = df['limit'].apply(lambda x: '^' + str(round(x, 2)) + '%')
     df['one_value'] = df['one_value'].apply(lambda x: '[' + str(x) + ',')
     df['one_margin'] = df['one_margin'].apply(lambda x: str(x) + ',')
     df['onem_margin'] = df['onem_margin'].apply(lambda x: str(x) + ']')
@@ -57,21 +59,21 @@ def format_realtime(df):
     return df
 
 
-def re_exe(interval=10, sortby=None):
+def re_exe(interval=10, group_type=None):
     """
     http://hq.sinajs.cn/list=EB0,IC0,IF0,IH0,LU0,NR0,PG0,PM0,RR0,SA0,SS0,T0,TF0,TS0,UR0
     :param interval:
-    :param sortby:
+    :param group_type:
     :return:
     """
-    on_target = (sortby == 'c')
+    on_target = (group_type is None)
     # 建立数据库连接
     db = get_db()
     # 使用cursor()方法创建一个游标对象
     cursor = db.cursor()
 
     while True:
-        future_basics = future_util.get_future_basics(on_target=on_target)
+        future_basics = future_util.get_future_basics(type=group_type, on_target=on_target)
         future_name_list = list(future_basics['name'])
         codes = ','.join(list(future_basics['symbol']))
         req_url = 'http://hq.sinajs.cn/list='
@@ -184,15 +186,16 @@ def re_exe(interval=10, sortby=None):
                 alert_trigger(symbol=name, realtime_price=price, prices=prices, realtime_change=change, changes=changes)
                 notify_trigger(symbol=name, price=price, change=change, alert=True)
 
-                row_list = [name, alias, exchange, price, wave_str, change, limit_in, bid, ask, low, high,
-                            round(position, 2), value_per_contract, margin_per_contract,
+                row_list = [name, alias, exchange, price, change, limit_in, bid, ask, low, high,
+                            round(position, 2), wave_str, margin_rate, value_per_contract, margin_per_contract,
                             str(contract_num_for_1m) + '-' + str(margin_for_1m),
-                            trade_date, date_util.get_now()]
+                            trade_date, date_util.get_now(), low_change, high_change]
                 result_list.append(row_list)
-            df = pd.DataFrame(result_list, columns=['name', 'alias', 'exchange', 'price', 'wave', 'change', 'limit',
-                                                    'bid1', 'ask1', 'low', 'high', 'position',
-                                                    'one_value', 'one_margin', 'onem_margin', 'date', 'time'])
-            if sortby == 'p':
+            df = pd.DataFrame(result_list, columns=['name', 'alias', 'exchange', 'price', 'change', 'limit',
+                                                    'bid1', 'ask1', 'low', 'high', 'position', 'wave', 'margin_rate',
+                                                    'one_value', 'one_margin', 'onem_margin', 'date', 'time',
+                                                    'low_change', 'high_change'])
+            if group_type == 'p':
                 df = df.sort_values(['position'], ascending=False)
             else:
                 df = df.sort_values(['change'])
@@ -205,7 +208,8 @@ def re_exe(interval=10, sortby=None):
                 break
             print(final_df)
             # print(future_from_sina, '可查')
-            print(tuple(future_name_list), '查无结果!')
+            if len(future_name_list) > 0:
+                print(tuple(future_name_list), '查无结果!')
             time.sleep(interval)
 
     # 关闭游标和数据库的连接
@@ -300,8 +304,8 @@ if __name__ == '__main__':
     # else:
     #     type = 'my'
     #
-    if len(argv) > 1 and argv[1] in ['a', 'c', 'p']:
-        sort = argv[1]
+    if len(argv) > 1 and argv[1] in group_list:
+        group = argv[1]
     else:
-        sort = 'c'
-    re_exe(5, sortby=sort)
+        group = None
+    re_exe(5, group_type=group)
