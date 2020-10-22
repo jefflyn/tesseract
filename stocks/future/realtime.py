@@ -15,8 +15,11 @@ from stocks.util.redis_util import redis_client
 group_list = ['all', 'ag', 'om', 'ch', 'co', 'en', 'pm', 'fm', 'nfm', 'fi']
 
 MONITOR_SYMBOL_MAP = {
-    # '鲜苹果2101': [-7950, -8000, -8020, -8050]
-    '棉花2101': [-13900, -13925, -13950, -13975, -14000, -14025, -14050, -14100]
+    # '鲜苹果2101': [-7910, 8020]
+    '棉花2101': [-13900, -13925, -13950, -13975, -14000, -14025, -14050, -14100, 14750],
+    '玉米2101': [2600, -2570],
+    '棕榈2101': [-6020, -6025, -6030, -6032, 6140]
+
 }
 
 
@@ -34,14 +37,24 @@ def notify_trigger(symbol=None, price=None, change=None, alert=True):
         msg_content = symbol + '到达' + str(price)
         target_prices = MONITOR_SYMBOL_MAP.get(symbol)
         notify_prices = [abs(e) for e in target_prices]
+        target_price_len = len(target_prices)
+        if target_price_len < 2:
+            notify_util.notify(content=symbol + '价格设置有误[少于2个]')
+            return
+
         if price in notify_prices:
             notify_util.notify(content=msg_content)
         if alert:
+            # 做空方向
             if target_prices[0] < 0:
-                if price <= abs(target_prices[0]) or price <= abs(target_prices[len(target_prices) - 3]):
+                if price <= abs(target_prices[0]) \
+                        or price <= abs(target_prices[target_price_len - 2]) \
+                        or price >= abs(target_prices[target_price_len - 1]):
                     notify_util.alert(message=msg_content)
             else:
-                if price <= target_prices[0] or price >= target_prices[len(target_prices) - 3]:
+                if price >= target_prices[0] \
+                        or price >= abs(target_prices[target_price_len - 2]) \
+                        or price <= abs(target_prices[target_price_len - 1]):
                     notify_util.alert(message=msg_content)
 
 
@@ -159,12 +172,14 @@ def re_exe(interval=10, group_type=None):
                     margin_for_1m = round(contract_num_for_1m * value_per_contract * margin_rate / 100, 2)
 
                     if float(price) < float(hist_low) or float(hist_low) == 0:
-                        update_low_sql = "update future_basics set low=%.2f where name like '%s'" % (low, '%' + alias + '%')
+                        update_low_sql = "update future_basics set low=%.2f where name like '%s'" % (
+                        low, '%' + alias + '%')
                         cursor.execute(update_low_sql)
                         db.commit()
                         print(name, '更新合约历史最低价成功!')
                     if float(price) > float(hist_high):
-                        update_high_sql = "update future_basics set high=%.2f where name like '%s'" % (high, '%' + alias + '%')
+                        update_high_sql = "update future_basics set high=%.2f where name like '%s'" % (
+                        high, '%' + alias + '%')
                         cursor.execute(update_high_sql)
                         db.commit()
                         print(name, '更新合约历史最高价成功!')
@@ -216,7 +231,9 @@ def re_exe(interval=10, group_type=None):
     cursor.close()
     db.close()
 
-def alert_trigger(symbol=None, realtime_price=None, prices=None, realtime_change=None, changes=None, receive_mobile='18507550586'):
+
+def alert_trigger(symbol=None, realtime_price=None, prices=None, realtime_change=None, changes=None,
+                  receive_mobile='18507550586'):
     if prices is not None and prices != '':
         for p in prices:
             if p == '':
