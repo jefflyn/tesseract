@@ -17,8 +17,8 @@ group_list = ['all', 'ag', 'om', 'ch', 'co', 'en', 'pm', 'fm', 'nfm', 'fi']
 MONITOR_SYMBOL_MAP = {
     # '鲜苹果2101': [-7910, 8020]
     '棉花2101': [-13900, -13925, -13950, -13975, -14000, -14025, -14050, -14100, 14750],
-    '玉米2101': [2600, -2570],
-    '棕榈2101': [-6020, -6025, -6030, -6032, 6140]
+    # '橡胶2101': [14920, 14950, -14800],
+    '棕榈2101': [-6030, -6040, -6050, -6060, 6160]
 
 }
 
@@ -74,7 +74,7 @@ def format_realtime(df):
 
 def re_exe(interval=10, group_type=None):
     """
-    http://hq.sinajs.cn/list=EB0,IC0,IF0,IH0,LU0,NR0,PG0,PM0,RR0,SA0,SS0,T0,TF0,TS0,UR0
+    http://hq.sinajs.cn/list=nf_SA2101
     :param interval:
     :param group_type:
     :return:
@@ -88,7 +88,7 @@ def re_exe(interval=10, group_type=None):
     while True:
         future_basics = future_util.get_future_basics(type=group_type, on_target=on_target)
         future_name_list = list(future_basics['name'])
-        codes = ','.join(list(future_basics['symbol']))
+        codes = ','.join(['nf_' + e for e in list(future_basics['symbol'])])
         req_url = 'http://hq.sinajs.cn/list='
         future_from_sina = []
         result = requests.get(req_url + codes)
@@ -325,4 +325,4 @@ if __name__ == '__main__':
         group = argv[1]
     else:
         group = None
-    re_exe(5, group_type=group)
+    re_exe(3, group_type=group)
