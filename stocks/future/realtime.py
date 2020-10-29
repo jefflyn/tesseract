@@ -15,13 +15,14 @@ from stocks.util.redis_util import redis_client
 group_list = ['all', 'ag', 'om', 'ch', 'co', 'en', 'pm', 'fm', 'nfm', 'fi']
 
 MONITOR_SYMBOL_MAP = {
-    # '鲜苹果2101': [-7910, 8020]
-    '棉花2101': [-13900, -13925, -13950, -13975, -14000, -14025, -14050, -14100, 14750],
-    '天然橡胶2101': [15030, 14950, -14800],
-    '棕榈油2101': [-6030, -6040, -6050, -6060, 6160]
+    '白银2101': [-4780, 6000],
+    '苹果2101': [-7300, 8000],
+    # '棉花2101': [-13900, -13925, -13950, -13975, -14000, -14025, -14050, -14100, 14750],
+    '天然橡胶2101': [-14865, -14900,-15000, -15100,-15200, -15300,-15700,16200],
+    # '棕榈油2101': [-6030, -6040, -6050, -6060, -6070,6160]
 
 }
-
+CHANGE_DESC = True
 
 def notify_trigger(symbol=None, price=None, change=None, alert=True):
     '''z
@@ -210,8 +211,8 @@ def re_exe(interval=10, group_type=None):
                                                     'bid1', 'ask1', 'low', 'high', 'position', 'wave', 'margin_rate',
                                                     'one_value', 'one_margin', 'onem_margin', 'date', 'time',
                                                     'low_change', 'high_change'])
-            if group_type == 'p':
-                df = df.sort_values(['position'], ascending=False)
+            if CHANGE_DESC:
+                df = df.sort_values(['change'], ascending=False)
             else:
                 df = df.sort_values(['change'])
 
