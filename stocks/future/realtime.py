@@ -18,7 +18,7 @@ MONITOR_SYMBOL_MAP = {
     '白银2101': [-4780, 6000],
     '苹果2101': [-7300, 8000],
     # '棉花2101': [-13900, -13925, -13950, -13975, -14000, -14025, -14050, -14100, 14750],
-    '天然橡胶2101': [-14865, -14900,-15000, -15100,-15200, -15300,-15700,16200],
+    '天然橡胶2101': [-14865, -14900,-15000, -15100,-15200, -15300, 15660],
     # '棕榈油2101': [-6030, -6040, -6050, -6060, -6070,6160]
 
 }
@@ -64,7 +64,7 @@ def format_realtime(df):
     df['low'] = df['low'].apply(lambda x: '_' + str(round(float(x), 2)))
     df['high'] = df['high'].apply(lambda x: '^' + str(round(float(x), 2)))
     df['change'] = df['change'].apply(lambda x: str(round(x, 2)) + '%')
-    df['position'] = df['position'].apply(lambda x: str(round(x, 2)) + '%')
+    df['position'] = df['position'].apply(lambda x: 'p-' + str(round(x, 2)) + '%')
     df['limit'] = df['limit'].apply(lambda x: '^' + str(round(x, 2)) + '%')
     df['one_value'] = df['one_value'].apply(lambda x: '[' + str(x) + ',')
     df['one_margin'] = df['one_margin'].apply(lambda x: str(x) + ',')
@@ -203,12 +203,12 @@ def re_exe(interval=10, group_type=None):
                 notify_trigger(symbol=name, price=price, change=change, alert=True)
 
                 row_list = [name, alias, exchange, price, change, limit_in, bid, ask, low, high,
-                            round(position, 2), wave_str, margin_rate, value_per_contract, margin_per_contract,
+                            round(position, 2), high-low, wave_str, margin_rate, value_per_contract, margin_per_contract,
                             str(contract_num_for_1m) + '-' + str(margin_for_1m),
                             trade_date, date_util.get_now(), low_change, high_change]
                 result_list.append(row_list)
             df = pd.DataFrame(result_list, columns=['name', 'alias', 'exchange', 'price', 'change', 'limit',
-                                                    'bid1', 'ask1', 'low', 'high', 'position', 'wave', 'margin_rate',
+                                                    'bid1', 'ask1', 'low', 'high', 'position', 'amp', 'wave', 'margin_rate',
                                                     'one_value', 'one_margin', 'onem_margin', 'date', 'time',
                                                     'low_change', 'high_change'])
             if CHANGE_DESC:

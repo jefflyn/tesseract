@@ -99,6 +99,8 @@ def get_realtime(hddf=None, last_trade_data=None, sortby=None):
         open = float(row['open'])
         high = float(row['high'])
         low = float(row['low'])
+        if high == low == 0:
+            continue
         last_high = last_trade_data.at[code, 'high']
         last_low = last_trade_data.at[code, 'low']
         open_gap = 0  # open price gap
@@ -239,7 +241,7 @@ def calc_low_change(df):
 def calc_a1v_ratio(df):
     a1_v = float(0 if df['a1_v'] is None or df['a1_v'] == '' else df['a1_v'])
     vol = float(df['volume'])
-    return str(round(a1_v * 100 / vol * 100, 2)) + '%'
+    return str(round(a1_v * 100 / vol * 100 if vol > 0 else 0, 2)) + '%'
 
 
 if __name__ == '__main__':
