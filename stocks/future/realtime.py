@@ -192,8 +192,7 @@ def re_exe(interval=10, group_type=None):
                 realtime_change_str = '+' + str(round(change, 2)) if change > 0 else str(round(change, 2))
                 realtime_price_info = str(price) + ' ' + realtime_change_str + '%'
                 # print(' ', name, realtime_price_info, str(alert_prices), str(alert_changes), sep=' | ')
-                alert_trigger(symbol=name, realtime_price=price, prices=tar_prices, realtime_change=change,
-                              changes=changes)
+                # alert_trigger(symbol=name, realtime_price=price, prices=tar_prices, realtime_change=change, changes=changes)
                 notify_trigger(symbol=name, price=price, alert_prices=tar_prices, alert=True)
 
                 row_list = [name, alias, exchange, price, change, limit_in, bid, ask, low, high,
