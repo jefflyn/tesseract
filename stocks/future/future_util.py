@@ -41,7 +41,7 @@ def get_future_basics(code=None, type=None, night=None, on_target=None):
             codes.append(code)
             code = codes
         sql += 'and code in :code '
-    if type is not None and type != 'all':
+    if type is not None and type not in ['d', 'all']:
         sql += 'and goods_type = :type '
     if night is not None:
         sql += 'and night = :night '

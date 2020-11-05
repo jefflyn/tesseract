@@ -12,50 +12,43 @@ from stocks.util import sms_util, date_const
 from stocks.util.db_util import get_db
 from stocks.util.redis_util import redis_client
 
-group_list = ['all', 'ag', 'om', 'ch', 'co', 'en', 'pm', 'fm', 'nfm', 'fi']
+group_list = ['d', 'all', 'ag', 'om', 'ch', 'co', 'en', 'pm', 'fm', 'nfm', 'fi']
 
-MONITOR_SYMBOL_MAP = {
-    '白银2101': [-4780, 6000],
-    '苹果2101': [-7300, 8000],
-    # '棉花2101': [-13900, -13925, -13950, -13975, -14000, -14025, -14050, -14100, 14750],
-    '天然橡胶2101': [-14865, -14900,-15000, -15100,-15200, -15300, 15660],
-    # '棕榈油2101': [-6030, -6040, -6050, -6060, -6070,6160]
 
-}
-CHANGE_DESC = True
-
-def notify_trigger(symbol=None, price=None, change=None, alert=True):
-    '''z
+def notify_trigger(symbol=None, price=None, alert_prices=None, alert=True):
+    '''
     手动设置提醒告警条件
+    :param alert_prices:
     :param symbol:
     :param price:
     :param change:
     :param alert:
     :return:
     '''
-    symbol_list = MONITOR_SYMBOL_MAP.keys()
-    if symbol is not None and symbol in symbol_list:
+    if alert_prices is None or len(alert_prices) == 0:
+        return
+    if symbol is not None:
         msg_content = symbol + '到达' + str(price)
-        target_prices = MONITOR_SYMBOL_MAP.get(symbol)
-        notify_prices = [abs(e) for e in target_prices]
-        target_price_len = len(target_prices)
+        notify_prices = [abs(float(e)) for e in alert_prices if e != '']
+        target_price_len = len(notify_prices)
         if target_price_len < 2:
-            notify_util.notify(content=symbol + '价格设置有误[少于2个]')
+            # notify_util.notify(content=symbol + ':价格设置至少[2个]')
+            print('⚠️' + symbol + ':价格设置至少[2个]')
             return
 
         if price in notify_prices:
             notify_util.notify(content=msg_content)
         if alert:
+            first_price = float(alert_prices[0])
+            before_last_price = float(alert_prices[target_price_len - 2])
+            last_price = float(alert_prices[target_price_len - 1])
+
             # 做空方向
-            if target_prices[0] < 0:
-                if price <= abs(target_prices[0]) \
-                        or price <= abs(target_prices[target_price_len - 2]) \
-                        or price >= abs(target_prices[target_price_len - 1]):
+            if first_price < 0:
+                if price <= abs(first_price) or price <= abs(before_last_price) or price >= abs(last_price):
                     notify_util.alert(message=msg_content)
             else:
-                if price >= target_prices[0] \
-                        or price >= abs(target_prices[target_price_len - 2]) \
-                        or price <= abs(target_prices[target_price_len - 1]):
+                if price >= first_price or price >= abs(before_last_price) or price <= abs(last_price):
                     notify_util.alert(message=msg_content)
 
 
@@ -80,7 +73,7 @@ def re_exe(interval=10, group_type=None):
     :param group_type:
     :return:
     """
-    on_target = (group_type is None)
+    on_target = (group_type is None or group_type == 'd')
     # 建立数据库连接
     db = get_db()
     # 使用cursor()方法创建一个游标对象
@@ -155,7 +148,7 @@ def re_exe(interval=10, group_type=None):
                     hist_low = target_df.loc[index, 'low']
                     hist_high = target_df.loc[index, 'high']
 
-                    prices = str.split(alert_prices, ',') if alert_prices is not None else None
+                    tar_prices = str.split(alert_prices, ',') if alert_prices is not None else None
                     changes = str.split(alert_changes, ',') if alert_changes is not None and alert_changes != '' \
                         else None
 
@@ -174,13 +167,13 @@ def re_exe(interval=10, group_type=None):
 
                     if float(price) < float(hist_low) or float(hist_low) == 0:
                         update_low_sql = "update future_basics set low=%.2f where name like '%s'" % (
-                        low, '%' + alias + '%')
+                            low, '%' + alias + '%')
                         cursor.execute(update_low_sql)
                         db.commit()
                         print(name, '更新合约历史最低价成功!')
                     if float(price) > float(hist_high):
                         update_high_sql = "update future_basics set high=%.2f where name like '%s'" % (
-                        high, '%' + alias + '%')
+                            high, '%' + alias + '%')
                         cursor.execute(update_high_sql)
                         db.commit()
                         print(name, '更新合约历史最高价成功!')
@@ -199,19 +192,22 @@ def re_exe(interval=10, group_type=None):
                 realtime_change_str = '+' + str(round(change, 2)) if change > 0 else str(round(change, 2))
                 realtime_price_info = str(price) + ' ' + realtime_change_str + '%'
                 # print(' ', name, realtime_price_info, str(alert_prices), str(alert_changes), sep=' | ')
-                alert_trigger(symbol=name, realtime_price=price, prices=prices, realtime_change=change, changes=changes)
-                notify_trigger(symbol=name, price=price, change=change, alert=True)
+                alert_trigger(symbol=name, realtime_price=price, prices=tar_prices, realtime_change=change,
+                              changes=changes)
+                notify_trigger(symbol=name, price=price, alert_prices=tar_prices, alert=True)
 
                 row_list = [name, alias, exchange, price, change, limit_in, bid, ask, low, high,
-                            round(position, 2), high-low, wave_str, margin_rate, value_per_contract, margin_per_contract,
+                            round(position, 2), str(high - low) + '-' + str(round((high - low) / high * 100, 2)) + '%',
+                            wave_str, margin_rate, value_per_contract, margin_per_contract,
                             str(contract_num_for_1m) + '-' + str(margin_for_1m),
                             trade_date, date_util.get_now(), low_change, high_change]
                 result_list.append(row_list)
             df = pd.DataFrame(result_list, columns=['name', 'alias', 'exchange', 'price', 'change', 'limit',
-                                                    'bid1', 'ask1', 'low', 'high', 'position', 'amp', 'wave', 'margin_rate',
+                                                    'bid1', 'ask1', 'low', 'high', 'position', 'amp', 'wave',
+                                                    'margin_rate',
                                                     'one_value', 'one_margin', 'onem_margin', 'date', 'time',
                                                     'low_change', 'high_change'])
-            if CHANGE_DESC:
+            if group_type == 'd':
                 df = df.sort_values(['change'], ascending=False)
             else:
                 df = df.sort_values(['change'])
