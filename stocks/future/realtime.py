@@ -61,7 +61,8 @@ def format_realtime(df):
     df['limit'] = df['limit'].apply(lambda x: '^' + str(round(x, 2)) + '%')
     df['one_value'] = df['one_value'].apply(lambda x: '[' + str(x) + ',')
     df['one_margin'] = df['one_margin'].apply(lambda x: str(x) + ',')
-    df['onem_margin'] = df['onem_margin'].apply(lambda x: str(x) + ']')
+    df['m_quantity'] = df['m_quantity'].apply(lambda x: str(x) + ':')
+    df['m_margin'] = df['m_margin'].apply(lambda x: str(x) + ']')
 
     return df
 
@@ -135,13 +136,14 @@ def re_exe(interval=10, group_type=None):
                     if goods_name.startswith(alias):
                         future_name_list.remove(goods_name)
 
-                target_df = future_basics.loc[future_basics['name'].str.contains(alias)]
+                target_df = future_basics.loc[future_basics['name'].str.startswith(alias)]
                 if target_df.empty:
                     print(name, alias, 'empty')
                 for index, row in target_df.iterrows():
+                    symbol_code = row['symbol']
                     amount_per_contract = row['amount']
                     limit_in = row['limit']
-                    margin_rate = row['margin_rate']
+                    margin_rate = row['margin']
                     alert_prices = target_df.loc[index, 'alert_price']
                     alert_changes = target_df.loc[index, 'alert_change']
                     receive_mobile = target_df.loc[index, 'alert_mobile']
@@ -195,16 +197,19 @@ def re_exe(interval=10, group_type=None):
                 # alert_trigger(symbol=name, realtime_price=price, prices=tar_prices, realtime_change=change, changes=changes)
                 notify_trigger(symbol=name, price=price, alert_prices=tar_prices, alert=True)
 
-                row_list = [name, alias, exchange, price, change, limit_in, bid, ask, low, high,
-                            round(position, 2), str(high - low) + '-' + str(round((high - low) / high * 100, 2)) + '%',
-                            wave_str, margin_rate, value_per_contract, margin_per_contract,
-                            str(contract_num_for_1m) + '-' + str(margin_for_1m),
-                            trade_date, date_util.get_now(), low_change, high_change]
+                row_list = [name, symbol_code, exchange, price, change, limit_in, bid, ask, low, high,
+                            round(position, 2),
+                            str(round(high - low, 2)) + '-' + str(round((high - low) / high * 100, 2)) + '%',
+                            wave_str, margin_rate,
+                            value_per_contract, margin_per_contract,
+                            contract_num_for_1m, margin_for_1m,
+                            date_util.get_now(),
+                            low_change, high_change]
                 result_list.append(row_list)
-            df = pd.DataFrame(result_list, columns=['name', 'alias', 'exchange', 'price', 'change', 'limit',
+            df = pd.DataFrame(result_list, columns=['name', 'symbol', 'exchange', 'price', 'change', 'limit',
                                                     'bid1', 'ask1', 'low', 'high', 'position', 'amp', 'wave',
-                                                    'margin_rate',
-                                                    'one_value', 'one_margin', 'onem_margin', 'date', 'time',
+                                                    'margin_rate', 'one_value',
+                                                    'one_margin', 'm_quantity', 'm_margin', 'time',
                                                     'low_change', 'high_change'])
             if group_type == 'd':
                 df = df.sort_values(['change'], ascending=False)

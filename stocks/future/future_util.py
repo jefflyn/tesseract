@@ -34,7 +34,7 @@ def get_future_basics(code=None, type=None, night=None, on_target=None):
     '''
     sql = "select * from future_basics where 1=1 and deleted = 0 "
     if on_target is True:
-        sql += 'and on_target = :on_target '
+        sql += 'and target = :on_target '
     if code is not None:
         if isinstance(code, str):
             codes = list()
