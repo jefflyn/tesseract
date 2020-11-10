@@ -199,7 +199,7 @@ def re_exe(interval=10, group_type=None):
 
                 row_list = [name, symbol_code, exchange, price, change, limit_in, bid, ask, low, high,
                             round(position, 2),
-                            str(round(high - low, 2)) + '-' + str(round((high - low) / high * 100, 2)) + '%',
+                            str(round(high - low, 2)) + '^' + str(round((high - low) / high * 100, 2)) + '%',
                             wave_str, margin_rate,
                             value_per_contract, margin_per_contract,
                             contract_num_for_1m, margin_for_1m,
