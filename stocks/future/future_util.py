@@ -32,7 +32,7 @@ def get_future_basics(code=None, type=None, night=None, on_target=None):
     :param on_target:
     :return:
     '''
-    sql = "select * from future_basics where 1=1 and deleted = 0 "
+    sql = "select * from future_basics where 1=1 and deleted = 0 and goods_type != '有色金属'"
     if on_target is True:
         sql += 'and target = :on_target '
     if code is not None:

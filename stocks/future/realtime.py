@@ -167,13 +167,13 @@ def re_exe(interval=10, group_type=None):
                     contract_num_for_1m = int(1000000 / value_per_contract) + 1
                     margin_for_1m = round(contract_num_for_1m * value_per_contract * margin_rate / 100, 2)
 
-                    if float(price) < float(hist_low) or float(hist_low) == 0:
+                    if float(low) < float(hist_low) or float(hist_low) == 0:
                         update_low_sql = "update future_basics set low=%.2f where name like '%s'" % (
                             low, '%' + alias + '%')
                         cursor.execute(update_low_sql)
                         db.commit()
                         print(name, '更新合约历史最低价成功!')
-                    if float(price) > float(hist_high):
+                    if float(high) > float(hist_high) or float(hist_high) == 0:
                         update_high_sql = "update future_basics set high=%.2f where name like '%s'" % (
                             high, '%' + alias + '%')
                         cursor.execute(update_high_sql)
@@ -194,7 +194,7 @@ def re_exe(interval=10, group_type=None):
                 realtime_change_str = '+' + str(round(change, 2)) if change > 0 else str(round(change, 2))
                 realtime_price_info = str(price) + ' ' + realtime_change_str + '%'
                 # print(' ', name, realtime_price_info, str(alert_prices), str(alert_changes), sep=' | ')
-                # alert_trigger(symbol=name, realtime_price=price, prices=tar_prices, realtime_change=change, changes=changes)
+                alert_trigger(symbol=name, realtime_price=price, prices=None, realtime_change=change, changes=changes)
                 notify_trigger(symbol=name, price=price, alert_prices=tar_prices, alert=True)
 
                 row_list = [name, symbol_code, exchange, price, change, limit_in, bid, ask, low, high,
