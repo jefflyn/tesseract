@@ -30,7 +30,7 @@ def send_msg_with_twilio(msg='', to=''):
 
 
 def send_msg_with_tencent(code=None, name='', price='', to=phone_numbers[0]):
-    result = ''
+    result = None
     try:
         # if code is None:
         #     return

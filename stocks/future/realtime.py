@@ -235,6 +235,19 @@ def re_exe(interval=10, group_type=None):
 
 def alert_trigger(symbol=None, realtime_price=None, prices=None, realtime_change=None, changes=None,
                   receive_mobile='18507550586'):
+    '''
+    短信提醒
+    :param symbol:
+    :param realtime_price:
+    :param prices:
+    :param realtime_change:
+    :param changes:
+    :param receive_mobile:
+    :return:
+    '''
+    if date_util.now() < date_util.open_time or date_util.now() > date_util.close_time:
+        print('not in open time')
+        return
     if prices is not None and prices != '':
         for p in prices:
             if p == '':
@@ -245,13 +258,14 @@ def alert_trigger(symbol=None, realtime_price=None, prices=None, realtime_change
                 warn_times = redis_client.get(redis_key)
                 if warn_times is None:
                     try:
-                        redis_client.set(redis_key, symbol + str(realtime_price), ex=date_const.ONE_MONTH * 3)
                         name_format = '：' + symbol
                         change_str = str(round(realtime_change, 2)) + '%' if realtime_change < 0 else '+' + str(
                             round(realtime_change, 2)) + '%'
                         price_format = str(round(realtime_price)) + ' ' + change_str
                         # send msg
                         t_msg = sms_util.send_msg_with_tencent(name=name_format, price=price_format, to=receive_mobile)
+                        if t_msg is not None:
+                            redis_client.set(redis_key, symbol + str(realtime_price), ex=date_const.ONE_MONTH * 3)
                         print(t_msg)
                     except Exception as e:
                         print(e)
@@ -260,13 +274,14 @@ def alert_trigger(symbol=None, realtime_price=None, prices=None, realtime_change
                 warn_times = redis_client.get(redis_key)
                 if warn_times is None:
                     try:
-                        redis_client.set(redis_key, symbol + str(realtime_price), ex=date_const.ONE_MONTH * 3)
                         name_format = '：' + symbol
                         change_str = str(round(realtime_change, 2)) + '%' if realtime_change < 0 else '+' + str(
                             round(realtime_change, 2)) + '%'
                         price_format = str(round(realtime_price)) + ' ' + change_str
                         # send msg
                         t_msg = sms_util.send_msg_with_tencent(name=name_format, price=price_format, to=receive_mobile)
+                        if t_msg is not None:
+                            redis_client.set(redis_key, symbol + str(realtime_price), ex=date_const.ONE_MONTH * 3)
                         print(t_msg)
                     except Exception as e:
                         print(e)
@@ -281,13 +296,14 @@ def alert_trigger(symbol=None, realtime_price=None, prices=None, realtime_change
                 if warn_times is None:
                     value = symbol + ':' + str(realtime_price) + ' +' + str(round(realtime_change, 2)) + '%'
                     try:
-                        redis_client.set(redis_key, value, ex=date_const.ONE_MONTH * 3)
                         name_format = '：' + symbol
                         change_str = str(round(realtime_change, 2)) + '%' if realtime_change < 0 else '+' + str(
                             round(realtime_change, 2)) + '%'
                         price_format = str(round(realtime_price)) + ' ' + change_str
                         # send msg
                         t_msg = sms_util.send_msg_with_tencent(name=name_format, price=price_format, to=receive_mobile)
+                        if t_msg is not None:
+                            redis_client.set(redis_key, value, ex=date_const.ONE_MONTH * 3)
                         print(t_msg)
                     except Exception as e:
                         print(e)
@@ -296,13 +312,14 @@ def alert_trigger(symbol=None, realtime_price=None, prices=None, realtime_change
                 if warn_times is None:
                     value = symbol + ' ' + str(realtime_price) + ' ' + str(round(realtime_change, 2)) + '%'
                     try:
-                        redis_client.set(redis_key, value, ex=date_const.ONE_MONTH * 3)
-                        name_format = '：' + code + ' ' + name
+                        name_format = '：' + symbol
                         change_str = str(round(realtime_change, 2)) + '%' if realtime_change < 0 else '+' + str(
                             round(realtime_change, 2)) + '%'
                         price_format = str(round(realtime_price)) + ' ' + change_str
                         # send msg
                         t_msg = sms_util.send_msg_with_tencent(name=name_format, price=price_format, to=receive_mobile)
+                        if t_msg is not None:
+                            redis_client.set(redis_key, value, ex=date_const.ONE_MONTH * 3)
                         print(t_msg)
                     except Exception as e:
                         print(e)
