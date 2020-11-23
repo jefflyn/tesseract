@@ -12,7 +12,7 @@ from stocks.util import sms_util, date_const
 from stocks.util.db_util import get_db
 from stocks.util.redis_util import redis_client
 
-group_list = ['d', 'all', 'ag', 'om', 'ch', 'co', 'en', 'pm', 'fm', 'nfm', 'fi']
+group_list = ['d', 'all', 'ag', 'om', 'ch', 'bk', 'en', 'pm', 'nfm', 'fi']
 
 
 def notify_trigger(symbol=None, price=None, alert_prices=None, alert=True):
@@ -168,17 +168,17 @@ def re_exe(interval=10, group_type=None):
                     margin_for_1m = round(contract_num_for_1m * value_per_contract * margin_rate / 100, 2)
 
                     if float(low) < float(hist_low) or float(hist_low) == 0:
-                        update_low_sql = "update future_basics set low=%.2f where name like '%s'" % (
+                        update_low_sql = "update future_basics set low=%.2f, update_time=now() where name like '%s'" % (
                             low, '%' + alias + '%')
                         cursor.execute(update_low_sql)
                         db.commit()
-                        print(name, '更新合约历史最低价成功!')
+                        print('--->', name, '更新合约历史最低价成功!')
                     if float(high) > float(hist_high) or float(hist_high) == 0:
-                        update_high_sql = "update future_basics set high=%.2f where name like '%s'" % (
+                        update_high_sql = "update future_basics set high=%.2f, update_time=now() where name like '%s'" % (
                             high, '%' + alias + '%')
                         cursor.execute(update_high_sql)
                         db.commit()
-                        print(name, '更新合约历史最高价成功!')
+                        print('--->', name, '更新合约历史最高价成功!')
                 except Exception as err:
                     print("  >>>error:", name, "数据有误:", info, err)
                     db.rollback()
