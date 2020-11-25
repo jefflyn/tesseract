@@ -12,7 +12,7 @@ from stocks.util import sms_util, date_const
 from stocks.util.db_util import get_db
 from stocks.util.redis_util import redis_client
 
-group_list = ['d', 'all', 'ag', 'om', 'ch', 'bk', 'en', 'pm', 'nfm', 'fi']
+group_list = ['tar', 'all', 'ag', 'om', 'ch', 'bk', 'en', 'pm', 'nfm', 'fi']
 
 
 def notify_trigger(symbol=None, price=None, alert_prices=None, alert=True):
@@ -33,7 +33,7 @@ def notify_trigger(symbol=None, price=None, alert_prices=None, alert=True):
         target_price_len = len(notify_prices)
         if target_price_len < 2:
             # notify_util.notify(content=symbol + ':价格设置至少[2个]')
-            print('⚠️' + symbol + ':价格设置至少[2个]')
+            # print('⚠️' + symbol + ':价格设置至少[2个]')
             return
 
         if price in notify_prices:
@@ -67,14 +67,14 @@ def format_realtime(df):
     return df
 
 
-def re_exe(interval=10, group_type=None):
+def re_exe(interval=10, group_type=None, sort_by=None):
     """
     http://hq.sinajs.cn/list=nf_SA2101
     :param interval:
     :param group_type:
     :return:
     """
-    on_target = (group_type is None or group_type == 'd')
+    on_target = (group_type is None or group_type == 'tar')
     # 建立数据库连接
     db = get_db()
     # 使用cursor()方法创建一个游标对象
@@ -166,19 +166,29 @@ def re_exe(interval=10, group_type=None):
                 try:
                     contract_num_for_1m = int(1000000 / value_per_contract) + 1
                     margin_for_1m = round(contract_num_for_1m * value_per_contract * margin_rate / 100, 2)
-
+                    msg_content = None
+                    if price < float(low):
+                        msg_content = '合约日内新低:' + low
+                    if price > float(high):
+                        msg_content = '合约日内新高:' + high
                     if float(low) < float(hist_low) or float(hist_low) == 0:
                         update_low_sql = "update future_basics set low=%.2f, update_time=now() where name like '%s'" % (
                             low, '%' + alias + '%')
                         cursor.execute(update_low_sql)
                         db.commit()
                         print('--->', name, '更新合约历史最低价成功!')
+                        msg_content = '合约创新低:' + low
                     if float(high) > float(hist_high) or float(hist_high) == 0:
                         update_high_sql = "update future_basics set high=%.2f, update_time=now() where name like '%s'" % (
                             high, '%' + alias + '%')
                         cursor.execute(update_high_sql)
                         db.commit()
                         print('--->', name, '更新合约历史最高价成功!')
+                        msg_content = '合约创新高:' + high
+
+                    if msg_content is not None:
+                        notify_util.alert(message=msg_content)
+
                 except Exception as err:
                     print("  >>>error:", name, "数据有误:", info, err)
                     db.rollback()
@@ -211,7 +221,7 @@ def re_exe(interval=10, group_type=None):
                                                     'margin_rate', 'one_value',
                                                     'one_margin', 'm_quantity', 'm_margin', 'time',
                                                     'low_change', 'high_change'])
-            if group_type == 'd':
+            if sort_by is not None and sort_by == 'd':
                 df = df.sort_values(['change'], ascending=False)
             else:
                 df = df.sort_values(['change'])
@@ -331,16 +341,12 @@ if __name__ == '__main__':
     nohup /usr/local/bin/redis-server /usr/local/etc/redis.conf &
     nohup /usr/local/bin/redis-server /etc/redis.conf &
     """
-    # if len(argv) > 1:
-    #     type = argv[1]
-    #     if type not in KEYS:
-    #         print("Contract Type NOT defined. Try the followings: " + str(KEYS))
-    #         sys.exit(0)
-    # else:
-    #     type = 'my'
-    #
+
+    sort = None
     if len(argv) > 1 and argv[1] in group_list:
         group = argv[1]
+        if len(argv) > 2:
+            sort = argv[2]
     else:
         group = None
-    re_exe(3, group_type=group)
+    re_exe(3, group_type=group, sort_by=sort)
