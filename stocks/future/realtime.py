@@ -168,23 +168,23 @@ def re_exe(interval=10, group_type=None, sort_by=None):
                     margin_for_1m = round(contract_num_for_1m * value_per_contract * margin_rate / 100, 2)
                     msg_content = None
                     if price < float(low):
-                        msg_content = '合约日内新低:' + low
+                        msg_content = name + '合约日内新低:' + str(low)
                     if price > float(high):
-                        msg_content = '合约日内新高:' + high
+                        msg_content = name + '合约日内新高:' + str(high)
                     if float(low) < float(hist_low) or float(hist_low) == 0:
                         update_low_sql = "update future_basics set low=%.2f, update_time=now() where name like '%s'" % (
                             low, '%' + alias + '%')
                         cursor.execute(update_low_sql)
                         db.commit()
                         print('--->', name, '更新合约历史最低价成功!')
-                        msg_content = '合约创新低:' + low
+                        msg_content = name + '合约创新低:' + str(low)
                     if float(high) > float(hist_high) or float(hist_high) == 0:
                         update_high_sql = "update future_basics set high=%.2f, update_time=now() where name like '%s'" % (
                             high, '%' + alias + '%')
                         cursor.execute(update_high_sql)
                         db.commit()
                         print('--->', name, '更新合约历史最高价成功!')
-                        msg_content = '合约创新高:' + high
+                        msg_content = name + '合约创新高:' + str(high)
 
                     if msg_content is not None:
                         notify_util.alert(message=msg_content)
