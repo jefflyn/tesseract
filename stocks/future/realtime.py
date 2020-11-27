@@ -167,28 +167,32 @@ def re_exe(interval=10, group_type=None, sort_by=None):
                     contract_num_for_1m = int(1000000 / value_per_contract) + 1
                     margin_for_1m = round(contract_num_for_1m * value_per_contract * margin_rate / 100, 2)
                     msg_content = None
+                    update_sql = None
                     if price < float(low):
-                        msg_content = name + '合约日内新低:' + str(low)
+                        msg_content = name + '【日内】新低:' + str(low)
+                        update_sql = "update future_basics set update_remark='%s' " \
+                                     "where name like '%s'" % (msg_content, '%' + alias + '%')
                     if price > float(high):
-                        msg_content = name + '合约日内新高:' + str(high)
+                        msg_content = name + '【日内】新高:' + str(high)
+                        update_sql = "update future_basics set update_remark='%s' " \
+                                     "where name like '%s'" % (msg_content, '%' + alias + '%')
                     if float(low) < float(hist_low) or float(hist_low) == 0:
-                        update_low_sql = "update future_basics set low=%.2f, update_time=now() where name like '%s'" % (
-                            low, '%' + alias + '%')
-                        cursor.execute(update_low_sql)
-                        db.commit()
-                        print('--->', name, '更新合约历史最低价成功!')
-                        msg_content = name + '合约创新低:' + str(low)
+                        msg_content = name + '【合约】新低:' + str(low)
+                        update_sql = "update future_basics set low=%.2f, update_remark='%s', update_time=now() " \
+                                     "where name like '%s'" % (low, msg_content, '%' + alias + '%')
+                        print('--->', name, '更新合约历史最低价!')
                     if float(high) > float(hist_high) or float(hist_high) == 0:
-                        update_high_sql = "update future_basics set high=%.2f, update_time=now() where name like '%s'" % (
-                            high, '%' + alias + '%')
-                        cursor.execute(update_high_sql)
-                        db.commit()
-                        print('--->', name, '更新合约历史最高价成功!')
-                        msg_content = name + '合约创新高:' + str(high)
+                        msg_content = name + '【合约】新高:' + str(high)
+                        update_sql = "update future_basics set high=%.2f, update_remark='%s', update_time=now() " \
+                                     "where name like '%s'" % (high, msg_content, '%' + alias + '%')
+                        print('--->', name, '更新合约历史最高价!')
 
                     if msg_content is not None:
                         notify_util.alert(message=msg_content)
 
+                    if update_sql is not None:
+                        cursor.execute(update_sql)
+                        db.commit()
                 except Exception as err:
                     print("  >>>error:", name, "数据有误:", info, err)
                     db.rollback()
