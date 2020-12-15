@@ -46,9 +46,9 @@ def get_ma_point(ma_arr=None):
     grade = 0.0
 
     # 不关注现价
-    if gap_between(ma10, ma20) and gap_between(ma20, ma30) and gap_between(ma30, ma60) \
-            and gap_between(ma60, ma90) and gap_between(ma90, ma120) and gap_between(ma120, ma250):
-    # if ma10 >= ma20 >= ma30 >= ma60 >= ma90 >= ma120 >= ma250 > 0:
+    # if gap_between(ma10, ma20) and gap_between(ma20, ma30) and gap_between(ma30, ma60) \
+    #         and gap_between(ma60, ma90) and gap_between(ma90, ma120) and gap_between(ma120, ma250):
+    if price >= ma5 >= ma10 >= ma20 >= ma30 >= ma60 >= ma90 >= ma120 >= ma250 > 0:
         grade = MA_GRADE_10
         space_base = ma250
         index = len(ma_arr)

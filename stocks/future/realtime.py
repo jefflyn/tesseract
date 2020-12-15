@@ -59,6 +59,8 @@ def format_realtime(df):
     df['change'] = df['change'].apply(lambda x: str(round(x, 2)) + '%')
     df['position'] = df['position'].apply(lambda x: 'p-' + str(round(x, 2)) + '%')
     df['limit'] = df['limit'].apply(lambda x: '^' + str(round(x, 2)) + '%')
+    df['margin_rate'] = df['margin_rate'].apply(lambda x: str(x) + '%')
+
     df['one_value'] = df['one_value'].apply(lambda x: '[' + str(x) + ',')
     df['one_margin'] = df['one_margin'].apply(lambda x: str(x) + ',')
     df['m_quantity'] = df['m_quantity'].apply(lambda x: str(x) + ':')
