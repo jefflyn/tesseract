@@ -152,7 +152,7 @@ def get_realtime(hddf=None, last_trade_data=None, sortby=None):
         if high != low:
             current = (price - low) / (high - low) * 100
             amplitude = (high - low) / low * 100
-        elif high == low:
+        elif high == low and change >= 0:
             current = 100
         position = (price - bottom) / (top - bottom) * 100
 
