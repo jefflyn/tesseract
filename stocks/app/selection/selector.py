@@ -17,7 +17,9 @@ from stocks.util._utils import timer
 last_trade_date = date_util.get_latest_trade_date(1)[0]
 
 this_week_hist = data_util.get_hist_trade_high_low(start=date_const.FIRST_DAY_THIS_WEEK,
-                                                           end=date_const.LAST_DAY_THIS_WEEK)
+                                                   end=date_const.LAST_DAY_THIS_WEEK)
+
+
 # from stocks.data.service import hist_trade_service
 # open_date_map = hist_trade_service.get_new_open_date()
 
@@ -201,7 +203,8 @@ def select_result(codeset=None, filename=''):
         if len(fire_dates) > 0:
             last_f_date = fire_dates[-1]
             call_diff = round((current_price - call_price) / current_price * 100, 2)
-            if list_date == 0 or (date_util.convert_to_date(list_date) - date_util.convert_to_date(last_f_date)).days == 0:
+            if list_date == '0' or \
+                    (date_util.convert_to_date(list_date) - date_util.convert_to_date(last_f_date)).days == 0:
                 fire_dates = ''
                 last_f_date = ''
                 call_prices = ''
@@ -298,7 +301,8 @@ def select_result(codeset=None, filename=''):
     # resultdf = resultdf.sort_values('sum_30d', axis=0, ascending=False, inplace=False, kind='quicksort', na_position='last')
 
     resultdf = resultdf[
-        ['concepts',  'code', 'name', 'industry', 'area', 'list_date', 'issue_price', 'price', 'issue_space', 'pe', 'profit',
+        ['concepts', 'code', 'name', 'industry', 'area', 'list_date', 'issue_price', 'price', 'issue_space', 'pe',
+         'profit',
          'pct', 'wave_a', 'wave_b', 'map', 'count', 'count_',
          'wave_detail', 'a_days', 'b_days', 'bottom', 'uspace', 'dspace', 'top', 'position',
          'w_gap', 'c_gap',
@@ -320,7 +324,7 @@ def select_result(codeset=None, filename=''):
         print('save excel success')
     end_time = date_util.now()
     print('select stocks finished, consume time %d secs! result size: %d\n' %
-                ((end_time - begin_time).seconds, len(resultdf.index.to_numpy())))
+          ((end_time - begin_time).seconds, len(resultdf.index.to_numpy())))
     return resultdf
 
 

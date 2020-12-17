@@ -7,11 +7,8 @@ Created on 2019/01/01
 @author: guru
 """
 
-import pymysql
-
-from stocks.util.pro_util import pro
-
 from stocks.util.db_util import get_db
+from stocks.util.pro_util import pro
 
 if __name__ == '__main__':
     # 查询当前所有正常上市交易的股票列表
@@ -35,7 +32,7 @@ if __name__ == '__main__':
             db.commit()
             insert_count += result
         except Exception as err:
-            print(err)
+            print(row, err)
             continue
 
     # 关闭游标和数据库的连接
