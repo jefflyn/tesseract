@@ -1,24 +1,7 @@
+from stocks.future.future_constants import *
+from stocks.util import date_util
+from stocks.util.db_util import get_db
 from stocks.util.db_util import read_sql
-
-# 商品类型
-ENERGY = '能源'
-CHEMICAL = '化工'
-COAL_FERROUS_METAL = '黑色'  # '煤炭\黑色金属'
-PRECIOUS_METAL = '贵金属'
-OIL_MATERIAL = '油脂油料'
-NON_FERROUS_METAL = '有色金属'
-AGRICULTURAL_PRODUCTS = '农产品'
-FINANCIAL = '金融板块'
-GOODS_TYPE_MAP = {
-    'ag': AGRICULTURAL_PRODUCTS,
-    'om': OIL_MATERIAL,
-    'ch': CHEMICAL,
-    'en': ENERGY,
-    'bk': COAL_FERROUS_METAL,
-    'pm': PRECIOUS_METAL,
-    'nfm': NON_FERROUS_METAL,
-    'fi': FINANCIAL
-}
 
 
 def get_future_basics(code=None, type=None, night=None, on_target=None):
@@ -47,3 +30,22 @@ def get_future_basics(code=None, type=None, night=None, on_target=None):
     df = read_sql(sql, params=params)
     return df
 
+
+def add_log(name, log_type, content):
+    print('add log -------------')
+
+    # 建立数据库连接
+    db = get_db()
+    # 使用cursor()方法创建一个游标对象
+    cursor = db.cursor()
+    try:
+        cursor.execute(
+            'insert into future_log(name,type,content,log_time) '
+            'values(%s,%s,%s,%s)', (name, log_type, content, date_util.get_now()))
+        db.commit()
+    except Exception as err:
+        print('>>> failed!', err)
+        db.rollback()
+    # 关闭游标和数据库的连接
+    cursor.close()
+    db.close()

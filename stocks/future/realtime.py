@@ -5,6 +5,7 @@ import pandas as pd
 import requests
 
 from stocks.future import future_util
+from stocks.future.future_constants import *
 from stocks.util import date_util
 from stocks.util import db_util
 from stocks.util import notify_util
@@ -122,9 +123,13 @@ def re_exe(interval=10, group_type=None, sort_by=None):
                 # 10：昨结算
                 pre_settle = float(info[10])
                 # 11：买量
+                buy_vol = float(info[11])
                 # 12：卖量
+                sell_vol = float(info[12])
                 # 13：持仓量
+                hold_vol = float(info[13])
                 # 14：成交量
+                deal_vol = float(info[14])
                 # 15：商品交易所简称
                 exchange = info[15]
                 # 16：品种名简称
@@ -132,7 +137,26 @@ def re_exe(interval=10, group_type=None, sort_by=None):
                 # 17：日期
                 trade_date = info[17]
                 future_from_sina.append(alias)
-                # print(alias)
+                # print(info)
+
+                last_price = redis_client.get(name)
+                secs = 30
+                if last_price is None:
+                    # print('set price=', price)
+                    redis_client.set(name, price, ex=secs)
+                else:
+                    last_price = float(last_price)
+                    diff = round(abs((price - last_price)) / last_price, 2) * 100
+                    # print(last_price, price, diff)
+                    if diff > 0.2:
+                        content = str(secs) + '秒内快速' + ('拉升' if price > last_price else '下跌') + str(diff) + '%, ' \
+                                  + '价格【' + str(last_price) + '-' + str(price) + '】'
+                        if redis_client.exists(name + content) is False:
+                            notify_util.alert(message='起来活动一下')
+                            future_util.add_log(name, LOG_TYPE_PRICE_UP if price > last_price else LOG_TYPE_PRICE_DOWN,
+                                                content)
+                            redis_client.set(name + msg_content, 'msg_content', ex=date_const.ONE_HOUR)
+
                 # 清除可以查询的商品
                 for goods_name in future_name_list:
                     if goods_name.startswith(alias):
@@ -170,27 +194,36 @@ def re_exe(interval=10, group_type=None, sort_by=None):
                     margin_for_1m = round(contract_num_for_1m * value_per_contract * margin_rate / 100, 2)
                     msg_content = None
                     update_sql = None
+                    log_type = ''
                     if price < float(low):
+                        log_type = LOG_TYPE_PRICE_NEW_LOW
                         msg_content = name + '【日内】新低:' + str(low)
                         update_sql = "update future_basics set update_remark='%s' " \
                                      "where name like '%s'" % (msg_content, '%' + alias + '%')
                     if price > float(high):
+                        log_type = LOG_TYPE_PRICE_NEW_HIGH
                         msg_content = name + '【日内】新高:' + str(high)
                         update_sql = "update future_basics set update_remark='%s' " \
                                      "where name like '%s'" % (msg_content, '%' + alias + '%')
                     if float(low) < float(hist_low) or float(hist_low) == 0:
+                        log_type = LOG_TYPE_PRICE_NEW_LOW
                         msg_content = name + '【合约】新低:' + str(low)
                         update_sql = "update future_basics set low=%.2f, update_remark='%s', update_time=now() " \
                                      "where name like '%s'" % (low, msg_content, '%' + alias + '%')
                         print('--->', name, '更新合约历史最低价!')
                     if float(high) > float(hist_high) or float(hist_high) == 0:
+                        log_type = LOG_TYPE_PRICE_NEW_HIGH
                         msg_content = name + '【合约】新高:' + str(high)
                         update_sql = "update future_basics set high=%.2f, update_remark='%s', update_time=now() " \
                                      "where name like '%s'" % (high, msg_content, '%' + alias + '%')
                         print('--->', name, '更新合约历史最高价!')
 
                     if msg_content is not None:
-                        notify_util.alert(message=msg_content)
+                        # notify_util.alert(message=msg_content)
+                        notify_util.alert(message='起来活动一下')
+                        if redis_client.exists(msg_content) is False:
+                            future_util.add_log(name, log_type, msg_content)
+                            redis_client.set(msg_content, 'msg_content', ex=date_const.ONE_HOUR)
 
                     if update_sql is not None:
                         cursor.execute(update_sql)
