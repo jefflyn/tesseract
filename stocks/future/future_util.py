@@ -13,7 +13,7 @@ def get_future_basics(code=None, type=None, night=None, on_target=None):
     :param on_target:
     :return:
     '''
-    sql = "select * from future_basics where 1=1 and deleted = 0 "
+    sql = "select * from future_basics where deleted = 0 "
     if on_target is True:
         sql += 'and target = :on_target '
     if code is not None:
@@ -27,6 +27,17 @@ def get_future_basics(code=None, type=None, night=None, on_target=None):
     if night is not None:
         sql += 'and night = :night '
     params = {'code': code, 'type': GOODS_TYPE_MAP.get(type), 'night': night, 'on_target': 1}
+    df = read_sql(sql, params=params)
+    return df
+
+
+def get_future_daily(name=None, trade_date=None):
+    sql = "select * from future_daily where 1=1 "
+    if name is not None:
+        sql += 'and name = :name '
+    if trade_date is not None:
+        sql += 'and trade_date = :trade_date '
+    params = {'name': name, 'trade_date': trade_date}
     df = read_sql(sql, params=params)
     return df
 

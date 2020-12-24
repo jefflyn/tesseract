@@ -1,10 +1,15 @@
 import requests
 
 from stocks.future import future_util
+from stocks.util import date_util
 from stocks.util.db_util import get_db
 
+last_trade_date = date_util.get_previous_trade_day()
+future_basics = future_util.get_future_basics()
+last_trade_data = future_util.get_future_daily(trade_date=last_trade_date)
+last_trade_data.index = list(last_trade_data['name'])
+
 if __name__ == '__main__':
-    future_basics = future_util.get_future_basics()
     future_name_list = list(future_basics['name'])
     codes = ','.join(['nf_' + e for e in list(future_basics['symbol'])])
     req_url = 'http://hq.sinajs.cn/list='
@@ -32,6 +37,9 @@ if __name__ == '__main__':
             low = round(float(info[4]), 2)
             # 5：昨日收盘价（不准）
             pre_close = float(info[5])
+            last_trade_close = last_trade_data.loc[name, 'close'] if last_trade_data.empty is False else None
+            if last_trade_close is not None:
+                pre_close = float(last_trade_close)
             # 6：买价，即“买一”报价
             bid = float(info[6])
             # 7：卖价，即“卖一”报价
@@ -71,12 +79,13 @@ if __name__ == '__main__':
             cursor = db.cursor()
             try:
                 cursor.execute(
-                    'insert into future_daily(trade_date,name,s_change,open,close,high,low,hl_diff,'
-                    'amplitude,settle,pre_close,pre_settle,deal_vol,hold_vol,exchange) '
-                    'values(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)',
-                    (trade_date, name, s_change, open, price, high, low, round(high-low, 2),
+                    'insert into future_daily(trade_date, name, s_change, p_change, open, close, high, low, hl_diff,'
+                    'amplitude, settle, pre_close, pre_settle, deal_vol, hold_vol, exchange) '
+                    'values(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)',
+                    (trade_date, name, s_change, p_change, open, price, high, low, round(high-low, 2),
                      round((high - low) / high * 100, 2), settle, pre_close, pre_settle, deal_vol, hold_vol, exchange))
                 db.commit()
+                print('>>> insert', name, 'success')
             except Exception as err:
                 print('>>> failed!', err)
                 db.rollback()

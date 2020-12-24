@@ -82,9 +82,9 @@ def re_exe(interval=10, group_type=None, sort_by=None):
     db = get_db()
     # 使用cursor()方法创建一个游标对象
     cursor = db.cursor()
+    future_basics = future_util.get_future_basics(type=group_type, on_target=on_target)
 
     while True:
-        future_basics = future_util.get_future_basics(type=group_type, on_target=on_target)
         future_name_list = list(future_basics['name'])
         codes = ','.join(['nf_' + e for e in list(future_basics['symbol'])])
         req_url = 'http://hq.sinajs.cn/list='
