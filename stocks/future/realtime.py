@@ -148,14 +148,14 @@ def re_exe(interval=10, group_type=None, sort_by=None):
                     last_price = float(last_price)
                     diff = round(abs((price - last_price)) / last_price, 2) * 100
                     # print(last_price, price, diff)
-                    if diff > 0.2:
+                    if diff > 0.1:
                         content = str(secs) + '秒内快速' + ('拉升' if price > last_price else '下跌') + str(diff) + '%, ' \
                                   + '价格【' + str(last_price) + '-' + str(price) + '】'
                         if redis_client.exists(name + content) is False:
                             notify_util.alert(message='起来活动一下')
                             future_util.add_log(name, LOG_TYPE_PRICE_UP if price > last_price else LOG_TYPE_PRICE_DOWN,
                                                 content)
-                            redis_client.set(name + msg_content, 'msg_content', ex=date_const.ONE_HOUR)
+                            redis_client.set(name + content, 'msg_content', ex=date_const.ONE_HOUR)
 
                 # 清除可以查询的商品
                 for goods_name in future_name_list:
