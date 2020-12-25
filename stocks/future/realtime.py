@@ -220,8 +220,8 @@ def re_exe(interval=10, group_type=None, sort_by=None):
 
                     if msg_content is not None:
                         # notify_util.alert(message=msg_content)
-                        notify_util.alert(message='起来活动一下')
                         if redis_client.exists(msg_content) is False:
+                            notify_util.alert(message='起来活动一下')
                             future_util.add_log(name, log_type, msg_content)
                             redis_client.set(msg_content, 'msg_content', ex=date_const.ONE_HOUR)
 
