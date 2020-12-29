@@ -260,8 +260,13 @@ def re_exe(interval=10, group_type=None, sort_by=None):
                                                     'margin_rate', 'one_value',
                                                     'one_margin', 'm_quantity', 'm_margin', 'time',
                                                     'low_change', 'high_change'])
-            if sort_by is not None and sort_by == 'd':
-                df = df.sort_values(['change'], ascending=False)
+            if sort_by is not None:
+                if sort_by == 'd':
+                    df = df.sort_values(['change'], ascending=False)
+                if sort_by == 'p1':
+                    df = df.sort_values(['position'])
+                if sort_by == 'p2':
+                    df = df.sort_values(['position'], ascending=False)
             else:
                 df = df.sort_values(['change'])
 
