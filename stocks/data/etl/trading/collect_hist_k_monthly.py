@@ -56,7 +56,7 @@ def collect_monthly(start_time=None, end_time=None):
                 'amt_change, pct_change, volume, amount)'
                 'values(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)', insert_values)
             db.commit()
-            print(code, start_time, 'monthly k data insert successfully.')
+            print(code, trade_date, 'monthly k data insert successfully.')
         except Exception as err:
             print('>>> failed!', err)
             db.rollback()
@@ -66,5 +66,5 @@ def collect_monthly(start_time=None, end_time=None):
 
 
 if __name__ == '__main__':
-    collect_monthly(start_time='2020-06-01', end_time=None)
+    collect_monthly(start_time='2021-01-01', end_time=None)
 
