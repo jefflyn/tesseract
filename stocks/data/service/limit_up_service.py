@@ -37,7 +37,7 @@ def update_latest_limit_up_stat():
     实时指定日期涨停信息
     :return:
     '''
-    target_date = date_util.get_this_year_start()
+    target_date = date_util.get_last_year_start()
     limit_up_stat_df = get_limit_up_stat(start=target_date)
     if limit_up_stat_df is not None:
         basics = data_util.get_basics()
@@ -243,7 +243,7 @@ if __name__ == '__main__':
     # get_limit_up_times(code_list=['601599'], target_date='2020-01-01')
     # collect_daily_limit_up(target_date='2020-01-01')
     update_latest_limit_up_stat()
-    sync_rds_limit_up_stat()
+    # sync_rds_limit_up_stat()
 
     # collect_limit_up_stat(target_date=date_util.get_this_week_start())
     # update_latest_limit_up_stat()
