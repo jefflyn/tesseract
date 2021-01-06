@@ -344,6 +344,8 @@ def get_my_stock_pool(type=None, hold=1):
         return df
     else:
         sql = 'select * from my_stock_pool where 1=1 and is_hold=:hold'
+        if hold is None:
+            hold = 1
         params = {'hold': hold}
         if type is not None:
             params['type'] = type

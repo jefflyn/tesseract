@@ -56,7 +56,7 @@ def format_realtime(df):
 
 def re_exe(hold_df=None, type='pos', inc=2, show_wave=True, sortby=None):
     while True:
-        hold_df = _dt.get_my_stock_pool(type)
+        hold_df = _dt.get_my_stock_pool(type=type, hold=sortby)
         if hold_df is None or hold_df.empty:
             print("Stock NOT found!")
             sys.exit(0)
