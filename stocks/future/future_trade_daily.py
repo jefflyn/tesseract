@@ -7,7 +7,8 @@ from stocks.util.db_util import get_db
 last_trade_date = date_util.get_previous_trade_day()
 future_basics = future_util.get_future_basics()
 last_trade_data = future_util.get_future_daily(trade_date=last_trade_date)
-last_trade_data.index = list(last_trade_data['name'])
+last_trade_data_names = list(last_trade_data['name'])
+last_trade_data.index = last_trade_data_names
 
 if __name__ == '__main__':
     future_name_list = list(future_basics['name'])
@@ -37,7 +38,7 @@ if __name__ == '__main__':
             low = round(float(info[4]), 2)
             # 5：昨日收盘价（不准）
             pre_close = float(info[5])
-            if name in last_trade_data.index:
+            if name in last_trade_data_names:
                 last_trade_close = last_trade_data.loc[name, 'close'] if last_trade_data.empty is False else None
                 if last_trade_close is not None:
                     pre_close = float(last_trade_close)
