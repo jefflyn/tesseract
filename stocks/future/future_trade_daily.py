@@ -37,9 +37,10 @@ if __name__ == '__main__':
             low = round(float(info[4]), 2)
             # 5：昨日收盘价（不准）
             pre_close = float(info[5])
-            last_trade_close = last_trade_data.loc[name, 'close'] if last_trade_data.empty is False else None
-            if last_trade_close is not None:
-                pre_close = float(last_trade_close)
+            if name in last_trade_data.index:
+                last_trade_close = last_trade_data.loc[name, 'close'] if last_trade_data.empty is False else None
+                if last_trade_close is not None:
+                    pre_close = float(last_trade_close)
             # 6：买价，即“买一”报价
             bid = float(info[6])
             # 7：卖价，即“卖一”报价
