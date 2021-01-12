@@ -61,9 +61,8 @@ def format_realtime(df):
     df['position'] = df['position'].apply(lambda x: 'p-' + str(round(x, 2)) + '%')
     df['limit'] = df['limit'].apply(lambda x: '^' + str(round(x, 2)) + '%')
     df['margin_rate'] = df['margin_rate'].apply(lambda x: str(x) + '%')
-
-    df['one_value'] = df['one_value'].apply(lambda x: '[' + str(x) + ',')
-    df['one_margin'] = df['one_margin'].apply(lambda x: str(x) + ',')
+    df['per_margin'] = df['per_margin'].apply(lambda x: '[' + str(x) + ',')
+    df['per_value'] = df['per_value'].apply(lambda x: str(x) + '')
     df['m_quantity'] = df['m_quantity'].apply(lambda x: str(x) + ':')
     df['m_margin'] = df['m_margin'].apply(lambda x: str(x) + ']')
 
@@ -248,16 +247,15 @@ def re_exe(interval=10, group_type=None, sort_by=None):
                 row_list = [name, symbol_code, exchange, price, change, limit_in, bid, ask, low, high,
                             round(position, 2),
                             str(round(high - low, 2)) + '^' + str(round((high - low) / high * 100, 2)) + '%',
-                            wave_str, margin_rate,
-                            value_per_contract, margin_per_contract,
+                            wave_str, margin_rate, margin_per_contract, value_per_contract,
                             contract_num_for_1m, margin_for_1m,
                             date_util.get_now(),
                             low_change, high_change]
                 result_list.append(row_list)
             df = pd.DataFrame(result_list, columns=['name', 'symbol', 'exchange', 'price', 'change', 'limit',
                                                     'bid1', 'ask1', 'low', 'high', 'position', 'amp', 'wave',
-                                                    'margin_rate', 'one_value',
-                                                    'one_margin', 'm_quantity', 'm_margin', 'time',
+                                                    'margin_rate', 'per_margin', 'per_value',
+                                                     'm_quantity', 'm_margin', 'time',
                                                     'low_change', 'high_change'])
             if sort_by is not None:
                 if sort_by == 'd':

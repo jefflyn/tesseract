@@ -11,6 +11,7 @@ last_trade_data_names = list(last_trade_data['name'])
 last_trade_data.index = last_trade_data_names
 
 if __name__ == '__main__':
+    # http://hq.sinajs.cn/list=nf_LH2109
     future_name_list = list(future_basics['name'])
     codes = ','.join(['nf_' + e for e in list(future_basics['symbol'])])
     req_url = 'http://hq.sinajs.cn/list='
