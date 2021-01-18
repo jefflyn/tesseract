@@ -167,7 +167,7 @@ def re_exe(interval=10, group_type=None, sort_by=None):
                     symbol_code = row['symbol']
                     amount_per_contract = row['amount']
                     limit_in = row['limit']
-                    margin_rate = row['margin']
+                    margin_rate = row['margin_std']
                     alert_prices = target_df.loc[index, 'alert_price']
                     alert_changes = target_df.loc[index, 'alert_change']
                     receive_mobile = target_df.loc[index, 'alert_mobile']
