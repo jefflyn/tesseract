@@ -13,7 +13,7 @@ from stocks.util import sms_util, date_const
 from stocks.util.db_util import get_db
 from stocks.util.redis_util import redis_client
 
-group_list = ['tar', 'all', 'ag', 'om', 'ch', 'bk', 'en', 'pm', 'nfm', 'fi']
+group_list = ['tar', 'all', 'ag', 'om', 'ch1', 'ch2', 'ch3', 'bk', 'en', 'pm', 'nfm', 'fi']
 
 
 def notify_trigger(symbol=None, price=None, alert_prices=None, alert=True):
@@ -138,7 +138,7 @@ def re_exe(interval=10, group_type=None, sort_by=None):
                 # print(info)
 
                 last_price = redis_client.get(name)
-                secs = 30
+                secs = 10
                 if last_price is None:
                     # print('set price=', price)
                     redis_client.set(name, price, ex=secs)
@@ -146,7 +146,7 @@ def re_exe(interval=10, group_type=None, sort_by=None):
                     last_price = float(last_price)
                     diff = round(abs((price - last_price)) / last_price, 2) * 100
                     # print(last_price, price, diff)
-                    if diff > 0.1:
+                    if diff > 0.05:
                         content = str(secs) + '秒内快速' + ('拉升' if price > last_price else '下跌') + str(diff) + '%, ' \
                                   + '价格【' + str(last_price) + '-' + str(price) + '】'
                         if redis_client.exists(name + content) is False:
@@ -255,7 +255,7 @@ def re_exe(interval=10, group_type=None, sort_by=None):
             df = pd.DataFrame(result_list, columns=['name', 'symbol', 'exchange', 'price', 'change', 'limit',
                                                     'bid1', 'ask1', 'low', 'high', 'position', 'amp', 'wave',
                                                     'margin_rate', 'per_margin', 'per_value',
-                                                     'm_quantity', 'm_margin', 'time',
+                                                    'm_quantity', 'm_margin', 'time',
                                                     'low_change', 'high_change'])
             if sort_by is not None:
                 if sort_by == 'd':
