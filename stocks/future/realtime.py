@@ -152,7 +152,7 @@ def re_exe(interval=10, group_type=None, sort_by=None):
                         if redis_client.exists(name + content) is False:
                             # notify_util.alert(message='起来活动一下')
                             future_util.add_log(name, LOG_TYPE_PRICE_UP if price > last_price else LOG_TYPE_PRICE_DOWN,
-                                                content)
+                                                change, content)
                             redis_client.set(name + content, 'msg_content', ex=date_const.ONE_HOUR)
 
                 # 清除可以查询的商品
@@ -177,7 +177,8 @@ def re_exe(interval=10, group_type=None, sort_by=None):
                     tar_prices = str.split(alert_prices, ',') if alert_prices is not None else None
                     changes = str.split(alert_changes, ',') if alert_changes is not None and alert_changes != '' \
                         else None
-
+                price_diff = float(price) - float(pre_settle)
+                change = round(price_diff / float(pre_settle) * 100, 2)
                 # 合约高低涨跌幅
                 wave_str = '[]'
                 if hist_high > hist_low > 0:
@@ -193,12 +194,12 @@ def re_exe(interval=10, group_type=None, sort_by=None):
                     msg_content = None
                     update_sql = None
                     log_type = ''
-                    if price < float(low):
+                    if price <= float(low):
                         log_type = LOG_TYPE_DAY_NEW_LOW
                         msg_content = name + '【日内】新低:' + str(low)
                         update_sql = "update future_basics set update_remark='%s' " \
                                      "where name like '%s'" % (msg_content, '%' + alias + '%')
-                    if price > float(high):
+                    if price >= float(high):
                         log_type = LOG_TYPE_DAY_NEW_HIGH
                         msg_content = name + '【日内】新高:' + str(high)
                         update_sql = "update future_basics set update_remark='%s' " \
@@ -220,7 +221,7 @@ def re_exe(interval=10, group_type=None, sort_by=None):
                         # notify_util.alert(message=msg_content)
                         if redis_client.exists(msg_content) is False:
                             # notify_util.alert(message='起来活动一下')
-                            future_util.add_log(name, log_type, msg_content)
+                            future_util.add_log(name, log_type, change, msg_content)
                             redis_client.set(msg_content, 'msg_content', ex=date_const.ONE_HOUR)
 
                     if update_sql is not None:
@@ -230,8 +231,6 @@ def re_exe(interval=10, group_type=None, sort_by=None):
                     print("  >>>error:", name, "数据有误:", info, err)
                     db.rollback()
 
-                price_diff = float(price) - float(pre_settle)
-                change = round(price_diff / float(pre_settle) * 100, 2)
                 position = 0
                 if high != low:
                     position = round((price - low) / (high - low) * 100, 2)

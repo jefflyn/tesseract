@@ -49,6 +49,23 @@ def send_msg_with_tencent(code=None, name='', price='', to=phone_numbers[0]):
     return result
 
 
+def send_future_msg_with_tencent(code=None, name='', price='', suggest='', to=phone_numbers[0]):
+    result = None
+    try:
+        params = [name, price, suggest]
+        # 签名参数未提供或者为空时，会使用默认签名发送短信
+        if code in send_counter.keys() and send_counter[code] > 3:
+            print('%s提醒超过3次，今天不再提醒！')
+            return
+        result = ssender.send_with_param(86, to, 849005, params, sign=sms_sign, extend="", ext="")
+        send_counter[code] += 1
+    except HTTPError as e:
+        print(e)
+    except Exception as e:
+        print(e)
+    return result
+
+
 if __name__ == '__main__':
     send_msg_with_twilio(msg='hello', to='+8618507550586')
 
