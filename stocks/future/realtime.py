@@ -138,7 +138,7 @@ def re_exe(interval=10, group_type=None, sort_by=None):
                 # print(info)
 
                 last_price = redis_client.get(name)
-                secs = 60
+                secs = 120
                 if last_price is None:
                     # print('set price=', price)
                     redis_client.set(name, price, ex=secs)
@@ -155,8 +155,11 @@ def re_exe(interval=10, group_type=None, sort_by=None):
                             # notify_util.alert(message='起来活动一下')
                             future_util.add_log(name, LOG_TYPE_PRICE_UP if price > last_price else LOG_TYPE_PRICE_DOWN,
                                                 change, content)
-                            # 信息警告
-                            sms_util.send_future_msg_with_tencent(code=name + suggest, name=name, price=str(price),
+                            is_trade_time = (date_util.future_open_time <= date_util.now() <= date_util.close_time) or \
+                                            (date_util.night_open_time <= date_util.now() <= date_util.night_close_time)
+                            if is_trade_time:
+                                # 信息警告
+                                sms_util.send_future_msg_with_tencent(code=name + suggest, name=name, price=str(price),
                                                                   suggest=suggest, to=receive_mobile)
                             redis_client.set(name + content, 'msg_content', ex=date_const.ONE_HOUR)
 
@@ -304,7 +307,7 @@ def alert_trigger(symbol=None, realtime_price=None, prices=None, realtime_change
     :param receive_mobile:
     :return:
     '''
-    is_trade_time = (date_util.open_time <= date_util.now() <= date_util.close_time) or \
+    is_trade_time = (date_util.future_open_time <= date_util.now() <= date_util.close_time) or \
                     (date_util.night_open_time <= date_util.now() <= date_util.night_close_time)
     if is_trade_time is False:
         print('not in open time')
