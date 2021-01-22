@@ -138,26 +138,21 @@ def re_exe(interval=10, group_type=None, sort_by=None):
                 # print(info)
 
                 last_price = redis_client.get(name)
-                secs = 60
+                secs = 10
                 if last_price is None:
                     # print('set price=', price)
                     redis_client.set(name, price, ex=secs)
                 else:
                     last_price = float(last_price)
-                    diff = abs((price - last_price)) / last_price * 100
+                    diff = round(abs((price - last_price)) / last_price, 2) * 100
                     # print(last_price, price, diff)
-                    if diff > 0.5:
-                        suggest = LOG_TYPE_PRICE_UP + '看多' if price > last_price else LOG_TYPE_PRICE_DOWN + '看空'
-                        content = str(secs) + '秒内快速' + ('拉升' if price > last_price else '下跌') \
-                                  + str(round(diff, 2)) + '%, ' \
+                    if diff > 0.05:
+                        content = str(secs) + '秒内快速' + ('拉升' if price > last_price else '下跌') + str(diff) + '%, ' \
                                   + '价格【' + str(last_price) + '-' + str(price) + '】'
                         if redis_client.exists(name + content) is False:
                             # notify_util.alert(message='起来活动一下')
                             future_util.add_log(name, LOG_TYPE_PRICE_UP if price > last_price else LOG_TYPE_PRICE_DOWN,
                                                 change, content)
-                            # 信息警告
-                            sms_util.send_future_msg_with_tencent(code=name + suggest, name=name, price=str(price),
-                                                                  suggest=suggest, to=receive_mobile)
                             redis_client.set(name + content, 'msg_content', ex=date_const.ONE_HOUR)
 
                 # 清除可以查询的商品
@@ -215,16 +210,12 @@ def re_exe(interval=10, group_type=None, sort_by=None):
                         update_sql = "update future_basics set low=%.2f, update_remark='%s', update_time=now() " \
                                      "where name like '%s'" % (low, msg_content, '%' + alias + '%')
                         print('--->', name, '更新合约历史最低价!')
-                        sms_util.send_future_msg_with_tencent(code=name + log_type, name=name, price=str(price),
-                                                              suggest=log_type + '看空', to=receive_mobile)
                     if float(high) > float(hist_high) or float(hist_high) == 0:
                         log_type = LOG_TYPE_CONTRACT_NEW_HIGH
                         msg_content = name + '【合约】新高:' + str(high)
                         update_sql = "update future_basics set high=%.2f, update_remark='%s', update_time=now() " \
                                      "where name like '%s'" % (high, msg_content, '%' + alias + '%')
                         print('--->', name, '更新合约历史最高价!')
-                        sms_util.send_future_msg_with_tencent(code=name + log_type, name=name, price=str(price),
-                                                              suggest=log_type + '看多', to=receive_mobile)
 
                     if msg_content is not None:
                         # notify_util.alert(message=msg_content)
