@@ -65,7 +65,6 @@ def format_realtime(df):
     df['per_value'] = df['per_value'].apply(lambda x: str(x) + '')
     df['m_quantity'] = df['m_quantity'].apply(lambda x: str(x) + ':')
     df['m_margin'] = df['m_margin'].apply(lambda x: str(x) + ']')
-
     return df
 
 
@@ -82,6 +81,8 @@ def re_exe(interval=10, group_type=None, sort_by=None):
     # 使用cursor()方法创建一个游标对象
     cursor = db.cursor()
     while True:
+        is_trade_time = (date_util.future_open_time <= date_util.now() < date_util.close_time) or \
+                        (date_util.night_open_time <= date_util.now() < date_util.night_close_time)
         future_basics = future_util.get_future_basics(type=group_type, on_target=on_target)
         future_name_list = list(future_basics['name'])
         codes = ','.join(['nf_' + e for e in list(future_basics['symbol'])])
@@ -137,32 +138,6 @@ def re_exe(interval=10, group_type=None, sort_by=None):
                 future_from_sina.append(alias)
                 # print(info)
 
-                last_price = redis_client.get(name)
-                secs = 120
-                if last_price is None:
-                    # print('set price=', price)
-                    redis_client.set(name, price, ex=secs)
-                else:
-                    last_price = float(last_price)
-                    diff = abs((price - last_price)) / last_price * 100
-                    # print(last_price, price, diff)
-                    if diff > 0.5:
-                        suggest = LOG_TYPE_PRICE_UP + '看多' if price > last_price else LOG_TYPE_PRICE_DOWN + '看空'
-                        content = str(secs) + '秒内快速' + ('拉升' if price > last_price else '下跌') \
-                                  + str(round(diff, 2)) + '%, ' \
-                                  + '价格【' + str(last_price) + '-' + str(price) + '】'
-                        if redis_client.exists(name + content) is False:
-                            # notify_util.alert(message='起来活动一下')
-                            future_util.add_log(name, LOG_TYPE_PRICE_UP if price > last_price else LOG_TYPE_PRICE_DOWN,
-                                                change, content)
-                            is_trade_time = (date_util.future_open_time <= date_util.now() <= date_util.close_time) or \
-                                            (date_util.night_open_time <= date_util.now() <= date_util.night_close_time)
-                            if is_trade_time:
-                                # 信息警告
-                                sms_util.send_future_msg_with_tencent(code=name + suggest, name=name, price=str(price),
-                                                                  suggest=suggest, to=receive_mobile)
-                            redis_client.set(name + content, 'msg_content', ex=date_const.ONE_HOUR)
-
                 # 清除可以查询的商品
                 for goods_name in future_name_list:
                     if goods_name.startswith(alias):
@@ -176,6 +151,7 @@ def re_exe(interval=10, group_type=None, sort_by=None):
                     amount_per_contract = row['amount']
                     limit_in = row['limit']
                     margin_rate = row['margin_std']
+                    alert_on = target_df.loc[index, 'alert_on']
                     alert_prices = target_df.loc[index, 'alert_price']
                     alert_changes = target_df.loc[index, 'alert_change']
                     receive_mobile = target_df.loc[index, 'alert_mobile']
@@ -183,10 +159,15 @@ def re_exe(interval=10, group_type=None, sort_by=None):
                     hist_high = target_df.loc[index, 'high']
 
                     tar_prices = str.split(alert_prices, ',') if alert_prices is not None else None
-                    changes = str.split(alert_changes, ',') if alert_changes is not None and alert_changes != '' \
-                        else None
+                    changes = str.split(alert_changes,
+                                        ',') if alert_changes is not None and alert_changes != '' else None
+
                 price_diff = float(price) - float(pre_settle)
                 change = round(price_diff / float(pre_settle) * 100, 2)
+
+                need_sms = alert_on is not None and alert_on == 1
+                log_price_flash(is_trade_time=is_trade_time, name=name, price=price, change=change, alert_on=need_sms)
+
                 # 合约高低涨跌幅
                 wave_str = '[]'
                 if hist_high > hist_low > 0:
@@ -293,6 +274,33 @@ def re_exe(interval=10, group_type=None, sort_by=None):
     # 关闭游标和数据库的连接
     cursor.close()
     db.close()
+
+
+def log_price_flash(is_trade_time=False, name=None, price=None, change=None, alert_on=False):
+    last_price = redis_client.get(name)
+    secs = 120
+    if last_price is None:
+        # print('set price=', price)
+        redis_client.set(name, price, ex=secs)
+    else:
+        last_price = float(last_price)
+        diff = abs((price - last_price)) / last_price * 100
+        # print(last_price, price, diff)
+        if diff > 0.3:
+            diff_str = str(round(diff, 2)) + '%'
+            suggest = LOG_TYPE_PRICE_UP + diff_str + '看多' if price > last_price \
+                else LOG_TYPE_PRICE_DOWN + diff_str + '看空'
+            content = str(secs) + '秒内快速' + ('拉升' if price > last_price else '下跌') \
+                      + diff_str + ', ' + '价格【' + str(last_price) + '-' + str(price) + '】'
+            if redis_client.exists(name + content) is False:
+                future_util.add_log(name, LOG_TYPE_PRICE_UP if price > last_price else LOG_TYPE_PRICE_DOWN,
+                                    change, content)
+                if is_trade_time and alert_on:
+                    # 信息警告
+                    sms_util.send_future_msg_with_tencent(
+                        code=name + (LOG_TYPE_PRICE_UP if price > last_price else LOG_TYPE_PRICE_DOWN),
+                        name=name, price=str(price), suggest=suggest, to='18507550586')
+                redis_client.set(name + content, 'msg_content', ex=date_const.ONE_HOUR)
 
 
 def alert_trigger(symbol=None, realtime_price=None, prices=None, realtime_change=None, changes=None,
