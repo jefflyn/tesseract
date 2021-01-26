@@ -278,7 +278,7 @@ def re_exe(interval=10, group_type=None, sort_by=None):
 
 def log_price_flash(is_trade_time=False, name=None, price=None, change=None, alert_on=False):
     last_price = redis_client.get(name)
-    secs = 120
+    secs = 90
     if last_price is None:
         # print('set price=', price)
         redis_client.set(name, price, ex=secs)
@@ -301,6 +301,7 @@ def log_price_flash(is_trade_time=False, name=None, price=None, change=None, ale
                         code=name + (LOG_TYPE_PRICE_UP if price > last_price else LOG_TYPE_PRICE_DOWN),
                         name=name, price=str(price), suggest=suggest, to='18507550586')
                 redis_client.set(name + content, 'msg_content', ex=date_const.ONE_HOUR)
+                redis_client.set(name, price, ex=secs)
 
 
 def alert_trigger(symbol=None, realtime_price=None, prices=None, realtime_change=None, changes=None,

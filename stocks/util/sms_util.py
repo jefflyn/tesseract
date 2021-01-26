@@ -57,7 +57,7 @@ def send_future_msg_with_tencent(code=None, name='', price='', suggest='', to=ph
         if code in send_counter.keys() and send_counter[code] > 3:
             print('%s提醒超过3次，今天不再提醒！')
             return
-        result = ssender.send_with_param(86, to, 849005, params, sign=sms_sign, extend="", ext="")
+        # result = ssender.send_with_param(86, to, 849005, params, sign=sms_sign, extend="", ext="")
         send_counter[code] += 1
     except HTTPError as e:
         print(e)
