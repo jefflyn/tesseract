@@ -7,10 +7,9 @@ LOG_TYPE_PRICE_UP = '快速拉升'
 LOG_TYPE_PRICE_DOWN = '快速下跌'
 
 # 商品类型
-ENERGY = '能源'
+ENERGY = '能源化工'
 CHEMICAL1 = '化工1'
 CHEMICAL2 = '化工2'
-CHEMICAL3 = '化工3'
 
 COAL_FERROUS_METAL = '黑色'  # '煤炭\黑色金属'
 PRECIOUS_METAL = '贵金属'
@@ -23,7 +22,6 @@ GOODS_TYPE_MAP = {
     'om': OIL_MATERIAL,
     'ch1': CHEMICAL1,
     'ch2': CHEMICAL2,
-    'ch3': CHEMICAL3,
     'en': ENERGY,
     'bk': COAL_FERROUS_METAL,
     'pm': PRECIOUS_METAL,

@@ -20,6 +20,7 @@ def notify_trigger(symbol=None, price=None, alert_prices=None, alert=True):
     '''
     手动设置提醒告警条件
     :param alert_prices:
+
     :param symbol:
     :param price:
     :param change:
