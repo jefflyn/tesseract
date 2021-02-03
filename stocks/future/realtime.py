@@ -212,6 +212,7 @@ def re_exe(interval=10, group_type=None, sort_by=None):
 
                     if msg_content is not None:
                         # notify_util.alert(message=msg_content)
+                        # 去重
                         if redis_client.exists(msg_content) is False:
                             # notify_util.alert(message='起来活动一下')
                             future_util.add_log(name, log_type, change, msg_content)
@@ -287,6 +288,9 @@ def log_price_flash(is_trade_time=False, name=None, price=None, change=None, ale
     :param alert_on:
     :return:
     '''
+    if is_trade_time is not True:
+        print('未开波~')
+        return
     key = price_flash_key + name
     secs = 90
     redis_client.rpush(key, price)
@@ -342,7 +346,7 @@ def alert_trigger(symbol=None, realtime_price=None, prices=None, realtime_change
     :return:
     '''
     if future_util.is_trade_time() is False:
-        print('not in open time')
+        print('not trade time')
         return
     if prices is not None and prices != '':
         for p in prices:

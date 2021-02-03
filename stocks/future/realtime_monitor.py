@@ -296,7 +296,7 @@ def alert_trigger(symbol=None, realtime_price=None, prices=None, realtime_change
     :return:
     '''
     if future_util.is_trade_time() is False:
-        print('not in open time')
+        print('not trade time')
         return
     if prices is not None and prices != '':
         for p in prices:
