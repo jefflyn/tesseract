@@ -295,9 +295,7 @@ def alert_trigger(symbol=None, realtime_price=None, prices=None, realtime_change
     :param receive_mobile:
     :return:
     '''
-    is_trade_time = (date_util.open_time <= date_util.now() <= date_util.close_time) or \
-                    (date_util.night_open_time <= date_util.now() <= date_util.night_close_time)
-    if is_trade_time is False:
+    if future_util.is_trade_time() is False:
         print('not in open time')
         return
     if prices is not None and prices != '':

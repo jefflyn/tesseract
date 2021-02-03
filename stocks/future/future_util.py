@@ -1,7 +1,27 @@
+import datetime
+
 from stocks.future.future_constants import *
 from stocks.util import date_util
 from stocks.util.db_util import get_db
 from stocks.util.db_util import read_sql
+
+
+def is_trade_time():
+    '''
+    日盘 09:00-15:00
+    夜盘 21:00-23:00
+    :return:
+    '''
+    current_time = date_util.now()
+    day_open_time = datetime.datetime(current_time.year, current_time.month, current_time.day, hour=9, minute=5)
+    day_close_time = datetime.datetime(current_time.year, current_time.month, current_time.day, hour=15, minute=0)
+    night_open_time = datetime.datetime(current_time.year, current_time.month, current_time.day, hour=21, minute=5)
+    night_close_time = datetime.datetime(current_time.year, current_time.month, current_time.day, hour=23, minute=0)
+
+    is_trade_time = (day_open_time <= date_util.now() <= day_close_time) or \
+                    (night_open_time <= date_util.now() <= night_close_time)
+    # print(current_time, day_open_time, day_close_time, night_open_time, night_close_time, is_trade_time)
+    return is_trade_time
 
 
 def get_future_basics(code=None, type=None, night=None, on_target=None):
@@ -60,3 +80,7 @@ def add_log(name, log_type, pct_change, content):
     # 关闭游标和数据库的连接
     cursor.close()
     db.close()
+
+
+if __name__ == '__main__':
+    is_trade_time()

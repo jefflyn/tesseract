@@ -82,8 +82,7 @@ def re_exe(interval=10, group_type=None, sort_by=None):
     # 使用cursor()方法创建一个游标对象
     cursor = db.cursor()
     while True:
-        is_trade_time = (date_util.future_open_time <= date_util.now() < date_util.close_time) or \
-                        (date_util.night_open_time <= date_util.now() < date_util.night_close_time)
+        is_trade_time = future_util.is_trade_time()
         future_basics = future_util.get_future_basics(type=group_type, on_target=on_target)
         future_name_list = list(future_basics['name'])
         codes = ','.join(['nf_' + e for e in list(future_basics['symbol'])])
@@ -235,7 +234,7 @@ def re_exe(interval=10, group_type=None, sort_by=None):
                 realtime_price_info = str(price) + ' ' + realtime_change_str + '%'
                 # print(' ', name, realtime_price_info, str(alert_prices), str(alert_changes), sep=' | ')
                 alert_trigger(symbol=name, realtime_price=price, prices=None, realtime_change=change, changes=changes)
-                notify_trigger(symbol=name, price=price, alert_prices=tar_prices, alert=True)
+                notify_trigger(symbol=name, price=price, alert_prices=tar_prices, alert=need_sms)
 
                 row_list = [name, symbol_code, exchange, price, change, limit_in, bid, ask, low, high,
                             round(position, 2),
@@ -276,33 +275,58 @@ def re_exe(interval=10, group_type=None, sort_by=None):
     cursor.close()
     db.close()
 
+price_flash_key = 'PRICE_FLASH_'
 
 def log_price_flash(is_trade_time=False, name=None, price=None, change=None, alert_on=False):
-    last_price = redis_client.get(name)
+    '''
+    价格快速波动
+    :param is_trade_time:
+    :param name:
+    :param price:
+    :param change:
+    :param alert_on:
+    :return:
+    '''
+    key = price_flash_key + name
     secs = 90
-    if last_price is None:
-        # print('set price=', price)
-        redis_client.set(name, price, ex=secs)
+    redis_client.rpush(key, price)
+    price_len = redis_client.llen(key)
+    if price_len >= secs / 5:
+        last_price = redis_client.lpop(key)
     else:
-        last_price = float(last_price)
-        diff = abs((price - last_price)) / last_price * 100
-        # print(last_price, price, diff)
-        if diff > 0.3:
-            diff_str = str(round(diff, 2)) + '%'
-            suggest = LOG_TYPE_PRICE_UP + diff_str + '看多' if price > last_price \
-                else LOG_TYPE_PRICE_DOWN + diff_str + '看空'
-            content = str(secs) + '秒内快速' + ('拉升' if price > last_price else '下跌') \
-                      + diff_str + ', ' + '价格【' + str(last_price) + '-' + str(price) + '】'
-            if redis_client.exists(name + content) is False:
-                future_util.add_log(name, LOG_TYPE_PRICE_UP if price > last_price else LOG_TYPE_PRICE_DOWN,
-                                    change, content)
-                if is_trade_time and alert_on:
-                    # 信息警告
-                    sms_util.send_future_msg_with_tencent(
-                        code=name + (LOG_TYPE_PRICE_UP if price > last_price else LOG_TYPE_PRICE_DOWN),
-                        name=name, price=str(price), suggest=suggest, to='18507550586')
-                redis_client.set(name + content, 'msg_content', ex=date_const.ONE_HOUR)
-                redis_client.set(name, price, ex=secs)
+        last_price = redis_client.lindex(key, 0)
+    last_price = float(last_price)
+    diff = abs((price - last_price)) / last_price * 100
+    # print(last_price, price, diff)
+    if diff > 0.3:
+        diff_str = str(round(diff, 2)) + '%'
+        suggest = LOG_TYPE_PRICE_UP + diff_str + '看多' if price > last_price \
+            else LOG_TYPE_PRICE_DOWN + diff_str + '看空'
+        blast_tip = '极速！' if price_len <= 8 else '快速'
+        content = str(secs) + '秒' + blast_tip + ('拉升' if price > last_price else '下跌') \
+                  + diff_str + ', ' + '价格【' + str(last_price) + '-' + str(price) + '】'
+        # 添加日志
+        future_util.add_log(name, LOG_TYPE_PRICE_UP if price > last_price else LOG_TYPE_PRICE_DOWN,
+                            change, content)
+
+        # 半小时不超过3次
+        if redis_client.get(name + '_msg_count') is not None and float(redis_client.get(name + '_msg_count')) >= 3:
+            print("该提示超过半小时限制，不再发送信息!")
+            return
+
+        if is_trade_time and alert_on:
+        # if True:
+            # 信息警告
+            suggest_price = round((price + last_price) / 2)
+            sms_util.send_future_msg_with_tencent(
+                code=name + (LOG_TYPE_PRICE_UP if price > last_price else LOG_TYPE_PRICE_DOWN),
+                name=name, price=str(suggest_price), suggest=suggest, to='18507550586')
+            # print(name, suggest_price, suggest)
+            # 删除价格列表，重新获取
+            redis_client.delete(key)
+            redis_client.incr(name + '_msg_count')
+            if float(redis_client.get(name + '_msg_count')) == 3:
+                redis_client.expire(name + '_msg_count', date_const.ONE_MINUTE * 30)
 
 
 def alert_trigger(symbol=None, realtime_price=None, prices=None, realtime_change=None, changes=None,
@@ -317,9 +341,7 @@ def alert_trigger(symbol=None, realtime_price=None, prices=None, realtime_change
     :param receive_mobile:
     :return:
     '''
-    is_trade_time = (date_util.future_open_time <= date_util.now() <= date_util.close_time) or \
-                    (date_util.night_open_time <= date_util.now() <= date_util.night_close_time)
-    if is_trade_time is False:
+    if future_util.is_trade_time() is False:
         print('not in open time')
         return
     if prices is not None and prices != '':
@@ -399,13 +421,18 @@ def alert_trigger(symbol=None, realtime_price=None, prices=None, realtime_change
                         print(e)
 
 
+def delete_price_flash_cached():
+    list_keys = redis_client.keys(price_flash_key + "*")
+    for key in list_keys:
+        redis_client.delete(key)
+
+
 if __name__ == '__main__':
     """
     python realtime.py argv1 argv2[c|p]
     nohup /usr/local/bin/redis-server /usr/local/etc/redis.conf &
     nohup /usr/local/bin/redis-server /etc/redis.conf &
     """
-
     sort = None
     if len(argv) > 1 and argv[1] in group_list:
         group = argv[1]
@@ -413,4 +440,6 @@ if __name__ == '__main__':
             sort = argv[2]
     else:
         group = None
+    delete_price_flash_cached()
+
     re_exe(3, group_type=group, sort_by=sort)
