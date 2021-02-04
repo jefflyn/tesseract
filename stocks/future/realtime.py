@@ -14,47 +14,19 @@ from stocks.util.db_util import get_db
 from stocks.util.redis_util import redis_client
 
 group_list = ['tar', 'all', 'ag', 'om', 'ch1', 'ch2', 'ch3', 'bk', 'en', 'pm', 'nfm', 'fi']
-
-
-def notify_trigger(symbol=None, price=None, alert_prices=None, alert=True):
-    '''
-    手动设置提醒告警条件
-    :param alert_prices:
-
-    :param symbol:
-    :param price:
-    :param change:
-    :param alert:
-    :return:
-    '''
-    if alert_prices is None or len(alert_prices) == 0:
-        return
-    if symbol is not None:
-        msg_content = symbol + '到达' + str(price)
-        notify_prices = [abs(float(e)) for e in alert_prices if e != '']
-        target_price_len = len(notify_prices)
-        if target_price_len < 2:
-            # notify_util.notify(content=symbol + ':价格设置至少[2个]')
-            # print('⚠️' + symbol + ':价格设置至少[2个]')
-            return
-
-        if price in notify_prices:
-            notify_util.notify(content=msg_content)
-        if alert:
-            first_price = float(alert_prices[0])
-            before_last_price = float(alert_prices[target_price_len - 2])
-            last_price = float(alert_prices[target_price_len - 1])
-
-            # 做空方向
-            if first_price < 0:
-                if price <= abs(first_price) or price <= abs(before_last_price) or price >= abs(last_price):
-                    notify_util.alert(message=msg_content)
-            else:
-                if price >= first_price or price >= abs(before_last_price) or price <= abs(last_price):
-                    notify_util.alert(message=msg_content)
+price_flash_key = 'PRICE_FLASH_'
+# 建立数据库连接
+db = get_db()
+# 使用cursor()方法创建一个游标对象
+cursor = db.cursor()
 
 
 def format_realtime(df):
+    '''
+    格式化数据
+    :param df:
+    :return:
+    '''
     # format data
     df['low'] = df['low'].apply(lambda x: '_' + str(round(float(x), 2)))
     df['high'] = df['high'].apply(lambda x: '^' + str(round(float(x), 2)))
@@ -71,16 +43,13 @@ def format_realtime(df):
 
 def re_exe(interval=10, group_type=None, sort_by=None):
     """
+    执行入口
     http://hq.sinajs.cn/list=nf_SA2101
     :param interval:
     :param group_type:
     :return:
     """
     on_target = (group_type is None or group_type == 'tar')
-    # 建立数据库连接
-    db = get_db()
-    # 使用cursor()方法创建一个游标对象
-    cursor = db.cursor()
     while True:
         is_trade_time = future_util.is_trade_time()
         future_basics = future_util.get_future_basics(type=group_type, on_target=on_target)
@@ -164,66 +133,10 @@ def re_exe(interval=10, group_type=None, sort_by=None):
 
                 price_diff = float(price) - float(pre_settle)
                 change = round(price_diff / float(pre_settle) * 100, 2)
-
-                need_sms = alert_on is not None and alert_on == 1
-                log_price_flash(is_trade_time=is_trade_time, name=name, price=price, change=change, alert_on=need_sms)
-
-                # 合约高低涨跌幅
-                wave_str = '[]'
-                if hist_high > hist_low > 0:
-                    low_change = round((float(price) - float(hist_low)) / float(hist_low) * 100, 2)
-                    high_change = round((float(price) - float(hist_high)) / float(hist_high) * 100, 2)
-                    wave_str = '[' + str(round(hist_low, 0)) + ' +' + str(low_change) + '%, ' \
-                               + str(round(hist_high, 0)) + ' ' + str(high_change) + '%]'
                 value_per_contract = round(float(price) * amount_per_contract, 2)
                 margin_per_contract = round(value_per_contract * margin_rate / 100, 2)
-                try:
-                    contract_num_for_1m = int(1000000 / value_per_contract) + 1
-                    margin_for_1m = round(contract_num_for_1m * value_per_contract * margin_rate / 100, 2)
-                    msg_content = None
-                    update_sql = None
-                    log_type = ''
-                    if price <= float(low):
-                        log_type = LOG_TYPE_DAY_NEW_LOW
-                        msg_content = name + '【日内】新低:' + str(low)
-                        update_sql = "update future_basics set update_remark='%s' " \
-                                     "where name like '%s'" % (msg_content, '%' + alias + '%')
-                    if price >= float(high):
-                        log_type = LOG_TYPE_DAY_NEW_HIGH
-                        msg_content = name + '【日内】新高:' + str(high)
-                        update_sql = "update future_basics set update_remark='%s' " \
-                                     "where name like '%s'" % (msg_content, '%' + alias + '%')
-                    if float(low) < float(hist_low) or float(hist_low) == 0:
-                        log_type = LOG_TYPE_CONTRACT_NEW_LOW
-                        msg_content = name + '【合约】新低:' + str(low)
-                        update_sql = "update future_basics set low=%.2f, update_remark='%s', update_time=now() " \
-                                     "where name like '%s'" % (low, msg_content, '%' + alias + '%')
-                        print('--->', name, '更新合约历史最低价!')
-                        sms_util.send_future_msg_with_tencent(code=name + log_type, name=name, price=str(price),
-                                                              suggest=log_type + '看空', to=receive_mobile)
-                    if float(high) > float(hist_high) or float(hist_high) == 0:
-                        log_type = LOG_TYPE_CONTRACT_NEW_HIGH
-                        msg_content = name + '【合约】新高:' + str(high)
-                        update_sql = "update future_basics set high=%.2f, update_remark='%s', update_time=now() " \
-                                     "where name like '%s'" % (high, msg_content, '%' + alias + '%')
-                        print('--->', name, '更新合约历史最高价!')
-                        sms_util.send_future_msg_with_tencent(code=name + log_type, name=name, price=str(price),
-                                                              suggest=log_type + '看多', to=receive_mobile)
-
-                    if msg_content is not None:
-                        # notify_util.alert(message=msg_content)
-                        # 去重
-                        if redis_client.exists(msg_content) is False:
-                            # notify_util.alert(message='起来活动一下')
-                            future_util.add_log(name, log_type, change, msg_content)
-                            redis_client.set(msg_content, 'msg_content', ex=date_const.ONE_HOUR)
-
-                    if update_sql is not None:
-                        cursor.execute(update_sql)
-                        db.commit()
-                except Exception as err:
-                    print("  >>>error:", name, "数据有误:", info, err)
-                    db.rollback()
+                contract_num_for_1m = int(1000000 / value_per_contract) + 1
+                margin_for_1m = round(contract_num_for_1m * value_per_contract * margin_rate / 100, 2)
 
                 position = 0
                 if high != low:
@@ -231,12 +144,28 @@ def re_exe(interval=10, group_type=None, sort_by=None):
                 elif high == low > price:
                     position = 100
 
-                realtime_change_str = '+' + str(round(change, 2)) if change > 0 else str(round(change, 2))
-                realtime_price_info = str(price) + ' ' + realtime_change_str + '%'
-                # print(' ', name, realtime_price_info, str(alert_prices), str(alert_changes), sep=' | ')
-                alert_trigger(symbol=name, realtime_price=price, prices=None, realtime_change=change, changes=changes)
-                notify_trigger(symbol=name, price=price, alert_prices=tar_prices, alert=need_sms)
+                wave_str = '[]'
+                if hist_high > hist_low > 0:
+                    low_change = round((float(price) - float(hist_low)) / float(hist_low) * 100, 2)
+                    high_change = round((float(price) - float(hist_high)) / float(hist_high) * 100, 2)
+                    wave_str = '[' + str(round(hist_low, 0)) + ' +' + str(low_change) + '%, ' \
+                               + str(round(hist_high, 0)) + ' ' + str(high_change) + '%]'
 
+                # ------ 提醒 -----
+                if is_trade_time is not True:
+                    print('未开波~')
+                    delete_price_flash_cached()
+                else:
+                    need_sms = alert_on is not None and alert_on == 1
+                    # 价格异动触发提醒
+                    trigger_price_flash(is_trade_time=is_trade_time, name=name, price=price, change=change,
+                                        alert_on=need_sms)
+                    # 合约高低涨跌幅 触发提醒
+                    trigger_new_high_low(name, alias, price, change, high, low, hist_high, hist_low)
+                    trigger_price_change_msg(symbol=name, realtime_price=price, prices=None, realtime_change=change, changes=changes)
+                    trigger_price_notify(symbol=name, price=price, alert_prices=tar_prices, alert=need_sms)
+
+                # 输出数据
                 row_list = [name, symbol_code, exchange, price, change, limit_in, bid, ask, low, high,
                             round(position, 2),
                             str(round(high - low, 2)) + '^' + str(round((high - low) / high * 100, 2)) + '%',
@@ -272,15 +201,8 @@ def re_exe(interval=10, group_type=None, sort_by=None):
                 print(tuple(future_name_list), '查无结果!')
             time.sleep(interval)
 
-    # 关闭游标和数据库的连接
-    cursor.close()
-    db.close()
 
-
-price_flash_key = 'PRICE_FLASH_'
-
-
-def log_price_flash(is_trade_time=False, name=None, price=None, change=None, alert_on=False):
+def trigger_price_flash(is_trade_time=False, name=None, price=None, change=None, alert_on=False):
     '''
     价格快速波动
     :param is_trade_time:
@@ -290,10 +212,6 @@ def log_price_flash(is_trade_time=False, name=None, price=None, change=None, ale
     :param alert_on:
     :return:
     '''
-    if is_trade_time is not True:
-        print('未开波~')
-        delete_price_flash_cached()
-        return
     key = price_flash_key + name
     secs = 90
     redis_client.rpush(key, price)
@@ -328,10 +246,70 @@ def log_price_flash(is_trade_time=False, name=None, price=None, change=None, ale
             redis_client.delete(key)
 
 
-def alert_trigger(symbol=None, realtime_price=None, prices=None, realtime_change=None, changes=None,
-                  receive_mobile='18507550586'):
+def trigger_new_high_low(name, alias, price, change, high, low, hist_high, hist_low):
     '''
-    短信提醒
+    价格新高新低
+    :param name:
+    :param alias:
+    :param price:
+    :param change:
+    :param high:
+    :param low:
+    :param hist_high:
+    :param hist_low:
+    :return:
+    '''
+    try:
+        msg_content = None
+        update_sql = None
+        log_type = ''
+        if price <= float(low):
+            log_type = LOG_TYPE_DAY_NEW_LOW
+            msg_content = name + '【日内】新低:' + str(low)
+            update_sql = "update future_basics set update_remark='%s' " \
+                         "where name like '%s'" % (msg_content, '%' + alias + '%')
+        if price >= float(high):
+            log_type = LOG_TYPE_DAY_NEW_HIGH
+            msg_content = name + '【日内】新高:' + str(high)
+            update_sql = "update future_basics set update_remark='%s' " \
+                         "where name like '%s'" % (msg_content, '%' + alias + '%')
+        if float(low) < float(hist_low) or float(hist_low) == 0:
+            log_type = LOG_TYPE_CONTRACT_NEW_LOW
+            msg_content = name + '【合约】新低:' + str(low)
+            update_sql = "update future_basics set low=%.2f, update_remark='%s', update_time=now() " \
+                         "where name like '%s'" % (low, msg_content, '%' + alias + '%')
+            print('--->', name, '更新合约历史最低价!')
+            sms_util.send_future_msg_with_tencent(code=name + log_type, name=name, price=str(price),
+                                                  suggest=log_type + '看空')
+        if float(high) > float(hist_high) or float(hist_high) == 0:
+            log_type = LOG_TYPE_CONTRACT_NEW_HIGH
+            msg_content = name + '【合约】新高:' + str(high)
+            update_sql = "update future_basics set high=%.2f, update_remark='%s', update_time=now() " \
+                         "where name like '%s'" % (high, msg_content, '%' + alias + '%')
+            print('--->', name, '更新合约历史最高价!')
+            sms_util.send_future_msg_with_tencent(code=name + log_type, name=name, price=str(price),
+                                                  suggest=log_type + '看多')
+
+        if msg_content is not None:
+            # notify_util.alert(message=msg_content)
+            # 去重
+            if redis_client.exists(msg_content) is False:
+                # notify_util.alert(message='起来活动一下')
+                future_util.add_log(name, log_type, change, msg_content)
+                redis_client.set(msg_content, 'msg_content', ex=date_const.ONE_HOUR)
+
+        if update_sql is not None:
+            cursor.execute(update_sql)
+            db.commit()
+    except Exception as err:
+        print("  >>>error:", name, "数据有误:", err)
+        db.rollback()
+
+
+def trigger_price_change_msg(symbol=None, realtime_price=None, prices=None, realtime_change=None, changes=None,
+                             receive_mobile='18507550586'):
+    '''
+    短信提醒 价格、涨跌幅配置
     :param symbol:
     :param realtime_price:
     :param prices:
@@ -340,9 +318,6 @@ def alert_trigger(symbol=None, realtime_price=None, prices=None, realtime_change
     :param receive_mobile:
     :return:
     '''
-    if future_util.is_trade_time() is False:
-        print('not trade time')
-        return
     if prices is not None and prices != '':
         for p in prices:
             if p == '':
@@ -360,7 +335,7 @@ def alert_trigger(symbol=None, realtime_price=None, prices=None, realtime_change
                         # send msg
                         t_msg = sms_util.send_msg_with_tencent(name=name_format, price=price_format, to=receive_mobile)
                         if t_msg is not None:
-                            redis_client.set(redis_key, symbol + str(realtime_price), ex=date_const.ONE_MONTH * 3)
+                            redis_client.set(redis_key, symbol + str(realtime_price), ex=date_const.ONE_MONTH)
                         print(t_msg)
                     except Exception as e:
                         print(e)
@@ -376,7 +351,7 @@ def alert_trigger(symbol=None, realtime_price=None, prices=None, realtime_change
                         # send msg
                         t_msg = sms_util.send_msg_with_tencent(name=name_format, price=price_format, to=receive_mobile)
                         if t_msg is not None:
-                            redis_client.set(redis_key, symbol + str(realtime_price), ex=date_const.ONE_MONTH * 3)
+                            redis_client.set(redis_key, symbol + str(realtime_price), ex=date_const.ONE_MONTH)
                         print(t_msg)
                     except Exception as e:
                         print(e)
@@ -398,7 +373,7 @@ def alert_trigger(symbol=None, realtime_price=None, prices=None, realtime_change
                         # send msg
                         t_msg = sms_util.send_msg_with_tencent(name=name_format, price=price_format, to=receive_mobile)
                         if t_msg is not None:
-                            redis_client.set(redis_key, value, ex=date_const.ONE_MONTH * 3)
+                            redis_client.set(redis_key, value, ex=date_const.ONE_MONTH)
                         print(t_msg)
                     except Exception as e:
                         print(e)
@@ -414,16 +389,60 @@ def alert_trigger(symbol=None, realtime_price=None, prices=None, realtime_change
                         # send msg
                         t_msg = sms_util.send_msg_with_tencent(name=name_format, price=price_format, to=receive_mobile)
                         if t_msg is not None:
-                            redis_client.set(redis_key, value, ex=date_const.ONE_MONTH * 3)
+                            redis_client.set(redis_key, value, ex=date_const.ONE_MONTH)
                         print(t_msg)
                     except Exception as e:
                         print(e)
 
 
+def trigger_price_notify(symbol=None, price=None, alert_prices=None, alert=True):
+    '''
+    通知提示 手动设置价格
+    :param alert_prices:
+
+    :param symbol:
+    :param price:
+    :param alert: 是否开启弹窗
+    :return:
+    '''
+    if alert_prices is None or len(alert_prices) == 0:
+        return
+    if symbol is not None:
+        msg_content = symbol + '到达' + str(price)
+        notify_prices = [abs(float(e)) for e in alert_prices if e != '']
+        target_price_len = len(notify_prices)
+        if target_price_len < 2:
+            # notify_util.notify(content=symbol + ':价格设置至少[2个]')
+            # print('⚠️' + symbol + ':价格设置至少[2个]')
+            return
+
+        if price in notify_prices:
+            notify_util.notify(content=msg_content)
+        if alert:
+            first_price = float(alert_prices[0])
+            before_last_price = float(alert_prices[target_price_len - 2])
+            last_price = float(alert_prices[target_price_len - 1])
+
+            # 做空方向
+            if first_price < 0:
+                if price <= abs(first_price) or price <= abs(before_last_price) or price >= abs(last_price):
+                    notify_util.alert(message=msg_content)
+            else:
+                if price >= first_price or price >= abs(before_last_price) or price <= abs(last_price):
+                    notify_util.alert(message=msg_content)
+
+
 def delete_price_flash_cached():
+    '''
+    删除价格异动缓存
+    :return:
+    '''
     list_keys = redis_client.keys(price_flash_key + "*")
     for key in list_keys:
         redis_client.delete(key)
+
+
+
 
 
 if __name__ == '__main__':

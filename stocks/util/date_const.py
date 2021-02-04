@@ -3,7 +3,7 @@ import arrow
 utc = arrow.utcnow()
 local = utc.to('local')
 
-ONE_MINUTE = 60 * 60
+ONE_MINUTE = 60
 ONE_HOUR = ONE_MINUTE * 60
 ONE_DAY = ONE_HOUR * 24
 ONE_WEEK = ONE_DAY * 7
