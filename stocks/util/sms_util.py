@@ -2,6 +2,8 @@ from qcloudsms_py import SmsSingleSender
 from qcloudsms_py.httpclient import HTTPError
 from twilio.rest import Client
 
+from stocks.util import date_const
+from stocks.util.redis_util import redis_client
 
 # 短信应用SDK AppID
 appid = 1400185234  # SDK AppID是1400开头
@@ -57,6 +59,13 @@ def send_future_msg_with_tencent(code=None, name='', price='', suggest='', to=ph
         if code in send_counter.keys() and send_counter[code] > 3:
             print('%s提醒超过3次，今天不再提醒！')
             return
+
+        redis_client.incr('MSG_COUNT_' + name)
+        if float(redis_client.get('MSG_COUNT_' + name)) >= 3:
+            print("该提示超过限制，不再发送信息!")
+            redis_client.expire('MSG_COUNT_' + name, date_const.ONE_MINUTE * 15)
+            return
+
         result = ssender.send_with_param(86, to, 849005, params, sign=sms_sign, extend="", ext="")
         send_counter[code] += 1
     except HTTPError as e:

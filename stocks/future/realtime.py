@@ -276,7 +276,9 @@ def re_exe(interval=10, group_type=None, sort_by=None):
     cursor.close()
     db.close()
 
+
 price_flash_key = 'PRICE_FLASH_'
+
 
 def log_price_flash(is_trade_time=False, name=None, price=None, change=None, alert_on=False):
     '''
@@ -290,6 +292,7 @@ def log_price_flash(is_trade_time=False, name=None, price=None, change=None, ale
     '''
     if is_trade_time is not True:
         print('未开波~')
+        delete_price_flash_cached()
         return
     key = price_flash_key + name
     secs = 90
@@ -313,11 +316,6 @@ def log_price_flash(is_trade_time=False, name=None, price=None, change=None, ale
         future_util.add_log(name, LOG_TYPE_PRICE_UP if price > last_price else LOG_TYPE_PRICE_DOWN,
                             change, content)
 
-        # 半小时不超过3次
-        if redis_client.get(name + '_msg_count') is not None and float(redis_client.get(name + '_msg_count')) >= 3:
-            print("该提示超过半小时限制，不再发送信息!")
-            return
-
         if is_trade_time and alert_on:
         # if True:
             # 信息警告
@@ -328,9 +326,6 @@ def log_price_flash(is_trade_time=False, name=None, price=None, change=None, ale
             # print(name, suggest_price, suggest)
             # 删除价格列表，重新获取
             redis_client.delete(key)
-            redis_client.incr(name + '_msg_count')
-            if float(redis_client.get(name + '_msg_count')) == 3:
-                redis_client.expire(name + '_msg_count', date_const.ONE_MINUTE * 30)
 
 
 def alert_trigger(symbol=None, realtime_price=None, prices=None, realtime_change=None, changes=None,
