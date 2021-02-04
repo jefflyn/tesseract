@@ -216,20 +216,36 @@ def trigger_price_flash(is_trade_time=False, name=None, price=None, change=None,
     secs = 90
     redis_client.rpush(key, price)
     price_len = redis_client.llen(key)
-    if price_len >= secs / 5:
+    # [99999999|99999999] x
+    steps = secs / 5
+    if price_len >= steps:
         last_price = redis_client.lpop(key)
     else:
         last_price = redis_client.lindex(key, 0)
+    blast_tip = ''
+    if price_len > steps / 2:
+        # 取FIFO队列后半价格
+        late_prices = redis_client.lrange(key, int(steps / 2), price_len)
+        max_price = max(late_prices)
+        min_price = min(late_prices)
+        if max_price != min_price:
+            diff_max = abs((price - max_price)) / max_price * 100
+            diff_min = abs((price - min_price)) / min_price * 100
+        else:
+            diff_max = abs((price - max_price)) / max_price * 100
+        if diff_max >= 0.33 or diff_min >= 0.33:
+            blast_tip = '快速'
+
     last_price = float(last_price)
     diff = abs((price - last_price)) / last_price * 100
     # print(last_price, price, diff)
-    if diff > 0.3:
+    if diff >= 0.33 or blast_tip != '':
         diff_str = str(round(diff, 2)) + '%'
-        suggest = LOG_TYPE_PRICE_UP + diff_str + '看多' if price > last_price \
-            else LOG_TYPE_PRICE_DOWN + diff_str + '看空'
-        blast_tip = '极速！' if price_len <= 8 else '快速'
-        content = str(secs) + '秒' + blast_tip + ('拉升' if price > last_price else '下跌') \
-                  + diff_str + ', ' + '价格【' + str(last_price) + '-' + str(price) + '】'
+        suggest = '看多:' + blast_tip + LOG_TYPE_PRICE_UP + diff_str if price > last_price \
+            else '看空:' + blast_tip + LOG_TYPE_PRICE_DOWN + diff_str
+
+        content = str(secs) + '秒' + (LOG_TYPE_PRICE_UP if price > last_price else LOG_TYPE_PRICE_DOWN) \
+            + diff_str + ', ' + '价格【' + str(last_price) + '-' + str(price) + '】'
         # 添加日志
         future_util.add_log(name, LOG_TYPE_PRICE_UP if price > last_price else LOG_TYPE_PRICE_DOWN,
                             change, content)
@@ -280,7 +296,7 @@ def trigger_new_high_low(name, alias, price, change, high, low, hist_high, hist_
                          "where name like '%s'" % (low, msg_content, '%' + alias + '%')
             print('--->', name, '更新合约历史最低价!')
             sms_util.send_future_msg_with_tencent(code=name + log_type, name=name, price=str(price),
-                                                  suggest=log_type + '看空')
+                                                  suggest='看空:' + log_type)
         if float(high) > float(hist_high) or float(hist_high) == 0:
             log_type = LOG_TYPE_CONTRACT_NEW_HIGH
             msg_content = name + '【合约】新高:' + str(high)
@@ -288,7 +304,7 @@ def trigger_new_high_low(name, alias, price, change, high, low, hist_high, hist_
                          "where name like '%s'" % (high, msg_content, '%' + alias + '%')
             print('--->', name, '更新合约历史最高价!')
             sms_util.send_future_msg_with_tencent(code=name + log_type, name=name, price=str(price),
-                                                  suggest=log_type + '看多')
+                                                  suggest='看多:' + log_type)
 
         if msg_content is not None:
             # notify_util.alert(message=msg_content)
@@ -440,9 +456,6 @@ def delete_price_flash_cached():
     list_keys = redis_client.keys(price_flash_key + "*")
     for key in list_keys:
         redis_client.delete(key)
-
-
-
 
 
 if __name__ == '__main__':
