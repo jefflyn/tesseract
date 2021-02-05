@@ -245,7 +245,8 @@ def trigger_price_flash(is_trade_time=False, name=None, price=None, change=None,
         suggest = '看多:' + blast_tip + LOG_TYPE_PRICE_UP + diff_str if price > last_price \
             else '看空:' + blast_tip + LOG_TYPE_PRICE_DOWN + diff_str
 
-        content = str(secs) + '秒' + (LOG_TYPE_PRICE_UP if price > last_price else LOG_TYPE_PRICE_DOWN) \
+        content = str(secs) + '秒' + (blast_tip + LOG_TYPE_PRICE_UP if price > last_price
+                                     else blast_tip + LOG_TYPE_PRICE_DOWN) \
             + diff_str + ', ' + '价格【' + str(last_price) + '-' + str(price) + '】'
         # 添加日志
         future_util.add_log(name, LOG_TYPE_PRICE_UP if price > last_price else LOG_TYPE_PRICE_DOWN,
