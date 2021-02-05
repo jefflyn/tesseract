@@ -226,21 +226,22 @@ def trigger_price_flash(is_trade_time=False, name=None, price=None, change=None,
     if price_len > steps / 2:
         # 取FIFO队列后半价格
         late_prices = redis_client.lrange(key, int(steps / 2), price_len)
-        max_price = max(late_prices)
-        min_price = min(late_prices)
+        max_price = float(max(late_prices))
+        min_price = float(min(late_prices))
+        diff_min = 0
         if max_price != min_price:
             diff_max = abs((price - max_price)) / max_price * 100
             diff_min = abs((price - min_price)) / min_price * 100
         else:
             diff_max = abs((price - max_price)) / max_price * 100
         if diff_max >= 0.33 or diff_min >= 0.33:
-            blast_tip = '快速'
+            blast_tip = '⚠️'
 
     last_price = float(last_price)
     diff = abs((price - last_price)) / last_price * 100
     # print(last_price, price, diff)
     if diff >= 0.33 or blast_tip != '':
-        diff_str = str(round(diff, 2)) + '%'
+        diff_str = str(round(diff, 2)).replace('0.', '.') + '%'
         suggest = '看多:' + blast_tip + LOG_TYPE_PRICE_UP + diff_str if price > last_price \
             else '看空:' + blast_tip + LOG_TYPE_PRICE_DOWN + diff_str
 
