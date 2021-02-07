@@ -153,7 +153,7 @@ def re_exe(interval=10, group_type=None, sort_by=None):
 
                 # ------ 提醒 -----
                 if is_trade_time is not True:
-                    print('未开波~')
+                    print(date_util.get_now(), '~未开波~')
                     delete_price_flash_cached()
                 else:
                     need_sms = alert_on is not None and alert_on == 1
