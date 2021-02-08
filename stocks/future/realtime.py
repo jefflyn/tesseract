@@ -235,7 +235,7 @@ def trigger_price_flash(is_trade_time=False, name=None, price=None, change=None,
         else:
             diff_max = abs((price - max_price)) / max_price * 100
         if diff_max >= 0.33 or diff_min >= 0.33:
-            blast_tip = '￥'
+            blast_tip = '￥$'
 
     last_price = float(last_price)
     diff = abs((price - last_price)) / last_price * 100
@@ -244,7 +244,7 @@ def trigger_price_flash(is_trade_time=False, name=None, price=None, change=None,
         diff_str = str(round(diff, 2)) + '%'
         is_up = price > last_price
         suggest_price = round((price + last_price) / 2)
-        position_param = str(position) + '，' + blast_tip + (LOG_TYPE_PRICE_UP if is_up else LOG_TYPE_PRICE_DOWN) + diff_str + '。'
+        position_param = str(position) + '，' + blast_tip + (LOG_TYPE_PRICE_UP if is_up else LOG_TYPE_PRICE_DOWN) + diff_str
         suggest_param = ('看多，参考价' if is_up else '看空，参考价') + str(suggest_price)
 
         content = str(secs) + '秒' + (blast_tip + LOG_TYPE_PRICE_UP if price > last_price
