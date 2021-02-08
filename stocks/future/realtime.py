@@ -240,7 +240,7 @@ def trigger_price_flash(is_trade_time=False, name=None, price=None, change=None,
     last_price = float(last_price)
     diff = abs((price - last_price)) / last_price * 100
     # print(last_price, price, diff)
-    if diff >= 0.33 or blast_tip != '':
+    if diff >= 0.5 or blast_tip != '':
         diff_str = str(round(diff, 2)) + '%'
         is_up = price > last_price
         suggest_price = round((price + last_price) / 2)
@@ -325,7 +325,7 @@ def trigger_new_high_low(name, alias, price, change, high, low, hist_high, hist_
             if redis_client.exists(msg_content) is False:
                 # notify_util.alert(message='起来活动一下')
                 future_util.add_log(name, log_type, change, msg_content)
-                redis_client.set(msg_content, 'msg_content', ex=date_const.ONE_HOUR)
+                redis_client.set(msg_content, str(date_util.get_now()), ex=date_const.ONE_HOUR)
 
         if update_sql is not None:
             cursor.execute(update_sql)
