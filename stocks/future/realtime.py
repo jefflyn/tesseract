@@ -213,7 +213,7 @@ def trigger_price_flash(is_trade_time=False, name=None, price=None, change=None,
     :return:
     '''
     key = price_flash_key + name
-    secs = 90
+    secs = 60
     redis_client.rpush(key, price)
     price_len = redis_client.llen(key)
     # [99999999|99999999] x
@@ -240,7 +240,7 @@ def trigger_price_flash(is_trade_time=False, name=None, price=None, change=None,
     last_price = float(last_price)
     diff = abs((price - last_price)) / last_price * 100
     # print(last_price, price, diff)
-    if diff >= 0.5 or blast_tip != '':
+    if diff >= 0.33 or blast_tip != '':
         diff_str = str(round(diff, 2)) + '%'
         is_up = price > last_price
         suggest_price = round((price + last_price) / 2)
@@ -257,9 +257,8 @@ def trigger_price_flash(is_trade_time=False, name=None, price=None, change=None,
         if is_trade_time and alert_on:
         # if True:
             # 信息警告
-            sms_util.send_future_msg_with_tencent(
-                code=name + (LOG_TYPE_PRICE_UP if price > last_price else LOG_TYPE_PRICE_DOWN),
-                name=name, price=position_param, suggest=suggest_param, to='18507550586')
+            sms_util.send_future_msg_with_tencent(name=name, price=position_param,
+                                                  suggest=suggest_param, to='18507550586')
             # print(name, suggest_price, suggest)
         # 删除价格列表，重新获取
         redis_client.delete(key)
