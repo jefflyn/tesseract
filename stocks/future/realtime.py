@@ -302,7 +302,7 @@ def trigger_new_high_low(name, alias, price, change, high, low, hist_high, hist_
                 print("合约历史最低价提示超过限制，不再发送信息!")
                 return
             sms_util.send_future_msg_with_tencent(code=name + log_type, name=name, price=log_type,
-                                                  suggest='看空，参考价' + str(price))
+                                                  suggest='看空' + str(price))
             redis_client.incr('CONTRACT_NEW_LOW_' + name)
             redis_client.expire('CONTRACT_NEW_LOW_' + name, date_const.ONE_MINUTE * 30)
         if float(high) > float(hist_high) or float(hist_high) == 0:
@@ -315,7 +315,7 @@ def trigger_new_high_low(name, alias, price, change, high, low, hist_high, hist_
                 print("合约历史最高价提示超过限制，不再发送信息!")
                 return
             sms_util.send_future_msg_with_tencent(code=name + log_type, name=name, price=log_type,
-                                                  suggest='看多，参考价' + str(price))
+                                                  suggest='看多' + str(price))
             redis_client.incr('CONTRACT_NEW_HIGH_' + name)
             redis_client.expire('CONTRACT_NEW_HIGH_' + name, date_const.ONE_MINUTE * 30)
         if msg_content is not None:
