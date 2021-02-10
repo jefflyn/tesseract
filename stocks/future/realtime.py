@@ -157,8 +157,14 @@ def re_exe(interval=10, group_type=None, sort_by=None):
                     delete_price_flash_cached()
                 else:
                     need_sms = alert_on is not None and alert_on == 1
+                    high_low_flag = ''
+                    if float(high) > float(hist_high) or float(hist_high) == 0:
+                        high_low_flag = LOG_TYPE_CONTRACT_NEW_HIGH
+                    if float(low) < float(hist_low) or float(hist_low) == 0:
+                        high_low_flag = LOG_TYPE_CONTRACT_NEW_LOW
+
                     # 价格异动触发提醒
-                    trigger_price_flash(is_trade_time=is_trade_time, name=name, price=price,
+                    trigger_price_flash(is_trade_time=is_trade_time, name=name + high_low_flag, price=price,
                                         change=change, position=round(position), alert_on=need_sms)
                     # 合约高低涨跌幅 触发提醒
                     trigger_new_high_low(name, alias, price, change, high, low, hist_high, hist_low)
@@ -298,26 +304,26 @@ def trigger_new_high_low(name, alias, price, change, high, low, hist_high, hist_
             update_sql = "update future_basics set low=%.2f, update_remark='%s', update_time=now() " \
                          "where name like '%s'" % (low, msg_content, '%' + alias + '%')
             print('--->', name, '更新合约历史最低价!')
-            if redis_client.get('CONTRACT_NEW_LOW_' + name) is not None and float(redis_client.get('CONTRACT_NEW_LOW_' + name)) >= 1:
-                print("合约历史最低价提示超过限制，不再发送信息!")
-                return
-            sms_util.send_future_msg_with_tencent(code=name + log_type, name=name, price=log_type,
-                                                  suggest='看空' + str(price))
-            redis_client.incr('CONTRACT_NEW_LOW_' + name)
-            redis_client.expire('CONTRACT_NEW_LOW_' + name, date_const.ONE_MINUTE * 30)
+            # if redis_client.get('CONTRACT_NEW_LOW_' + name) is not None and float(redis_client.get('CONTRACT_NEW_LOW_' + name)) >= 1:
+            #     print("合约历史最低价提示超过限制，不再发送信息!")
+            #     return
+            # sms_util.send_future_msg_with_tencent(code=name + log_type, name=name, price=log_type,
+            #                                       suggest='看空' + str(price))
+            # redis_client.incr('CONTRACT_NEW_LOW_' + name)
+            # redis_client.expire('CONTRACT_NEW_LOW_' + name, date_const.ONE_MINUTE * 30)
         if float(high) > float(hist_high) or float(hist_high) == 0:
             log_type = LOG_TYPE_CONTRACT_NEW_HIGH
             msg_content = name + '【合约】新高:' + str(high)
             update_sql = "update future_basics set high=%.2f, update_remark='%s', update_time=now() " \
                          "where name like '%s'" % (high, msg_content, '%' + alias + '%')
             print('--->', name, '更新合约历史最高价!')
-            if redis_client.get('CONTRACT_NEW_HIGH_' + name) is not None and float(redis_client.get('CONTRACT_NEW_HIGH_' + name)) >= 1:
-                print("合约历史最高价提示超过限制，不再发送信息!")
-                return
-            sms_util.send_future_msg_with_tencent(code=name + log_type, name=name, price=log_type,
-                                                  suggest='看多' + str(price))
-            redis_client.incr('CONTRACT_NEW_HIGH_' + name)
-            redis_client.expire('CONTRACT_NEW_HIGH_' + name, date_const.ONE_MINUTE * 30)
+            # if redis_client.get('CONTRACT_NEW_HIGH_' + name) is not None and float(redis_client.get('CONTRACT_NEW_HIGH_' + name)) >= 1:
+            #     print("合约历史最高价提示超过限制，不再发送信息!")
+            #     return
+            # sms_util.send_future_msg_with_tencent(code=name + log_type, name=name, price=log_type,
+            #                                       suggest='看多' + str(price))
+            # redis_client.incr('CONTRACT_NEW_HIGH_' + name)
+            # redis_client.expire('CONTRACT_NEW_HIGH_' + name, date_const.ONE_MINUTE * 30)
         if msg_content is not None:
             # notify_util.alert(message=msg_content)
             # 去重
