@@ -14,6 +14,8 @@ hist_date_list = pd.read_csv(os.getenv('STOCKS_HOME') + '/data/etl/basic_data/' 
 FORMAT_DATETIME = '%Y-%m-%d %H:%M:%S'
 FORMAT_DEFAULT = '%Y-%m-%d'
 FORMAT_FLAT = '%Y%m%d'
+FORMAT_HOUR = '%H:%M'
+
 
 # 今天
 today = datetime.datetime.now()
@@ -77,6 +79,10 @@ def now():
 
 def get_now():
     return now().strftime(FORMAT_DATETIME)
+
+
+def get_now_hour():
+    return now().strftime(FORMAT_HOUR)
 
 
 # 本周第一天和最后一天
@@ -351,7 +357,7 @@ def shift_date(type='d', from_date=None, n=-1, format='YYYY-MM-DD'):
 
 
 if __name__ == '__main__':
-    print(get_now())
+    print(get_now_hour())
     print(get_next_trade_day('2019-12-06'))
     print(get_previous_trade_day('2019-12-08'))
     # init_trade_date_list()

@@ -10,6 +10,7 @@
 20 10,15 * * 1 /Users/ruian/work/my-git/tesseract/stocks/cron/collect_trade_weekly.sh >> ~/stocks.log 2>&1
 15 15,16 * * 1-5 /Users/ruian/work/my-git/tesseract/stocks/cron/collect_future_daily.sh >> ~/future.log 2>&1
 
+00 09 * * 1-5 /Users/linjingu/work/machine-learning/stocks/cron/future_realtime_start.sh >> ~/future.log 2>&1
 30 09,16 * * 1-5 /Users/linjingu/work/machine-learning/stocks/cron/collect_basic_daily.sh > ~/stocks.log 2>&1
 30 16 * * 1-5 /Users/linjingu/work/machine-learning/stocks/cron/collect_trade_data.sh >> ~/stocks.log 2>&1
 30 16 * * 1-5 /Users/linjingu/work/machine-learning/stocks/cron/collect_ma_data.sh >> ~/stocks.log 2>&1
