@@ -60,7 +60,7 @@ def send_future_msg_with_tencent(code=None, name='', price='', suggest='', to=ph
         #     print('%s提醒超过3次，今天不再提醒！')
         #     return
 
-        if redis_client.get('MSG_COUNT_' + name) is not None and int(redis_client.get('MSG_COUNT_' + name)) >= 3:
+        if redis_client.get('MSG_COUNT_' + name) is not None and int(redis_client.get('MSG_COUNT_' + name)) >= 1:
             print("该提示超过限制，不再发送信息!")
             return
         result = ssender.send_with_param(86, to, 849005, params, sign=sms_sign, extend="", ext="")
