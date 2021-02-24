@@ -219,7 +219,7 @@ def trigger_price_flash(is_trade_time=False, name=None, price=None, change=None,
     :return:
     '''
     key = price_flash_key + name
-    secs = 60
+    secs = 40
     redis_client.rpush(key, price)
     price_len = redis_client.llen(key)
     # [99999999|99999999] x
@@ -249,7 +249,7 @@ def trigger_price_flash(is_trade_time=False, name=None, price=None, change=None,
     if diff >= 0.33 or blast_tip != '':
         diff_str = str(round(diff, 2)) + '%'
         is_up = price > last_price
-        suggest_price = round((price + last_price) / 2)
+        suggest_price = round(last_price)
         position_param = str(position) + '，' + blast_tip + (LOG_TYPE_PRICE_UP if is_up else LOG_TYPE_PRICE_DOWN) + diff_str
         suggest_param = ('看多' if is_up else '看空') + str(suggest_price)
 
@@ -287,17 +287,17 @@ def trigger_new_high_low(name, alias, price, change, high, low, hist_high, hist_
         msg_content = None
         update_sql = None
         log_type = ''
-        if price <= float(low):
-            log_type = LOG_TYPE_DAY_NEW_LOW
-            msg_content = name + '【日内】新低:' + str(low)
-            update_sql = "update future_basics set update_remark='%s' " \
-                         "where name like '%s'" % (msg_content, '%' + alias + '%')
-        if price >= float(high):
-            log_type = LOG_TYPE_DAY_NEW_HIGH
-            msg_content = name + '【日内】新高:' + str(high)
-            update_sql = "update future_basics set update_remark='%s' " \
-                         "where name like '%s'" % (msg_content, '%' + alias + '%')
-        # ------
+        # if price <= float(low):
+        #     log_type = LOG_TYPE_DAY_NEW_LOW
+        #     msg_content = name + '【日内】新低:' + str(low)
+        #     update_sql = "update future_basics set update_remark='%s' " \
+        #                  "where name like '%s'" % (msg_content, '%' + alias + '%')
+        # if price >= float(high):
+        #     log_type = LOG_TYPE_DAY_NEW_HIGH
+        #     msg_content = name + '【日内】新高:' + str(high)
+        #     update_sql = "update future_basics set update_remark='%s' " \
+        #                  "where name like '%s'" % (msg_content, '%' + alias + '%')
+        # ------- contract ---------
         if float(low) < float(hist_low) or float(hist_low) == 0:
             log_type = LOG_TYPE_CONTRACT_NEW_LOW
             msg_content = name + '【合约】新低:' + str(low)
