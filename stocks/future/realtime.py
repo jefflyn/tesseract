@@ -220,6 +220,7 @@ def trigger_price_flash(is_trade_time=False, name=None, price=None, change=None,
     '''
     key = price_flash_key + name
     secs = 40
+    trigger_diff = 0.33
     redis_client.rpush(key, price)
     price_len = redis_client.llen(key)
     # [99999999|99999999] x
@@ -240,13 +241,13 @@ def trigger_price_flash(is_trade_time=False, name=None, price=None, change=None,
             diff_min = abs((price - min_price)) / min_price * 100
         else:
             diff_max = abs((price - max_price)) / max_price * 100
-        if diff_max >= 0.33 or diff_min >= 0.33:
+        if diff_max >= trigger_diff or diff_min >= trigger_diff:
             blast_tip = '￥￥'
 
     last_price = float(last_price)
     diff = abs((price - last_price)) / last_price * 100
     # print(last_price, price, diff)
-    if diff >= 0.33 or blast_tip != '':
+    if diff >= trigger_diff or blast_tip != '':
         diff_str = str(round(diff, 2)) + '%'
         is_up = price > last_price
         suggest_price = round(last_price)
