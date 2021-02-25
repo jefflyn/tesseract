@@ -159,13 +159,13 @@ def re_exe(interval=10, group_type=None, sort_by=None):
                     need_sms = alert_on is not None and alert_on == 1
                     high_low_flag = ''
                     if float(high) > float(hist_high) or float(hist_high) == 0:
-                        high_low_flag = LOG_TYPE_CONTRACT_NEW_HIGH
+                        high_low_flag = '^'
                     if float(low) < float(hist_low) or float(hist_low) == 0:
-                        high_low_flag = LOG_TYPE_CONTRACT_NEW_LOW
+                        high_low_flag = '_'
 
                     # 价格异动触发提醒
-                    trigger_price_flash(is_trade_time=is_trade_time, name=name + high_low_flag, price=price,
-                                        change=change, position=round(position), alert_on=need_sms)
+                    trigger_price_flash(is_trade_time=is_trade_time, name=name, price=price,
+                                        change=change, position=round(position), hist_new_tag=high_low_flag, alert_on=need_sms)
                     # 合约高低涨跌幅 触发提醒
                     trigger_new_high_low(name, alias, price, change, high, low, hist_high, hist_low)
                     trigger_price_change_msg(symbol=name, realtime_price=price, prices=None, realtime_change=change, changes=changes)
@@ -208,7 +208,7 @@ def re_exe(interval=10, group_type=None, sort_by=None):
             time.sleep(interval)
 
 
-def trigger_price_flash(is_trade_time=False, name=None, price=None, change=None, position=0, alert_on=False):
+def trigger_price_flash(is_trade_time=False, name=None, price=None, change=None, position=0, hist_new_tag='', alert_on=False):
     '''
     价格快速波动
     :param is_trade_time:
@@ -242,7 +242,7 @@ def trigger_price_flash(is_trade_time=False, name=None, price=None, change=None,
         else:
             diff_max = abs((price - max_price)) / max_price * 100
         if diff_max >= trigger_diff or diff_min >= trigger_diff:
-            blast_tip = '￥￥'
+            blast_tip = '￥'
 
     last_price = float(last_price)
     diff = abs((price - last_price)) / last_price * 100
@@ -250,8 +250,9 @@ def trigger_price_flash(is_trade_time=False, name=None, price=None, change=None,
     if diff >= trigger_diff or blast_tip != '':
         diff_str = str(round(diff, 2)) + '%'
         is_up = price > last_price
-        suggest_price = round(last_price)
-        position_param = str(position) + '，' + blast_tip + (LOG_TYPE_PRICE_UP if is_up else LOG_TYPE_PRICE_DOWN) + diff_str
+        suggest_price = round((last_price + price) / 2)
+        position_param = str(position) + '，' + hist_new_tag + blast_tip \
+                         + (LOG_TYPE_PRICE_UP if is_up else LOG_TYPE_PRICE_DOWN) + diff_str
         suggest_param = ('看多' if is_up else '看空') + str(suggest_price)
 
         content = str(secs) + '秒' + (blast_tip + LOG_TYPE_PRICE_UP if price > last_price
@@ -259,7 +260,7 @@ def trigger_price_flash(is_trade_time=False, name=None, price=None, change=None,
             + diff_str + ', ' + '价格【' + str(last_price) + '-' + str(price) + '】'
         # 添加日志
         future_util.add_log(name, LOG_TYPE_PRICE_UP if price > last_price else LOG_TYPE_PRICE_DOWN,
-                            change, content)
+                            change, content, hist_new_tag)
 
         if is_trade_time and alert_on:
         # if True:
