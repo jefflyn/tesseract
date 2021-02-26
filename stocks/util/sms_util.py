@@ -65,7 +65,7 @@ def send_future_msg_with_tencent(code=None, name='', price='', suggest='', to=ph
             return
         result = ssender.send_with_param(86, to, 849005, params, sign=sms_sign, extend="", ext="")
         redis_client.incr('MSG_COUNT_' + name)
-        redis_client.expire('MSG_COUNT_' + name, date_const.ONE_MINUTE * 15)
+        redis_client.expire('MSG_COUNT_' + name, date_const.ONE_MINUTE * 30)
         # send_counter[code] += 1
     except HTTPError as e:
         print(e)
