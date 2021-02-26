@@ -75,7 +75,8 @@ def add_log(name, log_type, pct_change, content, remark):
     try:
         cursor.execute(
             'insert into future_log(name,type,content,pct_change,log_time,remark) '
-            'values(%s,%s,%s,%s,%s,%s)', (name, log_type, content, pct_change, date_util.get_now(), remark))
+            'values(%s,%s,%s,%s,%s,%s)', (name, log_type, content, pct_change, date_util.get_now(),
+                                          log_type if remark == '' or remark is None else remark))
         db.commit()
     except Exception as err:
         print('>>> failed!', err)
