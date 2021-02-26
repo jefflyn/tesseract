@@ -257,10 +257,10 @@ def trigger_price_flash(is_trade_time=False, name=None, price=None, change=None,
 
         content = str(secs) + '秒' + (blast_tip + LOG_TYPE_PRICE_UP if price > last_price
                                      else blast_tip + LOG_TYPE_PRICE_DOWN) \
-            + diff_str + '【' + str(last_price) + '-' + str(price) + '】+ ', suggest_param
+            + diff_str + '【' + str(last_price) + '-' + str(price) + '】+ ' + suggest_param
         # 添加日志
-        future_util.add_log(name, LOG_TYPE_PRICE_UP if price > last_price else LOG_TYPE_PRICE_DOWN,
-                            change, content, hist_new_tag)
+        log_type = LOG_TYPE_PRICE_UP if price > last_price else LOG_TYPE_PRICE_DOWN
+        future_util.add_log(name, log_type, change, content, log_type if hist_new_tag == '' or hist_new_tag is None else hist_new_tag)
 
         if is_trade_time and alert_on:
         # if True:

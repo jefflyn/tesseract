@@ -74,12 +74,12 @@ def add_log(name, log_type, pct_change, content, remark):
     cursor = db.cursor()
     try:
         cursor.execute(
-            'insert into future_log(name,type,content,pct_change,log_time,remark) '
-            'values(%s,%s,%s,%s,%s,%s)', (name, log_type, content, pct_change, date_util.get_now(),
-                                          log_type if remark == '' or remark is None else remark))
+            'insert into future_log(name,type,content,pct_change,log_time,remark) values(%s,%s,%s,%s,%s,%s)',
+            (name, log_type, content, pct_change, date_util.get_now(), remark)
+        )
         db.commit()
     except Exception as err:
-        print('>>> failed!', err)
+        print('>>> insert future_log failed!', err)
         db.rollback()
     # 关闭游标和数据库的连接
     cursor.close()
