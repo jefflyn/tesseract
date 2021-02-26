@@ -331,7 +331,7 @@ def trigger_new_high_low(name, alias, price, change, high, low, hist_high, hist_
             # 去重
             if redis_client.exists(msg_content) is False:
                 # notify_util.alert(message='起来活动一下')
-                future_util.add_log(name, log_type, change, msg_content)
+                future_util.add_log(name, log_type, change, msg_content, log_type)
                 redis_client.set(msg_content, str(date_util.get_now()), ex=date_const.ONE_HOUR)
 
         if update_sql is not None:
