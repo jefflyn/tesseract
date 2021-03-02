@@ -168,7 +168,8 @@ def re_exe(interval=10, group_type=None, sort_by=None):
                                         change=change, position=round(position), hist_new_tag=high_low_flag, alert_on=need_sms)
                     # 合约高低涨跌幅 触发提醒
                     trigger_new_high_low(name, alias, price, change, high, low, hist_high, hist_low)
-                    trigger_price_change_msg(symbol=name, realtime_price=price, prices=None, realtime_change=change, changes=changes)
+                    trigger_price_change_msg(symbol=name, realtime_price=price, alert_prices=tar_prices,
+                                             realtime_change=change, changes=changes)
                     trigger_price_notify(symbol=name, price=price, alert_prices=tar_prices, alert=need_sms)
 
                 # 输出数据
@@ -257,7 +258,7 @@ def trigger_price_flash(is_trade_time=False, name=None, price=None, change=None,
 
         content = str(secs) + '秒' + (blast_tip + LOG_TYPE_PRICE_UP if price > last_price
                                      else blast_tip + LOG_TYPE_PRICE_DOWN) \
-            + diff_str + '【' + str(last_price) + '-' + str(price) + '】+ ' + suggest_param
+            + diff_str + '【' + str(last_price) + '-' + str(price) + '】' + suggest_param
         # 添加日志
         log_type = LOG_TYPE_PRICE_UP if price > last_price else LOG_TYPE_PRICE_DOWN
         future_util.add_log(name, log_type, change, content, log_type if hist_new_tag == '' or hist_new_tag is None else hist_new_tag)
@@ -304,26 +305,26 @@ def trigger_new_high_low(name, alias, price, change, high, low, hist_high, hist_
             log_type = LOG_TYPE_CONTRACT_NEW_LOW
             msg_content = name + log_type + ':' + str(low)
             update_sql = "update future_basics set low=%.2f, update_remark='%s', update_time=now() " \
-                         "where name like '%s'" % (low * 0.9, msg_content, '%' + alias + '%')
+                         "where name like '%s'" % (low, msg_content, '%' + alias + '%')
             print('--->', name, '更新合约历史最低价!')
             if redis_client.get('CONTRACT_NEW_LOW_' + name) is not None and float(redis_client.get('CONTRACT_NEW_LOW_' + name)) >= 1:
                 print("合约历史最低价提示超过限制，不再发送信息!")
                 return
             sms_util.send_future_msg_with_tencent(code=name + log_type, name=name, price=log_type,
-                                                  suggest='看空' + str(price))
+                                                  suggest='看空' + str(hist_low))
             redis_client.incr('CONTRACT_NEW_LOW_' + name)
             redis_client.expire('CONTRACT_NEW_LOW_' + name, date_const.ONE_HOUR * 4)
         if float(high) > float(hist_high) or float(hist_high) == 0:
             log_type = LOG_TYPE_CONTRACT_NEW_HIGH
             msg_content = name + log_type + ':' + str(high)
             update_sql = "update future_basics set high=%.2f, update_remark='%s', update_time=now() " \
-                         "where name like '%s'" % (high * 1.1, msg_content, '%' + alias + '%')
+                         "where name like '%s'" % (high, msg_content, '%' + alias + '%')
             print('--->', name, '更新合约历史最高价!')
             if redis_client.get('CONTRACT_NEW_HIGH_' + name) is not None and float(redis_client.get('CONTRACT_NEW_HIGH_' + name)) >= 1:
                 print("合约历史最高价提示超过限制，不再发送信息!")
                 return
             sms_util.send_future_msg_with_tencent(code=name + log_type, name=name, price=log_type,
-                                                  suggest='看多' + str(price))
+                                                  suggest='看多' + str(hist_high))
             redis_client.incr('CONTRACT_NEW_HIGH_' + name)
             redis_client.expire('CONTRACT_NEW_HIGH_' + name, date_const.ONE_HOUR * 4)
         if msg_content is not None:
@@ -342,7 +343,7 @@ def trigger_new_high_low(name, alias, price, change, high, low, hist_high, hist_
         db.rollback()
 
 
-def trigger_price_change_msg(symbol=None, realtime_price=None, prices=None, realtime_change=None, changes=None,
+def trigger_price_change_msg(symbol=None, realtime_price=None, alert_prices=None, realtime_change=None, changes=None,
                              receive_mobile='18507550586'):
     '''
     短信提醒 价格、涨跌幅配置
@@ -354,41 +355,39 @@ def trigger_price_change_msg(symbol=None, realtime_price=None, prices=None, real
     :param receive_mobile:
     :return:
     '''
-    if prices is not None and prices != '':
-        for p in prices:
+    if alert_prices is not None and alert_prices != '' and len(alert_prices) > 0:
+        for p in alert_prices:
             if p == '':
                 continue
             target_price = round(float(p), 0)
             if 0 < target_price <= realtime_price:
-                redis_key = date_util.get_today() + symbol + '_price_' + str(target_price)
+                target_price = str(target_price)
+                redis_key = date_util.get_today() + symbol + '_price_' + target_price
                 warn_times = redis_client.get(redis_key)
                 if warn_times is None:
                     try:
-                        name_format = '：' + symbol
-                        change_str = str(round(realtime_change, 2)) + '%' if realtime_change < 0 else '+' + str(
-                            round(realtime_change, 2)) + '%'
-                        price_format = str(round(realtime_price)) + ' ' + change_str
+                        msg_content = symbol + future_util.LOG_TYPE_PRICE_ABOVE + ':' + target_price
+                        future_util.add_log(symbol, future_util.LOG_TYPE_PRICE_ABOVE, realtime_change, msg_content,
+                                            future_util.LOG_TYPE_PRICE_ABOVE)
                         # send msg
-                        t_msg = sms_util.send_msg_with_tencent(name=name_format, price=price_format, to=receive_mobile)
-                        if t_msg is not None:
-                            redis_client.set(redis_key, symbol + str(realtime_price), ex=date_const.ONE_MONTH)
-                        print(t_msg)
+                        sms_util.send_future_msg_with_tencent(name=symbol, price=future_util.LOG_TYPE_PRICE_ABOVE,
+                                                              suggest='看多' + target_price)
+                        redis_client.set(redis_key, symbol + str(realtime_price), ex=date_const.ONE_HOUR * 4)
                     except Exception as e:
                         print(e)
             if target_price < 0 and realtime_price <= abs(target_price):
-                redis_key = date_util.get_today() + symbol + '_price_' + str(abs(target_price))
+                target_price = str(abs(target_price))
+                redis_key = date_util.get_today() + symbol + '_price_' + target_price
                 warn_times = redis_client.get(redis_key)
                 if warn_times is None:
                     try:
-                        name_format = '：' + symbol
-                        change_str = str(round(realtime_change, 2)) + '%' if realtime_change < 0 else '+' + str(
-                            round(realtime_change, 2)) + '%'
-                        price_format = str(round(realtime_price)) + ' ' + change_str
+                        msg_content = symbol + future_util.LOG_TYPE_PRICE_BELOW + ':' + target_price
+                        future_util.add_log(symbol, future_util.LOG_TYPE_PRICE_BELOW, realtime_change, msg_content,
+                                            future_util.LOG_TYPE_PRICE_BELOW)
                         # send msg
-                        t_msg = sms_util.send_msg_with_tencent(name=name_format, price=price_format, to=receive_mobile)
-                        if t_msg is not None:
-                            redis_client.set(redis_key, symbol + str(realtime_price), ex=date_const.ONE_MONTH)
-                        print(t_msg)
+                        sms_util.send_future_msg_with_tencent(name=symbol, price=future_util.LOG_TYPE_PRICE_BELOW,
+                                                              suggest='看空' + target_price)
+                        redis_client.set(redis_key, symbol + str(realtime_price), ex=date_const.ONE_HOUR * 4)
                     except Exception as e:
                         print(e)
 
