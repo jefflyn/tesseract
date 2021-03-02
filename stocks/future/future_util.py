@@ -15,7 +15,7 @@ def is_trade_time():
     current_time = date_util.now()
     morning_open_time = datetime.datetime(current_time.year, current_time.month, current_time.day, hour=9, minute=1)
     morning_close_time = datetime.datetime(current_time.year, current_time.month, current_time.day, hour=11, minute=30)
-    afternoon_open_time = datetime.datetime(current_time.year, current_time.month, current_time.day, hour=11, minute=30)
+    afternoon_open_time = datetime.datetime(current_time.year, current_time.month, current_time.day, hour=13, minute=30)
     afternoon_close_time = datetime.datetime(current_time.year, current_time.month, current_time.day, hour=15, minute=0)
     night_open_time = datetime.datetime(current_time.year, current_time.month, current_time.day, hour=21, minute=1)
     night_close_time = datetime.datetime(current_time.year, current_time.month, current_time.day, hour=23, minute=50)

@@ -220,7 +220,7 @@ def trigger_price_flash(is_trade_time=False, name=None, price=None, change=None,
     :return:
     '''
     key = price_flash_key + name
-    secs = 40
+    secs = 50
     trigger_diff = 0.33
     redis_client.rpush(key, price)
     price_len = redis_client.llen(key)
@@ -371,12 +371,12 @@ def trigger_price_change_msg(symbol=None, realtime_price=None, alert_prices=None
                                             future_util.LOG_TYPE_PRICE_ABOVE)
                         # send msg
                         sms_util.send_future_msg_with_tencent(name=symbol, price=future_util.LOG_TYPE_PRICE_ABOVE,
-                                                              suggest='看多' + target_price)
+                                                              suggest='看空' + target_price)
                         redis_client.set(redis_key, symbol + str(realtime_price), ex=date_const.ONE_HOUR * 4)
                     except Exception as e:
                         print(e)
-            if target_price < 0 and realtime_price <= abs(target_price):
-                target_price = str(abs(target_price))
+            if float(target_price) < 0 and realtime_price <= abs(float(target_price)):
+                target_price = str(abs(float(target_price)))
                 redis_key = date_util.get_today() + symbol + '_price_' + target_price
                 warn_times = redis_client.get(redis_key)
                 if warn_times is None:
@@ -386,7 +386,7 @@ def trigger_price_change_msg(symbol=None, realtime_price=None, alert_prices=None
                                             future_util.LOG_TYPE_PRICE_BELOW)
                         # send msg
                         sms_util.send_future_msg_with_tencent(name=symbol, price=future_util.LOG_TYPE_PRICE_BELOW,
-                                                              suggest='看空' + target_price)
+                                                              suggest='看多' + target_price)
                         redis_client.set(redis_key, symbol + str(realtime_price), ex=date_const.ONE_HOUR * 4)
                     except Exception as e:
                         print(e)
