@@ -309,11 +309,11 @@ def trigger_new_high_low(name, alias, price, change, high, low, hist_high, hist_
             print('--->', name, '更新合约历史最低价!')
             if redis_client.get('CONTRACT_NEW_LOW_' + name) is not None and float(redis_client.get('CONTRACT_NEW_LOW_' + name)) >= 1:
                 print("合约历史最低价提示超过限制，不再发送信息!")
-                return
-            sms_util.send_future_msg_with_tencent(code=name + log_type, name=name, price=log_type,
-                                                  suggest='看空' + str(hist_low))
-            redis_client.incr('CONTRACT_NEW_LOW_' + name)
-            redis_client.expire('CONTRACT_NEW_LOW_' + name, date_const.ONE_HOUR * 4)
+            else:
+                sms_util.send_future_msg_with_tencent(code=name + log_type, name=name, price=log_type,
+                                                      suggest='看空' + str(hist_low))
+                redis_client.incr('CONTRACT_NEW_LOW_' + name)
+                redis_client.expire('CONTRACT_NEW_LOW_' + name, date_const.ONE_HOUR * 4)
         if float(high) > float(hist_high) or float(hist_high) == 0:
             log_type = LOG_TYPE_CONTRACT_NEW_HIGH
             msg_content = name + log_type + ':' + str(high)
@@ -322,11 +322,11 @@ def trigger_new_high_low(name, alias, price, change, high, low, hist_high, hist_
             print('--->', name, '更新合约历史最高价!')
             if redis_client.get('CONTRACT_NEW_HIGH_' + name) is not None and float(redis_client.get('CONTRACT_NEW_HIGH_' + name)) >= 1:
                 print("合约历史最高价提示超过限制，不再发送信息!")
-                return
-            sms_util.send_future_msg_with_tencent(code=name + log_type, name=name, price=log_type,
-                                                  suggest='看多' + str(hist_high))
-            redis_client.incr('CONTRACT_NEW_HIGH_' + name)
-            redis_client.expire('CONTRACT_NEW_HIGH_' + name, date_const.ONE_HOUR * 4)
+            else:
+                sms_util.send_future_msg_with_tencent(code=name + log_type, name=name, price=log_type,
+                                                      suggest='看多' + str(hist_high))
+                redis_client.incr('CONTRACT_NEW_HIGH_' + name)
+                redis_client.expire('CONTRACT_NEW_HIGH_' + name, date_const.ONE_HOUR * 4)
         if msg_content is not None:
             # notify_util.alert(message=msg_content)
             # 去重
