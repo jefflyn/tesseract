@@ -264,6 +264,8 @@ def trigger_price_flash(is_trade_time=False, name=None, price=None, change=None,
         future_util.add_log(name, log_type, change, content, log_type if hist_new_tag == '' or hist_new_tag is None else hist_new_tag)
 
         if is_trade_time and alert_on:
+            if name.startswith('菜油'):
+                notify_util.alert(message='起来活动一下')
         # if True:
             # 信息警告
             sms_util.send_future_msg_with_tencent(name=name, price=position_param,
