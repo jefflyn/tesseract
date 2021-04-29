@@ -275,9 +275,10 @@ def trigger_price_flash(is_trade_time=False, name=None, price=None, change=None,
         redis_client.delete(key)
 
 
-def trigger_new_high_low(name, alias, price, change, high, low, hist_high, hist_low, alert_on=need_sms):
+def trigger_new_high_low(name, alias, price, change, high, low, hist_high, hist_low, alert_on):
     '''
     价格新高新低
+    :param alert_on:
     :param name:
     :param alias:
     :param price:
