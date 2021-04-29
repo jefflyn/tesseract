@@ -376,7 +376,7 @@ def trigger_price_change_msg(symbol=None, realtime_price=None, alert_prices=None
                                             future_util.LOG_TYPE_PRICE_ABOVE)
                         # send msg
                         sms_util.send_future_msg_with_tencent(name=symbol, price=future_util.LOG_TYPE_PRICE_ABOVE,
-                                                              suggest='看空' + target_price)
+                                                              suggest='看多' + target_price)
                         redis_client.set(redis_key, symbol + str(realtime_price), ex=date_const.ONE_HOUR * 4)
                     except Exception as e:
                         print(e)
@@ -391,7 +391,7 @@ def trigger_price_change_msg(symbol=None, realtime_price=None, alert_prices=None
                                             future_util.LOG_TYPE_PRICE_BELOW)
                         # send msg
                         sms_util.send_future_msg_with_tencent(name=symbol, price=future_util.LOG_TYPE_PRICE_BELOW,
-                                                              suggest='看多' + target_price)
+                                                              suggest='看空' + target_price)
                         redis_client.set(redis_key, symbol + str(realtime_price), ex=date_const.ONE_HOUR * 4)
                     except Exception as e:
                         print(e)
