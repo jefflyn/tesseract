@@ -261,7 +261,8 @@ def trigger_price_flash(is_trade_time=False, name=None, price=None, change=None,
             + diff_str + '【' + str(last_price) + '-' + str(price) + '】' + suggest_param
         # 添加日志
         log_type = LOG_TYPE_PRICE_UP if price > last_price else LOG_TYPE_PRICE_DOWN
-        future_util.add_log(name, log_type, change, content, log_type if hist_new_tag == '' or hist_new_tag is None else hist_new_tag)
+        future_util.add_log(name, log_type, change, content,
+                            log_type if hist_new_tag == '' or hist_new_tag is None else hist_new_tag, price, position)
 
         if is_trade_time and alert_on:
             if name.startswith('菜油'):
@@ -337,7 +338,7 @@ def trigger_new_high_low(name, alias, price, change, high, low, hist_high, hist_
             # 去重
             if redis_client.exists(msg_content) is False:
                 # notify_util.alert(message='起来活动一下')
-                future_util.add_log(name, log_type, change, msg_content, log_type)
+                future_util.add_log(name, log_type, change, msg_content, log_type, price, None)
                 redis_client.set(msg_content, str(date_util.get_now()), ex=date_const.ONE_HOUR)
 
         if update_sql is not None:
@@ -373,7 +374,7 @@ def trigger_price_change_msg(symbol=None, realtime_price=None, alert_prices=None
                     try:
                         msg_content = symbol + future_util.LOG_TYPE_PRICE_ABOVE + ':' + target_price
                         future_util.add_log(symbol, future_util.LOG_TYPE_PRICE_ABOVE, realtime_change, msg_content,
-                                            future_util.LOG_TYPE_PRICE_ABOVE)
+                                            future_util.LOG_TYPE_PRICE_ABOVE, realtime_price, None)
                         # send msg
                         sms_util.send_future_msg_with_tencent(name=symbol, price=future_util.LOG_TYPE_PRICE_ABOVE,
                                                               suggest='看多' + target_price)
@@ -388,7 +389,7 @@ def trigger_price_change_msg(symbol=None, realtime_price=None, alert_prices=None
                     try:
                         msg_content = symbol + future_util.LOG_TYPE_PRICE_BELOW + ':' + target_price
                         future_util.add_log(symbol, future_util.LOG_TYPE_PRICE_BELOW, realtime_change, msg_content,
-                                            future_util.LOG_TYPE_PRICE_BELOW)
+                                            future_util.LOG_TYPE_PRICE_BELOW, realtime_price, None)
                         # send msg
                         sms_util.send_future_msg_with_tencent(name=symbol, price=future_util.LOG_TYPE_PRICE_BELOW,
                                                               suggest='看空' + target_price)
