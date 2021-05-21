@@ -220,8 +220,8 @@ def trigger_price_flash(is_trade_time=False, name=None, price=None, change=None,
     :return:
     '''
     key = price_flash_key + name
-    secs = 50
-    trigger_diff = 0.33
+    secs = 100
+    trigger_diff = 0.5
     redis_client.rpush(key, price)
     price_len = redis_client.llen(key)
     # [99999999|99999999] x
