@@ -65,7 +65,7 @@ def get_future_daily(name=None, trade_date=None):
     return df
 
 
-def add_log(name, log_type, pct_change, content, remark):
+def add_log(name, log_type, pct_change, content, remark, price=None, position=None):
     print('add log -------------')
 
     # 建立数据库连接
@@ -74,8 +74,9 @@ def add_log(name, log_type, pct_change, content, remark):
     cursor = db.cursor()
     try:
         cursor.execute(
-            'insert into future_log(name,type,content,pct_change,log_time,remark) values(%s,%s,%s,%s,%s,%s)',
-            (name, log_type, content, pct_change, date_util.get_now(), remark)
+            'insert into future_log(name, type, content, price, position, pct_change, log_time, remark) '
+            'values(%s, %s, %s, %s, %s, %s, %s, %s)',
+            (name, log_type, content, price, position, pct_change, date_util.get_now(), remark)
         )
         db.commit()
     except Exception as err:

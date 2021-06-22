@@ -102,16 +102,17 @@ if __name__ == '__main__':
     # sql = 'select ts_code from basics where code like :sh_code'
     # df = data_util.read_sql(sql, params={"sh_code": "6%"})
 
-    # sql = 'select ts_code from basics where code like :sz_code'
-    # df = data_util.read_sql(sql, params={"sz_code": "0%"})
+    sql = 'select ts_code from basics where code like :sz_code'
+    df = data_util.read_sql(sql, params={"sz_code": "0%"})
 
     # sql = 'select ts_code from basics where code like :cyb_code'
     # df = data_util.read_sql(sql, params={"cyb_code": "3%"})
 
     # all
-    sql = 'select ts_code from basics'
-    df = data_util.read_query(sql)
+    # sql = 'select ts_code from basics'
+    # df = data_util.read_query(sql)
 
     init_codes = list(df['ts_code'])
-    init_codes = ['000700.SZ', '600513.SH']
+    # init_codes = ['000700.SZ', '600513.SH']
+
     init_hist_daily(init_codes)
