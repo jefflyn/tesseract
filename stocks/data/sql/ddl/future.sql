@@ -80,3 +80,28 @@ comment '每日数据';
 
 create index idx_future_daily_name
 	on future_daily (name);
+
+create table future_log
+(
+	id bigint auto_increment comment 'id'
+		primary key,
+	sno varchar(16) not null comment 'serial no.',
+	code varchar(8) not null comment 'code',
+	name varchar(20) not null comment 'contract name',
+	type varchar(10) not null comment 'log type',
+	content varchar(64) not null comment 'log contents',
+	price decimal(10,2) not null comment 'logged current price',
+	pct_change decimal(10,2) not null comment 'logged percentage change',
+	position int not null comment 'relative position',
+	position_lvl tinyint not null comment '[0,33]=1,[33,66]=2,[66,100]=3',
+	`option` tinyint not null comment '1=call 2=put',
+	suggest_price decimal(10,2) not null comment 'suggest price',
+	log_time datetime not null comment 'log time',
+	remark varchar(32) null comment 'remark contents',
+	constraint future_log_code_uindex
+		unique (code),
+	constraint future_log_sno_uindex
+		unique (sno)
+)
+comment '日志';
+
