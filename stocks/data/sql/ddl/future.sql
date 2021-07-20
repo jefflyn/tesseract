@@ -81,7 +81,7 @@ comment '每日数据';
 create index idx_future_daily_name
 	on future_daily (name);
 
-create table future_log
+create table future_monitor_log
 (
 	id bigint auto_increment comment 'id'
 		primary key,
@@ -98,10 +98,10 @@ create table future_log
 	suggest_price decimal(10,2) not null comment 'suggest price',
 	log_time datetime not null comment 'log time',
 	remark varchar(32) null comment 'remark contents',
-	constraint future_log_code_uindex
+	constraint uidx_future_monitor_log_code
 		unique (code),
-	constraint future_log_sno_uindex
+	constraint uidx_future_monitor_log_sno
 		unique (sno)
 )
-comment '日志';
+comment '监控日志';
 

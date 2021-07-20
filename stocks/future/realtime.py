@@ -112,6 +112,13 @@ def re_exe(interval=10, group_type=None, sort_by=None):
                     if goods_name.startswith(alias):
                         future_name_list.remove(goods_name)
 
+                if redis_client.get('PRE_PRICE_' + trade_date + name) is None:
+                    redis_client.set('PRE_PRICE_' + trade_date + name, pre_close, date_const.ONE_HOUR * 12)
+                else:
+                    pre_close = redis_client.get('PRE_PRICE_' + trade_date + name)
+                    # if (float(open) - float(pre_close)) / float(pre_close) > 0.0033:
+
+
                 target_df = future_basics.loc[future_basics['name'].str.startswith(alias)]
                 if target_df.empty:
                     print(name, alias, 'empty')
