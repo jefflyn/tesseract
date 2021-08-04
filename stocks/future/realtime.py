@@ -55,7 +55,7 @@ def re_exe(interval=10, group_type=None, sort_by=None):
         future_basics = future_util.get_future_basics(type=group_type, on_target=on_target)
         future_name_list = list(future_basics['name'])
         codes = ','.join(['nf_' + e for e in list(future_basics['symbol'])])
-        req_url = 'http://hq.sinajs.cn/list='
+        req_url = 'https://hq.sinajs.cn/list='
         future_from_sina = []
         result = requests.get(req_url + codes)
         txt = result.text

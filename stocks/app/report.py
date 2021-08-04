@@ -224,7 +224,7 @@ def mail(to_users=[], content=None):
         # msg['To'] = formataddr(["FK", to_users])  # receiver nickname and account
         msg['Subject'] = todaystr + " Stocks Report"  # subject
 
-        server = smtplib.SMTP_SSL("smtp.qq.com", 465)  # SMTP server and port
+        server = smtplib.SMTP_SSL("smtp.qq.com", 587)  # SMTP server and port
         server.login(sender, passw)
         server.sendmail(sender, to_users, msg.as_string())
         server.quit()  # close connection
