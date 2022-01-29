@@ -25,7 +25,6 @@ def get_wave(code=None, hist_data=None, begin_low=True, duration=0, change=0):
 
 def wave_from(code, df, begin_low, direction='left', duration=0, change=0):
     period_data = []
-    # for get_k_data use
     first_date = df.head(1).at[df.head(1).index.to_numpy()[0], 'date']
     last_date = df.tail(1).at[df.tail(1).index.to_numpy()[0], 'date']
 
@@ -262,30 +261,42 @@ def get_wave_list(wave_str=None):
 
 
 def wave_to_db(data_list=None, wave_df_list=None):
-    wave_df_result = pd.DataFrame(data_list, columns=['code', 'a', 'b', 'c', 'd'])
+    wave_df_result = pd.DataFrame(data_list, columns=['code', 'start', 'end', 'a', 'b', 'c', 'd'])
     _dt.to_db(wave_df_result, 'future_wave')
     wave_detail_result = pd.DataFrame(pd.concat(wave_df_list),
-                                      columns=['code', 'begin', 'end', 'status', 'begin_price', 'end_price', 'days',
-                                               'change'])
+                                      columns=['code', 'begin', 'end', 'status', 'begin_price', 'end_price',
+                                               'change', 'days'])
     _dt.to_db(wave_detail_result, 'future_wave_detail')
 
 
 if __name__ == '__main__':
-    df = future_util.select_from_sql("select ts_code from ts_future_contract where type=1 "
-                                     "and fut_code in (select symbol from future_basic where deleted=0)")
-    code_list = list(df['ts_code'])
+    select_ts_codes = "select ts_code from ts_future_contract where type=1 and fut_code " \
+                   "in (select symbol from future_basic where deleted=0)"
+    select_main_codes = "select concat(code, '.', exchange) ts_code from future_basic where deleted=0"
+    ############################################################
+    ts_codes_df = future_util.select_from_sql(select_ts_codes)
+    main_codes_df = future_util.select_from_sql(select_main_codes)
+    code_list = list(pd.concat([ts_codes_df, main_codes_df])['ts_code'])
+    ############################################################
     # code_list = ['APL.ZCE']
+    ############################################################
     data_list = []
-    wave_df_list =[]
+    wave_df_list = []
     for code in code_list:
-        df_data = future_util.get_ts_future_daily(code)[['ts_code', 'trade_date', 'open', 'high',
-                                                                                'low', 'close']]
+        df_data = future_util.get_ts_future_daily(code)[['ts_code', 'trade_date', 'open', 'high', 'low', 'close']]
+        if df_data is None or df_data.empty:
+            print(code + ' no daily data!')
+            continue
         df_data.columns = ['code', 'date', 'open', 'high', 'low', 'close']
-        wave_df = get_wave(code, hist_data=df_data, begin_low=True, duration=0, change=0)
+        # df_data['code'] = df_data['code'].apply(lambda x: str(x).split('.')[0])
+        wave_df = get_wave(code.split('.')[0], hist_data=df_data, begin_low=True, duration=0, change=0)
         wave_df_list.append(wave_df)
         wave_str = wave_to_str(wave_df)
         wave_list = get_wave_list(wave_str)
         wave_list.insert(0, code)
+        date_list = list(df_data['date'])
+        wave_list.insert(1, date_list[0])
+        wave_list.insert(2, date_list[-1])
         data_list.append(wave_list)
         # print(result)
         # print(wave_str)
