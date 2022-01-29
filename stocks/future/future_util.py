@@ -6,6 +6,10 @@ from stocks.util.db_util import get_db
 from stocks.util.db_util import read_sql
 
 
+def select_from_sql(sql=None):
+    return read_sql(sql, params=None)
+
+
 def is_trade_time():
     '''
     日盘 09:00-15:00
@@ -54,6 +58,24 @@ def get_future_basics(code=None, type=None, night=None, on_target=None):
     return df
 
 
+def get_ts_future_daily(ts_code=None, start_date=None, end_date=None):
+    sql = "select * from ts_future_daily where 1=1 "
+    if ts_code is not None:
+        if isinstance(ts_code, str):
+            codes = list()
+            codes.append(ts_code)
+            ts_code = codes
+        sql += 'and ts_code in :codes '
+    if start_date is not None:
+        sql += 'and trade_date >=:start '
+    if end_date is not None:
+        sql += 'and trade_date <=:end '
+
+    params = {'codes': ts_code, 'start': start_date, 'end': end_date}
+    df = read_sql(sql, params=params)
+    return df
+
+
 def get_future_daily(name=None, trade_date=None):
     sql = "select * from future_daily where 1=1 "
     if name is not None:
@@ -88,4 +110,5 @@ def add_log(name, log_type, pct_change, content, remark, price=None, position=No
 
 
 if __name__ == '__main__':
-    is_trade_time()
+    df = get_ts_future_daily(ts_code='PKL.ZCE', start_date=20220127)
+    print(df)

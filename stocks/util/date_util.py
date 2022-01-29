@@ -1,15 +1,13 @@
 # coding=utf-8
 import calendar
 import datetime
-import os
 from datetime import timedelta
 
 import arrow
-import pandas as pd
 from dateutil.relativedelta import relativedelta
 from dateutil.rrule import *
 
-hist_date_list = pd.read_csv(os.getenv('STOCKS_HOME') + '/data/etl/basic_data/' + 'hist_trade_date.csv')
+# hist_date_list = pd.read_csv(os.getenv('STOCKS_HOME') + '/data/etl/basic_data/' + 'hist_trade_date.csv')
 
 FORMAT_DATETIME = '%Y-%m-%d %H:%M:%S'
 FORMAT_DEFAULT = '%Y-%m-%d'
