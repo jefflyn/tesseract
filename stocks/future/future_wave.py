@@ -289,11 +289,12 @@ if __name__ == '__main__':
             continue
         df_data.columns = ['code', 'date', 'open', 'high', 'low', 'close']
         # df_data['code'] = df_data['code'].apply(lambda x: str(x).split('.')[0])
-        wave_df = get_wave(code.split('.')[0], hist_data=df_data, begin_low=True, duration=0, change=0)
+        new_code = code.split('.')[0]
+        wave_df = get_wave(new_code, hist_data=df_data, begin_low=True, duration=0, change=0)
         wave_df_list.append(wave_df)
         wave_str = wave_to_str(wave_df)
         wave_list = get_wave_list(wave_str)
-        wave_list.insert(0, code)
+        wave_list.insert(0, new_code)
         date_list = list(df_data['date'])
         wave_list.insert(1, date_list[0])
         wave_list.insert(2, date_list[-1])
