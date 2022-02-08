@@ -159,7 +159,7 @@ def wave_to_str(wavedf=None, size=4, change=10):
     for k in range(0, len(str_list)):
         wavestr += ('|' + str(round(str_list[k], 2)))
         wave_day_str += ('|' + str(wave_days[k]))
-    return wavestr + '\n' + wave_day_str + '\n￥' + price_wave
+    return wavestr + '\n' + wave_day_str + '\n' + price_wave
 
 
 def get_wave_ab(wave_str=None, pct_limit=33):
