@@ -270,7 +270,7 @@ def wave_to_db(data_list=None, wave_df_list=None):
 
 
 if __name__ == '__main__':
-    select_ts_codes = "select ts_code from ts_future_contract where type=1 and fut_code " \
+    select_ts_codes = "select ts_code from ts_future_contract where type in (1, 2) and fut_code " \
                    "in (select symbol from future_basic where deleted=0)"
     select_main_codes = "select concat(code, '.', exchange) ts_code from future_basic where deleted=0"
     ############################################################
