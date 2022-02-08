@@ -66,7 +66,8 @@ def wave_from(code, df, begin_low, direction='left', duration=0, change=0):
             status = 'down' if is_max else 'up'
         if direction == 'right':
             # if the latest one, get the close price, calculate the actual rises
-            end_price = close if date == last_date else price
+            # end_price = close if date == last_date else price
+            end_price = price
             end_date = date
             status = 'up' if is_max else 'down'
 
@@ -270,10 +271,10 @@ def wave_to_db(data_list=None, wave_df_list=None):
 
 
 if __name__ == '__main__':
+    ############################################################
     select_ts_codes = "select ts_code from ts_future_contract where type in (1, 2) and fut_code " \
                    "in (select symbol from future_basic where deleted=0)"
     select_main_codes = "select concat(code, '.', exchange) ts_code from future_basic where deleted=0"
-    ############################################################
     ts_codes_df = future_util.select_from_sql(select_ts_codes)
     main_codes_df = future_util.select_from_sql(select_main_codes)
     code_list = list(pd.concat([ts_codes_df, main_codes_df])['ts_code'])
