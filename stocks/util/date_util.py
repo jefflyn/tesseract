@@ -7,13 +7,10 @@ import arrow
 from dateutil.relativedelta import relativedelta
 from dateutil.rrule import *
 
-# hist_date_list = pd.read_csv(os.getenv('STOCKS_HOME') + '/data/etl/basic_data/' + 'hist_trade_date.csv')
-
 FORMAT_DATETIME = '%Y-%m-%d %H:%M:%S'
 FORMAT_DEFAULT = '%Y-%m-%d'
 FORMAT_FLAT = '%Y%m%d'
 FORMAT_HOUR = '%H:%M'
-
 
 # 今天
 today = datetime.datetime.now()
@@ -69,6 +66,11 @@ this_year_end = datetime.datetime(today.year + 1, 1, 1) - timedelta(days=1)
 # 去年第一天和最后一天
 last_year_end = this_year_start - timedelta(days=1)
 last_year_start = datetime.datetime(last_year_end.year, 1, 1)
+
+start_date = last_year_start.strftime(FORMAT_FLAT)
+curt_date = today.strftime(FORMAT_FLAT)
+hist_date_list = None  # pro.trade_cal(start_date=start_date, end_date=curt_date)
+# hist_date_list = hist_date_list.iloc[::-1]
 
 
 def now():
@@ -198,8 +200,8 @@ def get_latest_trade_date(days=1):
     :param days:
     :return: [yyyy-MM-dd]
     """
-    trade_dates = hist_date_list[(hist_date_list.is_open == 1) & (hist_date_list.hist_date <= get_today())].head(days)
-    return list(trade_dates['hist_date'])
+    trade_dates = hist_date_list[hist_date_list.is_open == 1].head(days)
+    return list(trade_dates['cal_date'])
 
 
 def is_tradeday(query_date=None):
@@ -224,12 +226,12 @@ def get_previous_trade_day(trade_date=None):
     """
     if trade_date is None:
         trade_date = get_today()
-    hist_date = hist_date_list[hist_date_list.hist_date == trade_date]
+    hist_date = hist_date_list[hist_date_list.cal_date == trade_date]
     if hist_date.empty is True:
         print(trade_date)
     index = hist_date.index.to_numpy()[0]
     for i in range(1, 15):
-        next_hist_date = hist_date_list.loc[index + i, ['hist_date', 'is_open']]
+        next_hist_date = hist_date_list.loc[index + i, ['cal_date', 'is_open']]
         if next_hist_date[1] == 1:
             return next_hist_date.iat[0]
 
@@ -240,12 +242,12 @@ def get_next_trade_day(trade_date=get_today()):
     :param trade_date:'yyyy-MM-dd'
     :return: str 'yyyy-MM-dd'
     """
-    hist_date = hist_date_list[hist_date_list.hist_date == trade_date]
+    hist_date = hist_date_list[hist_date_list.cal_date == trade_date]
     index = hist_date.index.to_numpy()[0]
     for i in range(1, 15):
         if index - i < 0:
             break
-        next_hist_date = hist_date_list.loc[index - i, ['hist_date', 'is_open']]
+        next_hist_date = hist_date_list.loc[index - i, ['cal_date', 'is_open']]
         if next_hist_date[1] == 1:
             return next_hist_date.iat[0]
 
@@ -356,12 +358,12 @@ def shift_date(type='d', from_date=None, n=-1, format='YYYY-MM-DD'):
 
 if __name__ == '__main__':
     print(get_now_hour())
-    print(get_next_trade_day('2019-12-06'))
-    print(get_previous_trade_day('2019-12-08'))
+    print(get_next_trade_day('2021-12-06'))
+    print(get_previous_trade_day('2021-12-08'))
     # init_trade_date_list()
-    print(get_latest_trade_date(5))
+    print(get_latest_trade_date(-5))
     # print(get_month_firstday_lastday(8))
-    print(get_previous_month_end('2020-12-31'))
+    print(get_previous_month_end('2021-12-31'))
     # print(get_week_firstday_lastday(-8))
     # print(get_week_firstday_lastday(-7))
     # print(get_week_firstday_lastday(-6))

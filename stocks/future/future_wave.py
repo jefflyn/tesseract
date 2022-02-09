@@ -4,18 +4,33 @@ import numpy as np
 import pandas as pd
 
 import stocks.util.db_util as _dt
-from stocks.future import future_util
+from stocks.future import future_util, future_trade
+from stocks.util import date_util
+
+
+def add_realtime_data(code=None, local_last_trade_date=None):
+    last_trade_date = date_util.get_today(date_util.FORMAT_FLAT)  # .get_latest_trade_date(1)[0]
+    if local_last_trade_date < last_trade_date:  # not the latest record
+        realtime = future_trade.realtime(code.split('.')[0])
+        if realtime is not None or realtime.empty is False:
+            realtime['code'] = code
+            return realtime
+    return None
 
 
 def get_wave(code=None, hist_data=None, begin_low=True, duration=0, change=0):
-    period_list = []
+    local_last_trade_date = list(hist_data['date'])[-1]
+    realtime = add_realtime_data(code, local_last_trade_date)
+    if realtime is not None:
+        # hist_data = hist_data.append(realtime, ignore_index=True)
+        hist_data = pd.concat([hist_data, realtime], ignore_index=True)
     left_data = wave_from(code, hist_data, begin_low, 'left', duration, change)
     # sorted by date asc
     left_data.reverse()
     right_data = wave_from(code, hist_data, begin_low, 'right', duration, change)
     period_df = pd.DataFrame(left_data + right_data,
                              columns=['code', 'begin', 'end', 'status', 'begin_price', 'end_price', 'days', 'change'])
-    period_list.append(period_df)
+    period_list = [period_df]
     if period_list is None or len(period_list) == 0:
         print('result is empty, please check the code is exist!')
         return None
@@ -103,63 +118,75 @@ def wave_from(code, df, begin_low, direction='left', duration=0, change=0):
     return period_data
 
 
-def wave_to_str(wavedf=None, size=4, change=10):
-    if wavedf is None or size < 1:
+def wave_to_str(wave_df=None, size=4, change=8):
+    """
+    :param wave_df:
+    :param size:
+    :param change:
+    :return: 1.4,-1.9,2.12|10,20,13|15.4,10.9,20.12
+    """
+    if wave_df is None or size < 1:
         return ''
-    changelist = list(wavedf['change'])
-    # changelist = changelist[::-1]
-    str_list = []
-    sum_last = 0
-    price_wave = ''
-    wave_days = []
-    sum_days = 0
-    for index, row in wavedf.iterrows():
-        # for i in range(0, len(changelist)):
-        #     lastone = changelist[i]
-        lastone = row['change']
-        wave_day = row['days']
-        flag = row['status']
-        if abs(lastone) >= change:
-            if 'up' == flag:
-                if index == 0:
-                    price_wave = str(round(row['begin_price'], 2)) + '/'
-                price_wave += str(round(row['end_price'], 2)) + '\\'
-            else:
-                if index == 0:
-                    price_wave = str(round(row['begin_price'], 2)) + '\\'
-                price_wave += str(round(row['end_price'], 2)) + '/'
-            if sum_last != 0:
-                str_list.append(sum_last)
-                sum_last = 0
-                wave_days.append(sum_days)
-                sum_days = 0
-            str_list.append(lastone)
-            wave_days.append(wave_day)
-            continue
-        else:
-            sum_last += lastone
-            sum_days += wave_day
-            if abs(sum_last) >= change:
-                str_list.append(sum_last)
-                sum_last = 0
-                wave_days.append(wave_day)
-                sum_days = 0
+    changelist = list(wave_df['change'])
+
+    if len(changelist) <= size:
+        wave_change_str = ','.join(list(map(str, changelist)))
+        wave_day_str = ','.join(list(map(str, wave_df['days'])))
+        wave_price_str = ','.join(list(map(str, wave_df['end_price'])))
+    else:
+        change_list = []
+        sum_last = 0
+        day_list = []
+        sum_days = 0
+        price_list = []
+        sum_price = 0
+        for index, row in wave_df.iterrows():
+            last_one = row['change']
+            wave_day = row['days']
+            # flag = row['status']
+            if abs(last_one) >= change:
+                if sum_last != 0:
+                    change_list.append(round(sum_last, 2))
+                    sum_last = 0
+                    day_list.append(sum_days)
+                    sum_days = 0
+                    price_list.append(sum_price)
+                    sum_price = 0
+                price_list.append(round(row['end_price'], 2))
+                change_list.append(round(last_one, 2))
+                day_list.append(wave_day)
                 continue
             else:
-                if index == len(changelist) - 1:
-                    str_list.append(sum_last)
+                sum_last += last_one
+                sum_days += wave_day
+                sum_price = sum_price if sum_price > 0 else round(row['end_price'], 2)
+                if abs(sum_last) >= change:
+                    change_list.append(round(sum_last, 2))
                     sum_last = 0
-                    wave_days.append(sum_days)
+                    day_list.append(sum_days)
                     sum_days = 0
-    takes = len(str_list) - size if len(str_list) - size > 0 else 0
-    str_list = str_list[takes:]
-    wavestr = ''
-    wave_days = wave_days[takes:]
-    wave_day_str = ''
-    for k in range(0, len(str_list)):
-        wavestr += ('|' + str(round(str_list[k], 2)))
-        wave_day_str += ('|' + str(wave_days[k]))
-    return wavestr + '\n' + wave_day_str + '\n' + price_wave
+                    price_list.append(sum_price)
+                    sum_price = 0
+                    continue
+                else:
+                    # 最后一条记录
+                    if index == len(changelist) - 1:
+                        change_list.append(round(sum_last, 2))
+                        sum_last = 0
+                        day_list.append(sum_days)
+                        sum_days = 0
+                        price_list.append(round(row['end_price'], 2))
+
+        # 剔除多余的元素数量
+        takes = len(change_list) - size if len(change_list) - size > 0 else 0
+        change_list = change_list[takes:]
+        day_list = day_list[takes:]
+        takes_price = len(price_list) - size if len(price_list) - size > 0 else 0
+        price_list = price_list[takes_price:]
+        wave_change_str = ','.join(map(str, change_list))
+        wave_day_str = ','.join(map(str, day_list))
+        wave_price_str = ','.join(map(str, price_list))
+    return wave_change_str + '|' + wave_day_str + '|' + wave_price_str
 
 
 def get_wave_ab(wave_str=None, pct_limit=33):
@@ -256,15 +283,21 @@ def get_wave_ab_fast(wave_str, pct_limit=33):
     return [(a_pct, a_day), (b_pct, b_day)]
 
 
-def get_wave_list(wave_str=None):
-    wave_arr = wave_str.split('\n')[0][1:].split('|')
-    return [round(float(e), 2) for e in wave_arr]
+def get_wave_list(wave_str=None, size=4):
+    change_arr = wave_str.split('|')[0][0:].split(',')
+    price_arr = wave_str.split('|')[2][0:].split(',')
+    while len(change_arr) < 4:
+        change_arr.append(0)
+    while len(price_arr) < 4:
+        price_arr.append(0)
+    return [round(float(e), 2) for e in change_arr] + [round(float(e), 2) for e in price_arr]
 
 
-def wave_to_db(data_list=None, wave_df_list=None):
-    wave_df_result = pd.DataFrame(data_list, columns=['code', 'start', 'end', 'a', 'b', 'c', 'd'])
+def wave_to_db(wave_list=None, wave_detail_list=None):
+    wave_df_result = pd.DataFrame(wave_list,
+                                  columns=['code', 'start', 'end', 'a', 'b', 'c', 'd', 'ap', 'bp', 'cp', 'dp'])
     _dt.to_db(wave_df_result, 'future_wave')
-    wave_detail_result = pd.DataFrame(pd.concat(wave_df_list),
+    wave_detail_result = pd.DataFrame(pd.concat(wave_detail_list),
                                       columns=['code', 'begin', 'end', 'status', 'begin_price', 'end_price',
                                                'change', 'days'])
     _dt.to_db(wave_detail_result, 'future_wave_detail')
@@ -273,7 +306,7 @@ def wave_to_db(data_list=None, wave_df_list=None):
 if __name__ == '__main__':
     ############################################################
     select_ts_codes = "select ts_code from ts_future_contract where type in (1, 2) and fut_code " \
-                   "in (select symbol from future_basic where deleted=0)"
+                      "in (select symbol from future_basic where deleted=0)"
     select_main_codes = "select concat(code, '.', exchange) ts_code from future_basic where deleted=0"
     ts_codes_df = future_util.select_from_sql(select_ts_codes)
     main_codes_df = future_util.select_from_sql(select_main_codes)
@@ -281,7 +314,7 @@ if __name__ == '__main__':
     ############################################################
     # code_list = ['APL.ZCE']
     ############################################################
-    data_list = []
+    wave_data_list = []
     wave_df_list = []
     for code in code_list:
         df_data = future_util.get_ts_future_daily(code)[['ts_code', 'trade_date', 'open', 'high', 'low', 'close']]
@@ -299,13 +332,11 @@ if __name__ == '__main__':
         date_list = list(df_data['date'])
         wave_list.insert(1, date_list[0])
         wave_list.insert(2, date_list[-1])
-        data_list.append(wave_list)
+        wave_data_list.append(wave_list)
         # print(result)
         # print(wave_str)
         # wave_ab = get_wave_ab(wave_str, 33)
         # print(wave_ab)
         # print('get_wave_ab_fast', get_wave_ab_fast(wave_str))
 
-    wave_to_db(data_list, wave_df_list)
-
-
+    wave_to_db(wave_data_list, wave_df_list)
