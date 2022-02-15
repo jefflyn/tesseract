@@ -12,7 +12,7 @@ def add_realtime_data(code=None, local_last_trade_date=None):
     last_trade_date = date_util.get_today(date_util.FORMAT_FLAT)  # .get_latest_trade_date(1)[0]
     if local_last_trade_date < last_trade_date:  # not the latest record
         realtime = future_trade.realtime(code.split('.')[0])
-        if realtime is not None or realtime.empty is False:
+        if realtime is not None and realtime.empty is False:
             realtime['code'] = code
             return realtime
     return None
@@ -24,10 +24,11 @@ def get_wave(code=None, hist_data=None, begin_low=True, duration=0, change=0):
     if realtime is not None:
         # hist_data = hist_data.append(realtime, ignore_index=True)
         hist_data = pd.concat([hist_data, realtime], ignore_index=True)
-    left_data = wave_from(code, hist_data, begin_low, 'left', duration, change)
+    new_code = code.split('.')[0]
+    left_data = wave_from(new_code, hist_data, begin_low, 'left', duration, change)
     # sorted by date asc
     left_data.reverse()
-    right_data = wave_from(code, hist_data, begin_low, 'right', duration, change)
+    right_data = wave_from(new_code, hist_data, begin_low, 'right', duration, change)
     period_df = pd.DataFrame(left_data + right_data,
                              columns=['code', 'begin', 'end', 'status', 'begin_price', 'end_price', 'days', 'change'])
     period_list = [period_df]
@@ -118,7 +119,7 @@ def wave_from(code, df, begin_low, direction='left', duration=0, change=0):
     return period_data
 
 
-def wave_to_str(wave_df=None, size=4, change=8):
+def wave_to_str(wave_df=None, size=4, change=10):
     """
     :param wave_df:
     :param size:
@@ -128,6 +129,7 @@ def wave_to_str(wave_df=None, size=4, change=8):
     if wave_df is None or size < 1:
         return ''
     changelist = list(wave_df['change'])
+    less_than_change = max([abs(e) for e in changelist]) < change
 
     if len(changelist) <= size:
         wave_change_str = ','.join(list(map(str, changelist)))
@@ -143,6 +145,7 @@ def wave_to_str(wave_df=None, size=4, change=8):
         for index, row in wave_df.iterrows():
             last_one = row['change']
             wave_day = row['days']
+            wave_end_price = row['end_price']
             # flag = row['status']
             if abs(last_one) >= change:
                 if sum_last != 0:
@@ -152,14 +155,14 @@ def wave_to_str(wave_df=None, size=4, change=8):
                     sum_days = 0
                     price_list.append(sum_price)
                     sum_price = 0
-                price_list.append(round(row['end_price'], 2))
+                price_list.append(round(wave_end_price, 2))
                 change_list.append(round(last_one, 2))
                 day_list.append(wave_day)
                 continue
             else:
                 sum_last += last_one
                 sum_days += wave_day
-                sum_price = sum_price if sum_price > 0 else round(row['end_price'], 2)
+                sum_price = sum_price if sum_price > 0 else round(wave_end_price, 2)
                 if abs(sum_last) >= change:
                     change_list.append(round(sum_last, 2))
                     sum_last = 0
@@ -172,10 +175,8 @@ def wave_to_str(wave_df=None, size=4, change=8):
                     # 最后一条记录
                     if index == len(changelist) - 1:
                         change_list.append(round(sum_last, 2))
-                        sum_last = 0
                         day_list.append(sum_days)
-                        sum_days = 0
-                        price_list.append(round(row['end_price'], 2))
+                        price_list.append(sum_price)
 
         # 剔除多余的元素数量
         takes = len(change_list) - size if len(change_list) - size > 0 else 0
@@ -186,7 +187,14 @@ def wave_to_str(wave_df=None, size=4, change=8):
         wave_change_str = ','.join(map(str, change_list))
         wave_day_str = ','.join(map(str, day_list))
         wave_price_str = ','.join(map(str, price_list))
+    if wave_change_str == '' or less_than_change is True:
+        length = len(changelist)
+        wave_change_str = ','.join(list(map(str, changelist))[length - size:])
+        wave_day_str = ','.join(list(map(str, wave_df['days']))[length - size:])
+        wave_price_str = ','.join(list(map(str, wave_df['end_price']))[length - size:])
     return wave_change_str + '|' + wave_day_str + '|' + wave_price_str
+
+
 
 
 def get_wave_ab(wave_str=None, pct_limit=33):
@@ -286,9 +294,9 @@ def get_wave_ab_fast(wave_str, pct_limit=33):
 def get_wave_list(wave_str=None, size=4):
     change_arr = wave_str.split('|')[0][0:].split(',')
     price_arr = wave_str.split('|')[2][0:].split(',')
-    while len(change_arr) < 4:
+    while len(change_arr) < size:
         change_arr.append(0)
-    while len(price_arr) < 4:
+    while len(price_arr) < size:
         price_arr.append(0)
     return [round(float(e), 2) for e in change_arr] + [round(float(e), 2) for e in price_arr]
 
@@ -315,7 +323,7 @@ if __name__ == '__main__':
     # code_list = ['APL.ZCE']
     ############################################################
     wave_data_list = []
-    wave_df_list = []
+    wave_detail_list = []
     for code in code_list:
         df_data = future_util.get_ts_future_daily(code)[['ts_code', 'trade_date', 'open', 'high', 'low', 'close']]
         if df_data is None or df_data.empty:
@@ -323,15 +331,13 @@ if __name__ == '__main__':
             continue
         df_data.columns = ['code', 'date', 'open', 'high', 'low', 'close']
         # df_data['code'] = df_data['code'].apply(lambda x: str(x).split('.')[0])
-        new_code = code.split('.')[0]
-        wave_df = get_wave(new_code, hist_data=df_data, begin_low=True, duration=0, change=0)
-        wave_df_list.append(wave_df)
+        wave_df = get_wave(code, hist_data=df_data, begin_low=True, duration=0, change=0)
+        wave_detail_list.append(wave_df)
         wave_str = wave_to_str(wave_df)
         wave_list = get_wave_list(wave_str)
-        wave_list.insert(0, new_code)
-        date_list = list(df_data['date'])
-        wave_list.insert(1, date_list[0])
-        wave_list.insert(2, date_list[-1])
+        wave_list.insert(0, code.split('.')[0])
+        wave_list.insert(1, list(wave_df['begin'])[0])
+        wave_list.insert(2, list(wave_df['end'])[-1])
         wave_data_list.append(wave_list)
         # print(result)
         # print(wave_str)
@@ -339,4 +345,5 @@ if __name__ == '__main__':
         # print(wave_ab)
         # print('get_wave_ab_fast', get_wave_ab_fast(wave_str))
 
-    wave_to_db(wave_data_list, wave_df_list)
+    wave_to_db(wave_data_list, wave_detail_list)
+    print(date_util.get_now())
