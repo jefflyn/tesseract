@@ -1,5 +1,8 @@
 import datetime
 
+import pandas as pd
+
+from stocks.future import future_trade
 from stocks.future.future_constants import *
 from stocks.util import date_util
 from stocks.util.db_util import get_db
@@ -58,6 +61,18 @@ def get_future_basics(code=None, type=None, night=None, on_target=None):
     return df
 
 
+def add_realtime_data(codes=None, local_last_trade_date=None):
+    last_trade_date = date_util.get_today(date_util.FORMAT_FLAT)  # .get_latest_trade_date(1)[0]
+    if local_last_trade_date < last_trade_date:  # not the latest record
+        sina_code = codes[0].split('.')[0]
+        realtime = future_trade.realtime(sina_code)
+        if realtime is not None and realtime.empty is False:
+            realtime['ts_code'] = codes[0]
+            realtime['trade_date'] = last_trade_date
+            return realtime
+    return None
+
+
 def get_ts_future_daily(ts_code=None, start_date=None, end_date=None):
     sql = "select * from ts_future_daily where 1=1 "
     if ts_code is not None:
@@ -73,6 +88,12 @@ def get_ts_future_daily(ts_code=None, start_date=None, end_date=None):
 
     params = {'codes': ts_code, 'start': start_date, 'end': end_date}
     df = read_sql(sql, params=params)
+
+    local_last_trade_date = list(df['trade_date'])[-1]
+    realtime = add_realtime_data(ts_code, local_last_trade_date)
+    if realtime is not None:
+        # hist_data = hist_data.append(realtime, ignore_index=True)
+        df = pd.concat([df, realtime], ignore_index=True)
     return df
 
 

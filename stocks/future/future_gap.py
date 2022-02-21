@@ -13,7 +13,11 @@ def save_gap(values=None):
                 'values(%s, %s, %s, %s, %s, %s, %s, %s, %s)', values)
             db.commit()
         except Exception as err:
-            print('  >>>error:', err)
+            print('  >>> error and update:', err)
+            sql = "update gap_log set is_fill=0, fill_date=now(), update_time=now() where code='" + values[
+                0][0] + "' and start_date='" + values[0][1] + "';"
+            cursor.execute(sql)
+            db.commit()
         db.rollback()
 
 
@@ -31,6 +35,10 @@ if __name__ == '__main__':
     db = _dt.get_db()
     # 使用cursor()方法创建一个游标对象
     cursor = db.cursor()
+
+    update_sql = 'update gap_log set is_fill = 1, update_time = now();'
+    cursor.execute(update_sql)
+    db.commit()
     for code in code_list:
         df_data = future_util.get_ts_future_daily(code)[['ts_code', 'trade_date', 'open', 'high', 'low', 'close']]
         if df_data is None or df_data.empty:
@@ -52,14 +60,14 @@ if __name__ == '__main__':
             if begin_low > highest:
                 highest_index = high_list.index(highest, index + 1)
                 save_gap([(row['code'].split('.')[0], row['date'], date_list[highest_index], '向下跳空',
-                                      begin_low, highest,
-                                      round((highest - begin_low) * 100 / begin_low, 2), 0, date_util.now())])
+                           begin_low, highest,
+                           round((highest - begin_low) * 100 / begin_low, 2), 0, date_util.now())])
             # 向上跳空缺口
             if begin_high < lowest:
                 lowest_index = low_list.index(lowest, index + 1)
                 save_gap([(row['code'].split('.')[0], row['date'], date_list[lowest_index], '向上跳空',
-                                      begin_high, lowest,
-                                      round((lowest - begin_high) * 100 / begin_high, 2), 0, date_util.now())])
+                           begin_high, lowest,
+                           round((lowest - begin_high) * 100 / begin_high, 2), 0, date_util.now())])
 
         # to db
         # save_gap(insert_values)

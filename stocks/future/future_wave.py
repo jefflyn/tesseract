@@ -19,11 +19,11 @@ def add_realtime_data(code=None, local_last_trade_date=None):
 
 
 def get_wave(code=None, hist_data=None, begin_low=True, duration=0, change=0):
-    local_last_trade_date = list(hist_data['date'])[-1]
-    realtime = add_realtime_data(code, local_last_trade_date)
-    if realtime is not None:
-        # hist_data = hist_data.append(realtime, ignore_index=True)
-        hist_data = pd.concat([hist_data, realtime], ignore_index=True)
+    # local_last_trade_date = list(hist_data['date'])[-1]
+    # realtime = add_realtime_data(code, local_last_trade_date)
+    # if realtime is not None:
+    #     # hist_data = hist_data.append(realtime, ignore_index=True)
+    #     hist_data = pd.concat([hist_data, realtime], ignore_index=True)
     new_code = code.split('.')[0]
     left_data = wave_from(new_code, hist_data, begin_low, 'left', duration, change)
     # sorted by date asc
@@ -63,7 +63,7 @@ def wave_from(code, df, begin_low, direction='left', duration=0, change=0):
     if direction == 'right':
         begin_date = pivot_date
         end_date = last_date
-    diff_days = datetime.strptime(end_date, '%Y%m%d') - datetime.strptime(begin_date, '%Y%m%d')
+    diff_days = datetime.strptime(str(end_date), '%Y%m%d') - datetime.strptime(str(begin_date), '%Y%m%d')
 
     while diff_days.days > duration:
         data = df[(df.date >= begin_date) & (df.date < end_date)] if direction == 'left' else df[
