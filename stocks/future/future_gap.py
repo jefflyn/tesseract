@@ -14,7 +14,7 @@ def save_gap(values=None):
             db.commit()
         except Exception as err:
             print('  >>> error and update:', err)
-            sql = "update gap_log set is_fill=0, fill_date=now(), update_time=now() where code='" + values[
+            sql = "update gap_log set is_fill=0, fill_date=null, update_time=now() where code='" + values[
                 0][0] + "' and start_date='" + values[0][1] + "';"
             cursor.execute(sql)
             db.commit()
@@ -36,7 +36,7 @@ if __name__ == '__main__':
     # 使用cursor()方法创建一个游标对象
     cursor = db.cursor()
 
-    update_sql = 'update gap_log set is_fill = 1, update_time = now();'
+    update_sql = 'update gap_log set is_fill = 1, fill_date=CURDATE(), update_time = now();'
     cursor.execute(update_sql)
     db.commit()
     for code in code_list:
