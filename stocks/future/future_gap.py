@@ -13,15 +13,56 @@ def save_gap(values=None):
                 'values(%s, %s, %s, %s, %s, %s, %s, %s, %s)', values)
             db.commit()
         except Exception as err:
-            print('  >>> error and update:', err)
-            sql = "update gap_log set is_fill=0, fill_date=null, update_time=now() where code='" + values[
-                0][0] + "' and start_date='" + values[0][1] + "';"
-            cursor.execute(sql)
-            db.commit()
-        db.rollback()
+            print('  >>> insert gap log error:', err)
+
+
+def update_gap_record(end_price, end_date, code, start_date):
+    sql = "update gap_log set end_price=%d, end_date='%s', is_fill=1, fill_date='%s', " \
+          "update_time=now() where code='%s' and start_date='%s';"
+    cursor.execute(sql % (end_price, end_date, end_date, code, start_date))
+    db.commit()
+
+
+def update_gap():
+    basic_df = _dt.read_sql("select code, concat(code, '.', exchange) ts_code from future_basic where deleted=0",
+                            params=None)
+    gap_df = _dt.read_sql('select * from gap_log where is_fill=0', params=None)
+    for index, row in gap_df.iterrows():
+        code = row['code']
+        start_date = row['start_date']
+        gap_price = row['start_price']
+        type = row['gap_type']
+        basic = basic_df[basic_df.code == code]
+        ts_code = basic.loc[basic.index.to_numpy()[0], 'ts_code']
+        ts_daily_df = future_util.get_ts_future_daily(ts_code, start_date=start_date)[
+            ['ts_code', 'trade_date', 'open', 'high', 'low', 'close']]
+        if ts_daily_df is None or ts_daily_df.empty:
+            print(code + ' no daily data!')
+            continue
+        ts_daily_df.columns = ['code', 'date', 'open', 'high', 'low', 'close']
+        date_list = list(ts_daily_df['date'])
+        high_list = list(ts_daily_df['high'])
+        low_list = list(ts_daily_df['low'])
+
+        lowest = min(low_list[1:])
+        highest = max(high_list[1:])
+        if type == '向上跳空':
+            if lowest <= gap_price:
+                lowest_index = low_list.index(lowest, 1)
+                update_gap_record(lowest, date_list[lowest_index], code, start_date)
+        else:
+            if highest >= gap_price:
+                highest_index = high_list.index(highest, 1)
+                update_gap_record(highest, date_list[highest_index], code, start_date)
 
 
 if __name__ == '__main__':
+    # 建立数据库连接
+    db = _dt.get_db()
+    # 使用cursor()方法创建一个游标对象
+    cursor = db.cursor()
+    update_gap()
+
     ############################################################
     select_main_codes = "select concat(code, '.', exchange) ts_code from future_basic where deleted=0"
     main_codes_df = future_util.select_from_sql(select_main_codes)
@@ -31,14 +72,7 @@ if __name__ == '__main__':
     ############################################################
     wave_data_list = []
     wave_detail_list = []
-    # 建立数据库连接
-    db = _dt.get_db()
-    # 使用cursor()方法创建一个游标对象
-    cursor = db.cursor()
 
-    update_sql = 'update gap_log set is_fill = 1, fill_date=CURDATE(), update_time = now();'
-    cursor.execute(update_sql)
-    db.commit()
     for code in code_list:
         df_data = future_util.get_ts_future_daily(code)[['ts_code', 'trade_date', 'open', 'high', 'low', 'close']]
         if df_data is None or df_data.empty:

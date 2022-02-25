@@ -129,13 +129,14 @@ def wave_to_str(wave_df=None, size=4, change=10):
     if wave_df is None or size < 1:
         return ''
     changelist = list(wave_df['change'])
-    less_than_change = max([abs(e) for e in changelist]) < change
+    less_than_change = False
 
     if len(changelist) <= size:
         wave_change_str = ','.join(list(map(str, changelist)))
         wave_day_str = ','.join(list(map(str, wave_df['days'])))
         wave_price_str = ','.join(list(map(str, wave_df['end_price'])))
     else:
+        less_than_change = max([abs(e) for e in changelist]) < change
         change_list = []
         sum_last = 0
         day_list = []
