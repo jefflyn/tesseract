@@ -19,12 +19,12 @@ def save_gap(values=None):
 def update_gap_record(end_price, end_date, code, start_date):
     sql = "update gap_log set end_price=%d, end_date='%s', is_fill=1, fill_date='%s', " \
           "update_time=now() where code='%s' and start_date='%s';"
-    cursor.execute(sql % (end_price, end_date, end_date, code, start_date))
+    cursor.execute(sql % (end_price, end_date, date_util.parse_date_str(end_date), code, start_date))
     db.commit()
 
 
 def update_gap():
-    basic_df = _dt.read_sql("select code, concat(code, '.', exchange) ts_code from future_basic where deleted=0",
+    basic_df = _dt.read_sql("select code, concat(code, '.', exchange) ts_code from future_basic",
                             params=None)
     gap_df = _dt.read_sql('select * from gap_log where is_fill=0', params=None)
     for index, row in gap_df.iterrows():
@@ -33,6 +33,7 @@ def update_gap():
         gap_price = row['start_price']
         type = row['gap_type']
         basic = basic_df[basic_df.code == code]
+        print(code)
         ts_code = basic.loc[basic.index.to_numpy()[0], 'ts_code']
         ts_daily_df = future_util.get_ts_future_daily(ts_code, start_date=start_date)[
             ['ts_code', 'trade_date', 'open', 'high', 'low', 'close']]
