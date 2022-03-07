@@ -23,6 +23,13 @@ def update_gap_record(end_price, end_date, code, start_date):
     db.commit()
 
 
+def del_gap_record(code):
+    sql = "delete from gap_log where code='%s';"
+    cursor.execute(sql % code)
+    db.commit()
+    print("delete gap record ", code)
+
+
 def update_gap():
     basic_df = _dt.read_sql("select code, concat(code, '.', exchange) ts_code from future_basic",
                             params=None)
@@ -34,6 +41,9 @@ def update_gap():
         type = row['gap_type']
         basic = basic_df[basic_df.code == code]
         print(code)
+        if basic.empty is True:
+            del_gap_record(code)
+            continue
         ts_code = basic.loc[basic.index.to_numpy()[0], 'ts_code']
         ts_daily_df = future_util.get_ts_future_daily(ts_code, start_date=start_date)[
             ['ts_code', 'trade_date', 'open', 'high', 'low', 'close']]
@@ -69,7 +79,7 @@ if __name__ == '__main__':
     main_codes_df = future_util.select_from_sql(select_main_codes)
     code_list = list(main_codes_df['ts_code'])
     ############################################################
-    # code_list = ['AP2205.ZCE']
+    # code_list = ['P2201.DCE']
     ############################################################
     wave_data_list = []
     wave_detail_list = []
