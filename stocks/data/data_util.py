@@ -593,7 +593,7 @@ def get_last_trade_data(codes=None):
 
 if __name__ == '__main__':
     # get_up_gap_codes()
-    # k_data = ts.get_k_data('000836', ktype='W')
+    # k_data = ts.get_k_data('', ktype='W')
     # print(k_data)
     # print(format_amount(''))
     # print(format_amount(None))
@@ -605,5 +605,11 @@ if __name__ == '__main__':
     # print(format_amount(2369852))
     # print(format_amount(25896325))
     # print(format_amount(369852369))
-    print(get_last_trade_data(['600126', '600162']))
+    # print(get_last_trade_data(['', '']))
+    df = get_data("id.csv")
+    step = 28000
+    for i in range(0, df.index.size, step):
+        print(i, 1 + step)
+
+    # df.to_csv("2_udate.sql")
 
