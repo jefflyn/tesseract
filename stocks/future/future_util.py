@@ -88,7 +88,8 @@ def get_ts_future_daily(ts_code=None, start_date=None, end_date=None):
 
     params = {'codes': ts_code, 'start': start_date, 'end': end_date}
     df = read_sql(sql, params=params)
-
+    if df is None or df.empty is True:
+        return df
     local_last_trade_date = list(df['trade_date'])[-1]
     realtime = add_realtime_data(ts_code, local_last_trade_date)
     if realtime is not None:

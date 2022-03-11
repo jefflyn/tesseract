@@ -48,7 +48,7 @@ def update_gap():
         ts_daily_df = future_util.get_ts_future_daily(ts_code, start_date=start_date)[
             ['ts_code', 'trade_date', 'open', 'high', 'low', 'close']]
         if ts_daily_df is None or ts_daily_df.empty:
-            print(code + ' no daily data!')
+            print(code + ' no ts daily data!')
             continue
         ts_daily_df.columns = ['code', 'date', 'open', 'high', 'low', 'close']
         date_list = list(ts_daily_df['date'])
