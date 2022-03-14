@@ -3,8 +3,9 @@ Created on Oct 12, 2010
 Decision Tree Source Code for Machine Learning in Action Ch. 3
 @author: Peter Harrington
 '''
-from math import log
 import operator
+from math import log
+
 
 def createDataSet():
     dataSet = [[1, 1, 'yes'],
@@ -26,7 +27,7 @@ def calcShannonEnt(dataSet):
     shannonEnt = 0.0
     for key in labelCounts:
         prob = float(labelCounts[key])/numEntries
-        shannonEnt -= prob * log(prob,2) #logs util 2
+        shannonEnt -= prob * log(prob,2) #logs utils 2
     return shannonEnt
     
 def splitDataSet(dataSet, axis, value):

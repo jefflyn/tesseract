@@ -1,6 +1,7 @@
-import nnmf
 import urllib2
 from numpy import *
+
+import nnmf
 
 tickers=['YHOO','AVP','BIIB','BP','CL','CVX',
          'DNA','EXPE','GOOG','PG','XOM','AMGN']
@@ -36,7 +37,7 @@ print w
 for i in range(shape(h)[0]):
   print "Feature %d" %i
   
-  # Get the top stocks for this feature
+  # Get the top zillion for this feature
   ol=[(h[i,j],tickers[j]) for j in range(shape(h)[1])]
   ol.sort()
   ol.reverse()
