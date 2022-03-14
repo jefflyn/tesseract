@@ -43,7 +43,7 @@ def get_future_basics(code=None, type=None, night=None, on_target=None):
     :param on_target:
     :return:
     '''
-    sql = "select * from future_basics where deleted = 0 "
+    sql = "select * from future_basic where deleted = 0 "
     if on_target is True:
         sql += 'and target = :on_target '
     if code is not None:
@@ -90,11 +90,12 @@ def get_ts_future_daily(ts_code=None, start_date=None, end_date=None):
     df = read_sql(sql, params=params)
     if df is None or df.empty is True:
         return df
-    local_last_trade_date = list(df['trade_date'])[-1]
-    realtime = add_realtime_data(ts_code, local_last_trade_date)
-    if realtime is not None:
-        # hist_data = hist_data.append(realtime, ignore_index=True)
-        df = pd.concat([df, realtime], ignore_index=True)
+    if end_date is None:
+        local_last_trade_date = list(df['trade_date'])[-1]
+        realtime = add_realtime_data(ts_code, local_last_trade_date)
+        if realtime is not None:
+            # hist_data = hist_data.append(realtime, ignore_index=True)
+            df = pd.concat([df, realtime], ignore_index=True)
     return df
 
 
