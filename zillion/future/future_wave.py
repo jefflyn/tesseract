@@ -299,7 +299,7 @@ def get_wave_list(wave_str=None, size=4):
         change_arr.append(0)
     while len(price_arr) < size:
         price_arr.append(0)
-    print(change_arr, price_arr)
+    # print(change_arr, price_arr)
     return [round(float(e), 2) for e in change_arr] + [round(float(e), 2) for e in price_arr]
 
 

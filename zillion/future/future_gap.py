@@ -57,7 +57,7 @@ def update_gap():
 
         lowest = min(low_list[1:])
         highest = max(high_list[1:])
-        if type == '向上跳空':
+        if type == '跳空高开':
             if lowest <= gap_price:
                 lowest_index = low_list.index(lowest, 1)
                 update_gap_record(lowest, date_list[lowest_index], code, start_date)
@@ -101,16 +101,16 @@ if __name__ == '__main__':
             begin_high = high_list[index]
             lowest = min(low_list[index + 1:])
             highest = max(high_list[index + 1:])
-            # 向下跳空缺口
+            # 跳空低开缺口
             if begin_low > highest:
                 highest_index = high_list.index(highest, index + 1)
-                save_gap([(row['code'].split('.')[0], row['date'], date_list[highest_index], '向下跳空',
+                save_gap([(row['code'].split('.')[0], row['date'], date_list[highest_index], '跳空低开',
                            begin_low, highest,
                            round((highest - begin_low) * 100 / begin_low, 2), 0, date_util.now())])
-            # 向上跳空缺口
+            # 跳空高开缺口
             if begin_high < lowest:
                 lowest_index = low_list.index(lowest, index + 1)
-                save_gap([(row['code'].split('.')[0], row['date'], date_list[lowest_index], '向上跳空',
+                save_gap([(row['code'].split('.')[0], row['date'], date_list[lowest_index], '跳空高开',
                            begin_high, lowest,
                            round((lowest - begin_high) * 100 / begin_high, 2), 0, date_util.now())])
 
