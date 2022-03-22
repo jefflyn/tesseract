@@ -7,7 +7,6 @@ if __name__ == '__main__':
     if df_data is None or df_data.empty is True:
         df_data = pro.us_daily(ts_code='BABA')
         db_util.to_db(df_data, 'stock_daily')
-        df_data.columns = ['code', 'date', 'open', 'high', 'low', 'close']
     wave_df = future_wave.get_wave('BABA', hist_data=df_data, begin_low=True, duration=0, change=0)
     wave_str = future_wave.wave_to_str(wave_df)
     wave_list = future_wave.get_wave_list(wave_str)
