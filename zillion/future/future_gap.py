@@ -40,7 +40,7 @@ def update_gap():
         gap_price = row['start_price']
         type = row['gap_type']
         basic = basic_df[basic_df.code == code]
-        print(code)
+        print(code, 'update gap...')
         if basic.empty is True:
             del_gap_record(code)
             continue
@@ -75,11 +75,12 @@ if __name__ == '__main__':
     update_gap()
 
     ############################################################
-    select_main_codes = "select concat(code, '.', exchange) ts_code from future_basic where deleted=0"
-    main_codes_df = future_util.select_from_sql(select_main_codes)
-    code_list = list(main_codes_df['ts_code'])
+    # select_codes = "select ts_code from ts_future_contract where type=2"
+    select_codes = "select concat(code, '.', exchange) ts_code from future_basic where deleted=0"
+    codes_df = future_util.select_from_sql(select_codes)
+    code_list = list(codes_df['ts_code'])
     ############################################################
-    # code_list = ['P2201.DCE']
+    # code_list = ['']
     ############################################################
     wave_data_list = []
     wave_detail_list = []
