@@ -1,6 +1,13 @@
 import zillion.utils.db_util as _dt
 from zillion.future import future_util
 from zillion.utils import date_util
+from zillion.utils.date_util import FORMAT_FLAT
+
+monthly_contract = [
+    'AL.SHF', 'BC.INE', 'CU.SHF', 'LU.INE', 'NI.SHF',
+    'PB.SHF', 'PG.DCE', 'SC.INE', 'SN.SHF', 'SS.SHF',
+    'ZN.SHF'
+]
 
 
 def save_gap(values=None):
@@ -30,16 +37,14 @@ def del_gap_record(code):
     print("delete gap record ", code)
 
 
-def update_gap():
-    basic_df = _dt.read_sql("select code, concat(code, '.', exchange) ts_code from future_basic",
-                            params=None)
+def update_gap(codes_df):
     gap_df = _dt.read_sql('select * from gap_log where is_fill=0', params=None)
     for index, row in gap_df.iterrows():
         code = row['code']
         start_date = row['start_date']
         gap_price = row['start_price']
         type = row['gap_type']
-        basic = basic_df[basic_df.code == code]
+        basic = codes_df[codes_df.code == code]
         print(code, 'update gap...')
         if basic.empty is True:
             del_gap_record(code)
@@ -67,26 +72,20 @@ def update_gap():
                 update_gap_record(highest, date_list[highest_index], code, start_date)
 
 
-if __name__ == '__main__':
-    # 建立数据库连接
-    db = _dt.get_db()
-    # 使用cursor()方法创建一个游标对象
-    cursor = db.cursor()
-    update_gap()
-
-    ############################################################
-    # select_codes = "select ts_code from ts_future_contract where type=2"
-    select_codes = "select concat(code, '.', exchange) ts_code from future_basic where deleted=0"
-    codes_df = future_util.select_from_sql(select_codes)
-    code_list = list(codes_df['ts_code'])
+def add_gap(codes_df_p):
+    code_list = list(codes_df_p['ts_code'])
     ############################################################
     # code_list = ['']
     ############################################################
     wave_data_list = []
     wave_detail_list = []
-
+    start_date = date_util.get_last_2month_start(FORMAT_FLAT)
     for code in code_list:
-        df_data = future_util.get_ts_future_daily(code)[['ts_code', 'trade_date', 'open', 'high', 'low', 'close']]
+        if code in monthly_contract:
+            df_data = future_util.get_ts_future_daily(code, start_date=start_date)[['ts_code', 'trade_date', 'open',
+                                                                                    'high', 'low', 'close']]
+        else:
+            df_data = future_util.get_ts_future_daily(code)[['ts_code', 'trade_date', 'open', 'high', 'low', 'close']]
         if df_data is None or df_data.empty:
             print(code + ' no daily data!')
             continue
@@ -115,6 +114,19 @@ if __name__ == '__main__':
                            begin_high, lowest,
                            round((lowest - begin_high) * 100 / begin_high, 2), 0, date_util.now())])
 
-        # to db
-        # save_gap(insert_values)
+
+if __name__ == '__main__':
+    # 建立数据库连接
+    db = _dt.get_db()
+    # 使用cursor()方法创建一个游标对象
+    cursor = db.cursor()
+    sql = "select if(monthly=0, code, symbol) code, concat(if(monthly=0, code, symbol), '.', exchange) ts_code " \
+          "from future_basic where deleted=0;"
+    codes_df = _dt.read_sql(sql, params=None)
+    # 先更新gap信息
+    update_gap(codes_df)
+
+    # 插入新的gap
+    add_gap(codes_df)
+
     print('done @', date_util.get_now())

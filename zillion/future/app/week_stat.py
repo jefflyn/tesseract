@@ -5,8 +5,8 @@ from zillion.utils import db_util
 
 if __name__ == '__main__':
     future_basics = future_util.get_future_basics()
-    week_start = '20220314'
-    week_end = '20220318'
+    week_start = '20220321'
+    week_end = '20220325'
     week_stat_data = []
     for index, row in future_basics.iterrows():
         code = row['code'] + '.' + row['exchange']
