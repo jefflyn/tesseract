@@ -1,3 +1,5 @@
+import pandas as pd
+
 import zillion.utils.db_util as _dt
 from zillion.future import future_util
 from zillion.utils import date_util
@@ -8,6 +10,13 @@ monthly_contract = [
     'PB.SHF', 'PG.DCE', 'SC.INE', 'SN.SHF', 'SS.SHF',
     'ZN.SHF'
 ]
+
+
+def in_monthly_contract(code):
+    for c in monthly_contract:
+        if c.startswith(code):
+            return True
+    return False
 
 
 def save_gap(values=None):
@@ -49,7 +58,7 @@ def update_gap(codes_df):
         if basic.empty is True:
             del_gap_record(code)
             continue
-        ts_code = basic.loc[basic.index.to_numpy()[0], 'ts_code']
+        ts_code = basic.loc[basic.index.to_numpy()[0], 'main_code']
         ts_daily_df = future_util.get_ts_future_daily(ts_code, start_date=start_date)[
             ['ts_code', 'trade_date', 'open', 'high', 'low', 'close']]
         if ts_daily_df is None or ts_daily_df.empty:
@@ -74,8 +83,9 @@ def update_gap(codes_df):
 
 def add_gap(codes_df_p):
     code_list = list(codes_df_p['ts_code'])
+    main_code = list(codes_df_p['main_code'])
     ############################################################
-    # code_list = ['']
+    # code_list = ['AL.SHF']
     ############################################################
     wave_data_list = []
     wave_detail_list = []
@@ -83,7 +93,13 @@ def add_gap(codes_df_p):
     for code in code_list:
         if code in monthly_contract:
             df_data = future_util.get_ts_future_daily(code, start_date=start_date)[['ts_code', 'trade_date', 'open',
-                                                                                    'high', 'low', 'close']]
+                                                                                'high', 'low', 'close']]
+            local_last_trade_date = list(df_data['trade_date'])[-1]
+            realtime = future_util.add_realtime_data([main_code[code_list.index(code)]], local_last_trade_date)
+            if realtime is not None:
+                realtime['ts_code'] = code
+                realtime.drop(['code', 'date'], axis=1, inplace=True)
+                df_data = pd.concat([df_data, realtime], ignore_index=True)
         else:
             df_data = future_util.get_ts_future_daily(code)[['ts_code', 'trade_date', 'open', 'high', 'low', 'close']]
         if df_data is None or df_data.empty:
@@ -120,8 +136,8 @@ if __name__ == '__main__':
     db = _dt.get_db()
     # 使用cursor()方法创建一个游标对象
     cursor = db.cursor()
-    sql = "select if(monthly=0, code, symbol) code, concat(if(monthly=0, code, symbol), '.', exchange) ts_code " \
-          "from future_basic where deleted=0;"
+    sql = "select if(monthly=0, code, symbol) code, concat(if(monthly=0, code, symbol), '.', exchange) ts_code, " \
+          " concat(code, '.', exchange)  main_code from future_basic where deleted=0;"
     codes_df = _dt.read_sql(sql, params=None)
     # 先更新gap信息
     update_gap(codes_df)
