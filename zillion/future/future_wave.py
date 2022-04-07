@@ -131,7 +131,12 @@ def wave_to_str(wave_df=None, size=4, change=10):
     changelist = list(wave_df['change'])
     less_than_change = False
 
-    if len(changelist) <= size:
+    if len(changelist) == 1:
+        for index, row in wave_df.iterrows():
+            wave_change_str = str(row['change']) + ',0'
+            wave_day_str = str(row['days']) + ',0'
+            wave_price_str = str(row['begin_price']) + "," + str(row['end_price'])
+    elif len(changelist) <= size:
         wave_change_str = ','.join(list(map(str, changelist)))
         wave_day_str = ','.join(list(map(str, wave_df['days'])))
         wave_price_str = ','.join(list(map(str, wave_df['end_price'])))
@@ -194,8 +199,6 @@ def wave_to_str(wave_df=None, size=4, change=10):
         wave_day_str = ','.join(list(map(str, wave_df['days']))[length - size:])
         wave_price_str = ','.join(list(map(str, wave_df['end_price']))[length - size:])
     return wave_change_str + '|' + wave_day_str + '|' + wave_price_str
-
-
 
 
 def get_wave_ab(wave_str=None, pct_limit=33):

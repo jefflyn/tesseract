@@ -8,7 +8,7 @@ from zillion.utils.date_util import FORMAT_FLAT
 monthly_contract = [
     'AL.SHF', 'BC.INE', 'CU.SHF', 'LU.INE', 'NI.SHF',
     'PB.SHF', 'PG.DCE', 'SC.INE', 'SN.SHF', 'SS.SHF',
-    'ZN.SHF'
+    'ZN.SHF', 'EB.DCE', 'NR.INE'
 ]
 
 

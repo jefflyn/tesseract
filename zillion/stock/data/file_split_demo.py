@@ -1,6 +1,9 @@
+import math
+
 import pandas as pd
 
-if __name__ == '__main__':
+
+def insert_sleep():
     file_name = 'id.csv'
     data = pd.read_csv(file_name, sep=' ')
     step1 = 280000
@@ -16,3 +19,17 @@ if __name__ == '__main__':
             df_pt.loc[j + step2] = "select sleep(1);"
         times += 1
         df_pt.to_csv(str(times) + "_update.sql", index=False, header=False)
+
+
+def split_sql():
+    ids = []
+    total = len(ids)
+    page_size = 20000
+    pages = int(math.ceil(total / page_size))
+    for i in range(0, pages):
+        id_list = tuple(ids[i * page_size:page_size * i + page_size])
+        print("select distinct shop_id, seller_id from device_box where status<>-1 and shop_id in " + str(id_list) + ";")
+
+
+if __name__ == '__main__':
+    split_sql()

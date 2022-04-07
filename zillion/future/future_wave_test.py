@@ -2,7 +2,7 @@ from zillion.future import future_util
 from zillion.future import future_wave
 
 if __name__ == '__main__':
-    code = 'RU2205.SHF'  # SHF ZCE DCE
+    code = 'AP2210.ZCE'  # SHF ZCE DCE
     df_data = future_util.get_ts_future_daily(code)[['ts_code', 'trade_date', 'open', 'high', 'low', 'close']]
     df_data.columns = ['code', 'date', 'open', 'high', 'low', 'close']
     wave_df = future_wave.get_wave(code, hist_data=df_data, begin_low=True, duration=0, change=0)
