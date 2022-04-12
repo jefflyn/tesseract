@@ -31,6 +31,7 @@ def get_wave(code=None, hist_data=None, begin_low=True, duration=0, change=0):
     right_data = wave_from(new_code, hist_data, begin_low, 'right', duration, change)
     period_df = pd.DataFrame(left_data + right_data,
                              columns=['code', 'begin', 'end', 'status', 'begin_price', 'end_price', 'days', 'change'])
+    period_df['ts_code'] = code
     period_list = [period_df]
     if period_list is None or len(period_list) == 0:
         print('result is empty, please check the code is exist!')
@@ -139,7 +140,13 @@ def wave_to_str(wave_df=None, size=4, change=10):
     elif len(changelist) <= size:
         wave_change_str = ','.join(list(map(str, changelist)))
         wave_day_str = ','.join(list(map(str, wave_df['days'])))
-        wave_price_str = ','.join(list(map(str, wave_df['end_price'])))
+        if len(changelist) == 2:
+            wave_price_str = ','.join(list(map(str, wave_df['begin_price'])))
+            wave_price_str = wave_price_str + ',' + str(list(wave_df['end_price'])[1])
+            wave_change_str = wave_change_str + ',0'
+            wave_day_str = wave_day_str + ',0'
+        else:
+            wave_price_str = ','.join(list(map(str, wave_df['end_price'])))
     else:
         less_than_change = max([abs(e) for e in changelist]) < change
         change_list = []
@@ -308,27 +315,50 @@ def get_wave_list(wave_str=None, size=4):
 
 def wave_to_db(wave_list=None, wave_detail_list=None):
     wave_df_result = pd.DataFrame(wave_list,
-                                  columns=['code', 'start', 'end', 'a', 'b', 'c', 'd', 'ap', 'bp', 'cp', 'dp'])
+                                  columns=['ts_code', 'code', 'start', 'end', 'a', 'b', 'c', 'd', 'ap', 'bp', 'cp', 'dp'])
     _dt.to_db(wave_df_result, 'future_wave')
     wave_detail_result = pd.DataFrame(pd.concat(wave_detail_list),
                                       columns=['code', 'begin', 'end', 'status', 'begin_price', 'end_price',
-                                               'change', 'days'])
+                                               'change', 'days', 'ts_code'])
     _dt.to_db(wave_detail_result, 'future_wave_detail')
 
 
+def update_abcd_hl():
+    # 建立数据库连接
+    db = _dt.get_db()
+    # 使用cursor()方法创建一个游标对象
+    cursor = db.cursor()
+    try:
+        sql = "update future_basic fb join future_wave at on at.code = fb.code join " \
+              "(select substring_index(ts_code,'.', 1) code, max(begin_price) high1, max(end_price) high2, " \
+              "min(begin_price) low1, min(end_price) low2 from future_wave_detail group by ts_code) hl " \
+              "on hl.code = fb.code set fb.high=if(hl.high1 > hl.high2, high1, high2), " \
+              "fb.low=if(hl.low1 < hl.low2, low1, low2), fb.a=at.ap, fb.b=if(at.bp = '', null, at.bp), " \
+              "fb.c=if(at.cp = '', null, at.cp), fb.d=if(at.dp = '', null, at.dp), fb.update_time=now() " \
+              "where fb.deleted = 0;"
+        cursor.execute(sql)
+        db.commit()
+    except Exception as err:
+        print('  >>> update_abcd_hl error:', err)
+
+
 if __name__ == '__main__':
+    print(date_util.get_now())
     ############################################################
     select_ts_codes = "select ts_code from ts_future_contract where type in (1, 2) and fut_code " \
                       "in (select symbol from future_basic where deleted=0)"
+    ts_codes = list(_dt.read_sql(select_ts_codes, None)['ts_code'])
+    if 10 < date_util.now().hour < 17:
+        ts_codes = []
     select_main_codes = "select concat(code, '.', exchange) ts_code from future_basic where deleted=0"
-    ts_codes_df = _dt.read_sql(select_ts_codes, None)
-    main_codes_df = _dt.read_sql(select_main_codes, None)
-    code_list = list(pd.concat([ts_codes_df, main_codes_df])['ts_code'])
+    main_codes = list(_dt.read_sql(select_main_codes, None)['ts_code'])
+    code_list = main_codes + ts_codes
     ############################################################
     # code_list = ['APL.ZCE']
     ############################################################
     wave_data_list = []
     wave_detail_list = []
+    size = len(code_list)
     for code in code_list:
         df_data = future_util.get_ts_future_daily(code)[['ts_code', 'trade_date', 'open', 'high', 'low', 'close']]
         if df_data is None or df_data.empty:
@@ -340,15 +370,19 @@ if __name__ == '__main__':
         wave_detail_list.append(wave_df)
         wave_str = wave_to_str(wave_df)
         wave_list = get_wave_list(wave_str)
-        wave_list.insert(0, code.split('.')[0])
-        wave_list.insert(1, list(wave_df['begin'])[0])
-        wave_list.insert(2, list(wave_df['end'])[-1])
+        wave_list.insert(0, code)
+        wave_list.insert(1, code.split('.')[0])
+        wave_list.insert(2, list(wave_df['begin'])[0])
+        wave_list.insert(3, list(wave_df['end'])[-1])
         wave_data_list.append(wave_list)
         # print(result)
         # print(wave_str)
         # wave_ab = get_wave_ab(wave_str, 33)
         # print(wave_ab)
         # print('get_wave_ab_fast', get_wave_ab_fast(wave_str))
+        print(size)
+        size = size - 1
 
     wave_to_db(wave_data_list, wave_detail_list)
     print(date_util.get_now())
+    update_abcd_hl()

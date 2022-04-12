@@ -81,6 +81,10 @@ def get_now():
     return now().strftime(FORMAT_DATETIME)
 
 
+def in_trade_time():
+    return open_time < now() < close_time
+
+
 def get_now_hour():
     return now().strftime(FORMAT_HOUR)
 
