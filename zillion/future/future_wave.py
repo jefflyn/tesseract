@@ -83,8 +83,8 @@ def wave_from(code, df, begin_low, direction='left', duration=0, change=0):
             status = 'down' if is_max else 'up'
         if direction == 'right':
             # if the latest one, get the close price, calculate the actual rises
-            # end_price = close if date == last_date else price
-            end_price = price
+            end_price = close  # if date == last_date else price
+            # end_price = price
             end_date = date
             status = 'up' if is_max else 'down'
 
@@ -338,6 +338,7 @@ def update_abcd_hl():
               "where fb.deleted = 0;"
         cursor.execute(sql)
         db.commit()
+        print('  >>> update_abcd_hl done!')
     except Exception as err:
         print('  >>> update_abcd_hl error:', err)
 
