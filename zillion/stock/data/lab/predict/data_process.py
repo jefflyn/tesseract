@@ -10,7 +10,7 @@ class DataCollect(object):
 
     def collect_data(self, in_code, start_dt, end_dt):
         # 建立数据库连接，获取日线基础行情(开盘价，收盘价，最高价，最低价，成交量，成交额)
-        db = pymysql.connect(host='127.0.0.1', user='linjingu', passwd='linjingu', db='zillion', charset='utf8')
+        db = pymysql.connect(host='127.0.0.1', user='linjingu', passwd='linjingu', db='stock', charset='utf8')
         cursor = db.cursor()
         sql_done_set = "SELECT * FROM hist_data_day a where ts_code = '%s' and trade_date >= '%s' and trade_date <= '%s' order by trade_date asc" % (
             in_code, start_dt, end_dt)
