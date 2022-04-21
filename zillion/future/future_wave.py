@@ -316,6 +316,7 @@ def get_wave_list(wave_str=None, size=4):
 def wave_to_db(wave_list=None, wave_detail_list=None):
     wave_df_result = pd.DataFrame(wave_list,
                                   columns=['ts_code', 'code', 'start', 'end', 'a', 'b', 'c', 'd', 'ap', 'bp', 'cp', 'dp'])
+    wave_df_result['update_time'] = date_util.now()
     _dt.to_db(wave_df_result, 'future_wave')
     wave_detail_result = pd.DataFrame(pd.concat(wave_detail_list),
                                       columns=['code', 'begin', 'end', 'status', 'begin_price', 'end_price',
