@@ -179,6 +179,10 @@ def get_this_year_end(format=FORMAT_DEFAULT):
     return this_year_end.strftime(format)
 
 
+def get_date_before(days=0, format=FORMAT_DEFAULT):
+    return (now() - timedelta(days=now().weekday() + days)).strftime(format)
+
+
 # 去年第一天和最后一天
 def get_last_year_start(format=FORMAT_DEFAULT):
     return last_year_start.strftime(format)

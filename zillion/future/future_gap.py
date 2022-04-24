@@ -6,9 +6,9 @@ from zillion.utils import date_util
 from zillion.utils.date_util import FORMAT_FLAT
 
 monthly_contract = [
-    'AL.SHF', 'BC.INE', 'CU.SHF', 'LU.INE', 'NI.SHF',
-    'PB.SHF', 'PG.DCE', 'SC.INE', 'SN.SHF', 'SS.SHF',
-    'ZN.SHF', 'EB.DCE', 'NR.INE'
+    # 'AL.SHF', 'BC.INE', 'CU.SHF', 'LU.INE', 'NI.SHF',
+    # 'PB.SHF', 'PG.DCE', 'SC.INE', 'SN.SHF', 'SS.SHF',
+    # 'ZN.SHF', 'EB.DCE', 'NR.INE'
 ]
 
 
@@ -25,8 +25,8 @@ def save_gap(values=None):
             # 注意这里使用的是executemany而不是execute，下边有对executemany的详细说明
             cursor.executemany(
                 'insert into gap_log '
-                '(code, start_date, end_date, gap_type, start_price, end_price, gap_rate, is_fill, update_time) '
-                'values(%s, %s, %s, %s, %s, %s, %s, %s, %s)', values)
+                '(ts_code, code, start_date, end_date, gap_type, start_price, cpos, end_price, gap_rate, is_fill, update_time) '
+                'values(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)', values)
             db.commit()
         except Exception as err:
             print('  >>> insert gap log error:', err)
@@ -50,15 +50,17 @@ def update_gap(codes_df):
     gap_df = _dt.read_sql('select * from gap_log where is_fill=0', params=None)
     for index, row in gap_df.iterrows():
         code = row['code']
+        ts_code = row['ts_code']
         start_date = row['start_date']
         gap_price = row['start_price']
         type = row['gap_type']
-        basic = codes_df[codes_df.code == code]
+        # basic = codes_df[codes_df.code == code]
         print(code, 'update gap...')
-        if basic.empty is True:
-            del_gap_record(code)
-            continue
-        ts_code = basic.loc[basic.index.to_numpy()[0], 'main_code']
+        # if basic.empty is True:
+        #     print(code, 'contract changed!')
+        #     # del_gap_record(code)
+        #     continue
+        # ts_code = basic.loc[basic.index.to_numpy()[0], 'main_code']
         ts_daily_df = future_util.get_ts_future_daily(ts_code, start_date=start_date)[
             ['ts_code', 'trade_date', 'open', 'high', 'low', 'close']]
         if ts_daily_df is None or ts_daily_df.empty:
@@ -89,9 +91,13 @@ def add_gap(codes_df_p):
     ############################################################
     wave_data_list = []
     wave_detail_list = []
-    start_date = date_util.get_last_2month_start(FORMAT_FLAT)
+    size = len(code_list)
     for code in code_list:
+        print(size)
+        size -= 1
+        # 跨月
         if code in monthly_contract:
+            start_date = date_util.get_last_2month_start(FORMAT_FLAT)
             df_data = future_util.get_ts_future_daily(code, start_date=start_date)[['ts_code', 'trade_date', 'open',
                                                                                 'high', 'low', 'close']]
             local_last_trade_date = list(df_data['trade_date'])[-1]
@@ -101,7 +107,9 @@ def add_gap(codes_df_p):
                 realtime.drop(['code', 'date'], axis=1, inplace=True)
                 df_data = pd.concat([df_data, realtime], ignore_index=True)
         else:
-            df_data = future_util.get_ts_future_daily(code)[['ts_code', 'trade_date', 'open', 'high', 'low', 'close']]
+            start_date = date_util.get_date_before(days=300, format=FORMAT_FLAT)
+            df_data = future_util.get_ts_future_daily(code, start_date=start_date)[['ts_code', 'trade_date', 'open',
+                                                                                    'high', 'low', 'close']]
         if df_data is None or df_data.empty:
             print(code + ' no daily data!')
             continue
@@ -109,7 +117,9 @@ def add_gap(codes_df_p):
         date_list = list(df_data['date'])
         high_list = list(df_data['high'])
         low_list = list(df_data['low'])
-
+        basic = codes_df[codes_df.ts_code == code]
+        c_low = basic.loc[basic.index.to_numpy()[0], 'low']
+        c_high = basic.loc[basic.index.to_numpy()[0], 'high']
         for index, row in df_data.iterrows():
             if index == len(high_list) - 1:
                 break
@@ -120,14 +130,16 @@ def add_gap(codes_df_p):
             # 跳空低开缺口
             if begin_low > highest:
                 highest_index = high_list.index(highest, index + 1)
-                save_gap([(row['code'].split('.')[0], row['date'], date_list[highest_index], '跳空低开',
-                           begin_low, highest,
+                c_pos = round((begin_low - c_low) * 100 / (c_high - c_low), 1)
+                save_gap([(row['code'], row['code'].split('.')[0], row['date'], date_list[highest_index], '跳空低开',
+                           begin_low, c_pos, highest,
                            round((highest - begin_low) * 100 / begin_low, 2), 0, date_util.now())])
             # 跳空高开缺口
             if begin_high < lowest:
                 lowest_index = low_list.index(lowest, index + 1)
-                save_gap([(row['code'].split('.')[0], row['date'], date_list[lowest_index], '跳空高开',
-                           begin_high, lowest,
+                c_pos = round((begin_high - c_low) * 100 / (c_high - c_low), 1)
+                save_gap([(row['code'], row['code'].split('.')[0], row['date'], date_list[lowest_index], '跳空高开',
+                           begin_high, c_pos, lowest,
                            round((lowest - begin_high) * 100 / begin_high, 2), 0, date_util.now())])
 
 
@@ -136,8 +148,8 @@ if __name__ == '__main__':
     db = _dt.get_db()
     # 使用cursor()方法创建一个游标对象
     cursor = db.cursor()
-    sql = "select if(monthly=0, code, symbol) code, concat(if(monthly=0, code, symbol), '.', exchange) ts_code, " \
-          " concat(code, '.', exchange)  main_code from future_basic where deleted=0;"
+    sql = "select code, concat(code, '.', exchange) ts_code, " \
+          " concat(code, '.', exchange)  main_code, low, high from future_basic where deleted=0;"
     codes_df = _dt.read_sql(sql, params=None)
     # 先更新gap信息
     update_gap(codes_df)
