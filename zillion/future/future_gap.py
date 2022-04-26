@@ -25,8 +25,8 @@ def save_gap(values=None):
             # 注意这里使用的是executemany而不是execute，下边有对executemany的详细说明
             cursor.executemany(
                 'insert into gap_log '
-                '(ts_code, code, start_date, end_date, gap_type, start_price, cpos, end_price, gap_rate, is_fill, update_time) '
-                'values(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)', values)
+                '(ts_code, code, start_date, end_date, gap_type, start_price, cpos, end_price, gap_rate, is_fill, create_time, update_time) '
+                'values(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)', values)
             db.commit()
         except Exception as err:
             print('  >>> insert gap log error:', err)
@@ -99,7 +99,7 @@ def add_gap(codes_df_p):
         if code in monthly_contract:
             start_date = date_util.get_last_2month_start(FORMAT_FLAT)
             df_data = future_util.get_ts_future_daily(code, start_date=start_date)[['ts_code', 'trade_date', 'open',
-                                                                                'high', 'low', 'close']]
+                                                                                    'high', 'low', 'close']]
             local_last_trade_date = list(df_data['trade_date'])[-1]
             realtime = future_util.add_realtime_data([main_code[code_list.index(code)]], local_last_trade_date)
             if realtime is not None:
@@ -125,22 +125,24 @@ def add_gap(codes_df_p):
                 break
             begin_low = low_list[index]
             begin_high = high_list[index]
-            lowest = min(low_list[index + 1:])
-            highest = max(high_list[index + 1:])
+            # next_low = min(low_list[index + 1:])  # 后面所有的最低
+            # next_high = max(high_list[index + 1:])  # 后面所有的最高
+            next_low = low_list[index + 1]  # 下一日的最低
+            next_high = high_list[index + 1]  # 下一日的最高
             # 跳空低开缺口
-            if begin_low > highest:
-                highest_index = high_list.index(highest, index + 1)
+            if begin_low > next_high:
+                highest_index = high_list.index(next_high, index + 1)
                 c_pos = round((begin_low - c_low) * 100 / (c_high - c_low), 1)
                 save_gap([(row['code'], row['code'].split('.')[0], row['date'], date_list[highest_index], '跳空低开',
-                           begin_low, c_pos, highest,
-                           round((highest - begin_low) * 100 / begin_low, 2), 0, date_util.now())])
+                           begin_low, c_pos, next_high,
+                           round((next_high - begin_low) * 100 / begin_low, 2), 0, date_util.now(), date_util.now())])
             # 跳空高开缺口
-            if begin_high < lowest:
-                lowest_index = low_list.index(lowest, index + 1)
+            if begin_high < next_low:
+                lowest_index = low_list.index(next_low, index + 1)
                 c_pos = round((begin_high - c_low) * 100 / (c_high - c_low), 1)
                 save_gap([(row['code'], row['code'].split('.')[0], row['date'], date_list[lowest_index], '跳空高开',
-                           begin_high, c_pos, lowest,
-                           round((lowest - begin_high) * 100 / begin_high, 2), 0, date_util.now())])
+                           begin_high, c_pos, next_low,
+                           round((next_low - begin_high) * 100 / begin_high, 2), 0, date_util.now(), date_util.now())])
 
 
 if __name__ == '__main__':
