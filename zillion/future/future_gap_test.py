@@ -18,20 +18,13 @@ def save_gap(values=None):
 
 
 def update_gap_record(end_price, end_date, code, start_date):
-    sql = "update gap_log set end_price=%d, end_date='%s', is_fill=1, fill_date='%s', " \
+    sql = "update gap_log_test set end_price=%d, end_date='%s', is_fill=1, fill_date='%s', " \
           "update_time=now() where code='%s' and start_date='%s';"
     cursor.execute(sql % (end_price, end_date, date_util.parse_date_str(end_date), code, start_date))
     db.commit()
 
 
-def del_gap_record(code):
-    sql = "delete from gap_log where code='%s';"
-    cursor.execute(sql % code)
-    db.commit()
-    print("delete gap record ", code)
-
-
-def update_gap(codes_df):
+def update_gap():
     gap_df = _dt.read_sql('select * from gap_log_test where is_fill=0', params=None)
     for index, row in gap_df.iterrows():
         code = row['code']
@@ -106,10 +99,12 @@ if __name__ == '__main__':
     db = _dt.get_db()
     # 使用cursor()方法创建一个游标对象
     cursor = db.cursor()
-    sql = "select ch.symbol, concat(ch.code, '.', fb.exchange) ts_code from future_contract_hist ch join future_basic fb on ch.symbol = fb.symbol;"
+    # sql = "select ch.symbol, concat(ch.code, '.', fb.exchange) ts_code from future_contract_hist ch join future_basic fb on ch.symbol = fb.symbol;"
+    sql = "select concat('LU2006', '.', exchange) ts_code from future_basic where symbol='LU'"
+
     codes_df = _dt.read_sql(sql, params=None)
     # 先更新gap信息
-    update_gap(codes_df)
+    update_gap()
 
     # 插入新的gap
     add_gap(codes_df)
