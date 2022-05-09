@@ -24,8 +24,13 @@ def update_gap_record(end_price, end_date, code, start_date):
     db.commit()
 
 
-def update_gap():
-    gap_df = _dt.read_sql('select * from gap_log_test where is_fill=0', params=None)
+def update_gap(codes_df_p):
+    update_sql = 'select * from gap_log_test where is_fill=0 '
+    ts_codes = None
+    if codes_df_p is not None:
+        ts_codes = list(codes_df_p['ts_code'])
+        update_sql += 'and ts_code in :ts_codes '
+    gap_df = _dt.read_sql(update_sql, params={'ts_codes': ts_codes})
     for index, row in gap_df.iterrows():
         code = row['code']
         ts_code = row['ts_code']
@@ -100,11 +105,11 @@ if __name__ == '__main__':
     # 使用cursor()方法创建一个游标对象
     cursor = db.cursor()
     # sql = "select ch.symbol, concat(ch.code, '.', fb.exchange) ts_code from future_contract_hist ch join future_basic fb on ch.symbol = fb.symbol;"
-    sql = "select concat('LU2006', '.', exchange) ts_code from future_basic where symbol='LU'"
+    sql = "select concat('LU2206', '.', exchange) ts_code from future_basic where symbol='LU'"
 
     codes_df = _dt.read_sql(sql, params=None)
     # 先更新gap信息
-    update_gap()
+    update_gap(codes_df)
 
     # 插入新的gap
     add_gap(codes_df)
