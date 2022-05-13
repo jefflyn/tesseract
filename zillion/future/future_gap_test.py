@@ -105,7 +105,7 @@ if __name__ == '__main__':
     # 使用cursor()方法创建一个游标对象
     cursor = db.cursor()
     # sql = "select ch.symbol, concat(ch.code, '.', fb.exchange) ts_code from future_contract_hist ch join future_basic fb on ch.symbol = fb.symbol;"
-    sql = "select concat('LU2206', '.', exchange) ts_code from future_basic where symbol='LU'"
+    sql = "select concat('SA2209', '.', exchange) ts_code from future_basic where symbol='SA'"
 
     codes_df = _dt.read_sql(sql, params=None)
     # 先更新gap信息

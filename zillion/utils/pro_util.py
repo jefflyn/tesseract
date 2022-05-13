@@ -1,6 +1,6 @@
 import tushare as ts
 
-token = '08cdba72469ce5ef4afd2cb5946749312d874c2aaef8ed9e176fa1a6'
+token = '27276608f3b650d14dea2fedf5249b0fdbe5ca249c0e57ab4c2161e8'
 ts.set_token(token)
 
 pro = ts.pro_api()
