@@ -153,10 +153,10 @@ if __name__ == '__main__':
     sql = "select code, concat(code, '.', exchange) ts_code, " \
           " concat(code, '.', exchange)  main_code, low, high from future_basic where deleted=0;"
     codes_df = _dt.read_sql(sql, params=None)
-    # 先更新gap信息
-    update_gap(codes_df)
-
     # 插入新的gap
     add_gap(codes_df)
+
+    # 更新gap信息
+    update_gap(codes_df)
 
     print('done @', date_util.get_now())

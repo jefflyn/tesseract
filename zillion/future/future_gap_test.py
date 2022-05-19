@@ -108,10 +108,11 @@ if __name__ == '__main__':
     sql = "select concat('SA2209', '.', exchange) ts_code from future_basic where symbol='SA'"
 
     codes_df = _dt.read_sql(sql, params=None)
-    # 先更新gap信息
-    update_gap(codes_df)
 
     # 插入新的gap
     add_gap(codes_df)
+
+    # 更新gap信息
+    update_gap(codes_df)
 
     print('done @', date_util.get_now())
