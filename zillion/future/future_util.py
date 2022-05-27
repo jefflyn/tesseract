@@ -43,7 +43,7 @@ def get_future_basics(code=None, type=None, night=None, on_target=None):
     :param on_target:
     :return:
     '''
-    sql = "select * from future_basic where deleted = 0 "
+    sql = "select concat(code, '.', exchange) ts_code, fb.* from future_basic fb where deleted = 0 "
     if on_target is True:
         sql += 'and target = :on_target '
     if code is not None:

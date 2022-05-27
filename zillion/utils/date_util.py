@@ -341,6 +341,10 @@ def date_diff(begin_date=now(), end_date=now(), type='days'):
         return (end_date - begin_date).minutes
 
 
+def shift_date_flat_format(type='d', from_date=None, n=-1):
+    return shift_date(type, from_date, n, format='YYYYMMDD')
+
+
 def shift_date(type='d', from_date=None, n=-1, format='YYYY-MM-DD'):
     """
     :param type: d w m y

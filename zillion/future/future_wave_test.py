@@ -4,8 +4,11 @@ from zillion.future import future_util
 from zillion.future import future_wave
 from zillion.utils import db_util
 
+pd.set_option('display.max_columns', None)
+
+
 if __name__ == '__main__':
-    tscode = 'SP2101.SHF,SP2105.SHF,SP2109.SHF,SP2201.SHF,SP2205.SHF,SP2209.SHF'
+    tscode = 'EB2208.DCE,LU2208.INE'
     code_list = tscode.split(",")
     wave_data_list = []
     for code in code_list:
@@ -25,5 +28,6 @@ if __name__ == '__main__':
         print(wave_list)
         wave_data_list.append(wave_list)
     wave_df_result = pd.DataFrame(wave_data_list,
-                                  columns=['ts_code', 'code', 'start', 'end', 'a', 'b', 'c', 'd', 'ap', 'bp', 'cp', 'dp'])
+                                  columns=['ts_code', 'code', 'start', 'end', 'a', 'b', 'c', 'd', 'ap', 'bp', 'cp',
+                                           'dp'])
     db_util.to_db(wave_df_result, 'future_wave_test')
