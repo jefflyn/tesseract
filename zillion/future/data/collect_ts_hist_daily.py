@@ -8,14 +8,14 @@ def save_daily(values=None):
     if values is not None and len(values) > 0:
         try:
             # 注意这里使用的是executemany而不是execute
-            insert_sql = 'INSERT INTO ts_future_daily (ts_code, trade_date, pre_close, pre_settle, ' \
+            insert_sql = 'INSERT INTO ts_future_daily_hist (ts_code, trade_date, pre_close, pre_settle, ' \
                          'open, high, low, close, settle, close_change, settle_change, deal_vol, deal_amount, ' \
                          'hold_vol, hold_change, create_time) ' \
                          'VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)'
             cursor.executemany(insert_sql, values)
             db.commit()
         except Exception as err:
-            print('  >>> insert ts daily error:', err)
+            print('  >>> insert ts hist daily error:', err)
 
 
 def add_daily(ts_codes=None):
@@ -51,7 +51,10 @@ if __name__ == '__main__':
     # 使用cursor()方法创建一个游标对象
     cursor = db.cursor()
 
-    ts_code_list = ['PF2209.ZCE']
+    ts_code_list = ['FG1901.ZCE', 'FG1905.ZCE', 'FG1909.ZCE',
+                    'FG2001.ZCE', 'FG2005.ZCE', 'FG2009.ZCE',
+                    'FG2101.ZCE', 'FG2105.ZCE', 'FG2109.ZCE',
+                    'FG2201.ZCE', 'FG2205.ZCE', 'FG2209.ZCE']
     add_daily(ts_code_list)
 
     print('done @', date_util.get_now())
