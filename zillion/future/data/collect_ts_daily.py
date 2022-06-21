@@ -51,7 +51,7 @@ if __name__ == '__main__':
     # 使用cursor()方法创建一个游标对象
     cursor = db.cursor()
 
-    ts_code_list = ['PF2209.ZCE']
+    ts_code_list = ['SC2208.INE']
     add_daily(ts_code_list)
 
     print('done @', date_util.get_now())
