@@ -66,12 +66,13 @@ def add_gap(codes_df_p):
     for code in code_list:
         print(size)
         size -= 1
-
-        df_data = future_util.get_ts_future_daily(code)[['ts_code', 'trade_date', 'open',
-                                                                                    'high', 'low', 'close']]
+        df_data = future_util.get_ts_future_daily(code)
         if df_data is None or df_data.empty:
             print(code + ' no daily data!')
             continue
+        df_data = df_data[df_data['deal_vol'] > 0]
+        df_data = df_data.reset_index()
+        df_data = df_data[['ts_code', 'trade_date', 'open', 'high', 'low', 'close']]
         df_data.columns = ['code', 'date', 'open', 'high', 'low', 'close']
         date_list = list(df_data['date'])
         high_list = list(df_data['high'])
