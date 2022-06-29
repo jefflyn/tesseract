@@ -1,5 +1,3 @@
-import pandas as pd
-
 import zillion.utils.db_util as _dt
 from zillion.future import future_util
 from zillion.utils import date_util
@@ -98,21 +96,23 @@ def add_gap(codes_df_p):
         # 跨月
         if code in monthly_contract:
             start_date = date_util.get_last_2month_start(FORMAT_FLAT)
-            df_data = future_util.get_ts_future_daily(code, start_date=start_date)[['ts_code', 'trade_date', 'open',
-                                                                                    'high', 'low', 'close']]
-            local_last_trade_date = list(df_data['trade_date'])[-1]
-            realtime = future_util.add_realtime_data([main_code[code_list.index(code)]], local_last_trade_date)
-            if realtime is not None:
-                realtime['ts_code'] = code
-                realtime.drop(['code', 'date'], axis=1, inplace=True)
-                df_data = pd.concat([df_data, realtime], ignore_index=True)
+            # df_data = future_util.get_ts_future_daily(code, start_date=start_date)[['ts_code', 'trade_date', 'open',
+            #                                                                         'high', 'low', 'close']]
+            # local_last_trade_date = list(df_data['trade_date'])[-1]
+            # realtime = future_util.add_realtime_data([main_code[code_list.index(code)]], local_last_trade_date)
+            # if realtime is not None:
+            #     realtime['ts_code'] = code
+            #     realtime.drop(['code', 'date'], axis=1, inplace=True)
+            #     df_data = pd.concat([df_data, realtime], ignore_index=True)
         else:
             start_date = date_util.get_date_before(days=300, format=FORMAT_FLAT)
-            df_data = future_util.get_ts_future_daily(code, start_date=start_date)[['ts_code', 'trade_date', 'open',
-                                                                                    'high', 'low', 'close']]
+            df_data = future_util.get_ts_future_daily(code, start_date=start_date)
         if df_data is None or df_data.empty:
             print(code + ' no daily data!')
             continue
+        df_data = df_data[df_data['deal_vol'] > 0]
+        df_data = df_data.reset_index()
+        df_data = df_data[['ts_code', 'trade_date', 'open', 'high', 'low', 'close']]
         df_data.columns = ['code', 'date', 'open', 'high', 'low', 'close']
         date_list = list(df_data['date'])
         high_list = list(df_data['high'])
