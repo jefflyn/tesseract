@@ -90,6 +90,7 @@ def add_gap(codes_df_p):
     wave_data_list = []
     wave_detail_list = []
     size = len(code_list)
+    curt_date = date_util.get_today(date_util.FORMAT_FLAT)
     for code in code_list:
         print(size)
         size -= 1
@@ -110,7 +111,9 @@ def add_gap(codes_df_p):
         if df_data is None or df_data.empty:
             print(code + ' no daily data!')
             continue
-        df_data = df_data[df_data['deal_vol'] > 0]
+        if 'UR2301' in code:
+            print("debug")
+        df_data = df_data[(df_data['deal_vol'] > 0) | (df_data['trade_date'] == curt_date)]
         df_data = df_data.reset_index()
         df_data = df_data[['ts_code', 'trade_date', 'open', 'high', 'low', 'close']]
         df_data.columns = ['code', 'date', 'open', 'high', 'low', 'close']
