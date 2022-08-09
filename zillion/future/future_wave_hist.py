@@ -10,7 +10,7 @@ pd.set_option('display.max_columns', None)
 if __name__ == '__main__':
     # tscode = 'CF2101.ZCE,CF2105.ZCE,CF2109.ZCE,CF2201.ZCE,CF2205.ZCE,CF2209.ZCE'
     # code_list = tscode.split(",")
-    code_list = ['FG2101.ZCE', 'FG2105.ZCE', 'FG2109.ZCE', 'FG2201.ZCE','FG2205.ZCE','FG2209.ZCE','FG2301.ZCE']
+    code_list = ['SP2209.SHF']
     wave_data_list = []
     for code in code_list:
         df_data = future_util.get_ts_future_hist_daily(code)[['ts_code', 'trade_date', 'open', 'high', 'low', 'close']]
