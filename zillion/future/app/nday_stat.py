@@ -47,6 +47,7 @@ if __name__ == '__main__':
     for ts_code, group in data_group:
         last7_data = group.tail(7)
         last7_data = last7_data.sort_values(['trade_date'], ascending=False, ignore_index=True)
+        last7_data['close_diff'] = last7_data['close'] - last7_data['pre_close']
         # n_close = 0
         # n = 0
         three_days_change = 0
@@ -83,7 +84,7 @@ if __name__ == '__main__':
             #     elif close_change < 0 and n_close < 0 and n == index-1:
             #         n_close -= 1
             #         n = index
-        last_cls_change_list = list(last7_data['close_change'])
+        last_cls_change_list = list(last7_data['close_diff'])
         n_list = get_n(last_cls_change_list)
         result.append([ts_code, last_cls_change, last_settle_change] + n_list + close_change_list
                       + [str(last_cls_change_list)])
