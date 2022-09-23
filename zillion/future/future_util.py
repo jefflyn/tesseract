@@ -61,15 +61,28 @@ def get_future_basics(code=None, type=None, night=None, on_target=None):
     return df
 
 
-def add_realtime_data(codes=None, local_last_trade_date=None):
+def add_realtime_data(codes=None, daily_df=None):
+    local_last_daily = daily_df.tail(1)
+    last_data = local_last_daily.iloc[0]
+    local_last_trade_date = last_data.at['trade_date']
     last_trade_date = date_util.get_today(date_util.FORMAT_FLAT)  # .get_latest_trade_date(1)[0]
-    if local_last_trade_date < last_trade_date:  # not the latest record
-        sina_code = codes[0].split('.')[0]
-        realtime = future_trade.realtime(sina_code)
-        if realtime is not None and realtime.empty is False:
-            realtime['ts_code'] = codes[0]
-            realtime['trade_date'] = last_trade_date
-            return realtime
+    if local_last_trade_date < last_trade_date:  # local not the latest record, add realtime
+        realtime_df = None
+        for code in codes:
+            sina_code = code.split('.')[0]
+            realtime = future_trade.realtime(sina_code)
+            if realtime is not None and realtime.empty is False:
+                realtime['ts_code'] = code
+                realtime['trade_date'] = last_trade_date
+                code_data = daily_df[(daily_df.trade_date == local_last_trade_date) & (daily_df.ts_code == code)]
+                realtime['pre_close'] = code_data.iloc[0].at['close']
+                realtime['pre_settle'] = code_data.iloc[0].at['settle']
+                realtime['close_change'] = realtime['close'] - realtime['pre_settle']
+                if realtime_df is None:
+                    realtime_df = realtime
+                else:
+                    realtime_df = pd.concat([realtime_df, realtime], ignore_index=True)
+        return realtime_df
     return None
 
 
@@ -91,8 +104,7 @@ def get_ts_future_hist_daily(ts_code=None, start_date=None, end_date=None):
     if df is None or df.empty is True:
         return df
     if end_date is None:
-        local_last_trade_date = list(df['trade_date'])[-1]
-        realtime = add_realtime_data(ts_code, local_last_trade_date)
+        realtime = add_realtime_data(ts_code, df)
         if realtime is not None:
             # hist_data = hist_data.append(realtime, ignore_index=True)
             df = pd.concat([df, realtime], ignore_index=True)
@@ -117,8 +129,7 @@ def get_ts_future_daily(ts_code=None, start_date=None, end_date=None):
     if df is None or df.empty is True:
         return df
     if end_date is None:
-        local_last_trade_date = list(df['trade_date'])[-1]
-        realtime = add_realtime_data(ts_code, local_last_trade_date)
+        realtime = add_realtime_data(ts_code, df)
         if realtime is not None:
             # hist_data = hist_data.append(realtime, ignore_index=True)
             df = pd.concat([df, realtime], ignore_index=True)
@@ -159,5 +170,8 @@ def add_log(name, log_type, pct_change, content, remark, price=None, position=No
 
 
 if __name__ == '__main__':
-    df = get_ts_future_daily(ts_code='PKL.ZCE', start_date=20220127)
+    df = get_ts_future_daily(ts_code='PK2301.ZCE', start_date=20220827)
     print(df)
+    val = df.iloc[18].iat[1]
+    val2 = df.iat[18, 1]
+    print(val, val2)

@@ -1,3 +1,5 @@
+import statistics
+
 import pandas as pd
 
 from zillion.future import future_util
@@ -35,16 +37,27 @@ def get_n(change_list):
 if __name__ == '__main__':
     future_basics = future_util.get_future_basics()
     week_end = date_util.get_today(date_util.FORMAT_FLAT)
-    week_start = date_util.shift_date_flat_format(n=-30)
+    week_start = date_util.shift_date_flat_format(n=-90)
 
     ts_codes = list(future_basics['ts_code'])
-    df_data = future_util.get_ts_future_daily(ts_codes, start_date=week_start, end_date=week_end)[
+    df_data = future_util.get_ts_future_daily(ts_codes, start_date=week_start)[
         ['ts_code', 'trade_date', 'pre_close', 'pre_settle', 'open', 'high', 'low', 'close', 'close_change']]
 
     stat_data = []
     data_group = df_data.groupby('ts_code')
     result = []
     for ts_code, group in data_group:
+        last60d_data = group.tail(60)
+        last60d_close = list(last60d_data['close'])
+        # print(last60d_close)
+        size = len(last60d_close)
+        price = statistics.mean(last60d_close[size:])
+        avg5d = statistics.mean(last60d_close[size-5:])  # attack
+        avg10d = statistics.mean(last60d_close[size-10:])  # strategy
+        avg20d = statistics.mean(last60d_close[size-20:])  # assist
+        avg60d = statistics.mean(last60d_close)  # trend
+        print(ts_code, price, avg5d, avg10d, avg20d, avg60d)
+
         last7_data = group.tail(7)
         last7_data = last7_data.sort_values(['trade_date'], ascending=False, ignore_index=True)
         last7_data['close_diff'] = last7_data['close'] - last7_data['pre_close']
@@ -72,24 +85,14 @@ if __name__ == '__main__':
             close_change = row['close'] - row['pre_close']
             settle_change = row['close'] - row['pre_settle']
 
-            # if index == 0:
-            #     if close_change > 0:
-            #         n_close += 1
-            #     else:
-            #         n_close -= 1
-            # else:
-            #     if close_change > 0 and n_close > 0 and n == index-1:
-            #         n_close += 1
-            #         n = index
-            #     elif close_change < 0 and n_close < 0 and n == index-1:
-            #         n_close -= 1
-            #         n = index
         last_cls_change_list = list(last7_data['close_diff'])
         n_list = get_n(last_cls_change_list)
         result.append([ts_code, last_cls_change, last_settle_change] + n_list + close_change_list
-                      + [str(last_cls_change_list)])
+                      + [str(last_cls_change_list)]
+                      + [round(price), round(avg5d), round(avg10d), round(avg20d), round(avg60d)])
 
     df = pd.DataFrame(result, columns=['ts_code', 'close_change', 'settle_change', 'up', 'days', '3d_change',
-                                       '5d_change', '7d_change', 'change_list'])
+                                       '5d_change', '7d_change', 'change_list',
+                                       'price', 'avg5d', 'avg10d', 'avg20d', 'avg60d'])
     df['update_time'] = date_util.now()
     db_util.to_db(df, 'n_stat', if_exists='replace')
