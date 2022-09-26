@@ -1,3 +1,4 @@
+import datetime
 import time
 
 import pandas as pd
@@ -20,7 +21,7 @@ def format_realtime(df):
     df['close'] = df['close'].apply(lambda x: '【' + future_price(x) + '】')
     df['bid'] = df['bid'].apply(lambda x: future_price(x))
     df['ask'] = df['ask'].apply(lambda x: future_price(x))
-    df['pre_settle'] = df['pre_settle'].apply(lambda x: future_price(x))
+    df['settle'] = df['settle'].apply(lambda x: future_price(x))
     return df
 
 
@@ -39,15 +40,16 @@ def future_price(price):
 
 if __name__ == '__main__':
     code_target = {
-        'PK2301': [-10854, 11100],
+        'PK2301': [-10780, 11100],
         'CF2301': [-13480, 13580],
-                   }
+    }
     while True:
         realtime_df = None
         for code in code_target.keys():
             realtime = future_trade.realtime(code)
             price = realtime.iloc[0].at["close"]
             pre_settle = realtime.iloc[0].at["pre_settle"]
+            realtime['settle'] = pre_settle
             high = realtime.iloc[0].at["high"]
             low = realtime.iloc[0].at["low"]
             price_diff = float(price) - float(pre_settle)
@@ -64,14 +66,16 @@ if __name__ == '__main__':
             for target in target_list:
                 if target < 0 and price < abs(target):
                     notify_util.notify(code, str(abs(target)), '↓' + str(price))
-                    code_target[code][0] = target - target*0.02
+                    code_target[code][0] = target - target * 0.02
                 elif 0 < target < price:
                     notify_util.notify(code, str(target), '↑' + str(price))
-                    code_target[code][1] = target + target*0.02
+                    code_target[code][1] = target + target * 0.02
             if realtime_df is None:
                 realtime_df = realtime
             else:
                 realtime_df = pd.concat([realtime_df, realtime], ignore_index=True)
+        realtime_df = realtime_df.drop(columns=['pre_settle'])
         final_df = format_realtime(realtime_df)
+        print(datetime.datetime.now())
         print(final_df)
         time.sleep(2)
