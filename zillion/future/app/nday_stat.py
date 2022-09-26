@@ -51,7 +51,7 @@ if __name__ == '__main__':
         last60d_close = list(last60d_data['close'])
         # print(last60d_close)
         size = len(last60d_close)
-        price = statistics.mean(last60d_close[size:])
+        price = last60d_close[size-1:][0]
         avg5d = statistics.mean(last60d_close[size-5:])  # attack
         avg10d = statistics.mean(last60d_close[size-10:])  # strategy
         avg20d = statistics.mean(last60d_close[size-20:])  # assist

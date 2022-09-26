@@ -19,11 +19,13 @@ def realtime(code=None):
             if len(info) < 18:
                 continue
             trade_date = date_util.parse_date_str(info[17], date_util.FORMAT_FLAT)
-            realtime_list.append([code, trade_date, float(info[2]), float(info[3]), float(info[4]), float(info[8])])
-    realtime_df = pd.DataFrame(realtime_list, columns=['code', 'date', 'open', 'high', 'low', 'close'])
+            realtime_list.append([code, trade_date, float(info[2]), float(info[3]), float(info[4]), float(info[8]),
+                                  float(info[6]), float(info[7]), float(info[10])])
+    realtime_df = pd.DataFrame(realtime_list, columns=['code', 'date', 'open', 'high', 'low', 'close', 'bid', 'ask',
+                                                       'pre_settle'])
     return realtime_df
 
 
 if __name__ == '__main__':
-    df = realtime(code='AU2206')
+    df = realtime(code='PK2301')
     print(df)

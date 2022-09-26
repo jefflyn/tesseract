@@ -49,6 +49,6 @@ if __name__ == '__main__':
 
     # notify("商品报价提醒", "苹果2101", "7400")
     # notify(title="商品报价提醒", content="苹果2101=7400")
-    # notify(content="苹果2101=7400")
+    notify(content="苹果2101=7400")
     # alert(message="苹果2101=7400")
-    alert(title="商品报价⚠️", message="苹果2101=7400")
+    #  alert(title="商品报价⚠️", message="苹果2101=7400")
