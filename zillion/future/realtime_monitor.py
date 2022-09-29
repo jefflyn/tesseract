@@ -10,11 +10,12 @@ pd.set_option('display.width', None)
 pd.set_option('display.max_columns', None)
 
 code_target = {
-    'P2301': [-7100, 7280],
-    'CF2301': [-13380, 13680],
-    'FG2301': [-1495, 1550],
-    'SN2301': [-170000, 175800],
-    'RM2301': [-3102, 3120],
+    'P2301': [-7000, 7200],
+    'FG2301': [-1490, 1515],
+    # 'SN2301': [-170000, 178000],
+'TA2301': [-5210, 5390],
+'CF2301': [-13250, 13400],
+'RM2301': [-3226, 3240],
 }
 
 
@@ -25,14 +26,14 @@ def format_realtime(df):
     :return:
     '''
     # format data
-    df['open'] = df['open'].apply(lambda x: future_price(x))
-    df['low'] = df['low'].apply(lambda x: future_price(x))
-    df['high'] = df['high'].apply(lambda x: future_price(x))
-    df['change'] = df['change'].apply(lambda x: str(round(x, 2)) + '%')
+    # df['open'] = df['open'].apply(lambda x: future_price(x))
+    # df['low'] = df['low'].apply(lambda x: '_' + future_price(x))
+    # df['high'] = df['high'].apply(lambda x: '^' + future_price(x))
+    # df['change'] = df['change'].apply(lambda x: str(round(x, 2)) + '%')
     df['close'] = df['close'].apply(lambda x: '【' + future_price(x) + '】')
     df['bid'] = df['bid'].apply(lambda x: future_price(x))
     df['ask'] = df['ask'].apply(lambda x: future_price(x))
-    df['settle'] = df['settle'].apply(lambda x: future_price(x))
+    # df['settle'] = df['settle'].apply(lambda x: future_price(x))
     return df
 
 
@@ -56,33 +57,39 @@ if __name__ == '__main__':
             realtime = future_trade.realtime(code)
             price = realtime.iloc[0].at["close"]
             pre_settle = realtime.iloc[0].at["pre_settle"]
-            realtime['settle'] = pre_settle
+            open = realtime.iloc[0].at["open"]
             high = realtime.iloc[0].at["high"]
             low = realtime.iloc[0].at["low"]
+            realtime['hi-low'] = '[' + future_price(low) + '-' + future_price(high) + ']'
+            realtime['diff'] = future_price(high - low)
             price_diff = float(price) - float(pre_settle)
-            realtime["change"] = round(price_diff / float(pre_settle) * 100, 2)
+            realtime["change"] = str(round(price_diff / float(pre_settle) * 100, 2)) + "% " + future_price(price_diff)
+            realtime['open'] = '[' + future_price(pre_settle) + '-' + future_price(open) \
+                               + " " + future_price(open - pre_settle) + ']'
 
             position = 0
             if high != low:
                 position = round((price - low) / (high - low) * 100, 2)
             elif high == low > price:
                 position = 100
-            realtime["position"] = position
+            realtime["position"] = round(position)
 
             target_list = code_target.get(code)
             for target in target_list:
-                if target < 0 and price < abs(target):
-                    notify_util.notify(code, str(abs(target)), '↓' + str(price))
+                if target < 0 and price <= abs(target):
+                    notify_util.notify('📣' + code, '✔️' + str(abs(target)), '🌧' + str(price))
                     code_target[code][0] = round(target - target * 0.001, 1)
-                elif 0 < target < price:
-                    notify_util.notify(code, str(target), '↑' + str(price))
+                elif 0 < target <= price:
+                    notify_util.notify('📣' + code, '✔️' + str(target), '☀️' + str(price))
                     code_target[code][1] = round(target + target * 0.001, 1)
             if realtime_df is None:
                 realtime_df = realtime
             else:
                 realtime_df = pd.concat([realtime_df, realtime], ignore_index=True)
         realtime_df = realtime_df.drop(columns=['pre_settle'])
+        realtime_df = realtime_df.drop(columns=['low'])
+        realtime_df = realtime_df.drop(columns=['high'])
         final_df = format_realtime(realtime_df)
-        print(final_df)
+        print(final_df[['code', 'date', 'open', 'hi-low', 'diff', 'close', 'bid', 'ask', 'change', 'position']])
         print(datetime.datetime.now())
         time.sleep(2)

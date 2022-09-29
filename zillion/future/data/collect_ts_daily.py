@@ -41,7 +41,7 @@ def add_daily(ts_codes=None):
                               high, low, close, row['settle'], change1, row['change2'], row['vol'], row['amount'],
                               row['oi'], row['oi_chg'], date_util.now()])
             save_daily(data_list)
-        print(size)
+        print(size, code)
 
 
 if __name__ == '__main__':
@@ -51,11 +51,7 @@ if __name__ == '__main__':
     cursor = db.cursor()
 
     ts_code_list = [
-'PB2211.SHF',
-'PG2211.DCE',
-'SC2211.INE',
-'SS2211.SHF',
-'ZN2211.SHF'
+        'SS2212.SHF','ZN2212.SHF'
 ]
     add_daily(ts_code_list)
 
