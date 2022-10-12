@@ -42,6 +42,8 @@ def get_wave(code=None, hist_data=None, begin_low=True, duration=0, change=0):
 
 def wave_from(code, df, begin_low, direction='left', duration=0, change=0):
     period_data = []
+    if df.empty:
+        return
     first_date = df.head(1).at[df.head(1).index.to_numpy()[0], 'date']
     last_date = df.tail(1).at[df.tail(1).index.to_numpy()[0], 'date']
 
