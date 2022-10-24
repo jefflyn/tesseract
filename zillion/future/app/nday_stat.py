@@ -7,6 +7,11 @@ from zillion.utils import date_util, db_util
 
 
 def get_n(change_list):
+    '''
+    compare close with pre-settle, close greater than pre-settle
+    :param change_list:
+    :return:
+    '''
     up_flag_list = []
     n_list = []
 
@@ -35,6 +40,7 @@ def get_n(change_list):
 
 
 if __name__ == '__main__':
+    n_day = 14
     future_basics = future_util.get_future_basics()
     week_end = date_util.get_today(date_util.FORMAT_FLAT)
     week_start = date_util.shift_date_flat_format(n=-90)
@@ -58,9 +64,9 @@ if __name__ == '__main__':
         avg60d = statistics.mean(last60d_close)  # trend
         print(ts_code, price, avg5d, avg10d, avg20d, avg60d)
 
-        last7_data = group.tail(7)
-        last7_data = last7_data.sort_values(['trade_date'], ascending=False, ignore_index=True)
-        last7_data['close_diff'] = last7_data['close'] - last7_data['pre_close']
+        last_n_data = group.tail(n_day)
+        last_n_data = last_n_data.sort_values(['trade_date'], ascending=False, ignore_index=True)
+        last_n_data['close_diff'] = last_n_data['close'] - last_n_data['pre_close']
         # n_close = 0
         # n = 0
         three_days_change = 0
@@ -70,7 +76,7 @@ if __name__ == '__main__':
         last_cls_change = 0
         last_settle_change = 0
         close_change_list = []
-        for index, row in last7_data.iterrows():
+        for index, row in last_n_data.iterrows():
             if index == 0:
                 last_close = row['close']
                 last_cls_change = round((last_close - row['pre_close']) * 100 / row['pre_close'], 2)
@@ -85,7 +91,7 @@ if __name__ == '__main__':
             close_change = row['close'] - row['pre_close']
             settle_change = row['close'] - row['pre_settle']
 
-        last_cls_change_list = list(last7_data['close_diff'])
+        last_cls_change_list = list(last_n_data['close_diff'])
         n_list = get_n(last_cls_change_list)
         result.append([ts_code, last_cls_change, last_settle_change] + n_list + close_change_list
                       + [str(last_cls_change_list)]

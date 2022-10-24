@@ -41,7 +41,7 @@ def add_daily(ts_codes=None):
                               row['oi'], row['oi_chg'], date_util.now()])
 
             save_daily(data_list)
-        print(size)
+        print(str(size) + " done")
         size -= 1
 
 
@@ -51,8 +51,8 @@ if __name__ == '__main__':
     # 使用cursor()方法创建一个游标对象
     cursor = db.cursor()
 
-    ts_code_list = ['I2101.DCE', 'I2009.DCE', 'I2005.DCE', 'I2001.DCE']
+    ts_code_list = ['SN2301.SHF']
 
     add_daily(ts_code_list)
 
-    print('done @', date_util.get_now())
+    print('all done @', date_util.get_now())
