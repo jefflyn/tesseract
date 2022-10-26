@@ -10,13 +10,13 @@ pd.set_option('display.width', None)
 pd.set_option('display.max_columns', None)
 
 code_target = {
-    # 'CJ2301': [-10900, 12000],
+    'CJ2301': [-10500, 12000],
     'PK2301': [-10000, 11208],
-    'P2301': [-7000, 8300],
-    'OI2301': [-10900, 11500],
-    'RM2301': [-2990, 3050],
+    'P2301': [-7800, 8400],
+    'OI2301': [-10800, 11500],
+    'RM2301': [-2980, 3050],
     'AP2301': [-8300, 8600],
-    'CF2301': [-13100, 13350],
+    'CF2301': [-13100, 13400],
 }
 
 
@@ -75,6 +75,7 @@ if __name__ == '__main__':
                 position = 100
             realtime["position"] = round(position)
             target_list = code_target.get(code)
+            target_diff = list()
             realtime["target"] = str(target_list)
             for target in target_list:
                 if target < 0 and price <= abs(target):
@@ -83,6 +84,8 @@ if __name__ == '__main__':
                 elif 0 < target <= price:
                     notify_util.notify('📣' + code, '✔️' + str(target), '☀️' + str(price))
                     code_target[code][1] = round(target + target * 0.001, 1)
+                target_diff.append(round(abs(target) - price))
+                realtime["t_diff"] = str(target_diff)
             if realtime_df is None:
                 realtime_df = realtime
             else:
@@ -92,6 +95,7 @@ if __name__ == '__main__':
         realtime_df = realtime_df.drop(columns=['high'])
         final_df = format_realtime(realtime_df)
         print(
-            final_df[['code', 'date', 'open', 'hi-low', 'diff', 'close', 'bid', 'ask', 'change', 'position', 'target']])
+            final_df[['code', 'date', 'open', 'hi-low', 'diff', 'close', 'bid', 'ask', 'change', 'position', 'target',
+                      't_diff']])
         print(datetime.datetime.now())
         time.sleep(2)
