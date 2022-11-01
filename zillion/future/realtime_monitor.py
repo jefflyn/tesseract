@@ -10,14 +10,10 @@ pd.set_option('display.width', None)
 pd.set_option('display.max_columns', None)
 
 code_target = {
-    'PG2212': [-5000, 5200],
-    'EB2212': [-7700, 8000],
-    'PP2301': [-7400, 7600],
-    'NR2301': [-9020, 9120],
-
-    'UR2301': [-2100, 2500],
-    'FG2301': [-1378, 1500],
-    'SP2301': [-6600, 7000],
+    'SN2301': [-150000, 167000],
+    'NR2301': [-8700, 9150],
+    'CF2301': [-12000, 13000],
+    'CJ2301': [-10725, 12000],
 }
 
 
@@ -86,7 +82,7 @@ if __name__ == '__main__':
                     notify_util.notify('📣' + code, '✔️' + str(target), '☀️' + str(price))
                     code_target[code][1] = round(target + target * 0.001, 1)
                 target_diff.append(round(abs(target) - price))
-            realtime["t_diff"] = str(target_diff)
+                realtime["t_diff"] = str(target_diff)
             if realtime_df is None:
                 realtime_df = realtime
             else:

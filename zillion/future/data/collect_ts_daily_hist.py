@@ -41,7 +41,7 @@ def add_daily(ts_codes=None):
                               row['oi'], row['oi_chg'], date_util.now()])
 
             save_daily(data_list)
-        print(str(size) + " done")
+        print(str(size) + "/" + len(ts_codes) + " done")
         size -= 1
 
 
@@ -51,7 +51,7 @@ if __name__ == '__main__':
     # 使用cursor()方法创建一个游标对象
     cursor = db.cursor()
 
-    ts_code_list = ['SN2301.SHF']
+    ts_code_list = ['CF2205.ZCE', 'CF2309.ZCE', 'CF2301.ZCE', 'CF2303.ZCE', 'CF2305.ZCE', 'CF2307.ZCE', 'CF2309.ZCE']
 
     add_daily(ts_code_list)
 

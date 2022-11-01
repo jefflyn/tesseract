@@ -9,11 +9,11 @@ pd.set_option('display.max_columns', None)
 
 if __name__ == '__main__':
     # tscode = 'CF2101.ZCE,CF2105.ZCE,CF2109.ZCE,CF2201.ZCE,CF2205.ZCE,CF2209.ZCE'
-    # code_list = tscode.split(",")
-    code_list = ['SN2306.SHF', 'SN2305.SHF', 'SN2304.SHF', 'SN2303.SHF', 'SN2302.SHF', 'SN2301.SHF']
+    # ts_code_list = tscode.split(",")
+    ts_code_list = ['CF2205.ZCE', 'CF2309.ZCE', 'CF2301.ZCE', 'CF2303.ZCE', 'CF2305.ZCE', 'CF2307.ZCE', 'CF2309.ZCE']
 
     wave_data_list = []
-    for code in code_list:
+    for code in ts_code_list:
         df_data = future_util.get_ts_future_hist_daily(code)[['ts_code', 'trade_date', 'open', 'high', 'low', 'close']]
         if df_data is None or df_data.empty:
             print("no daily data found!")

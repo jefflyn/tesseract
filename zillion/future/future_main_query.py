@@ -6,7 +6,7 @@ pro = ts.pro_api('f65316bb26b0a27ef7f876249615fcba99b5aab10e5be46cb278e53e')
 
 # 拉取数据
 df = pro.fut_mapping(**{
-    "ts_code": "SN.SHF",
+    "ts_code": "CF.ZCE",
     "trade_date": "",
     "start_date": "",
     "end_date": "",
