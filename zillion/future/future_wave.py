@@ -332,7 +332,7 @@ def update_abcd_hl():
     # 使用cursor()方法创建一个游标对象
     cursor = db.cursor()
     try:
-        sql = "update future_basic fb join future_wave at on at.code = fb.code join " \
+        sql = "update basic fb join future_wave at on at.code = fb.code join " \
               "(select substring_index(ts_code,'.', 1) code, max(begin_price) high1, max(end_price) high2, " \
               "min(begin_price) low1, min(end_price) low2 from future_wave_detail group by ts_code) hl " \
               "on hl.code = fb.code set fb.high=if(hl.high1 > hl.high2, high1, high2), " \
@@ -350,9 +350,9 @@ if __name__ == '__main__':
     print(date_util.get_now())
     ############################################################
     select_ts_codes = "select ts_code from ts_future_contract where type in (1, 2) and fut_code " \
-                      "in (select symbol from future_basic where deleted=0)"
+                      "in (select symbol from basic where deleted=0)"
     ts_codes = list(_dt.read_sql(select_ts_codes, None)['ts_code'])
-    select_main_codes = "select concat(code, '.', exchange) ts_code from future_basic where deleted=0"
+    select_main_codes = "select concat(code, '.', exchange) ts_code from basic where deleted=0"
     main_codes = list(_dt.read_sql(select_main_codes, None)['ts_code'])
     code_list = ts_codes + main_codes
     ############################################################

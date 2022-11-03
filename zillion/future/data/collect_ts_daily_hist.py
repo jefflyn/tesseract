@@ -20,6 +20,7 @@ def save_daily(values=None):
 
 def add_daily(ts_codes=None):
     size = len(ts_codes)
+    seq = 1
     for code in ts_codes:
         df_data = pro_util.pro.fut_daily(ts_code=code)
         if df_data is None or df_data.empty:
@@ -41,8 +42,8 @@ def add_daily(ts_codes=None):
                               row['oi'], row['oi_chg'], date_util.now()])
 
             save_daily(data_list)
-        print(str(size) + "/" + len(ts_codes) + " done")
-        size -= 1
+        print(str(seq) + "/" + str(size) + " done")
+        seq += 1
 
 
 if __name__ == '__main__':
@@ -51,7 +52,7 @@ if __name__ == '__main__':
     # 使用cursor()方法创建一个游标对象
     cursor = db.cursor()
 
-    ts_code_list = ['CF2205.ZCE', 'CF2309.ZCE', 'CF2301.ZCE', 'CF2303.ZCE', 'CF2305.ZCE', 'CF2307.ZCE', 'CF2309.ZCE']
+    ts_code_list = ['CF2105.ZCE', 'CF2109.ZCE', 'CF2201.ZCE']
 
     add_daily(ts_code_list)
 

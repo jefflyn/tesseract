@@ -315,7 +315,7 @@ def trigger_new_high_low(name, alias, price, change, high, low, hist_high, hist_
         if float(low) < float(hist_low) or float(hist_low) == 0:
             log_type = LOG_TYPE_CONTRACT_NEW_LOW
             msg_content = name + log_type + ':' + str(low)
-            update_sql = "update future_basics set low=%.2f, update_remark='%s', update_time=now() " \
+            update_sql = "update basic set low=%.2f, update_remark='%s', update_time=now() " \
                          "where name like '%s'" % (low, msg_content, '%' + alias + '%')
             print('--->', name, '更新合约历史最低价!')
             if redis_client.get('CONTRACT_NEW_LOW_' + name) is not None and float(redis_client.get('CONTRACT_NEW_LOW_' + name)) >= 1:
@@ -329,7 +329,7 @@ def trigger_new_high_low(name, alias, price, change, high, low, hist_high, hist_
         if float(high) > float(hist_high) or float(hist_high) == 0:
             log_type = LOG_TYPE_CONTRACT_NEW_HIGH
             msg_content = name + log_type + ':' + str(high)
-            update_sql = "update future_basics set high=%.2f, update_remark='%s', update_time=now() " \
+            update_sql = "update basic set high=%.2f, update_remark='%s', update_time=now() " \
                          "where name like '%s'" % (high, msg_content, '%' + alias + '%')
             print('--->', name, '更新合约历史最高价!')
             if redis_client.get('CONTRACT_NEW_HIGH_' + name) is not None and float(redis_client.get('CONTRACT_NEW_HIGH_' + name)) >= 1:

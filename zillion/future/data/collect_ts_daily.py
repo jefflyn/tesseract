@@ -20,8 +20,8 @@ def save_daily(values=None):
 
 def add_daily(ts_codes=None):
     size = len(ts_codes)
+    seq = 1
     for code in ts_codes:
-        size -= 1
         df_data = pro_util.pro.fut_daily(ts_code=code)
         if df_data is None or df_data.empty:
             print(code + ' no daily data!')
@@ -41,7 +41,8 @@ def add_daily(ts_codes=None):
                               high, low, close, row['settle'], change1, row['change2'], row['vol'], row['amount'],
                               row['oi'], row['oi_chg'], date_util.now()])
             save_daily(data_list)
-        print(size, code)
+        print(str(seq) + "/" + str(size) + " done")
+        seq += 1
 
 
 if __name__ == '__main__':
@@ -51,7 +52,7 @@ if __name__ == '__main__':
     cursor = db.cursor()
 
     ts_code_list = [
-        'SN2301.SHF'
+        'PG2301.DCE','SC2301.INE','SS2301.SHF','ZN2301.SHF'
 ]
     add_daily(ts_code_list)
 

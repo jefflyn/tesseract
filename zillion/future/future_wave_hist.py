@@ -10,7 +10,7 @@ pd.set_option('display.max_columns', None)
 if __name__ == '__main__':
     # tscode = 'CF2101.ZCE,CF2105.ZCE,CF2109.ZCE,CF2201.ZCE,CF2205.ZCE,CF2209.ZCE'
     # ts_code_list = tscode.split(",")
-    ts_code_list = ['CF2205.ZCE', 'CF2309.ZCE', 'CF2301.ZCE', 'CF2303.ZCE', 'CF2305.ZCE', 'CF2307.ZCE', 'CF2309.ZCE']
+    ts_code_list = ['CF2105.ZCE', 'CF2109.ZCE', 'CF2201.ZCE', 'CF2205.ZCE', 'CF2309.ZCE', 'CF2301.ZCE', 'CF2303.ZCE', 'CF2305.ZCE', 'CF2307.ZCE', 'CF2309.ZCE']
 
     wave_data_list = []
     for code in ts_code_list:

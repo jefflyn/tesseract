@@ -111,8 +111,6 @@ def add_gap(codes_df_p):
         if df_data is None or df_data.empty:
             print(code + ' no daily data!')
             continue
-        if 'UR2301' in code:
-            print("debug")
         df_data = df_data[(df_data['deal_vol'] > 0) | (df_data['trade_date'] == curt_date)]
         df_data = df_data.reset_index()
         df_data = df_data[['ts_code', 'trade_date', 'open', 'high', 'low', 'close']]
@@ -154,7 +152,7 @@ if __name__ == '__main__':
     # 使用cursor()方法创建一个游标对象
     cursor = db.cursor()
     sql = "select code, concat(code, '.', exchange) ts_code, " \
-          " concat(code, '.', exchange)  main_code, low, high from future_basic where deleted=0;"
+          " concat(code, '.', exchange) main_code, low, high from basic where deleted=0;"
     codes_df = _dt.read_sql(sql, params=None)
     # 插入新的gap
     add_gap(codes_df)
