@@ -34,4 +34,4 @@ if __name__ == '__main__':
     wave_df_result = pd.DataFrame(wave_data_list,
                                   columns=['ts_code', 'code', 'start', 'end', 'a', 'b', 'c', 'd', 'ap', 'bp', 'cp',
                                            'dp'])
-    db_util.to_db(wave_df_result, 'future_wave_hist')
+    db_util.to_db(wave_df_result, 'wave_hist')

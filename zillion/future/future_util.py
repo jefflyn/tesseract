@@ -87,7 +87,7 @@ def add_realtime_data(codes=None, daily_df=None):
 
 
 def get_ts_future_hist_daily(ts_code=None, start_date=None, end_date=None):
-    sql = "select * from ts_future_daily_hist where 1=1 "
+    sql = "select * from ts_trade_daily_hist where 1=1 "
     if ts_code is not None:
         if isinstance(ts_code, str):
             codes = list()
@@ -112,7 +112,7 @@ def get_ts_future_hist_daily(ts_code=None, start_date=None, end_date=None):
 
 
 def get_ts_future_daily(ts_code=None, start_date=None, end_date=None):
-    sql = "select * from ts_future_daily where 1=1 "
+    sql = "select * from ts_trade_daily where 1=1 "
     if ts_code is not None:
         if isinstance(ts_code, str):
             codes = list()
@@ -137,7 +137,7 @@ def get_ts_future_daily(ts_code=None, start_date=None, end_date=None):
 
 
 def get_future_daily(name=None, trade_date=None):
-    sql = "select * from future_daily where 1=1 "
+    sql = "select * from trade_daily where 1=1 "
     if name is not None:
         sql += 'and name = :name '
     if trade_date is not None:
@@ -156,13 +156,13 @@ def add_log(name, log_type, pct_change, content, remark, price=None, position=No
     cursor = db.cursor()
     try:
         cursor.execute(
-            'insert into future_log(name, type, content, price, position, pct_change, log_time, remark) '
+            'insert into trade_log(name, type, content, price, position, pct_change, log_time, remark) '
             'values(%s, %s, %s, %s, %s, %s, %s, %s)',
             (name, log_type, content, price, position, pct_change, date_util.get_now(), remark)
         )
         db.commit()
     except Exception as err:
-        print('>>> insert future_log failed!', err)
+        print('>>> insert trade_log failed!', err)
         db.rollback()
     # 关闭游标和数据库的连接
     cursor.close()

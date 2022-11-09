@@ -82,7 +82,7 @@ if __name__ == '__main__':
             cursor = db.cursor()
             try:
                 cursor.execute(
-                    'insert into future_daily(trade_date, name, s_change, p_change, open, close, high, low, hl_diff,'
+                    'insert into trade_daily(trade_date, name, s_change, p_change, open, close, high, low, hl_diff,'
                     'amplitude, settle, pre_close, pre_settle, deal_vol, hold_vol, exchange) '
                     'values(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)',
                     (trade_date, name, s_change, p_change, open, price, high, low, round(high-low, 2),

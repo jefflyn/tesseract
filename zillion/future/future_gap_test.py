@@ -105,7 +105,6 @@ if __name__ == '__main__':
     db = _dt.get_db()
     # 使用cursor()方法创建一个游标对象
     cursor = db.cursor()
-    # sql = "select ch.symbol, concat(ch.code, '.', fb.exchange) ts_code from future_contract_hist ch join future_basic fb on ch.symbol = fb.symbol;"
     sql = "select concat(symbol, '.', exchange) ts_code from basic where deleted=0"
 
     codes_df = _dt.read_sql(sql, params=None)

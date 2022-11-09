@@ -8,7 +8,7 @@ def save_daily(values=None):
     if values is not None and len(values) > 0:
         try:
             # 注意这里使用的是executemany而不是execute
-            insert_sql = 'INSERT INTO ts_future_daily (ts_code, trade_date, pre_close, pre_settle, ' \
+            insert_sql = 'INSERT INTO ts_trade_daily (ts_code, trade_date, pre_close, pre_settle, ' \
                          'open, high, low, close, settle, close_change, settle_change, deal_vol, deal_amount, ' \
                          'hold_vol, hold_change, create_time) ' \
                          'VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)'

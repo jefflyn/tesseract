@@ -319,11 +319,11 @@ def wave_to_db(wave_list=None, wave_detail_list=None):
     wave_df_result = pd.DataFrame(wave_list,
                                   columns=['ts_code', 'code', 'start', 'end', 'a', 'b', 'c', 'd', 'ap', 'bp', 'cp', 'dp'])
     wave_df_result['update_time'] = date_util.now()
-    _dt.to_db(wave_df_result, 'future_wave')
+    _dt.to_db(wave_df_result, 'wave')
     wave_detail_result = pd.DataFrame(pd.concat(wave_detail_list),
                                       columns=['code', 'begin', 'end', 'status', 'begin_price', 'end_price',
                                                'change', 'days', 'ts_code'])
-    _dt.to_db(wave_detail_result, 'future_wave_detail')
+    _dt.to_db(wave_detail_result, 'wave_detail')
 
 
 def update_abcd_hl():
@@ -332,9 +332,9 @@ def update_abcd_hl():
     # 使用cursor()方法创建一个游标对象
     cursor = db.cursor()
     try:
-        sql = "update basic fb join future_wave at on at.code = fb.code join " \
+        sql = "update basic fb join wave at on at.code = fb.code join " \
               "(select substring_index(ts_code,'.', 1) code, max(begin_price) high1, max(end_price) high2, " \
-              "min(begin_price) low1, min(end_price) low2 from future_wave_detail group by ts_code) hl " \
+              "min(begin_price) low1, min(end_price) low2 from wave_detail group by ts_code) hl " \
               "on hl.code = fb.code set fb.high=if(hl.high1 > hl.high2, high1, high2), " \
               "fb.low=if(hl.low1 < hl.low2, low1, low2), fb.a=at.ap, fb.b=if(at.bp = '', null, at.bp), " \
               "fb.c=if(at.cp = '', null, at.cp), fb.d=if(at.dp = '', null, at.dp), fb.update_time=now() " \
@@ -349,7 +349,7 @@ def update_abcd_hl():
 if __name__ == '__main__':
     print(date_util.get_now())
     ############################################################
-    select_ts_codes = "select ts_code from ts_future_contract where type in (1, 2) and fut_code " \
+    select_ts_codes = "select ts_code from ts_contract where type in (1, 2) and fut_code " \
                       "in (select symbol from basic where deleted=0)"
     ts_codes = list(_dt.read_sql(select_ts_codes, None)['ts_code'])
     select_main_codes = "select concat(code, '.', exchange) ts_code from basic where deleted=0"

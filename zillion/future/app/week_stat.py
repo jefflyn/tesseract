@@ -20,4 +20,4 @@ if __name__ == '__main__':
         week_change = round((close - pre_close) * 100 / pre_close, 2)
         week_stat_data.append([row['code'], week_end, round(close - pre_close, 1), float(week_change)])
     wave_df_result = pd.DataFrame(week_stat_data, columns=['code', 'week', 'change', 'pct_change'])
-    db_util.to_db(wave_df_result, 'future_week_stat', if_exists='append')
+    db_util.to_db(wave_df_result, 'week_stat', if_exists='append')
