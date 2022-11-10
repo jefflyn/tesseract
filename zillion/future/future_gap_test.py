@@ -37,7 +37,7 @@ def update_gap(codes_df_p):
         start_date = row['start_date']
         gap_price = row['start_price']
         type = row['gap_type']
-        print(code, 'update gap...')
+        print(index, code, 'update gap...')
         ts_daily_df = future_util.get_ts_future_daily(ts_code, start_date=start_date)[
             ['ts_code', 'trade_date', 'open', 'high', 'low', 'close']]
         if ts_daily_df is None or ts_daily_df.empty:
