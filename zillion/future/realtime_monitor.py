@@ -11,28 +11,29 @@ pd.set_option('display.max_columns', None)
 
 code_target = {
     # 'PG2212': [-5000, 5200],
-    # 'EB2212': [-7700, 8000],
-    'PP2301': [-7522, 7540],
-    # 'NR2301': [-9720, 9800],
-    'UR2301': [-2388, 2445],
+    'EB2301': [-7700, 7810],
+    # 'PP2301': [-7522, 7800],
+    'NR2301': [-9300, 9600],
+    'UR2301': [-2610, 2635],
     # 'FG2301': [-1356, 1372],
     # 'SP2301': [-6600, 7000],
     #
-    'NI2302': [-190000, 195000],
+    # 'NI2302': [-190000, 205000],
     # 'SN2301': [-151000, 166000],
     # 'AL2301': [-17345.0, 18800],
     # 'AG2301': [-4500, 4700],
     # 'JM2301': [-1900, 2100],
     # 'J2301': [-2450, 2650],
-    'SF2301': [-8200, 8350],
-    # 'I2301': [-600, 700],
+    'SF2301': [-8350, 8520],
+    # 'I2301': [-710, 740],
     #
-    # 'CJ2301': [-10500, 11930],
+    # 'CJ2301': [-10625, 10880],
     # 'PK2301': [-10000, 11208],
-    'P2301': [-7800, 8600],
-    # 'OI2301': [-10800, 11500],
+    'P2301': [-8200, 8316],
+    # 'OI2301': [-11100, 11900],
+# 'OI2305': [-10000, 10600],
     # 'RM2301': [-2950, 3250],
-    # 'CF2301': [-12400, 13200],
+    # 'CF2305': [-12080, 13110],
 }
 
 
@@ -94,12 +95,13 @@ if __name__ == '__main__':
             target_diff = list()
             realtime["target"] = str(target_list)
             for target in target_list:
+                price_str = str(price)
                 if target < 0 and price <= abs(target):
-                    notify_util.notify('📣' + code, '✔️' + str(abs(target)), '🌧' + str(price))
-                    code_target[code][0] = round(target - target * 0.001, 1)
+                    notify_util.notify('📣' + code, '✔️' + str(abs(target)), '🌧' + price_str)
+                    code_target[code][0] = round(target - target * 0.001) if '.0' in price_str else round(target - target * 0.001, 1)
                 elif 0 < target <= price:
-                    notify_util.notify('📣' + code, '✔️' + str(target), '☀️' + str(price))
-                    code_target[code][1] = round(target + target * 0.001, 1)
+                    notify_util.notify('📣' + code, '✔️' + str(target), '☀️' + price_str)
+                    code_target[code][1] = round(target + target * 0.001) if '.0' in price_str else round(target + target * 0.001, 1)
                 target_diff.append(round(abs(target) - price))
                 realtime["t_diff"] = str(target_diff)
             if realtime_df is None:

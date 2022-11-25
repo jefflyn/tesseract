@@ -52,7 +52,7 @@ if __name__ == '__main__':
     cursor = db.cursor()
 
     ts_code_list = [
-        'PG2301.DCE','SC2301.INE','SS2301.SHF','ZN2301.SHF'
+        'M2305.DCE','OI2305.ZCE','RM2305.ZCE','Y2305.DCE'
 ]
     add_daily(ts_code_list)
 
