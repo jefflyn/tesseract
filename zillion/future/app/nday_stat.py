@@ -46,6 +46,7 @@ if __name__ == '__main__':
     week_start = date_util.shift_date_flat_format(n=-90)
 
     ts_codes = list(future_basics['ts_code'])
+    # ts_codes = ['L2305.DCE']
     df_data = future_util.get_ts_future_daily(ts_codes, start_date=week_start)[
         ['ts_code', 'trade_date', 'pre_close', 'pre_settle', 'open', 'high', 'low', 'close', 'close_change']]
 
