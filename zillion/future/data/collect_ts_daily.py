@@ -1,8 +1,12 @@
 import math
 
+import pandas as pd
+
 import zillion.utils.db_util as _dt
 from zillion.utils import date_util, pro_util
 
+pd.set_option('display.width', None)
+pd.set_option('display.max_columns', None)
 
 def save_daily(values=None):
     if values is not None and len(values) > 0:
@@ -46,6 +50,27 @@ def add_daily(ts_codes=None):
 
 
 if __name__ == '__main__':
+    import akshare as ak
+
+    get_futures_daily_df = ak.get_dce_daily(date="20230104")
+    print(get_futures_daily_df)
+    # get_futures_daily_df = ak.get_futures_daily(start_date="20220101", end_date="20221231", market="DCE")
+    # print(get_futures_daily_df)
+    futures_zh_daily_sina_df = ak.futures_zh_daily_sina(symbol="SI2308")
+    print(futures_zh_daily_sina_df)
+    # futures_zh_spot_df = ak.futures_zh_spot(symbol='TA2305, P2305, B2305, M2305', market="CF", adjust='0')
+    # print(futures_zh_spot_df)
+    # futures_contract_detail_df = ak.futures_display_main_sina()
+    # print(futures_contract_detail_df)
+    # futures_main_sina_hist = ak.futures_main_sina(symbol="V0", start_date="20230101", end_date="20230106")
+    # print(futures_main_sina_hist)
+    # main_contract = ak.match_main_contract(symbol="shfe")
+    # print(main_contract)
+    # futures_spot_price_df = ak.futures_spot_price(date="2023-01-04")
+    # print(futures_spot_price_df)
+    # futures_comm_info_df = ak.futures_comm_info(symbol="P2305")
+    # print(futures_comm_info_df)
+
     # 建立数据库连接
     db = _dt.get_db()
     # 使用cursor()方法创建一个游标对象
@@ -54,6 +79,6 @@ if __name__ == '__main__':
     ts_code_list = [
         'M2305.DCE','OI2305.ZCE','RM2305.ZCE','Y2305.DCE'
 ]
-    add_daily(ts_code_list)
+    # add_daily(ts_code_list)
 
     print('done @', date_util.get_now())
