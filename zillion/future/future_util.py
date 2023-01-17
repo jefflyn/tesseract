@@ -34,29 +34,22 @@ def is_trade_time():
     return is_trade_time
 
 
-def get_future_basics(code=None, type=None, night=None, on_target=None):
+def get_future_basics(type=None, night=None, on_target=None):
     '''
     查询商品合约详情，不包含金融产品
-    :param code:
     :param type:
     :param night:
     :param on_target:
     :return:
     '''
-    sql = "select concat(code, '.', exchange) ts_code, fb.* from basic fb where deleted = 0 "
+    sql = "select * from basic where deleted = 0 "
     if on_target is True:
         sql += 'and target = :on_target '
-    if code is not None:
-        if isinstance(code, str):
-            codes = list()
-            codes.append(code)
-            code = codes
-        sql += 'and code in :code '
     if type is not None and type not in ['tar', 'all']:
         sql += 'and goods_type = :type '
     if night is not None:
         sql += 'and night = :night '
-    params = {'code': code, 'type': GOODS_TYPE_MAP.get(type), 'night': night, 'on_target': 1}
+    params = {'type': GOODS_TYPE_MAP.get(type), 'night': night, 'on_target': 1}
     df = read_sql(sql, params=params)
     return df
 
