@@ -1,12 +1,15 @@
 import akshare as ak
 import numpy as np
 import pandas as pd
+from akshare.futures import cons
 from akshare.futures.symbol_var import symbol_varieties
 
 import zillion.utils.db_util as _dt
+from zillion.future.domain import trade
 from zillion.utils import date_util
+from zillion.utils.db_util import read_sql
+
 # 建立数据库连接
-from zillion.utils.date_util import FORMAT_FLAT
 
 db = _dt.get_db()
 # 使用cursor()方法创建一个游标对象
@@ -26,19 +29,71 @@ def _save_daily(values=None):
             print('  >>> insert daily error:', err)
 
 
-def get_daily_all_ak(date=None):
+def _daily_all_ak(date=None):
     if date is None:
-        date = date_util.get_today(FORMAT_FLAT)
+        date = cons.get_latest_data_date(date_util.now())
     dce_daily = ak.get_dce_daily(date)
     czce_daily = ak.get_czce_daily(date)
     gfex_daily = ak.get_gfex_daily(date)
     ine_daily = ak.get_ine_daily(date)
     shfe_daily = ak.get_shfe_daily(date)
     all_data = pd.concat([dce_daily, czce_daily, gfex_daily, ine_daily, shfe_daily], ignore_index=True)
-    print(all_data)
+    return all_data
 
 
-def get_hist_daily_ak(codes=None):
+def get_daily(code=None, trade_date=None):
+    sql = "select * from trade_daily where 1=1 "
+    if code is not None:
+        sql += 'and code = :code '
+    if trade_date is not None:
+        sql += 'and trade_date = :trade_date '
+    params = {'code': code, 'trade_date': trade_date}
+    df = read_sql(sql, params=params)
+    df.index = list(df['code'])
+    return df
+
+
+def collect_daily_ak(codes=None, trade_date=None):
+    '''
+    日增量
+    :param codes:
+    :return:
+    '''
+    last_trade_date = cons.last_trading_day(date_util.now())
+    last_trade_data = get_daily(trade_date=last_trade_date)
+
+    size = len(codes)
+    seq = 1
+    collect_time = date_util.now()
+    # all_daily_df = _daily_all_ak(date=trade_date)
+    for code in codes:
+        # df_data = all_daily_df[(all_daily_df.symbol.str.upper() == code) & (all_daily_df.date == trade_date)]
+        df_data = trade.realtime_for_daily(code)
+        if df_data is None or df_data.empty:
+            print(code + ' no daily data!')
+            continue
+        pre_close = last_trade_data.loc[code, 'close'] if last_trade_data.empty is False else None
+        if pre_close is None:
+            print(code, " pre daily data is empty!")
+            continue
+
+        df_data['pre_close'] = pre_close
+        data_list = []
+        for index, row in df_data.iterrows():
+            close_change = round((row['close'] - row['pre_settle']) * 100 / row['pre_settle'], 2) if row[
+                                                                                                         'pre_settle'] > 0 else 0
+            settle_change = round((row['settle'] - row['pre_settle']) * 100 / row['pre_settle'], 2) if row[
+                                                                                                           'pre_settle'] > 0 else 0
+            data_list.append([symbol_varieties(code), row['date'], code, row['open'], row['high'], row['low'],
+                              row['close'], row['settle'], row['pre_close'], row['pre_settle'], close_change,
+                              settle_change,
+                              row['volume'], row['hold'], collect_time])
+        _save_daily(data_list)
+        print("processing " + str(seq) + "/" + str(size) + " done!")
+        seq += 1
+
+
+def collect_hist_daily_ak(codes=None):
     '''
     历史全量
     :param codes:
@@ -67,15 +122,21 @@ def get_hist_daily_ak(codes=None):
         # print(df_data.tail(10))
         data_list = []
         for index, row in df_data.iterrows():
-            close_change = round((row['close'] - row['pre_settle']) * 100 / row['pre_settle'], 2) if row['pre_settle'] > 0 else 0
-            settle_change = round((row['settle'] - row['pre_settle']) * 100 / row['pre_settle'], 2) if row['pre_settle'] > 0 else 0
-            data_list.append([symbol_varieties(code), row['date'], code,  row['open'], row['high'], row['low'],
-                              row['close'], row['settle'], row['pre_close'], row['pre_settle'], close_change, settle_change,
+            close_change = round((row['close'] - row['pre_settle']) * 100 / row['pre_settle'], 2) if row[
+                                                                                                         'pre_settle'] > 0 else 0
+            settle_change = round((row['settle'] - row['pre_settle']) * 100 / row['pre_settle'], 2) if row[
+                                                                                                           'pre_settle'] > 0 else 0
+            data_list.append([symbol_varieties(code), row['date'], code, row['open'], row['high'], row['low'],
+                              row['close'], row['settle'], row['pre_close'], row['pre_settle'], close_change,
+                              settle_change,
                               row['volume'], row['hold'], collect_time])
         _save_daily(data_list)
-        print(str(seq) + "/" + str(size) + " done")
+        print("processing " + str(seq) + "/" + str(size) + " done!")
         seq += 1
 
 
 if __name__ == '__main__':
-    get_hist_daily_ak(["A2305"])
+    # collect_hist_daily_ak(["A2305"])
+    collect_daily_ak(["SA2305"], cons.get_latest_data_date(date_util.now()))
+
+

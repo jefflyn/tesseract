@@ -1,8 +1,8 @@
 import akshare as ak
 import pandas as pd
+from akshare.futures import cons
 
 from zillion.utils import date_util
-from zillion.utils.date_util import FORMAT_FLAT
 
 pd.set_option('display.width', None)
 pd.set_option('display.max_columns', None)
@@ -10,7 +10,7 @@ pd.set_option('display.max_columns', None)
 
 def get_daily_all(date=None):
     if date is None:
-        date = date_util.get_today(FORMAT_FLAT)
+        date = cons.get_latest_data_date(date_util.now())
     dce_daily = ak.get_dce_daily(date)
     czce_daily = ak.get_czce_daily(date)
     gfex_daily = ak.get_gfex_daily(date)
@@ -21,7 +21,7 @@ def get_daily_all(date=None):
 
 
 if __name__ == '__main__':
-    get_daily_all(date="20230118")
+    get_daily_all()
     # get_dce_daily = ak.get_dce_daily(date="20230118")
     # print(get_dce_daily)
 

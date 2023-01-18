@@ -1,12 +1,22 @@
 import numpy as np
 
 import zillion.utils.db_util as _dt
+from zillion.future.domain import basic
 from zillion.utils.db_util import read_sql
 
 # 建立数据库连接
 db = _dt.get_db()
 # 使用cursor()方法创建一个游标对象
 cursor = db.cursor()
+
+
+def get_basic_contract():
+    '''
+    连续合约
+    :return:
+    '''
+    symbol_exchange_map = basic.symbol_exchange_map(None)
+    return [symbol + '0' for symbol in symbol_exchange_map.keys()]
 
 
 def pre_main_contract(code, main):

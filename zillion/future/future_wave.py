@@ -4,14 +4,15 @@ import numpy as np
 import pandas as pd
 
 import zillion.utils.db_util as _dt
-from zillion.future import future_util, future_trade
+from zillion.future import future_util
+from zillion.future.domain import trade
 from zillion.utils import date_util
 
 
 def add_realtime_data(code=None, local_last_trade_date=None):
     last_trade_date = date_util.get_today(date_util.FORMAT_FLAT)  # .get_latest_trade_date(1)[0]
     if local_last_trade_date < last_trade_date:  # not the latest record
-        realtime = future_trade.realtime(code.split('.')[0])
+        realtime = trade.realtime_simple(code.split('.')[0])
         if realtime is not None and realtime.empty is False:
             realtime['code'] = code
             return realtime

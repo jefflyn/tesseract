@@ -2,7 +2,7 @@ import datetime
 
 import pandas as pd
 
-from zillion.future import future_trade
+from zillion.future.domain import trade
 from zillion.future.future_constants import *
 from zillion.utils import date_util
 from zillion.utils.db_util import get_db
@@ -63,7 +63,7 @@ def add_realtime_data(codes=None, daily_df=None):
         realtime_df = None
         for code in codes:
             sina_code = code.split('.')[0]
-            realtime = future_trade.realtime(sina_code)
+            realtime = trade.realtime_simple(sina_code)
             if realtime is not None and realtime.empty is False:
                 realtime['ts_code'] = code
                 realtime['trade_date'] = last_trade_date

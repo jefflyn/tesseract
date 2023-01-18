@@ -7,6 +7,8 @@ import arrow
 from dateutil.relativedelta import relativedelta
 from dateutil.rrule import *
 
+from zillion.utils.pro_util import pro
+
 FORMAT_DATETIME = '%Y-%m-%d %H:%M:%S'
 FORMAT_DEFAULT = '%Y-%m-%d'
 FORMAT_FLAT = '%Y%m%d'
@@ -69,7 +71,7 @@ last_year_start = datetime.datetime(last_year_end.year, 1, 1)
 
 start_date = last_year_start.strftime(FORMAT_FLAT)
 curt_date = today.strftime(FORMAT_FLAT)
-hist_date_list = None  # pro.trade_cal(start_date=start_date, end_date=curt_date)
+hist_date_list = pro.trade_cal(start_date=start_date, end_date=curt_date)
 # hist_date_list = hist_date_list.iloc[::-1]
 
 

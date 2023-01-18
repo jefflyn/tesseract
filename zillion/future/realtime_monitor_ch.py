@@ -3,7 +3,6 @@ import time
 
 import pandas as pd
 
-from zillion.future import future_trade
 from zillion.utils import notify_util
 
 pd.set_option('display.width', None)
@@ -56,7 +55,7 @@ if __name__ == '__main__':
     while True:
         realtime_df = None
         for code in code_target.keys():
-            realtime = future_trade.realtime(code)
+            realtime = future_trade.realtime_simple(code)
             price = realtime.iloc[0].at["close"]
             pre_settle = realtime.iloc[0].at["pre_settle"]
             open = realtime.iloc[0].at["open"]
