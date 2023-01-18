@@ -1,3 +1,5 @@
+import numpy as np
+
 import zillion.utils.db_util as _dt
 from zillion.utils.db_util import read_sql
 
@@ -5,6 +7,12 @@ from zillion.utils.db_util import read_sql
 db = _dt.get_db()
 # 使用cursor()方法创建一个游标对象
 cursor = db.cursor()
+
+
+def pre_main_contract(code, main):
+    if code[-1] != '0':
+        return code < main
+    return False
 
 
 def get_local_contract(code=None, main=False, selected=False):
@@ -17,6 +25,8 @@ def get_local_contract(code=None, main=False, selected=False):
         sql += 'and selected = 1 '
     params = {'code': code, 'main': main, 'selected': selected}
     df = read_sql(sql, params=params)
+    df['low_time'] = np.where(df.low_time.notnull(), df.low_time, None)
+    df['high_time'] = np.where(df.high_time.notnull(), df.high_time, None)
     return df
 
 
@@ -43,3 +53,7 @@ def remove_contract_hist(code, values=None):
     sql = "delete from contract where code='%s';"
     cursor.execute(sql % code)
     save_contract(values, True)
+
+
+if __name__ == '__main__':
+    print(pre_main_contract('A2305', 'A2305'))
