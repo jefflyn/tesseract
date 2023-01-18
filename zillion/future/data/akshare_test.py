@@ -21,12 +21,13 @@ def get_daily_all(date=None):
 
 
 if __name__ == '__main__':
-    get_daily_all()
+    # get_daily_all()
     # get_dce_daily = ak.get_dce_daily(date="20230118")
     # print(get_dce_daily)
 
-    # get_czce_daily = ak.get_czce_daily(date="20230117")
-    # print(get_czce_daily)
+    get_czce_daily = ak.get_czce_daily(date="20230117")
+    print(get_czce_daily)
+    print(get_czce_daily[get_czce_daily.variety == 'SA'])
 
     # get_gfex_daily = ak.get_gfex_daily(date="20230117")
     # print(get_gfex_daily)
