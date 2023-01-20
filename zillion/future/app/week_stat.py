@@ -1,18 +1,19 @@
 import pandas as pd
 
-from zillion.future import future_util
+from zillion.future.domain import daily, contract
 from zillion.utils import db_util
 
 if __name__ == '__main__':
-    future_basics = future_util.get_future_basics()
-    week_start = '20220523'
-    week_end = '20220527'
+    contracts = contract.get_local_contract()
+    week_start = '2023-01-16'
+    week_end = '2023-01-20'
     week_stat_data = []
-    for index, row in future_basics.iterrows():
-        code = row['code'] + '.' + row['exchange']
-        df_data = future_util.get_ts_future_daily(code, start_date=week_start,
+    for index, row in contracts.iterrows():
+        code = row['code']
+        print('processing ', code)
+        df_data = daily.get_daily(code, start_date=week_start,
                                                   end_date=week_end)[
-            ['ts_code', 'trade_date', 'pre_close', 'pre_settle', 'open', 'high', 'low', 'close']]
+            ['code', 'trade_date', 'pre_close', 'pre_settle', 'open', 'high', 'low', 'close']]
         pre_close_data = list(df_data['pre_close'])
         close_data = list(df_data['close'])
         pre_close = pre_close_data[0]

@@ -4,13 +4,12 @@ import numpy as np
 import pandas as pd
 
 import zillion.utils.db_util as _dt
-from zillion.future import future_util
-from zillion.future.domain import trade
+from zillion.future.domain import trade, contract, daily
 from zillion.utils import date_util
 
 
 def add_realtime_data(code=None, local_last_trade_date=None):
-    last_trade_date = date_util.get_today(date_util.FORMAT_FLAT)  # .get_latest_trade_date(1)[0]
+    last_trade_date = date_util.get_today()  # .get_latest_trade_date(1)[0]
     if local_last_trade_date < last_trade_date:  # not the latest record
         realtime = trade.realtime_simple(code.split('.')[0])
         if realtime is not None and realtime.empty is False:
@@ -20,19 +19,12 @@ def add_realtime_data(code=None, local_last_trade_date=None):
 
 
 def get_wave(code=None, hist_data=None, begin_low=True, duration=0, change=0):
-    # local_last_trade_date = list(hist_data['date'])[-1]
-    # realtime = add_realtime_data(code, local_last_trade_date)
-    # if realtime is not None:
-    #     # hist_data = hist_data.append(realtime, ignore_index=True)
-    #     hist_data = pd.concat([hist_data, realtime], ignore_index=True)
-    new_code = code.split('.')[0]
-    left_data = wave_from(new_code, hist_data, begin_low, 'left', duration, change)
+    left_data = wave_from(code, hist_data, begin_low, 'left', duration, change)
     # sorted by date asc
     left_data.reverse()
-    right_data = wave_from(new_code, hist_data, begin_low, 'right', duration, change)
+    right_data = wave_from(code, hist_data, begin_low, 'right', duration, change)
     period_df = pd.DataFrame(left_data + right_data,
                              columns=['code', 'begin', 'end', 'status', 'begin_price', 'end_price', 'days', 'change'])
-    period_df['ts_code'] = code
     period_list = [period_df]
     if period_list is None or len(period_list) == 0:
         print('result is empty, please check the code is exist!')
@@ -54,6 +46,7 @@ def wave_from(code, df, begin_low, direction='left', duration=0, change=0):
     if pivot_rec is None or pivot_rec.empty is True:
         print(code + ' pivot_rec is None or pivot_rec.empty')
         return
+    pivot_rec = pivot_rec.head(1)
     pivot_index = pivot_rec.index.to_numpy()[0]
     pivot_date = pivot_rec.at[pivot_index, 'date']
     pivot_close = pivot_rec.at[pivot_index, 'close']
@@ -67,7 +60,7 @@ def wave_from(code, df, begin_low, direction='left', duration=0, change=0):
     if direction == 'right':
         begin_date = pivot_date
         end_date = last_date
-    diff_days = datetime.strptime(str(end_date), '%Y%m%d') - datetime.strptime(str(begin_date), '%Y%m%d')
+    diff_days = datetime.strptime(str(end_date), '%Y-%m-%d') - datetime.strptime(str(begin_date), '%Y-%m-%d')
 
     while diff_days.days > duration:
         data = df[(df.date >= begin_date) & (df.date < end_date)] if direction == 'left' else df[
@@ -76,6 +69,7 @@ def wave_from(code, df, begin_low, direction='left', duration=0, change=0):
 
         status = ''
         rec = data[data.high == price] if is_max else data[data.low == price]
+        rec = rec.head(1)
         idx = rec.index.to_numpy()[0]
         date = rec.at[idx, 'date']
         close = rec.at[idx, 'close']
@@ -104,7 +98,7 @@ def wave_from(code, df, begin_low, direction='left', duration=0, change=0):
         list.append(status)
         list.append(begin_price)
         list.append(end_price)
-        list.append((datetime.strptime(end_date, '%Y%m%d') - datetime.strptime(begin_date, '%Y%m%d')).days)
+        list.append((datetime.strptime(end_date, '%Y-%m-%d') - datetime.strptime(begin_date, '%Y-%m-%d')).days)
         list.append(round(diff_percent, 2))
         if begin_price != end_price:
             period_data.append(list)
@@ -118,7 +112,7 @@ def wave_from(code, df, begin_low, direction='left', duration=0, change=0):
             end_date = last_date
             begin_price = price
 
-        diff_days = datetime.strptime(end_date, '%Y%m%d') - datetime.strptime(begin_date, '%Y%m%d')
+        diff_days = datetime.strptime(end_date, '%Y-%m-%d') - datetime.strptime(begin_date, '%Y-%m-%d')
         is_max = not is_max
     return period_data
 
@@ -318,22 +312,22 @@ def get_wave_list(wave_str=None, size=4):
 
 def wave_to_db(wave_list=None, wave_detail_list=None):
     wave_df_result = pd.DataFrame(wave_list,
-                                  columns=['ts_code', 'code', 'start', 'end', 'a', 'b', 'c', 'd', 'ap', 'bp', 'cp', 'dp'])
+                                  columns=['code', 'code', 'start', 'end', 'a', 'b', 'c', 'd', 'ap', 'bp', 'cp', 'dp'])
     wave_df_result['update_time'] = date_util.now()
     _dt.to_db(wave_df_result, 'wave')
     wave_detail_result = pd.DataFrame(pd.concat(wave_detail_list),
                                       columns=['code', 'begin', 'end', 'status', 'begin_price', 'end_price',
-                                               'change', 'days', 'ts_code'])
+                                               'change', 'days'])
     _dt.to_db(wave_detail_result, 'wave_detail')
 
 
-def update_abcd_hl():
+def update_contract_hl():
     # 建立数据库连接
     db = _dt.get_db()
     # 使用cursor()方法创建一个游标对象
     cursor = db.cursor()
     try:
-        sql = "update basic fb join wave at on at.code = fb.code join " \
+        sql = "update contract c join wave w at on c.code = w.code join " \
               "(select substring_index(ts_code,'.', 1) code, max(begin_price) high1, max(end_price) high2, " \
               "min(begin_price) low1, min(end_price) low2 from wave_detail group by ts_code) hl " \
               "on hl.code = fb.code set fb.high=if(hl.high1 > hl.high2, high1, high2), " \
@@ -350,20 +344,17 @@ def update_abcd_hl():
 if __name__ == '__main__':
     print(date_util.get_now())
     ############################################################
-    select_ts_codes = "select ts_code from ts_contract where type in (1, 2) and fut_code " \
-                      "in (select symbol from basic where deleted=0)"
-    ts_codes = list(_dt.read_sql(select_ts_codes, None)['ts_code'])
-    select_main_codes = "select concat(code, '.', exchange) ts_code from basic where deleted=0"
-    main_codes = list(_dt.read_sql(select_main_codes, None)['ts_code'])
-    code_list = ts_codes + main_codes
+    mian_codes = contract.get_main_contract_code()
+    codes = list(contract.get_local_contract()['code'])
+    code_list = mian_codes + codes
     ############################################################
-    # code_list = ['APL.ZCE']
+    # code_list = ['FG0']
     ############################################################
     wave_data_list = []
     wave_detail_list = []
     size = len(code_list)
     for code in code_list:
-        df_data = future_util.get_ts_future_daily(code)[['ts_code', 'trade_date', 'open', 'high', 'low', 'close']]
+        df_data = daily.get_daily(code)[['code', 'trade_date', 'open', 'high', 'low', 'close']]
         if df_data is None or df_data.empty:
             print(code + ' no daily data!')
             continue
@@ -388,4 +379,4 @@ if __name__ == '__main__':
 
     wave_to_db(wave_data_list, wave_detail_list)
     print(date_util.get_now())
-    update_abcd_hl()
+    #update_contract_hl()

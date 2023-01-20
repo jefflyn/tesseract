@@ -1,7 +1,6 @@
 import pandas as pd
 
 from zillion.future import future_util
-from zillion.future import future_wave
 from zillion.utils import db_util
 
 pd.set_option('display.max_columns', None)

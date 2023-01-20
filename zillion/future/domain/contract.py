@@ -10,7 +10,7 @@ db = _dt.get_db()
 cursor = db.cursor()
 
 
-def get_basic_contract_code():
+def get_main_contract_code():
     '''
     连续合约
     :return:

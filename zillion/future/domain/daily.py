@@ -7,6 +7,7 @@ from akshare.futures.symbol_var import symbol_varieties
 import zillion.utils.db_util as _dt
 from zillion.future.domain import trade
 from zillion.utils import date_util
+from zillion.utils.date_util import FORMAT_FLAT
 from zillion.utils.db_util import read_sql
 
 # 建立数据库连接
@@ -45,7 +46,7 @@ def _daily_all_ak(date=None):
     return all_data
 
 
-def get_daily(code=None, start_date=None, end_date=None):
+def get_daily(code=None, trade_date=None, start_date=None, end_date=None):
     sql = "select * from trade_daily where 1=1 "
     if code is not None:
         if isinstance(code, str):
@@ -53,11 +54,16 @@ def get_daily(code=None, start_date=None, end_date=None):
             codes.append(code)
             code = codes
         sql += 'and code in :codes '
+    if trade_date is not None:
+        trade_date = date_util.parse_date_str(trade_date)
+        sql += 'and trade_date =:trade_date '
     if start_date is not None:
+        start_date = date_util.parse_date_str(start_date)
         sql += 'and trade_date >=:start '
     if end_date is not None:
+        end_date = date_util.parse_date_str(end_date)
         sql += 'and trade_date <=:end '
-    params = {'codes': code, 'start': start_date, 'end': end_date}
+    params = {'codes': code, 'trade_date': trade_date, 'start': start_date, 'end': end_date}
 
     df = read_sql(sql, params=params)
     df.index = list(df['code'])
@@ -70,7 +76,7 @@ def collect_daily_ak(codes=None, trade_date=None):
     :param codes:
     :return:
     '''
-    last_trade_date = cons.last_trading_day(date_util.now())
+    last_trade_date = cons.last_trading_day(date_util.parse_date_str(trade_date, FORMAT_FLAT))
     last_trade_data = get_daily(trade_date=last_trade_date)
 
     size = len(codes)

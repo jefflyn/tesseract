@@ -1,4 +1,3 @@
-from zillion.future import future_wave
 from zillion.utils import db_util
 from zillion.utils.pro_util import pro
 
