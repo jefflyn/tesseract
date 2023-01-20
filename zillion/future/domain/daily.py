@@ -18,7 +18,11 @@ cursor = db.cursor()
 
 def _save_daily(values=None):
     if values is not None and len(values) > 0:
+        trade_date = values[0][1]
+        codes = ','.join(["'" + e[2] + "'" for e in values])
         try:
+            delete_sql = "delete from future.trade_daily where code in (" + codes + ") and trade_date='" + trade_date + "'"
+            cursor.execute(delete_sql)
             # 注意这里使用的是executemany而不是execute
             insert_sql = 'INSERT INTO future.trade_daily (symbol, trade_date, code, open, high, low, close, settle, ' \
                          'pre_close, pre_settle, close_change, settle_change, deal_vol, hold_vol, create_time) VALUES ' \
@@ -41,13 +45,20 @@ def _daily_all_ak(date=None):
     return all_data
 
 
-def get_daily(code=None, trade_date=None):
+def get_daily(code=None, start_date=None, end_date=None):
     sql = "select * from trade_daily where 1=1 "
     if code is not None:
-        sql += 'and code = :code '
-    if trade_date is not None:
-        sql += 'and trade_date = :trade_date '
-    params = {'code': code, 'trade_date': trade_date}
+        if isinstance(code, str):
+            codes = list()
+            codes.append(code)
+            code = codes
+        sql += 'and code in :codes '
+    if start_date is not None:
+        sql += 'and trade_date >=:start '
+    if end_date is not None:
+        sql += 'and trade_date <=:end '
+    params = {'codes': code, 'start': start_date, 'end': end_date}
+
     df = read_sql(sql, params=params)
     df.index = list(df['code'])
     return df
@@ -69,7 +80,8 @@ def collect_daily_ak(codes=None, trade_date=None):
     for code in codes:
         # df_data = all_daily_df[(all_daily_df.symbol.str.upper() == code) & (all_daily_df.date == trade_date)]
         df_data = trade.realtime_for_daily(code)
-        if df_data is None or df_data.empty:
+        realtime_date = date_util.parse_date_str(df_data.head(1).loc[0, 'date'])
+        if df_data is None or df_data.empty or date_util.parse_date_str(trade_date) != realtime_date:
             print(code + ' no daily data!')
             continue
         pre_close = last_trade_data.loc[code, 'close'] if last_trade_data.empty is False else None
@@ -84,7 +96,7 @@ def collect_daily_ak(codes=None, trade_date=None):
                                                                                                          'pre_settle'] > 0 else 0
             settle_change = round((row['settle'] - row['pre_settle']) * 100 / row['pre_settle'], 2) if row[
                                                                                                            'pre_settle'] > 0 else 0
-            data_list.append([symbol_varieties(code), row['date'], code, row['open'], row['high'], row['low'],
+            data_list.append([symbol_varieties(code), trade_date, code, row['open'], row['high'], row['low'],
                               row['close'], row['settle'], row['pre_close'], row['pre_settle'], close_change,
                               settle_change,
                               row['volume'], row['hold'], collect_time])

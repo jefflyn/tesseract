@@ -3,6 +3,7 @@ import time
 
 import pandas as pd
 
+from zillion.future.domain import trade
 from zillion.utils import notify_util
 
 pd.set_option('display.width', None)
@@ -26,7 +27,7 @@ code_target = {
     # 'AG2305': [-4500, 5000],
     # 'JM2305': [-1900, 2100],
     # 'J2305': [-2450, 2650],
-    'SF2305': [-8300, 8600],
+    'SF2305': [-8300, 8800],
     'I2305': [-800, 900],
     #
     # 'CJ2305': [-10060, 10460],
@@ -76,7 +77,7 @@ if __name__ == '__main__':
     while True:
         realtime_df = None
         for code in code_target.keys():
-            realtime = future_trade.realtime_simple(code)
+            realtime = trade.realtime_simple(code)
             price = realtime.iloc[0].at["close"]
             pre_settle = realtime.iloc[0].at["pre_settle"]
             open = realtime.iloc[0].at["open"]

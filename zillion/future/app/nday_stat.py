@@ -2,7 +2,7 @@ import statistics
 
 import pandas as pd
 
-from zillion.future import future_util
+from zillion.future.domain import contract, daily
 from zillion.utils import date_util, db_util
 
 
@@ -41,17 +41,15 @@ def get_n(change_list):
 
 if __name__ == '__main__':
     n_day = 14
-    future_basics = future_util.get_future_basics()
-    week_end = date_util.get_today(date_util.FORMAT_FLAT)
+    codes = list(contract.get_local_contract()['code'])
+    week_end = date_util.get_today()
     week_start = date_util.shift_date_flat_format(n=-90)
 
-    ts_codes = list(future_basics['ts_code'])
-    # ts_codes = ['L2305.DCE']
-    df_data = future_util.get_ts_future_daily(ts_codes, start_date=week_start)[
-        ['ts_code', 'trade_date', 'pre_close', 'pre_settle', 'open', 'high', 'low', 'close', 'close_change']]
+    df_data = daily.get_daily(codes, start_date=week_start)[
+        ['code', 'trade_date', 'pre_close', 'pre_settle', 'open', 'high', 'low', 'close', 'close_change']]
 
     stat_data = []
-    data_group = df_data.groupby('ts_code')
+    data_group = df_data.groupby('code')
     result = []
     for ts_code, group in data_group:
         last60d_data = group.tail(60)
@@ -98,7 +96,7 @@ if __name__ == '__main__':
                       + [str(last_cls_change_list)]
                       + [round(price), round(avg5d), round(avg10d), round(avg20d), round(avg60d)])
 
-    df = pd.DataFrame(result, columns=['ts_code', 'close_change', 'settle_change', 'up', 'days', '3d_change',
+    df = pd.DataFrame(result, columns=['code', 'close_change', 'settle_change', 'up', 'days', '3d_change',
                                        '5d_change', '7d_change', 'change_list',
                                        'price', 'avg5d', 'avg10d', 'avg20d', 'avg60d'])
     df['update_time'] = date_util.now()
