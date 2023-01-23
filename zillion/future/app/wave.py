@@ -327,18 +327,24 @@ def update_contract_hl():
     # 使用cursor()方法创建一个游标对象
     cursor = db.cursor()
     try:
-        sql = "update contract c join wave w at on c.code = w.code join " \
-              "(select substring_index(ts_code,'.', 1) code, max(begin_price) high1, max(end_price) high2, " \
-              "min(begin_price) low1, min(end_price) low2 from wave_detail group by ts_code) hl " \
-              "on hl.code = fb.code set fb.high=if(hl.high1 > hl.high2, high1, high2), " \
-              "fb.low=if(hl.low1 < hl.low2, low1, low2), fb.a=at.ap, fb.b=if(at.bp = '', null, at.bp), " \
-              "fb.c=if(at.cp = '', null, at.cp), fb.d=if(at.dp = '', null, at.dp), fb.update_time=now() " \
-              "where fb.deleted = 0;"
+        sql = "update contract c join wave w on c.code = w.code join " \
+              "(select code, max(begin_price) high1, max(end_price) high2, min(begin_price) low1, min(end_price) low2 from wave_detail group by code) hl " \
+              "on hl.code = c.code set c.high=if(hl.high1 > hl.high2, high1, high2), " \
+              "c.low=if(hl.low1 < hl.low2, low1, low2), c.update_time=now() " \
+              "where c.deleted = 0;"
+        cursor.execute(sql)
+        sql = "update contract c join wave_detail wd on c.code = wd.code and c.high = wd.begin_price set c.high_time = wd.begin, c.update_time=now() where c.deleted = 0 and (c.high_time is null or c.high_time < wd.begin); update contract c join wave_detail wd on c.code = wd.code and c.high = wd.end_price set c.high_time = wd.end, c.update_time=now() where c.deleted = 0 and (c.high_time is null or c.high_time < wd.end); update contract c join wave_detail wd on c.code = wd.code and c.low = wd.begin_price set c.low_time = wd.begin, c.update_time=now() where c.deleted = 0 and (c.low_time is null or c.low_time < wd.begin); update contract c join wave_detail wd on c.code = wd.code and c.low = wd.end_price set c.low_time = wd.end, c.update_time=now() where c.deleted = 0 and (c.low_time is null or c.low_time < wd.end);"
         cursor.execute(sql)
         db.commit()
-        print('  >>> update_abcd_hl done!')
+        print('  >>> update_contract_hl done!')
     except Exception as err:
-        print('  >>> update_abcd_hl error:', err)
+        print('  >>> update_contract_hl error:', err)
+
+
+def get_high_low():
+    df = _dt.read_query('select code, GREATEST(ap, bp, cp, dp) high, LEAST(ap, bp, cp, dp) low from wave')
+    df.index = list(df['code'])
+    return df
 
 
 if __name__ == '__main__':
@@ -379,4 +385,4 @@ if __name__ == '__main__':
 
     wave_to_db(wave_data_list, wave_detail_list)
     print(date_util.get_now())
-    #update_contract_hl()
+    update_contract_hl()
