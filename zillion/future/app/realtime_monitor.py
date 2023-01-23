@@ -3,19 +3,42 @@ import time
 
 import pandas as pd
 
+from zillion.future.domain import trade
 from zillion.utils import notify_util
 
 pd.set_option('display.width', None)
 pd.set_option('display.max_columns', None)
 
 code_target = {
-    'CJ2301': [-10500, 11930],
-    'PK2301': [-10000, 11208],
-    'P2301': [-7800, 8600],
-    'OI2301': [-10800, 11500],
-    'RM2301': [-2950, 3250],
-    'AP2301': [-8400, 8500],
-    'CF2301': [-12400, 13200],
+    'SC2303': [-500, 600],
+    'TA2305': [-5250, 6000],
+    # 'PG2303': [-4250, 4650],
+    # 'EB2302': [-8600, 8800],
+    # 'PP2305': [-7670, 8000],
+    # 'NR2303': [-9300, 9900],
+    # 'UR2305': [-2490, 2635],
+    # 'FG2305': [-1356, 1372],
+    # 'SP2305': [-6300, 6400],
+    #
+    # 'NI2303': [-197000, 200000],
+    'SN2303': [-218500, 240000],
+    # 'AL2302': [-17345.0, 19800],
+    'SI2308': [-17000, 19000],
+    # 'AG2305': [-4500, 5000],
+    # 'JM2305': [-1900, 2100],
+    # 'J2305': [-2450, 2650],
+    'SF2305': [-8300, 8800],
+    'I2305': [-800, 900],
+    #
+    # 'CJ2305': [-10060, 10460],
+    # 'PK2304': [-10000, 10600],
+    # 'P2305': [-7600, 8400],
+    'OI2305': [-9800, 10280],
+    # 'RM2305': [-2950, 3250],
+    # 'CF2305': [-10275, 10320],
+    # 'AP2305': [-8300, 8500],
+'FG2305': [-1700, 1800],
+'SA2309': [-2470, 2550],
 }
 
 
@@ -38,7 +61,7 @@ def format_realtime(df):
 
 
 def future_price(price):
-    price_str = str(price)
+    price_str = str(round(price, 2))
     price_arr = price_str.split(".")
     if len(price_arr) == 1:
         return price_arr[0]
@@ -54,7 +77,7 @@ if __name__ == '__main__':
     while True:
         realtime_df = None
         for code in code_target.keys():
-            realtime = future_trade.realtime_simple(code)
+            realtime = trade.realtime_simple(code)
             price = realtime.iloc[0].at["close"]
             pre_settle = realtime.iloc[0].at["pre_settle"]
             open = realtime.iloc[0].at["open"]
@@ -77,12 +100,15 @@ if __name__ == '__main__':
             target_diff = list()
             realtime["target"] = str(target_list)
             for target in target_list:
+                price_str = str(price)
                 if target < 0 and price <= abs(target):
-                    notify_util.notify('📣' + code, '✔️' + str(abs(target)), '🌧' + str(price))
-                    code_target[code][0] = round(target - target * 0.001, 1)
+                    notify_util.notify('📣' + code, '✔️' + str(abs(target)), '🌧' + price_str)
+                    code_target[code][0] = round(target - target * 0.001) if '.0' in price_str else round(
+                        target - target * 0.001, 1)
                 elif 0 < target <= price:
-                    notify_util.notify('📣' + code, '✔️' + str(target), '☀️' + str(price))
-                    code_target[code][1] = round(target + target * 0.001, 1)
+                    notify_util.notify('📣' + code, '✔️' + str(target), '☀️' + price_str)
+                    code_target[code][1] = round(target + target * 0.001) if '.0' in price_str else round(
+                        target + target * 0.001, 1)
                 target_diff.append(round(abs(target) - price))
                 realtime["t_diff"] = str(target_diff)
             if realtime_df is None:
