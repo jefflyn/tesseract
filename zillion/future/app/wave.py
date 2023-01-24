@@ -327,14 +327,10 @@ def update_contract_hl():
     # 使用cursor()方法创建一个游标对象
     cursor = db.cursor()
     try:
-        sql = "update contract c join wave w on c.code = w.code join " \
-              "(select code, max(begin_price) high1, max(end_price) high2, min(begin_price) low1, min(end_price) low2 from wave_detail group by code) hl " \
-              "on hl.code = c.code set c.high=if(hl.high1 > hl.high2, high1, high2), " \
-              "c.low=if(hl.low1 < hl.low2, low1, low2), c.update_time=now() " \
-              "where c.deleted = 0;"
-        cursor.execute(sql)
-        sql = "update contract c join wave_detail wd on c.code = wd.code and c.high = wd.begin_price set c.high_time = wd.begin, c.update_time=now() where c.deleted = 0 and (c.high_time is null or c.high_time < wd.begin); update contract c join wave_detail wd on c.code = wd.code and c.high = wd.end_price set c.high_time = wd.end, c.update_time=now() where c.deleted = 0 and (c.high_time is null or c.high_time < wd.end); update contract c join wave_detail wd on c.code = wd.code and c.low = wd.begin_price set c.low_time = wd.begin, c.update_time=now() where c.deleted = 0 and (c.low_time is null or c.low_time < wd.begin); update contract c join wave_detail wd on c.code = wd.code and c.low = wd.end_price set c.low_time = wd.end, c.update_time=now() where c.deleted = 0 and (c.low_time is null or c.low_time < wd.end);"
-        cursor.execute(sql)
+        cursor.execute("update contract c join wave_detail wd on c.code = wd.code and c.high = wd.begin_price set c.high_time = wd.begin, c.update_time=now() where c.deleted = 0 and (c.high_time is null or c.high_time < wd.begin);")
+        cursor.execute("update contract c join wave_detail wd on c.code = wd.code and c.high = wd.end_price set c.high_time = wd.end, c.update_time=now() where c.deleted = 0 and (c.high_time is null or c.high_time < wd.end);")
+        cursor.execute("update contract c join wave_detail wd on c.code = wd.code and c.low = wd.begin_price set c.low_time = wd.begin, c.update_time=now() where c.deleted = 0 and (c.low_time is null or c.low_time < wd.begin);")
+        cursor.execute("update contract c join wave_detail wd on c.code = wd.code and c.low = wd.end_price set c.low_time = wd.end, c.update_time=now() where c.deleted = 0 and (c.low_time is null or c.low_time < wd.end);")
         db.commit()
         print('  >>> update_contract_hl done!')
     except Exception as err:
