@@ -14,6 +14,6 @@ if __name__ == '__main__':
     #
     # contract_df = contract.get_local_contract()
     # code_list = list(contract_df['code'])
-    code_list = ['SA2309', 'EB2303', 'NI2303', 'SF2305']
+    code_list = ['ZN2303']
     daily.collect_hist_daily_ak(code_list)
     print('done @', date_util.get_now())

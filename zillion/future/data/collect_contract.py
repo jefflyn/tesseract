@@ -3,7 +3,7 @@ import pandas as pd
 from akshare.futures.cons import market_exchange_symbols
 from akshare.futures.symbol_var import symbol_varieties
 
-from zillion.future.domain import contract, basic
+from zillion.future.domain import contract, basic, daily
 from zillion.future.future_util import get_future_basics
 from zillion.utils import date_util
 
@@ -20,13 +20,14 @@ if __name__ == '__main__':
     for key in market_exchange_symbols.keys():
         match_main_contract_df = ak.match_main_contract(symbol=key)
         main_contracts = match_main_contract_df.split(",")
-        for mc in main_contracts:
-            symbol = symbol_varieties(mc)
-            main_contract_map[symbol] = mc
-            if symbol in basic_symbols and mc not in contract_code:
-                ts_code = mc + '.' + symbol_exchange.get(symbol)
-                contract.save_contract([[symbol, mc, ts_code, 1, 0, 0, None, None, 1,
+        for main_code in main_contracts:
+            symbol = symbol_varieties(main_code)
+            main_contract_map[symbol] = main_code
+            if symbol in basic_symbols and main_code not in contract_code:
+                ts_code = main_code + '.' + symbol_exchange.get(symbol)
+                contract.save_contract([[symbol, main_code, ts_code, 1, 0, 0, None, None, 1,
                                          date_util.now(), date_util.now(), 0]])
+                daily.collect_hist_daily_ak(main_code)
     print(main_contract_map)
     if len(contract_code) == 0:
         print('done!!!')

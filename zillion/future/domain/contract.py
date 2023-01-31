@@ -50,7 +50,7 @@ def save_contract(values=None, hist=False):
             cursor.executemany(insert_sql, values)
             db.commit()
         except Exception as err:
-            print('  >>> insert contract error:', err)
+            print('  >>> insert error:', table_name, err)
 
 
 def update_contract_main(code):
