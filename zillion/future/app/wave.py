@@ -80,8 +80,8 @@ def wave_from(code, df, begin_low, direction='left', duration=0, change=0):
             status = 'down' if is_max else 'up'
         if direction == 'right':
             # if the latest one, get the close price, calculate the actual rises
-            # end_price = close if date == last_date else price
-            end_price = price
+            end_price = close if date == last_date else price
+            # end_price = price
             end_date = date
             status = 'up' if is_max else 'down'
 
@@ -312,7 +312,8 @@ def get_wave_list(wave_str=None, size=4):
 
 def wave_to_db(wave_list=None, wave_detail_list=None):
     wave_df_result = pd.DataFrame(wave_list,
-                                  columns=['code', 'code', 'start', 'end', 'a', 'b', 'c', 'd', 'ap', 'bp', 'cp', 'dp'])
+                                  columns=['code', 'code', 'start', 'end', 'a', 'b', 'c', 'd', 'ap', 'bp', 'cp', 'dp',
+                                           'p'])
     wave_df_result['update_time'] = date_util.now()
     _dt.to_db(wave_df_result, 'wave')
     wave_detail_result = pd.DataFrame(pd.concat(wave_detail_list),
@@ -366,6 +367,7 @@ if __name__ == '__main__':
         wave_detail_list.append(wave_df)
         wave_str = wave_to_str(wave_df)
         wave_list = get_wave_list(wave_str)
+        wave_list.append(wave_df.tail(1).iloc[0, 5])  # end_price
         wave_list.insert(0, code)
         wave_list.insert(1, code.split('.')[0])
         wave_list.insert(2, list(wave_df['begin'])[0])
