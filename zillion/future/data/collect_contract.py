@@ -27,7 +27,8 @@ if __name__ == '__main__':
                 ts_code = main_code + '.' + symbol_exchange.get(symbol)
                 contract.save_contract([[symbol, main_code, ts_code, 1, 0, 0, None, None, 1,
                                          date_util.now(), date_util.now(), 0]])
-                daily.collect_hist_daily_ak(main_code)
+                print("add new contract hist daily:", main_code)
+                daily.collect_hist_daily_ak([main_code])
     print(main_contract_map)
     if len(contract_code) == 0:
         print('done!!!')
@@ -41,6 +42,6 @@ if __name__ == '__main__':
             continue
         if symbol not in basic_symbols or code < main_code:
             contract.remove_contract_hist(code, [list(row.values)])
-            print("remove ", code)
+            print("Remove contract:", code)
         if code == main_code and not_main:
             contract.update_contract_main(code)
