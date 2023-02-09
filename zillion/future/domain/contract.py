@@ -1,5 +1,3 @@
-import numpy as np
-
 import zillion.utils.db_util as _dt
 from zillion.future.domain import basic
 from zillion.utils.db_util import read_sql
@@ -25,18 +23,20 @@ def pre_main_contract(code, main):
     return False
 
 
-def get_local_contract(code=None, main=False, selected=False):
+def get_local_contract(symbol=None, code=None, main=False, selected=False):
     sql = "select * from contract where 1=1 "
+    if symbol is not None:
+        sql += 'and symbol = :symbol '
     if code is not None:
         sql += 'and code = :code '
     if main is True:
         sql += 'and main = 1 '
     if selected is True:
         sql += 'and selected = 1 '
-    params = {'code': code, 'main': main, 'selected': selected}
+    params = {'symbol': symbol, 'code': code, 'main': main, 'selected': selected}
     df = read_sql(sql, params=params)
-    df['low_time'] = np.where(df.low_time.notnull(), df.low_time, None)
-    df['high_time'] = np.where(df.high_time.notnull(), df.high_time, None)
+    # df['low_time'] = np.where(df.low_time.notnull(), df.low_time, None)
+    # df['high_time'] = np.where(df.high_time.notnull(), df.high_time, None)
     return df
 
 
