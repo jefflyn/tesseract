@@ -29,6 +29,15 @@ if __name__ == '__main__':
                                          date_util.now(), date_util.now(), 0]])
                 print("add new contract hist daily:", main_code)
                 daily.collect_hist_daily_ak([main_code])
+                daily_df = daily.get_daily(main_code)
+                close_list = list(daily_df['close'])
+                date_list = list(daily_df['trade_date'])
+                lowest = min(close_list)
+                lowest_date = date_list[close_list.index(lowest)]
+                highest = max(close_list)
+                highest_date = date_list[close_list.index(highest)]
+                contract.update_contract_hl(main_code, lowest, lowest_date, highest, highest_date)
+
     print(main_contract_map)
     if len(contract_code) == 0:
         print('done!!!')

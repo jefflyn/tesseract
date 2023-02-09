@@ -59,6 +59,12 @@ def update_contract_main(code):
     db.commit()
 
 
+def update_contract_hl(code, low, low_time, high, high_time):
+    sql = "update contract set low=%d, low_time='%s', high=%d, high_time='%s', update_time=now() where code='%s';"
+    cursor.execute(sql % (low, low_time, high, high_time, code))
+    db.commit()
+
+
 def remove_contract_hist(code, values=None):
     sql = "delete from contract where code='%s';"
     cursor.execute(sql % code)
