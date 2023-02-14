@@ -51,7 +51,7 @@ if __name__ == '__main__':
     stat_data = []
     data_group = df_data.groupby('code')
     result = []
-    for ts_code, group in data_group:
+    for code, group in data_group:
         last60d_data = group.tail(60)
         last60d_close = list(last60d_data['close'])
         # print(last60d_close)
@@ -61,11 +61,11 @@ if __name__ == '__main__':
         avg10d = statistics.mean(last60d_close[size-10:])  # strategy
         avg20d = statistics.mean(last60d_close[size-20:])  # assist
         avg60d = statistics.mean(last60d_close)  # trend
-        print(ts_code, price, avg5d, avg10d, avg20d, avg60d)
+        print(code, price, avg5d, avg10d, avg20d, avg60d)
 
         last_n_data = group.tail(n_day)
         last_n_data = last_n_data.sort_values(['trade_date'], ascending=False, ignore_index=True)
-        last_n_data['close_diff'] = last_n_data['close'] - last_n_data['pre_close']
+        last_n_data['close_diff'] = round(last_n_data['close'] - last_n_data['pre_close'], 1)
         # n_close = 0
         # n = 0
         three_days_change = 0
@@ -92,12 +92,20 @@ if __name__ == '__main__':
 
         last_cls_change_list = list(last_n_data['close_diff'])
         n_list = get_n(last_cls_change_list)
-        result.append([ts_code, last_cls_change, last_settle_change] + n_list + close_change_list
+        p5t10 = round((avg5d - avg10d) * 100 / avg10d, 2)
+        pt5 = round((price - avg5d) * 100 / avg5d, 2)
+        pt10 = round((price - avg10d) * 100 / avg10d, 2)
+        pt20 = round((price - avg20d) * 100 / avg20d, 2)
+        pt60 = round((price - avg60d) * 100 / avg60d, 2)
+        trend_up = price >= avg5d >= avg10d >= avg20d >= avg60d
+        result.append([code, last_cls_change, last_settle_change] + n_list + close_change_list
                       + [str(last_cls_change_list)]
-                      + [round(price), round(avg5d), round(avg10d), round(avg20d), round(avg60d)])
+                      + [round(price), round(avg5d), round(avg10d), round(avg20d), round(avg60d)]
+                      + [p5t10, pt5, pt10, pt20, pt60, trend_up])
 
     df = pd.DataFrame(result, columns=['code', 'close_change', 'settle_change', 'up', 'days', '3d_change',
                                        '5d_change', '7d_change', 'change_list',
-                                       'price', 'avg5d', 'avg10d', 'avg20d', 'avg60d'])
+                                       'price', 'avg5d', 'avg10d', 'avg20d', 'avg60d',
+                                       'p5t10', 'pt5', 'pt10', 'pt20', 'pt60', 'trend_up'])
     df['update_time'] = date_util.now()
     db_util.to_db(df, 'n_stat', if_exists='replace')

@@ -33,7 +33,7 @@ def del_gap_record(code):
     sql = "delete from gap_log where code='%s';"
     cursor.execute(sql % code)
     db.commit()
-    print("delete gap record ", code)
+    print("Delete gap record ", code)
 
 
 def update_gap():

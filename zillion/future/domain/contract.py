@@ -69,6 +69,7 @@ def remove_contract_hist(code, values=None):
     sql = "delete from contract where code='%s';"
     cursor.execute(sql % code)
     save_contract(values, True)
+    print("Remove contract:", code)
 
 
 if __name__ == '__main__':

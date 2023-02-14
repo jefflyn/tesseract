@@ -3,7 +3,7 @@ import pandas as pd
 from akshare.futures.cons import market_exchange_symbols
 from akshare.futures.symbol_var import symbol_varieties
 
-from zillion.future.domain import contract, basic, daily
+from zillion.future.domain import contract, basic, daily, gap
 from zillion.future.future_util import get_future_basics
 from zillion.utils import date_util
 
@@ -66,7 +66,7 @@ if __name__ == '__main__':
 
         if symbol not in basic_symbols or code < main_code:
             contract.remove_contract_hist(code, [list(row.values)])
-            print("Remove contract:", code)
+            gap.del_gap_record(code)
         if code > main_code:
             update_contract_hl(code)
 

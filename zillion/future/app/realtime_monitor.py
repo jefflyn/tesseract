@@ -10,35 +10,37 @@ pd.set_option('display.width', None)
 pd.set_option('display.max_columns', None)
 
 code_target = {
-    'SC2303': [-500, 600],
-    # 'TA2305': [-5650, 5720],
-    # 'PG2303': [-4250, 4650],
-    # 'EB2302': [-8600, 8800],
+    'SC2304': [-555, 566],
+    # 'TA2305': [-5420, 5440],
+    # 'PG2304': [-4250, 4650],
+    # 'EB2304': [-8320, 8880],
     # 'PP2305': [-7670, 8000],
-    'NR2305': [-9850, 9870],
+    'NR2305': [-9750, 9990],
     # 'UR2305': [-2490, 2635],
     # 'FG2305': [-1356, 1372],
     # 'SP2305': [-6700, 6930],
     #
-    # 'NI2303': [-197000, 200000],
-    # 'SN2303': [-218500, 241000],
-    # 'AL2302': [-17345.0, 19800],
-    # 'SI2308': [-17580, 17760],
+    # 'NI2304': [-197000, 208000],
+    # 'SN2304': [-218500, 241000],
+    # 'AL2304': [-17345.0, 19800],
+    # 'SI2308': [-17580, 18260],
     # 'AG2305': [-4500, 5000],
     # 'JM2305': [-1900, 2100],
     # 'J2305': [-2450, 2650],
-    'SF2305': [-7950, 8250],
+    'SF2305': [-7700, 7970],
     'I2305': [-800, 900],
     #
     # 'CJ2305': [-10060, 10460],
     # 'PK2304': [-10000, 10600],
     # 'P2305': [-7600, 8400],
-    'OI2305': [-9800, 9999],
+    'OI2305': [-9740, 9940],
     # 'RM2305': [-2950, 3250],
-    # 'CF2305': [-10275, 10320],
+    'CF2305': [-14080, 14400],
     # 'AP2305': [-8300, 8500],
-'FG2305': [-1520, 1650],
-'SA2309': [-2470, 2680],
+    'FG2305': [-1500, 1650],
+    'SA2309': [-2470, 2680],
+        # 'PP2305': [-7770, 7790],
+
 }
 
 
@@ -83,12 +85,13 @@ if __name__ == '__main__':
             open = realtime.iloc[0].at["open"]
             high = realtime.iloc[0].at["high"]
             low = realtime.iloc[0].at["low"]
-            realtime['hi-low'] = '[' + future_price(low) + '-' + future_price(high) + ']'
+            realtime['low-hi'] = '[' + future_price(low) + '-' + future_price(high) + ']'
             realtime['diff'] = future_price(high - low)
             price_diff = float(price) - float(pre_settle)
             realtime["change"] = str(round(price_diff / float(pre_settle) * 100, 2)) + "% " + future_price(price_diff)
-            realtime['open'] = '[' + future_price(pre_settle) + '-' + future_price(open) \
-                               + " " + future_price(open - pre_settle) + ']'
+            is_up = open > pre_settle
+            realtime['open'] = '[' + future_price(pre_settle) + '-' + future_price(open) + (' ↑' if is_up else ' ↓') \
+                               + future_price(open - pre_settle) + ']'
 
             position = 0
             if high != low:
@@ -120,7 +123,7 @@ if __name__ == '__main__':
         realtime_df = realtime_df.drop(columns=['high'])
         final_df = format_realtime(realtime_df)
         print(
-            final_df[['code', 'date', 'open', 'hi-low', 'diff', 'close', 'bid', 'ask', 'change', 'position', 'target',
+            final_df[['code', 'date', 'open', 'low-hi', 'diff', 'close', 'bid', 'ask', 'change', 'position', 'target',
                       't_diff']])
         print(datetime.datetime.now())
         time.sleep(2)
