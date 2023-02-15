@@ -9,13 +9,13 @@ from zillion.utils import notify_util
 pd.set_option('display.width', None)
 pd.set_option('display.max_columns', None)
 
-code_target = {
-    'SC2304': [-555, 566],
-    # 'TA2305': [-5420, 5440],
+init_target = {
+    'SC2304': [[-555], [572]],
+    'TA2305': [[-5420], [5500]],
     # 'PG2304': [-4250, 4650],
     # 'EB2304': [-8320, 8880],
     # 'PP2305': [-7670, 8000],
-    'NR2305': [-9750, 9990],
+    # 'NR2305': [-9750, 10000],
     # 'UR2305': [-2490, 2635],
     # 'FG2305': [-1356, 1372],
     # 'SP2305': [-6700, 6930],
@@ -23,24 +23,24 @@ code_target = {
     # 'NI2304': [-197000, 208000],
     # 'SN2304': [-218500, 241000],
     # 'AL2304': [-17345.0, 19800],
-    # 'SI2308': [-17580, 18260],
+    'SI2308': [[-17580], [18260]],
     # 'AG2305': [-4500, 5000],
     # 'JM2305': [-1900, 2100],
     # 'J2305': [-2450, 2650],
-    'SF2305': [-7700, 7970],
-    'I2305': [-800, 900],
+    'SF2305': [[-7700], [7970]],
+    'I2305': [[-800], [900]],
     #
     # 'CJ2305': [-10060, 10460],
     # 'PK2304': [-10000, 10600],
     # 'P2305': [-7600, 8400],
-    'OI2305': [-9740, 9940],
-    # 'RM2305': [-2950, 3250],
-    'CF2305': [-14080, 14400],
-    # 'AP2305': [-8300, 8500],
-    'FG2305': [-1500, 1650],
-    'SA2309': [-2470, 2680],
-        # 'PP2305': [-7770, 7790],
-
+    'OI2305': [[-9740], [9850]],
+    # 'RM2305': [-2950, [3250]],
+    # 'CF2305': [-14080, 14500]],
+    'AP2305': [[-8780], [8880]],
+    'FG2305': [[-1500], [1650]],
+    'SA2309': [[-2470], [2490]],
+        'PP2305': [[-7780], [7810]],
+'EB2304': [[-8310], [8320]],
 }
 
 
@@ -76,9 +76,15 @@ def future_price(price):
 
 
 if __name__ == '__main__':
+    target_dw_index_dir = {}
+    target_up_index_dir = {}
     while True:
         realtime_df = None
-        for code in code_target.keys():
+        for code in init_target.keys():
+            if target_dw_index_dir.get(code) is None:
+                target_dw_index_dir[code] = 0
+            if target_up_index_dir.get(code) is None:
+                target_up_index_dir[code] = 0
             realtime = trade.realtime_simple(code)
             price = realtime.iloc[0].at["close"]
             pre_settle = realtime.iloc[0].at["pre_settle"]
@@ -99,20 +105,37 @@ if __name__ == '__main__':
             elif high == low > price:
                 position = 100
             realtime["position"] = round(position)
-            target_list = code_target.get(code)
+            target_list = init_target.get(code)
             target_diff = list()
-            realtime["target"] = str(target_list)
-            for target in target_list:
+            target_dw_index = target_dw_index_dir.get(code)
+            target_up_index = target_up_index_dir.get(code)
+            realtime["target"] = str([target_list[0][target_dw_index], target_list[1][target_up_index]])
+            for target_arr in target_list:
+                is_target_down = target_arr[0] < 0
                 price_str = str(price)
-                if target < 0 and price <= abs(target):
-                    notify_util.notify('📣' + code, '✔️' + str(abs(target)), '🌧' + price_str)
-                    code_target[code][0] = round(target - target * 0.001) if '.0' in price_str else round(
-                        target - target * 0.001, 1)
-                elif 0 < target <= price:
-                    notify_util.notify('📣' + code, '✔️' + str(target), '☀️' + price_str)
-                    code_target[code][1] = round(target + target * 0.001) if '.0' in price_str else round(
-                        target + target * 0.001, 1)
-                target_diff.append(round(abs(target) - price))
+                if is_target_down:
+                    target_price = target_arr[target_dw_index]
+                    if price <= abs(target_price):
+                        notify_util.notify('📣' + code, '✔️' + str(abs(target_price)), '🌧' + price_str)
+                        new_target = round(target_price - target_price * 0.001) if '.0' in price_str else round(
+                            target_price - target_price * 0.001, 1)
+                        init_target[code][0].append(new_target)
+                        target_dw_index_dir[code] = target_dw_index + 1
+                    elif target_dw_index > 1:
+                        if price > abs(target_arr[target_dw_index - 1]):
+                            target_dw_index_dir[code] = target_dw_index - 1
+                else:
+                    target_price = target_arr[target_up_index]
+                    if target_price <= price:
+                        notify_util.notify('📣' + code, '✔️' + str(target_price), '☀️' + price_str)
+                        new_target = round(target_price + target_price * 0.001) if '.0' in price_str else round(
+                            target_price + target_price * 0.001, 1)
+                        init_target[code][1].append(new_target)
+                        target_up_index_dir[code] = target_up_index + 1
+                    elif target_up_index > 1:
+                        if price < abs(target_arr[target_up_index - 1]):
+                            target_up_index_dir[code] = target_up_index - 1
+                target_diff.append(round(abs(target_price) - price))
                 realtime["t_diff"] = str(target_diff)
             if realtime_df is None:
                 realtime_df = realtime
