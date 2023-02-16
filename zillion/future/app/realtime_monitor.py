@@ -10,37 +10,34 @@ pd.set_option('display.width', None)
 pd.set_option('display.max_columns', None)
 
 init_target = {
-    'SC2304': [[-555], [572]],
-    'TA2305': [[-5420], [5500]],
-    # 'PG2304': [-4250, 4650],
-    # 'EB2304': [-8320, 8880],
-    # 'PP2305': [-7670, 8000],
-    # 'NR2305': [-9750, 10000],
-    # 'UR2305': [-2490, 2635],
-    # 'FG2305': [-1356, 1372],
-    # 'SP2305': [-6700, 6930],
+    'SC2304': [[-555], [580]],
+    'TA2305': [[-5420], [5580]],
+    # 'PG2304': [[-4250], [4650]],
+    # 'NR2305': [[-9750], [10000]],
+    # 'UR2305': [[-2490], [2635]],
+    # 'SP2305': [[-6700], [6930]],
     #
-    # 'NI2304': [-197000, 208000],
-    # 'SN2304': [-218500, 241000],
-    # 'AL2304': [-17345.0, 19800],
+    # 'NI2304': [[-197000], [208000]],
+    # 'SN2304': [[-218500], [241000]],
+    # 'AL2304': [[-17345.0], [19800]],
     'SI2308': [[-17580], [18260]],
-    # 'AG2305': [-4500, 5000],
-    # 'JM2305': [-1900, 2100],
-    # 'J2305': [-2450, 2650],
-    'SF2305': [[-7700], [7970]],
+    # 'AG2305': [[-4500], [5000]],
+    # 'JM2305': [[-1900], [2100]],
+    # 'J2305': [[-2450], [2650]],
+    'SF2305': [[-7700], [8000]],
     'I2305': [[-800], [900]],
     #
-    # 'CJ2305': [-10060, 10460],
-    # 'PK2304': [-10000, 10600],
+    # 'CJ2305': [[-10060], [10460]],
+    'PK2304': [[-11090], [11100]],
     # 'P2305': [-7600, 8400],
-    'OI2305': [[-9740], [9850]],
-    # 'RM2305': [-2950, [3250]],
-    # 'CF2305': [-14080, 14500]],
+    'OI2305': [[-9920], [9950]],
+    # 'RM2305': [[-2950], [3250]],
+    # 'CF2305': [[-14080], [14500]],
     'AP2305': [[-8780], [8880]],
     'FG2305': [[-1500], [1650]],
-    'SA2309': [[-2470], [2490]],
-        'PP2305': [[-7780], [7810]],
-'EB2304': [[-8310], [8320]],
+    'SA2309': [[-2470], [2500]],
+        'PP2305': [[-7780], [7850]],
+'EB2304': [[-8310], [8520]],
 }
 
 
@@ -119,7 +116,8 @@ if __name__ == '__main__':
                         notify_util.notify('📣' + code, '✔️' + str(abs(target_price)), '🌧' + price_str)
                         new_target = round(target_price - target_price * 0.001) if '.0' in price_str else round(
                             target_price - target_price * 0.001, 1)
-                        init_target[code][0].append(new_target)
+                        if new_target not in init_target[code][0]:
+                            init_target[code][0].append(new_target)
                         target_dw_index_dir[code] = target_dw_index + 1
                     elif target_dw_index > 1:
                         if price > abs(target_arr[target_dw_index - 1]):
@@ -130,7 +128,8 @@ if __name__ == '__main__':
                         notify_util.notify('📣' + code, '✔️' + str(target_price), '☀️' + price_str)
                         new_target = round(target_price + target_price * 0.001) if '.0' in price_str else round(
                             target_price + target_price * 0.001, 1)
-                        init_target[code][1].append(new_target)
+                        if new_target not in init_target[code][1]:
+                            init_target[code][1].append(new_target)
                         target_up_index_dir[code] = target_up_index + 1
                     elif target_up_index > 1:
                         if price < abs(target_arr[target_up_index - 1]):
