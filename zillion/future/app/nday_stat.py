@@ -76,18 +76,18 @@ if __name__ == '__main__':
         last_close = 0
         last_cls_change = 0
         last_settle_change = 0
-        close_change_list = []
+        close_change_n_list = []
         for index, row in last_n_data.iterrows():
             if index == 0:
                 last_close = row['close']
                 last_cls_change = round((last_close - row['pre_close']) * 100 / row['pre_close'], 2)
                 last_settle_change = round((last_close - row['pre_settle']) * 100 / row['pre_settle'], 2)
             elif index == 2:
-                close_change_list.append(round((last_close - row['close']) * 100 / row['close'], 2))
+                close_change_n_list.append(round((last_close - row['close']) * 100 / row['close'], 2))
             elif index == 4:
-                close_change_list.append(round((last_close - row['close']) * 100 / row['close'], 2))
+                close_change_n_list.append(round((last_close - row['close']) * 100 / row['close'], 2))
             elif index == 6:
-                close_change_list.append(round((last_close - row['close']) * 100 / row['close'], 2))
+                close_change_n_list.append(round((last_close - row['close']) * 100 / row['close'], 2))
 
             close_change = row['close'] - row['pre_close']
             settle_change = row['close'] - row['pre_settle']
@@ -99,15 +99,14 @@ if __name__ == '__main__':
         pt10 = round((price - avg10d) * 100 / avg10d, 2)
         pt20 = round((price - avg20d) * 100 / avg20d, 2)
         pt60 = round((price - avg60d) * 100 / avg60d, 2)
-        trend_up = price >= avg5d >= avg10d >= avg20d >= avg60d
-        result.append([code, last_cls_change, last_settle_change] + n_list + close_change_list
-                      + [str(last_cls_change_list)]
+        trend_up = avg5d >= avg10d >= avg20d >= avg60d
+        result.append([code, last_cls_change, last_settle_change] + n_list + close_change_n_list
                       + [round(price, 1), round(settle, 1), round(avg5d), round(avg10d), round(avg20d), round(avg60d)]
-                      + [p5t10, pt5, pt10, pt20, pt60, trend_up])
+                      + [p5t10, pt5, pt10, pt20, pt60, trend_up] + [str(last_cls_change_list)])
 
     df = pd.DataFrame(result, columns=['code', 'close_change', 'settle_change', 'up', 'days', '3d_change',
-                                       '5d_change', '7d_change', 'change_list',
+                                       '5d_change', '7d_change',
                                        'price', 'settle', 'avg5d', 'avg10d', 'avg20d', 'avg60d',
-                                       'p5t10', 'pt5', 'pt10', 'pt20', 'pt60', 'trend_up'])
+                                       'p5t10', 'pt5', 'pt10', 'pt20', 'pt60', 'trend_up', 'change_list'])
     df['update_time'] = date_util.now()
     db_util.to_db(df, 'n_stat', if_exists='replace')
