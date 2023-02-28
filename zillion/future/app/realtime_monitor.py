@@ -10,40 +10,41 @@ pd.set_option('display.width', None)
 pd.set_option('display.max_columns', None)
 
 init_target = {
-    'SC2304': [[-555], [580]],
+    'SC2304': [[-500], [580]],
 
-    'TA2305': [[-5420], [5580]],
-    'EB2304': [[-8310], [8520]],
-    'PP2305': [[-7780], [7850]],
+    'TA2305': [[-5420], [5800]],
+    # 'EB2304': [[-8310], [8520]],
+    # 'PP2305': [[-7780], [8100]],
     # 'PG2304': [[-4250], [4650]],
     # 'NR2305': [[-9750], [10000]],
 
     # 'UR2305': [[-2490], [2635]],
     # 'SP2305': [[-6700], [6930]],
-    'FG2305': [[-1500], [1650]],
-    'SA2309': [[-2470], [2500]],
+    'FG2305': [[-1510], [1680]],
+'SA2309': [[-2400], [2600]],
 
-    # 'AG2305': [[-4500], [5000]],
+    'AG2305': [[-4820], [4874]],
     # 'NI2304': [[-197000], [208000]],
     # 'SN2304': [[-218500], [241000]],
     # 'AL2304': [[-17345.0], [19800]],
-    'SI2308': [[-17580], [18260]],
+    'SI2308': [[-17300], [18800]],
 
     # 'JM2305': [[-1900], [2100]],
     # 'J2305': [[-2450], [2650]],
-    'SF2305': [[-7700], [8000]],
-    'I2305': [[-800], [900]],
 
-    'PK2304': [[-11080], [11100]],
+
+    'PK2304': [[-10000], [11500]],
     # 'P2305': [-7600, 8400],
-    'OI2305': [[-9820], [9950]],
+    'OI2305': [[-9800], [9924]],
     # 'RM2305': [[-2950], [3250]],
 
     # 'CF2305': [[-14080], [14500]],
     # 'CJ2305': [[-10060], [10460]],
-    'AP2305': [[-8780], [8880]],
+    # 'AP2305': [[-9240], [9270]],
     ######################################
-
+'SF2305': [[-7840], [8500]],
+    'I2305': [[-880], [914]],
+'AP2305': [[-9100], [9228]],
 }
 
 
@@ -104,10 +105,15 @@ if __name__ == '__main__':
 
             position = 0
             if high != low:
-                position = round((price - low) / (high - low) * 100, 2)
+                position = round((price - low) / (high - low) * 100)
             elif high == low > price:
                 position = 100
-            realtime["position"] = round(position)
+            if position == 0:
+                notify_util.notify('📣' + code + ' new low', '', '🌧' + str(price))
+            elif position == 100:
+                notify_util.notify('📣' + code + ' new high', '', '☀️' + str(price))
+
+            realtime["position"] = position
             target_list = init_target.get(code)
             target_diff = list()
             target_dw_index = target_dw_index_dir.get(code)
@@ -120,27 +126,26 @@ if __name__ == '__main__':
                     target_price = target_arr[target_dw_index]
                     if price <= abs(target_price):
                         notify_util.notify('📣' + code, '✔️' + str(abs(target_price)), '🌧' + price_str)
-                        new_target = round(target_price - target_price * 0.001) if '.0' in price_str else round(
-                            target_price - target_price * 0.001, 1)
+                        new_target = round(target_price - target_price * 0.001)
                         if new_target not in init_target[code][0]:
                             init_target[code][0].append(new_target)
                         target_dw_index_dir[code] = target_dw_index + 1
-                    elif target_dw_index > 1:
+                    elif target_dw_index > 0:
                         if price > abs(target_arr[target_dw_index - 1]):
                             target_dw_index_dir[code] = target_dw_index - 1
                 else:
                     target_price = target_arr[target_up_index]
                     if target_price <= price:
                         notify_util.notify('📣' + code, '✔️' + str(target_price), '☀️' + price_str)
-                        new_target = round(target_price + target_price * 0.001) if '.0' in price_str else round(
-                            target_price + target_price * 0.001, 1)
+                        new_target = round(target_price + target_price * 0.001)
                         if new_target not in init_target[code][1]:
                             init_target[code][1].append(new_target)
                         target_up_index_dir[code] = target_up_index + 1
-                    elif target_up_index > 1:
+                    elif target_up_index > 0:
                         if price < abs(target_arr[target_up_index - 1]):
                             target_up_index_dir[code] = target_up_index - 1
-                target_diff.append(round(abs(target_price) - price))
+                diff = abs(target_price) - price
+                target_diff.append(round(diff) if '.0' in str(diff) else round(diff, 1))
                 realtime["t_diff"] = str(target_diff)
             if realtime_df is None:
                 realtime_df = realtime
