@@ -23,7 +23,7 @@ init_target = {
     'FG2305': [[-1510], [1680]],
 'SA2309': [[-2400], [2600]],
 
-    'AG2305': [[-4820], [4874]],
+    'AG2305': [[-4820], [5000]],
     # 'NI2304': [[-197000], [208000]],
     # 'SN2304': [[-218500], [241000]],
     # 'AL2304': [[-17345.0], [19800]],
@@ -44,7 +44,7 @@ init_target = {
     ######################################
 'SF2305': [[-7840], [8500]],
     'I2305': [[-880], [914]],
-'AP2305': [[-9100], [9228]],
+'AP2305': [[-9000], [9228]],
 }
 
 
@@ -109,9 +109,9 @@ if __name__ == '__main__':
             elif high == low > price:
                 position = 100
             if position == 0:
-                notify_util.notify('📣' + code + ' new low', '', '🌧' + str(price))
+                notify_util.notify('📣' + code + ' low', '', '🌧' + str(price))
             elif position == 100:
-                notify_util.notify('📣' + code + ' new high', '', '☀️' + str(price))
+                notify_util.notify('📣' + code + ' high', '', '☀️' + str(price))
 
             realtime["position"] = position
             target_list = init_target.get(code)
