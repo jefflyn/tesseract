@@ -21,12 +21,12 @@ init_target = {
     # 'UR2305': [[-2490], [2635]],
     # 'SP2305': [[-6700], [6930]],
     'FG2305': [[-1510], [1680]],
-# 'SA2309': [[-2400], [2600]],
+    # 'SA2309': [[-2400], [2600]],
 
-    'AG2305': [[-4820], [5000]],
-    # 'NI2304': [[-197000], [208000]],
-    # 'SN2304': [[-218500], [241000]],
-    # 'AL2304': [[-17345.0], [19800]],
+    'AG2307': [[-4820], [5000]],
+    'NI2306': [[-182000], [200000]],
+    # 'SN2306': [[-218500], [241000]],
+    # 'AL2305': [[-17345.0], [19800]],
     'SI2308': [[-17300], [18800]],
 
     # 'JM2305': [[-1900], [2100]],
@@ -34,18 +34,18 @@ init_target = {
 
     # 'PK2304': [[-10000], [11500]],
     # 'P2305': [-7600, 8400],
-    'OI2305': [[-9800], [9924]],
+    'OI2305': [[-9800], [9980]],
     # 'RM2305': [[-2950], [3250]],
 
     # 'CF2305': [[-14080], [14500]],
     # 'CJ2305': [[-10060], [10460]],
     # 'AP2305': [[-9240], [9270]],
     ######################################
-'SF2305': [[-8000], [8180]],
+    'SF2305': [[-8000], [8180]],
     'I2305': [[-880], [914]],
-'AP2305': [[-9000], [9228]],
-'SA2309': [[-2560], [2600]],
-'PK2304': [[-10980], [11000]],
+    'AP2305': [[-9000], [9228]],
+    'SA2309': [[-2500], [2600]],
+    'PK2304': [[-10980], [11000]],
 }
 
 
@@ -108,14 +108,15 @@ if __name__ == '__main__':
             realtime["change"] = str(round(price_diff / float(pre_settle) * 100, 2)) + "% " + future_price(price_diff)
             is_up = open > pre_settle
             realtime['open'] = '[' + future_price(pre_settle) + '-' + future_price(open) + (' ↑' if is_up else ' ↓') \
-                               + future_price(open - pre_settle) + ']'
+                               + future_price(open - pre_settle) + ':' + str(
+                round((open - pre_settle) * 100 / pre_settle, 2)) + '%]'
 
             position = 0
             if high != low:
                 position = round((price - low) / (high - low) * 100)
             elif high == low > price:
                 position = 100
-            if position == 0 and low.get(code) > low:
+            if position == 0 and low_dir.get(code) > low:
                 low_dir[code] = low
                 notify_util.notify('📣' + code + ' Lo @' + date_util.get_time(), '', '🌧' + str(price))
             elif position == 100 and high_dir.get(code) < high:
