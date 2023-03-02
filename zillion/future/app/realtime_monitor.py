@@ -4,7 +4,7 @@ import time
 import pandas as pd
 
 from zillion.future.domain import trade
-from zillion.utils import notify_util
+from zillion.utils import notify_util, date_util
 
 pd.set_option('display.width', None)
 pd.set_option('display.max_columns', None)
@@ -21,7 +21,7 @@ init_target = {
     # 'UR2305': [[-2490], [2635]],
     # 'SP2305': [[-6700], [6930]],
     'FG2305': [[-1510], [1680]],
-'SA2309': [[-2400], [2600]],
+# 'SA2309': [[-2400], [2600]],
 
     'AG2305': [[-4820], [5000]],
     # 'NI2304': [[-197000], [208000]],
@@ -32,8 +32,7 @@ init_target = {
     # 'JM2305': [[-1900], [2100]],
     # 'J2305': [[-2450], [2650]],
 
-
-    'PK2304': [[-10000], [11500]],
+    # 'PK2304': [[-10000], [11500]],
     # 'P2305': [-7600, 8400],
     'OI2305': [[-9800], [9924]],
     # 'RM2305': [[-2950], [3250]],
@@ -42,9 +41,11 @@ init_target = {
     # 'CJ2305': [[-10060], [10460]],
     # 'AP2305': [[-9240], [9270]],
     ######################################
-'SF2305': [[-7840], [8500]],
+'SF2305': [[-8000], [8180]],
     'I2305': [[-880], [914]],
 'AP2305': [[-9000], [9228]],
+'SA2309': [[-2560], [2600]],
+'PK2304': [[-10980], [11000]],
 }
 
 
@@ -82,19 +83,25 @@ def future_price(price):
 if __name__ == '__main__':
     target_dw_index_dir = {}
     target_up_index_dir = {}
+    high_dir = {}
+    low_dir = {}
     while True:
         realtime_df = None
         for code in init_target.keys():
-            if target_dw_index_dir.get(code) is None:
-                target_dw_index_dir[code] = 0
-            if target_up_index_dir.get(code) is None:
-                target_up_index_dir[code] = 0
             realtime = trade.realtime_simple(code)
             price = realtime.iloc[0].at["close"]
             pre_settle = realtime.iloc[0].at["pre_settle"]
             open = realtime.iloc[0].at["open"]
             high = realtime.iloc[0].at["high"]
             low = realtime.iloc[0].at["low"]
+
+            if target_dw_index_dir.get(code) is None:
+                target_dw_index_dir[code] = 0
+                high_dir[code] = high
+            if target_up_index_dir.get(code) is None:
+                target_up_index_dir[code] = 0
+                low_dir[code] = low
+
             realtime['low-hi'] = '[' + future_price(low) + '-' + future_price(high) + ']'
             realtime['diff'] = future_price(high - low)
             price_diff = float(price) - float(pre_settle)
@@ -108,10 +115,12 @@ if __name__ == '__main__':
                 position = round((price - low) / (high - low) * 100)
             elif high == low > price:
                 position = 100
-            if position == 0:
-                notify_util.notify('📣' + code + ' low', '', '🌧' + str(price))
-            elif position == 100:
-                notify_util.notify('📣' + code + ' high', '', '☀️' + str(price))
+            if position == 0 and low.get(code) > low:
+                low_dir[code] = low
+                notify_util.notify('📣' + code + ' Lo @' + date_util.get_time(), '', '🌧' + str(price))
+            elif position == 100 and high_dir.get(code) < high:
+                high_dir[code] = high
+                notify_util.notify('📣' + code + ' Hi @' + date_util.get_time(), '', '☀️' + str(price))
 
             realtime["position"] = position
             target_list = init_target.get(code)
@@ -125,7 +134,8 @@ if __name__ == '__main__':
                 if is_target_down:
                     target_price = target_arr[target_dw_index]
                     if price <= abs(target_price):
-                        notify_util.notify('📣' + code, '✔️' + str(abs(target_price)), '🌧' + price_str)
+                        notify_util.notify('📣' + code + ' @' + date_util.get_time(),
+                                           '✔️' + str(abs(target_price)), '🌧' + price_str)
                         new_target = round(target_price - target_price * 0.001)
                         if new_target not in init_target[code][0]:
                             init_target[code][0].append(new_target)
@@ -136,7 +146,8 @@ if __name__ == '__main__':
                 else:
                     target_price = target_arr[target_up_index]
                     if target_price <= price:
-                        notify_util.notify('📣' + code, '✔️' + str(target_price), '☀️' + price_str)
+                        notify_util.notify('📣' + code + ' @' + date_util.get_time(),
+                                           '✔️' + str(target_price), '☀️' + price_str)
                         new_target = round(target_price + target_price * 0.001)
                         if new_target not in init_target[code][1]:
                             init_target[code][1].append(new_target)

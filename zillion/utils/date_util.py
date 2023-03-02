@@ -12,6 +12,7 @@ from zillion.utils.pro_util import pro
 FORMAT_DATETIME = '%Y-%m-%d %H:%M:%S'
 FORMAT_DEFAULT = '%Y-%m-%d'
 FORMAT_FLAT = '%Y%m%d'
+FORMAT_TIME = '%H:%M:%S'
 FORMAT_HOUR = '%H:%M'
 
 # 今天
@@ -81,6 +82,9 @@ def now():
 
 def get_now():
     return now().strftime(FORMAT_DATETIME)
+
+def get_time():
+    return now().strftime(FORMAT_TIME)
 
 
 def in_trade_time():
