@@ -19,10 +19,11 @@ cursor = db.cursor()
 
 def _save_daily(values=None):
     if values is not None and len(values) > 0:
-        trade_date = values[0][1]
-        codes = ','.join(["'" + e[2] + "'" for e in values])
+        trade_dates = ','.join(set(["'" + e[1] + "'" for e in values]))
+        codes = ','.join(set(["'" + e[2] + "'" for e in values]))
         try:
-            delete_sql = "delete from future.trade_daily where code in (" + codes + ") and trade_date='" + trade_date + "'"
+            delete_sql = "delete from future.trade_daily where code in (" + codes \
+                         + ") and trade_date in (" + trade_dates + ");"
             cursor.execute(delete_sql)
             # 注意这里使用的是executemany而不是execute
             insert_sql = 'INSERT INTO future.trade_daily (symbol, trade_date, code, open, high, low, close, settle, ' \

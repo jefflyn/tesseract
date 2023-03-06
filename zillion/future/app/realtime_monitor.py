@@ -13,9 +13,9 @@ init_target = {
     'SC2304': [[-500], [580]],
 
     'TA2305': [[-5420], [5800]],
-    # 'EB2304': [[-8310], [8520]],
+    # 'EB2305': [[-8310], [8520]],
     # 'PP2305': [[-7780], [8100]],
-    # 'PG2304': [[-4250], [4650]],
+    # 'PG2305': [[-4250], [4650]],
     # 'NR2305': [[-9750], [10000]],
 
     # 'UR2305': [[-2490], [2635]],
@@ -24,7 +24,7 @@ init_target = {
     # 'SA2309': [[-2400], [2600]],
 
     'AG2307': [[-4820], [5000]],
-    'NI2306': [[-182000], [200000]],
+    'NI2306': [[-180000], [200000]],
     # 'SN2306': [[-218500], [241000]],
     # 'AL2305': [[-17345.0], [19800]],
     'SI2308': [[-17300], [18800]],
@@ -34,18 +34,18 @@ init_target = {
 
     # 'PK2304': [[-10000], [11500]],
     # 'P2305': [-7600, 8400],
-    'OI2305': [[-9800], [9980]],
+    'OI2305': [[-9800], [10200]],
     # 'RM2305': [[-2950], [3250]],
 
     # 'CF2305': [[-14080], [14500]],
     # 'CJ2305': [[-10060], [10460]],
     # 'AP2305': [[-9240], [9270]],
     ######################################
-    'SF2305': [[-8000], [8180]],
-    'I2305': [[-880], [914]],
-    'AP2305': [[-9000], [9228]],
+    'SF2305': [[-7800], [8180]],
+    'I2305': [[-880], [930]],
+    'AP2305': [[-8900], [9228]],
     'SA2309': [[-2500], [2600]],
-    'PK2304': [[-10980], [11000]],
+    'PK2304': [[-11040], [11080]],
 }
 
 
@@ -118,10 +118,10 @@ if __name__ == '__main__':
                 position = 100
             if position == 0 and low_dir.get(code) > low:
                 low_dir[code] = low
-                notify_util.notify('📣' + code + ' Lo @' + date_util.get_time(), '', '🌧' + str(price))
+                notify_util.notify('📣' + code + ' @' + date_util.get_time(), '❄️', '🅿️' + str(price))
             elif position == 100 and high_dir.get(code) < high:
                 high_dir[code] = high
-                notify_util.notify('📣' + code + ' Hi @' + date_util.get_time(), '', '☀️' + str(price))
+                notify_util.notify('📣' + code + ' @' + date_util.get_time(), '️🔥', '🅿️' + str(price))
 
             realtime["position"] = position
             target_list = init_target.get(code)
@@ -136,7 +136,7 @@ if __name__ == '__main__':
                     target_price = target_arr[target_dw_index]
                     if price <= abs(target_price):
                         notify_util.notify('📣' + code + ' @' + date_util.get_time(),
-                                           '✔️' + str(abs(target_price)), '🌧' + price_str)
+                                           '🏁' + str(abs(target_price)), '🅿️' + price_str)
                         new_target = round(target_price - target_price * 0.001)
                         if new_target not in init_target[code][0]:
                             init_target[code][0].append(new_target)
@@ -148,7 +148,7 @@ if __name__ == '__main__':
                     target_price = target_arr[target_up_index]
                     if target_price <= price:
                         notify_util.notify('📣' + code + ' @' + date_util.get_time(),
-                                           '✔️' + str(target_price), '☀️' + price_str)
+                                           '🏁' + str(target_price), '🅿️' + price_str)
                         new_target = round(target_price + target_price * 0.001)
                         if new_target not in init_target[code][1]:
                             init_target[code][1].append(new_target)
