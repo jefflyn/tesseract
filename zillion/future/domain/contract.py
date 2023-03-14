@@ -60,7 +60,8 @@ def update_contract_main(code):
 
 
 def update_contract_hl(code, low, low_time, high, high_time):
-    sql = "update contract set low=%d, low_time='%s', high=%d, high_time='%s', update_time=now() where code='%s';"
+    sql = "update contract set low=%d, low_time='%s', high=%d, high_time='%s', update_time=now() " \
+          "where code='%s' and (low > " + str(low) + " or high < " + str(high) + ");"
     cursor.execute(sql % (low, low_time, high, high_time, code))
     db.commit()
 

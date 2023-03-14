@@ -83,6 +83,7 @@ def now():
 def get_now():
     return now().strftime(FORMAT_DATETIME)
 
+
 def get_time():
     return now().strftime(FORMAT_TIME)
 

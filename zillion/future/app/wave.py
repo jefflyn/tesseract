@@ -343,8 +343,7 @@ def get_high_low():
     df.index = list(df['code'])
     return df
 
-
-if __name__ == '__main__':
+def redo_wave():
     print(date_util.get_now())
     ############################################################
     mian_codes = contract.get_main_contract_code()
@@ -384,3 +383,7 @@ if __name__ == '__main__':
     wave_to_db(wave_data_list, wave_detail_list)
     print(date_util.get_now())
     update_contract_hl()
+
+
+if __name__ == '__main__':
+    redo_wave()
