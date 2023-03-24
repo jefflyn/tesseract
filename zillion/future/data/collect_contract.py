@@ -20,8 +20,9 @@ def update_contract_hl(code):
     lowest_date = date_list[close_list.index(lowest)]
     highest = max(close_list)
     highest_date = date_list[close_list.index(highest)]
-    contract.update_contract_hl(code, lowest, lowest_date, highest, highest_date)
-    print("update contract hl:", code)
+    rows = contract.update_contract_hl(code, lowest, lowest_date, highest, highest_date)
+    if rows > 0:
+        print("update contract hl:", code)
 
 
 if __name__ == '__main__':
