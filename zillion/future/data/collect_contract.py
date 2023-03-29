@@ -57,7 +57,7 @@ if __name__ == '__main__':
         if symbol not in basic_symbols:
             continue
         if main_code is None:
-            print('No main contract found, please check!!! >>> ', symbol)
+            print('No main contract found, please check!!! >>> ', code)
             contract_df = contract.get_local_contract(symbol=symbol)
             if contract_df is None or contract_df.empty:
                 continue

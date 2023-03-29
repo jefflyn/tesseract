@@ -328,10 +328,14 @@ def update_contract_hl():
     # 使用cursor()方法创建一个游标对象
     cursor = db.cursor()
     try:
-        cursor.execute("update contract c join wave_detail wd on c.code = wd.code and c.high = wd.begin_price set c.high_time = wd.begin, c.update_time=now() where c.deleted = 0 and (c.high_time is null or c.high_time < wd.begin);")
-        cursor.execute("update contract c join wave_detail wd on c.code = wd.code and c.high = wd.end_price set c.high_time = wd.end, c.update_time=now() where c.deleted = 0 and (c.high_time is null or c.high_time < wd.end);")
-        cursor.execute("update contract c join wave_detail wd on c.code = wd.code and c.low = wd.begin_price set c.low_time = wd.begin, c.update_time=now() where c.deleted = 0 and (c.low_time is null or c.low_time < wd.begin);")
-        cursor.execute("update contract c join wave_detail wd on c.code = wd.code and c.low = wd.end_price set c.low_time = wd.end, c.update_time=now() where c.deleted = 0 and (c.low_time is null or c.low_time < wd.end);")
+        cursor.execute(
+            "update contract c join wave_detail wd on c.code = wd.code and c.high = wd.begin_price set c.high_time = wd.begin, c.update_time=now() where c.deleted = 0 and (c.high_time is null or c.high_time < wd.begin);")
+        cursor.execute(
+            "update contract c join wave_detail wd on c.code = wd.code and c.high = wd.end_price set c.high_time = wd.end, c.update_time=now() where c.deleted = 0 and (c.high_time is null or c.high_time < wd.end);")
+        cursor.execute(
+            "update contract c join wave_detail wd on c.code = wd.code and c.low = wd.begin_price set c.low_time = wd.begin, c.update_time=now() where c.deleted = 0 and (c.low_time is null or c.low_time < wd.begin);")
+        cursor.execute(
+            "update contract c join wave_detail wd on c.code = wd.code and c.low = wd.end_price set c.low_time = wd.end, c.update_time=now() where c.deleted = 0 and (c.low_time is null or c.low_time < wd.end);")
         db.commit()
         print('  >>> update_contract_hl done!')
     except Exception as err:
@@ -342,6 +346,7 @@ def get_high_low():
     df = _dt.read_query('select code, GREATEST(ap, bp, cp, dp) high, LEAST(ap, bp, cp, dp) low from wave')
     df.index = list(df['code'])
     return df
+
 
 def redo_wave():
     print(date_util.get_now())
