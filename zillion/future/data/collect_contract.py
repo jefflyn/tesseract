@@ -14,12 +14,14 @@ pd.set_option('display.max_columns', None)
 
 def update_contract_hl(code):
     daily_df = daily.get_daily(code)
-    close_list = list(daily_df['close'])
+    low_list = list(daily_df['low'])
+    high_list = list(daily_df['high'])
     date_list = list(daily_df['trade_date'])
-    lowest = min(close_list)
-    lowest_date = date_list[close_list.index(lowest)]
-    highest = max(close_list)
-    highest_date = date_list[close_list.index(highest)]
+
+    lowest = min(low_list)
+    lowest_date = date_list[low_list.index(lowest)]
+    highest = max(high_list)
+    highest_date = date_list[high_list.index(highest)]
     rows = contract.update_contract_hl(code, lowest, lowest_date, highest, highest_date)
     if rows > 0:
         print("update contract hl:", code)

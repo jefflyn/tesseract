@@ -10,8 +10,11 @@ def future_price(price):
         if int(decimal) == 0:
             return price_arr[0]
         else:
-            return price_arr[0] + '.' + decimal
+            return price_arr[0] + '.' + decimal[0]
 
 
 if __name__ == '__main__':
+    print(future_price("123.9"))
+    print(future_price("123.09"))
     print(future_price("123.909"))
+    print(future_price("123.9888889"))

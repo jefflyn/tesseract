@@ -162,6 +162,10 @@ def add_log(name, log_type, pct_change, content, remark, price=None, position=No
     db.close()
 
 
+def calc_position(price, low, high):
+    return round((price - low) / (high - low) * 100)
+
+
 if __name__ == '__main__':
     df = get_ts_future_daily(ts_code='PK2301.ZCE', start_date=20220827)
     print(df)

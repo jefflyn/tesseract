@@ -19,6 +19,7 @@ def get_future_basics(type=None, night=None, on_target=None):
         sql += 'and night = :night '
     params = {'type': GOODS_TYPE_MAP.get(type), 'night': night, 'on_target': 1}
     df = read_sql(sql, params=params)
+    df.index = df["symbol"]
     return df
 
 
