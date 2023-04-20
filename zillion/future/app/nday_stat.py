@@ -3,6 +3,7 @@ import statistics
 import pandas as pd
 
 from zillion.future.domain import contract, daily
+from zillion.future.future_util import calc_position
 from zillion.utils import date_util, db_util
 
 
@@ -47,7 +48,7 @@ if __name__ == '__main__':
 
     df_data = daily.get_daily(codes, start_date=week_start)[
         ['code', 'trade_date', 'pre_close', 'pre_settle', 'open', 'high', 'low', 'close', 'settle', 'close_change']]
-
+    contract_df = contract.get_local_contract()
     stat_data = []
     data_group = df_data.groupby('code')
     result = []
@@ -55,9 +56,13 @@ if __name__ == '__main__':
         last60d_data = group.tail(60)
         last60d_close = list(last60d_data['close'])
         last60d_settle = list(last60d_data['settle'])
-        # print(last60d_close)
+
+        his_low = contract_df.loc[code].at["low"]
+        his_high = contract_df.loc[code].at["high"]
+
         size = len(last60d_close)
         price = last60d_close[size - 1:][0]
+        hist_pos = calc_position(price, his_low, his_high)
         settle = last60d_settle[size - 1:][0]
         avg5d = statistics.mean(last60d_close[size-5:])  # attack
         avg10d = statistics.mean(last60d_close[size-10:])  # strategy
@@ -102,11 +107,11 @@ if __name__ == '__main__':
         trend_up = avg5d >= avg10d >= avg20d >= avg60d
         result.append([code, last_cls_change, last_settle_change] + n_list + close_change_n_list
                       + [round(price, 1), round(settle, 1), round(avg5d), round(avg10d), round(avg20d), round(avg60d)]
-                      + [p5t10, pt5, pt10, pt20, pt60, trend_up] + [str(last_cls_change_list)])
+                      + [p5t10, pt5, pt10, pt20, pt60, trend_up, hist_pos] + [str(last_cls_change_list)])
 
     df = pd.DataFrame(result, columns=['code', 'close_change', 'settle_change', 'up', 'days', '3d_change',
                                        '5d_change', '7d_change',
                                        'price', 'settle', 'avg5d', 'avg10d', 'avg20d', 'avg60d',
-                                       'p5t10', 'pt5', 'pt10', 'pt20', 'pt60', 'trend_up', 'change_list'])
+                                       'p5t10', 'pt5', 'pt10', 'pt20', 'pt60', 'trend_up', 'hist_pos', 'change_list'])
     df['update_time'] = date_util.now()
     db_util.to_db(df, 'n_stat', if_exists='replace')
