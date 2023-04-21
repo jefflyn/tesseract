@@ -39,6 +39,7 @@ def wave_from(code, df, begin_low, direction='left', duration=0, change=0):
         return
     first_date = df.head(1).at[df.head(1).index.to_numpy()[0], 'date']
     last_date = df.tail(1).at[df.tail(1).index.to_numpy()[0], 'date']
+    last_close = df.tail(1).at[df.tail(1).index.to_numpy()[0], 'close']
 
     # start from the lowest price, find the wave from both sides
     pivot_low = df.min()['close'] if df.min()['low'] == 0 else df.min()['low']
@@ -49,7 +50,7 @@ def wave_from(code, df, begin_low, direction='left', duration=0, change=0):
     pivot_rec = pivot_rec.head(1)
     pivot_index = pivot_rec.index.to_numpy()[0]
     pivot_date = pivot_rec.at[pivot_index, 'date']
-    pivot_close = pivot_rec.at[pivot_index, 'close']
+    # pivot_close = pivot_rec.at[pivot_index, 'close']
 
     is_max = begin_low
     begin_date = first_date
@@ -72,7 +73,7 @@ def wave_from(code, df, begin_low, direction='left', duration=0, change=0):
         rec = rec.head(1)
         idx = rec.index.to_numpy()[0]
         date = rec.at[idx, 'date']
-        close = rec.at[idx, 'close']
+        # close = rec.at[idx, 'close']
 
         if direction == 'left':
             begin_price = price
@@ -80,28 +81,23 @@ def wave_from(code, df, begin_low, direction='left', duration=0, change=0):
             status = 'down' if is_max else 'up'
         if direction == 'right':
             # if the latest one, get the close price, calculate the actual rises
-            end_price = close if date == last_date else price
-            # end_price = price
+            # end_price = close if date == last_date else price
+            end_price = price
             end_date = date
             status = 'up' if is_max else 'down'
-
-        diff_percent = 0
-        if begin_price > 0:
-            diff_percent = (end_price - begin_price) / begin_price * 100
-        if abs(diff_percent) < change:
+        wave_detail_list = build_wave_detail(code, begin_date, end_date, status, begin_price, end_price, change)
+        if wave_detail_list is None:
             break
-        list = []
-        # ['code', 'begin', 'end', 'status' 'begin_price', 'end_price', 'days', 'p_change']
-        list.append(code)
-        list.append(begin_date)
-        list.append(end_date)
-        list.append(status)
-        list.append(begin_price)
-        list.append(end_price)
-        list.append((datetime.strptime(end_date, '%Y-%m-%d') - datetime.strptime(begin_date, '%Y-%m-%d')).days)
-        list.append(round(diff_percent, 2))
-        if begin_price != end_price:
-            period_data.append(list)
+        period_data.append(wave_detail_list)
+        if end_date == last_date:
+            last_status = 'up' if status == 'down' else 'down'
+            last_bgn_p = end_price
+            last_end_p = last_close
+            # add last date wave data
+            last_wave_detail = build_wave_detail(code, end_date, end_date, last_status, last_bgn_p, last_end_p, change)
+            if last_wave_detail is not None:
+                period_data.append(last_wave_detail) if direction == 'right' \
+                    else period_data.insert(0, last_wave_detail)
 
         if direction == 'left':
             begin_date = first_date
@@ -114,7 +110,27 @@ def wave_from(code, df, begin_low, direction='left', duration=0, change=0):
 
         diff_days = datetime.strptime(end_date, '%Y-%m-%d') - datetime.strptime(begin_date, '%Y-%m-%d')
         is_max = not is_max
+
     return period_data
+
+
+def build_wave_detail(code, begin_date, end_date, status, begin_price, end_price, change=0):
+    diff_percent = 0
+    if begin_price > 0:
+        diff_percent = (end_price - begin_price) / begin_price * 100
+    if abs(diff_percent) < change:
+        return None
+    list = []
+    # columns = ['code', 'begin', 'end', 'status' 'begin_price', 'end_price', 'days', 'p_change']
+    list.append(code)
+    list.append(begin_date)
+    list.append(end_date)
+    list.append(status)
+    list.append(begin_price)
+    list.append(end_price)
+    list.append((datetime.strptime(end_date, '%Y-%m-%d') - datetime.strptime(begin_date, '%Y-%m-%d')).days)
+    list.append(round(diff_percent, 2))
+    return list
 
 
 def wave_to_str(wave_df=None, size=4, change=10):

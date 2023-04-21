@@ -30,24 +30,25 @@ init_target = {
     # 'J2309': [[-2450], [3000]],
 
     # 'RM2309': [[-2700], [3250]],
-    # 'OI2309': [[-8000], [9000]],
+    # 'OI2309': [[-8100], [9000]],
     # 'P2309': [[-7000], [8400]],
-    # 'PK2310': [[-10100], [10600]],
+    'PK2310': [[-10100], [10600]],
+    'CJ2309': [[-9900], [10500]],
     # 'CF2309': [[-13000], [15000]],
-    # 'CJ2309': [[-9900], [10500]],
 
     # 'SP2309': [[-5300], [5900]],
-    'FG2309': [[-1500], [1900]],
+    'FG2309': [[-1800], [1810]],
     'SA2309': [[-2100], [2600]],
-    'SF2306': [[-7300], [8000]],
+    'SF2306': [[-7360], [8000]],
     'I2309': [[-700], [850]],
-    'PP2309': [[-7510], [7550]],
+    'PP2309': [[-7510], [7600]],
 }
 
 holding_cost = {
-    'TA2309': [-5946, 10],
-    'PP2309': [7556, 10],
-    'FG2309': [-1856, 1000]
+    'PK2310': [-10550, 10], 'CJ2309': [10080, 5],
+    'TA2309': [-5946, 10], 'SI2308': [15050, 5],
+    'PP2309': [7556, 10], 'SF2306': [7476, 4],
+    'FG2309': [1799, 5]
 }
 
 
@@ -97,10 +98,11 @@ if __name__ == '__main__':
                 profit = basic_df.loc[symbol].at["profit"]
                 cost_info = holding_cost.get(code)
                 cost = cost_info[0]
+                is_long = True if cost > 0 else False
                 quantity = cost_info[1]
-                cost_diff = (price - cost) if cost > 0 else (abs(cost) - price)
+                cost_diff = (price - cost) if is_long else (abs(cost) - price)
                 earning = future_price(cost_diff * (profit / step) * quantity)
-                earning = future_price(cost_diff) + ',' + earning
+                earning = ('^' if is_long else '_') + future_price(cost_diff) + ',' + earning
 
             if target_dw_index_dir.get(code) is None:
                 target_dw_index_dir[code] = 0
