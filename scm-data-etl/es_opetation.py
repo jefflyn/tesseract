@@ -27,4 +27,4 @@ if __name__ == '__main__':
     resp = es.info()
     print(resp)
     # dict_field = {}
-    add_field('dispatch_shop_flink', {"properties": {"low_efficiency_pb_num": {"type": "integer"}}})
+    add_field('dispatch_shop_flink', {"properties": {"pb_dispatch_disable": {"type": "integer"}}})

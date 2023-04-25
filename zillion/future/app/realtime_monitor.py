@@ -25,30 +25,30 @@ init_target = {
     # 'AL2306': [[-17345.0], [20000]],
     'SI2308': [[-15000], [15500]],
 
-    # 'UR2309': [[-2000], [2635]],
+    'UR2309': [[-2000], [2006]],
     # 'JM2309': [[-1500], [2100]],
     # 'J2309': [[-2450], [3000]],
 
     # 'RM2309': [[-2700], [3250]],
     # 'OI2309': [[-8100], [9000]],
     # 'P2309': [[-7000], [8400]],
-    'PK2310': [[-10100], [10600]],
+    'PK2310': [[-10400], [10620]],
     'CJ2309': [[-9900], [10500]],
     # 'CF2309': [[-13000], [15000]],
 
     # 'SP2309': [[-5300], [5900]],
-    'FG2309': [[-1800], [1810]],
-    'SA2309': [[-2100], [2600]],
-    'SF2306': [[-7360], [8000]],
+    'FG2309': [[-1800], [1880]],
+    'SA2309': [[-2120], [2180]],
+    'SF2306': [[-7340], [7400]],
     'I2309': [[-700], [850]],
-    'PP2309': [[-7510], [7600]],
+    'PP2309': [[-7500], [7600]],
 }
 
 holding_cost = {
-    'PK2310': [-10550, 10], 'CJ2309': [10080, 5],
-    'TA2309': [-5946, 10], 'SI2308': [15050, 5],
-    'PP2309': [7556, 10], 'SF2306': [7476, 4],
-    'FG2309': [1799, 5]
+    'PK2310': [-10524, 0], 'CJ2309': [10080, 0],
+    'TA2309': [-5946, 0], 'SI2308': [15050, 0],
+    'PP2309': [7556, 0], 'SF2306': [7360, 5],
+    'FG2309': [1789, 0], 'UR2309': [2006, 9]
 }
 
 
@@ -91,7 +91,7 @@ if __name__ == '__main__':
             high = realtime.iloc[0].at["high"]
             low = realtime.iloc[0].at["low"]
 
-            earning = 0
+            earning = ''
             if code in holding_cost.keys():
                 symbol = symbol_varieties(code)
                 step = basic_df.loc[symbol].at["step"]
@@ -102,7 +102,7 @@ if __name__ == '__main__':
                 quantity = cost_info[1]
                 cost_diff = (price - cost) if is_long else (abs(cost) - price)
                 earning = future_price(cost_diff * (profit / step) * quantity)
-                earning = ('^' if is_long else '_') + future_price(cost_diff) + ',' + earning
+                earning = ('^' if is_long else '_') + future_price(cost_diff) + ',' + earning if quantity > 0 else ''
 
             if target_dw_index_dir.get(code) is None:
                 target_dw_index_dir[code] = 0
