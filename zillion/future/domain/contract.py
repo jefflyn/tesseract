@@ -13,13 +13,17 @@ class Contract:
     symbol = ''
     code = ''
     low = 0
+    low_date = ''
     high = 0
+    high_date = ''
 
-    def __init__(self, symbol, code, low, high):
+    def __init__(self, symbol, code, low, low_date, high, high_date):
         self.symbol = symbol
         self.code = code
         self.low = low
+        self.low_date = low_date
         self.high = high
+        self.high_date = high_date
 
 
 def get_local_contract(symbol=None, code=None, main=False, selected=False):
@@ -42,7 +46,8 @@ def get_local_contract(symbol=None, code=None, main=False, selected=False):
 
 def refresh_contract_map(contract_df):
     for index, row in contract_df.iterrows():
-        contract_map[index] = Contract(row['symbol'], row['code'], row['low'], row['high'])
+        contract_map[index] = Contract(row['symbol'], row['code'], row['low'], row['low_time'][0, 10],
+                                       row['high'], row['high_time'][0, 10])
 
 
 contract_df = get_local_contract()
