@@ -16,4 +16,4 @@ if __name__ == '__main__':
     # code_list = list(contract_df['code'])
     code_list = ['SF2309']
     daily.collect_hist_daily_ak(code_list)
-    print('done @', date_util.get_now())
+    print('done @', date_util.now_str())

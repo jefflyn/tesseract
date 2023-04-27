@@ -13,7 +13,7 @@ pd.set_option('display.width', None)
 pd.set_option('display.max_columns', None)
 
 init_target = {
-    'SC2306': [[-400], [620]],
+    'SC2306': [[-500], [600]],
     # 'TA2309': [[-5650], [6000]],
     # 'EB2306': [[-8000], [8700]],
     # 'PG2306': [[-4250], [5000]],
@@ -25,30 +25,32 @@ init_target = {
     # 'AL2306': [[-17345.0], [20000]],
     # 'SI2308': [[-15000], [15500]],
 
-    'UR2309': [[-1976], [2000]],
-    'JM2309': [[-1470], [1600]],
+    'UR2309': [[-1975], [2000]],
+    'JM2309': [[-1400], [1600]],
     # 'J2309': [[-2200], [3000]],
 
     # 'RM2309': [[-2700], [3250]],
-    'OI2309': [[-8160], [9000]],
+    'OI2309': [[-8040], [8060]],
     # 'P2309': [[-6960], [8400]],
     'PK2310': [[-10400], [10620]],
     # 'CJ2309': [[-9900], [10500]],
     # 'CF2309': [[-13000], [15000]],
 
-    # 'SP2309': [[-5300], [5900]],
-    'FG2309': [[-1800], [1880]],
-    'SA2309': [[-2120], [2180]],
-    'SF2306': [[-7340], [7400]],
+    'SP2309': [[-5080], [5150]],
+    'FG2309': [[-1730], [1800]],
+    'SA2309': [[-2100], [2200]],
+    'SF2306': [[-7360], [7400]],
     'I2309': [[-700], [850]],
-    'PP2309': [[-7500], [7600]],
+    'PP2309': [[-7400], [7600]],
 }
 
 holding_cost = {
-    'PK2310': [-10524, 0], 'CJ2309': [10080, 0],
-    'TA2309': [-5946, 0], 'SI2308': [15050, 0],
-    'PP2309': [7556, 0], 'SF2306': [7360, 5],
-    'FG2309': [1789, 0], 'UR2309': [2006, 9]
+    'TA2309': [-5946, 0], 'PP2309': [7510, 10], 'EB2309': [8000, 0], 'PG2309': [5000, 0],
+    'FG2309': [1789, 0], 'SA2309': [2100, 0], 'SF2306': [7360, 5], 'I2309': [736, 0],
+    'UR2309': [1974, 5], 'JM2309': [1400, 0], 'J2309': [2000, 0], 'SI2308': [15050, 0],
+    'OI2309': [8052, 2], 'P2309': [1974, 0], 'PK2310': [-10524, 0], 'RM2309': [-10524, 0],
+    'AL2306': [15000, 0], 'AG2307': [1234, 0], 'SN2306': [200000, 0], 'NI2306': [190000, 0],
+    'SP2309': [5130, 3], 'CJ2309': [10080, 0], 'NR2307': [9000, 0], 'CF2309': [15000, 0]
 }
 
 
@@ -72,7 +74,7 @@ def format_realtime(df):
 
 if __name__ == '__main__':
     basic_df = basic.get_future_basics()
-    contract_df = contract.get_local_contract()
+    contract_map = contract.contract_map
     target_dw_index_dir = {}
     target_up_index_dir = {}
     high_dir = {}
@@ -80,8 +82,12 @@ if __name__ == '__main__':
     while True:
         realtime_df = None
         for code in init_target.keys():
-            his_low = contract_df.loc[code].at["low"]
-            his_high = contract_df.loc[code].at["high"]
+            cont = contract_map.get(code)
+            if cont is None:
+                print(code + ' is not in contract list!!!')
+                continue
+            his_low = cont.low
+            his_high = cont.high
 
             realtime = trade.realtime_simple(code)
             price = realtime.iloc[0].at["close"]
@@ -90,6 +96,12 @@ if __name__ == '__main__':
             open = realtime.iloc[0].at["open"]
             high = realtime.iloc[0].at["high"]
             low = realtime.iloc[0].at["low"]
+            bid = realtime.iloc[0].at["bid"]
+            ask = realtime.iloc[0].at["ask"]
+            if low < his_low:
+                contract.update_contract_hl(code, low, date_util.now_str())
+            if low < his_low:
+                contract.update_contract_hl(code, low, date_util.now_str())
 
             earning = ''
             if code in holding_cost.keys():
@@ -111,15 +123,15 @@ if __name__ == '__main__':
                 target_up_index_dir[code] = 0
                 low_dir[code] = low
 
-            realtime['low-hi'] = '[' + future_price(low) + '-' + future_price(high) + ']'
-            realtime['diff'] = future_price(high - low)
+            realtime['lo_hi'] = '[' + future_price(low) + '-' + future_price(high) + ']'
+            # realtime['diff'] = future_price(high - low)
             price_diff = float(price) - float(pre_settle)
             realtime["change"] = str(round(price_diff / float(pre_settle) * 100, 2)) + "% " + future_price(price_diff)
             open_flag = ' ↑' if open > pre_settle else (' ↓' if open < pre_settle else ' ')
             realtime['open'] = '[' + future_price(pre_settle) + '-' + future_price(open) + open_flag \
-                               + future_price(open - pre_settle) + ':' + str(
+                               + future_price(open - pre_settle) + ',' + str(
                 round((open - pre_settle) * 100 / pre_settle, 2)) + '%]'
-
+            realtime['bid_ask'] = '[' + future_price(bid) + ',' + future_price(ask) + ']'
             position = 0
             if high != low:
                 position = calc_position(price, low, high)
@@ -127,15 +139,18 @@ if __name__ == '__main__':
                 position = 100
             if position == 0 and low_dir.get(code) > low:
                 low_dir[code] = low
-                notify_util.notify('📣' + code + ' @' + date_util.get_time(),
-                                   '❄️❄️❄️' if hist_pos == 0 else '🌧🌧🌧', '⬇️' + str(price))
+                notify_util.notify('📣' + code + ' @' + date_util.time_str(),
+                                   '❄️❄️❄️' if low <= his_low else '🌧🌧🌧', '⬇️' + str(price))
             elif position == 100 and high_dir.get(code) < high:
                 high_dir[code] = high
-                notify_util.notify('📣' + code + ' @' + date_util.get_time(),
-                                   '️🔥🔥🔥' if hist_pos == 100 else '☀️☀️☀️', '⬆️' + str(price))
+                notify_util.notify('📣' + code + ' @' + date_util.time_str(),
+                                   '️🔥🔥🔥' if high >= his_high else '☀️☀️☀️', '⬆️' + str(price))
 
             realtime["pos"] = position
-            realtime["h_pos"] = hist_pos
+            flag = '_' if low <= his_low else '^' if high >= his_high else ''
+            realtime["code"] = flag + code
+            realtime["his_pos"] = str(hist_pos) + '^' + future_price(his_high) \
+                if hist_pos > 50 else str(hist_pos) + '_' + future_price(his_low)
             target_list = init_target.get(code)
             target_diff = list()
             target_dw_index = target_dw_index_dir.get(code)
@@ -147,7 +162,7 @@ if __name__ == '__main__':
                 if is_target_down:
                     target_price = target_arr[target_dw_index]
                     if price <= abs(target_price):
-                        notify_util.notify('📣' + code + ' @' + date_util.get_time(),
+                        notify_util.notify('📣' + code + ' @' + date_util.time_str(),
                                            '🏁' + str(abs(target_price)), '🌚' + price_str)
                         new_target = round(target_price - target_price * 0.001)
                         if new_target not in init_target[code][0]:
@@ -159,7 +174,7 @@ if __name__ == '__main__':
                 else:
                     target_price = target_arr[target_up_index]
                     if target_price <= price:
-                        notify_util.notify('📣' + code + ' @' + date_util.get_time(),
+                        notify_util.notify('📣' + code + ' @' + date_util.time_str(),
                                            '🏁' + str(target_price), '🌝️' + price_str)
                         new_target = round(target_price + target_price * 0.001)
                         if new_target not in init_target[code][1]:
@@ -181,7 +196,7 @@ if __name__ == '__main__':
         realtime_df = realtime_df.drop(columns=['high'])
         final_df = format_realtime(realtime_df)
         print(
-            final_df[['code', 'date', 'open', 'low-hi', 'diff', 'close', 'bid', 'ask', 'change', 'pos', 'h_pos',
+            final_df[['code', 'open', 'lo_hi', 'close', 'bid_ask', 'change', 'pos', 'his_pos',
                       'target', 't_diff', 'earning']])
         print(datetime.datetime.now())
         time.sleep(2)

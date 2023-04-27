@@ -60,4 +60,4 @@ if __name__ == '__main__':
         'M2305.DCE','OI2305.ZCE','RM2305.ZCE','Y2305.DCE']
     add_daily(ts_code_list)
 
-    print('done @', date_util.get_now())
+    print('done @', date_util.now_str())

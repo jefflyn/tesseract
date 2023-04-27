@@ -125,4 +125,4 @@ def add_gap(code_list):
 
 
 if __name__ == '__main__':
-    print('done @', date_util.get_now())
+    print('done @', date_util.now_str())

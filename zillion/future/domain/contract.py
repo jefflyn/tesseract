@@ -6,21 +6,20 @@ from zillion.utils.db_util import read_sql
 db = _dt.get_db()
 # 使用cursor()方法创建一个游标对象
 cursor = db.cursor()
+contract_map = {}
 
 
-def get_main_contract_code():
-    '''
-    连续合约
-    :return:
-    '''
-    symbol_exchange_map = basic.symbol_exchange_map(None)
-    return [symbol + '0' for symbol in symbol_exchange_map.keys()]
+class Contract:
+    symbol = ''
+    code = ''
+    low = 0
+    high = 0
 
-
-def pre_main_contract(code, main):
-    if code[-1] != '0':
-        return code < main
-    return False
+    def __init__(self, symbol, code, low, high):
+        self.symbol = symbol
+        self.code = code
+        self.low = low
+        self.high = high
 
 
 def get_local_contract(symbol=None, code=None, main=False, selected=False):
@@ -39,6 +38,30 @@ def get_local_contract(symbol=None, code=None, main=False, selected=False):
     # df['high_time'] = np.where(df.high_time.notnull(), df.high_time, None)
     df.index = df["code"]
     return df
+
+
+def refresh_contract_map(contract_df):
+    for index, row in contract_df.iterrows():
+        contract_map[index] = Contract(row['symbol'], row['code'], row['low'], row['high'])
+
+
+contract_df = get_local_contract()
+refresh_contract_map(contract_df)
+
+
+def get_main_contract_code():
+    '''
+    连续合约
+    :return:
+    '''
+    symbol_exchange_map = basic.symbol_exchange_map(None)
+    return [symbol + '0' for symbol in symbol_exchange_map.keys()]
+
+
+def pre_main_contract(code, main):
+    if code[-1] != '0':
+        return code < main
+    return False
 
 
 def save_contract(values=None, hist=False):
@@ -60,11 +83,15 @@ def update_contract_main(code):
     db.commit()
 
 
-def update_contract_hl(code, low, low_time, high, high_time):
-    sql = "update contract set low=%d, low_time='%s', high=%d, high_time='%s', update_time=now() " \
-          "where code='%s' and (low > " + str(low) + " or high < " + str(high) + ");"
-    result = cursor.execute(sql % (low, low_time, high, high_time, code))
+def update_contract_hl(code, low=None, low_time=None, high=None, high_time=None):
+    if low is not None and low_time is not None:
+        sql = "update contract set low=%d, low_time='%s', update_time=now() where code='%s' and `low` > " + str(low)
+        result = cursor.execute(sql % (low, low_time, code))
+    if high is not None and high_time is not None:
+        sql = "update contract set high=%d, high_time='%s', update_time=now() where code='%s' and `high` < " + str(high)
+        result = cursor.execute(sql % (high, high_time, code))
     db.commit()
+    refresh_contract_map(get_local_contract(code=code))
     return result
 
 

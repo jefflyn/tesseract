@@ -56,4 +56,4 @@ if __name__ == '__main__':
 
     add_daily(ts_code_list)
 
-    print('all done @', date_util.get_now())
+    print('all done @', date_util.now_str())

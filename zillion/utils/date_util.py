@@ -77,11 +77,11 @@ def now():
     return datetime.datetime.now()
 
 
-def get_now():
+def now_str():
     return now().strftime(FORMAT_DATETIME)
 
 
-def get_time():
+def time_str():
     return now().strftime(FORMAT_TIME)
 
 

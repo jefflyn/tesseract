@@ -160,7 +160,7 @@ def re_exe(interval=10, group_type=None, sort_by=None):
 
                 # ------ 提醒 -----
                 if is_trade_time is not True:
-                    print(date_util.get_now(), '~未开波~')
+                    print(date_util.now_str(), '~未开波~')
                     delete_price_flash_cached()
                 else:
                     need_sms = alert_on is not None and alert_on == 1
@@ -185,7 +185,7 @@ def re_exe(interval=10, group_type=None, sort_by=None):
                             str(round(high - low, 2)) + '^' + str(round((high - low) / high * 100, 2)) + '%',
                             wave_str, margin_rate, margin_per_contract, value_per_contract,
                             contract_num_for_1m, margin_for_1m,
-                            date_util.get_now(),
+                            date_util.now_str(),
                             low_change, high_change]
                 result_list.append(row_list)
             df = pd.DataFrame(result_list, columns=['name', 'symbol', 'exchange', 'price', 'change', 'limit',
@@ -346,7 +346,7 @@ def trigger_new_high_low(name, alias, price, change, high, low, hist_high, hist_
             if redis_client.exists(msg_content) is False:
                 # notify_util.alert(message='起来活动一下')
                 future_util.add_log(name, log_type, change, msg_content, log_type, price, None)
-                redis_client.set(msg_content, str(date_util.get_now()), ex=date_const.ONE_HOUR)
+                redis_client.set(msg_content, str(date_util.now_str()), ex=date_const.ONE_HOUR)
 
         if update_sql is not None:
             cursor.execute(update_sql)

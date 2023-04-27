@@ -365,7 +365,7 @@ def get_high_low():
 
 
 def redo_wave():
-    print(date_util.get_now())
+    print(date_util.now_str())
     ############################################################
     mian_codes = contract.get_main_contract_code()
     codes = list(contract.get_local_contract()['code'])
@@ -402,7 +402,7 @@ def redo_wave():
         size = size - 1
 
     wave_to_db(wave_data_list, wave_detail_list)
-    print(date_util.get_now())
+    print(date_util.now_str())
     update_contract_hl()
 
 

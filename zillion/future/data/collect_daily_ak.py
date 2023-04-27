@@ -18,4 +18,4 @@ if __name__ == '__main__':
     code_list = list(contract_df['code'])
     daily.collect_daily_ak(code_list, trade_date)
 
-    print('done @', date_util.get_now())
+    print('done @', date_util.now_str())

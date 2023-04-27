@@ -55,7 +55,7 @@ def get_wave_info(codes=[]):
             sql_insert = "INSERT INTO wave_info(code, from_date, to_date, wave_a, wave_b, wave_c, adays, bdays, cdays, " \
                          "update_time) " \
                          "VALUES ('%s', '%s', '%s', '%.2f', '%.2f','%.2f','%i','%i','%i','%s')" \
-                         % (code, open_date, date_util.get_today(), wa, wb, wc, d1, d2, d3, date_util.get_now())
+                         % (code, open_date, date_util.get_today(), wa, wb, wc, d1, d2, d3, date_util.now_str())
             cursor.execute(sql_insert)
             db.commit()
         except Exception as err:

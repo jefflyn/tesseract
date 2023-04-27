@@ -82,7 +82,7 @@ if __name__ == '__main__':
 
                 curt_values = (code, trade_date, str(round(grade, 2)), str(round(price, 2)), str(round(ma5, 2)), str(round(ma10, 2)),
                                str(round(ma20, 2)), str(round(ma30, 2)), str(round(ma60, 2)), str(round(ma90, 2)), str(round(ma120, 2)),
-                               str(round(ma250, 2)), date_util.get_now())
+                               str(round(ma250, 2)), date_util.now_str())
                 insert_values.append(curt_values)
 
                 # sql_insert = "INSERT INTO hist_ma_day(code,trade_date,grade,price,ma5,ma10,ma20,ma30,ma60,ma90,ma120,ma250,create_time) " \

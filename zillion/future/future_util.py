@@ -151,7 +151,7 @@ def add_log(name, log_type, pct_change, content, remark, price=None, position=No
         cursor.execute(
             'insert into trade_log(name, type, content, price, position, pct_change, log_time, remark) '
             'values(%s, %s, %s, %s, %s, %s, %s, %s)',
-            (name, log_type, content, price, position, pct_change, date_util.get_now(), remark)
+            (name, log_type, content, price, position, pct_change, date_util.now_str(), remark)
         )
         db.commit()
     except Exception as err:
