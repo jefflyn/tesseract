@@ -50,7 +50,7 @@ holding_cost = {
     'UR2309': [1974, 5], 'JM2309': [1400, 0], 'J2309': [2000, 0], 'SI2308': [15050, 0],
     'OI2309': [8052, 2], 'P2309': [1974, 0], 'PK2310': [-10524, 0], 'RM2309': [-10524, 0],
     'AL2306': [15000, 0], 'AG2307': [1234, 0], 'SN2306': [200000, 0], 'NI2306': [190000, 0],
-    'SP2309': [5130, 3], 'CJ2309': [10080, 0], 'NR2307': [9000, 0], 'CF2309': [15000, 0]
+    'SP2309': [5106, 5], 'CJ2309': [10080, 0], 'NR2307': [9000, 0], 'CF2309': [15000, 0]
 }
 
 
@@ -87,7 +87,9 @@ if __name__ == '__main__':
                 print(code + ' is not in contract list!!!')
                 continue
             his_low = cont.low
+            his_low_date = cont.low_date
             his_high = cont.high
+            his_high_date = cont.high_date
 
             realtime = trade.realtime_simple(code)
             price = realtime.iloc[0].at["close"]
@@ -100,8 +102,10 @@ if __name__ == '__main__':
             ask = realtime.iloc[0].at["ask"]
             if low < his_low:
                 contract.update_contract_hl(code, low, date_util.now_str())
-            if low < his_low:
-                contract.update_contract_hl(code, low, date_util.now_str())
+                print("update hist low to contract")
+            if high > his_high:
+                contract.update_contract_hl(code, high, date_util.now_str())
+                print("update hist high to contract")
 
             earning = ''
             if code in holding_cost.keys():
@@ -149,8 +153,8 @@ if __name__ == '__main__':
             realtime["pos"] = position
             flag = '_' if low <= his_low else '^' if high >= his_high else ''
             realtime["code"] = flag + code
-            realtime["his_pos"] = str(hist_pos) + '^' + future_price(his_high) \
-                if hist_pos > 50 else str(hist_pos) + '_' + future_price(his_low)
+            realtime["his_pos"] = str(hist_pos) + '^' + future_price(his_high) + '@' + his_high_date\
+                if hist_pos > 50 else str(hist_pos) + '_' + future_price(his_low) + '@' + his_low_date
             target_list = init_target.get(code)
             target_diff = list()
             target_dw_index = target_dw_index_dir.get(code)

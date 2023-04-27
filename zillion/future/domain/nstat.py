@@ -5,18 +5,17 @@ db = _dt.get_db()
 # 使用cursor()方法创建一个游标对象
 cursor = db.cursor()
 
-class Nstat:
-    symbol = ''
-    code = ''
-    low = 0
-    high = 0
+class Nstat(object):
+    pass
 
-    def __init__(self, symbol, code, low, high):
-        self.symbol = symbol
-        self.code = code
-        self.low = low
-        self.high = high
 
+def get_all_stat():
+    sql = "select * from n_stat"
+    df = read_query(sql)
+    df.index = df["code"]
+    for index, row in df.iterrows():
+
+    return df
 
 if __name__ == '__main__':
-    print(pre_main_contract('A2305', 'A2305'))
+    print(get_all_stat())
