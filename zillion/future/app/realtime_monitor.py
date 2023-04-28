@@ -4,7 +4,7 @@ import time
 import pandas as pd
 from akshare.futures.symbol_var import symbol_varieties
 
-from zillion.future.domain import trade, basic, contract
+from zillion.future.domain import trade, basic, contract, nstat
 from zillion.future.future_util import calc_position
 from zillion.utils import notify_util, date_util
 from zillion.utils.price_util import future_price
@@ -14,32 +14,32 @@ pd.set_option('display.max_columns', None)
 
 init_target = {
     'SC2306': [[-500], [600]],
-    # 'TA2309': [[-5650], [6000]],
-    # 'EB2306': [[-8000], [8700]],
+    # 'TA2309': [[-5600], [6000]],
+    # 'EB2306': [[-7000], [8700]],
     # 'PG2306': [[-4250], [5000]],
     # 'NR2307': [[-9200], [10000]],
 
-    # 'AG2307': [[-5620], [6000]],
+    # 'AG2306': [[-5500], [6000]],
     # 'SN2306': [[-200000], [228000]],
-    # 'NI2306': [[-166000], [200000]],
+    # 'NI2306': [[-166000], [220000]],
     # 'AL2306': [[-17345.0], [20000]],
     # 'SI2308': [[-15000], [15500]],
 
     'UR2309': [[-1975], [2000]],
-    'JM2309': [[-1400], [1600]],
-    # 'J2309': [[-2200], [3000]],
+    'JM2309': [[-1300], [1600]],
+    'J2309': [[-2000], [3000]],
 
     # 'RM2309': [[-2700], [3250]],
-    'OI2309': [[-8040], [8060]],
-    # 'P2309': [[-6960], [8400]],
-    'PK2310': [[-10400], [10620]],
-    # 'CJ2309': [[-9900], [10500]],
-    # 'CF2309': [[-13000], [15000]],
+    'OI2309': [[-8000], [8100]],
+    # 'P2309': [[-6800], [8000]],
+    'PK2310': [[-10400], [10900]],
+    # 'CJ2309': [[-9900], [10800]],
+    # 'CF2309': [[-13000], [16000]],
 
-    'SP2309': [[-5080], [5150]],
+    'SP2309': [[-5080], [5100]],
     'FG2309': [[-1730], [1800]],
-    'SA2309': [[-2100], [2200]],
-    'SF2306': [[-7360], [7400]],
+    'SA2309': [[-2000], [2200]],
+    'SF2306': [[-7300], [7360]],
     'I2309': [[-700], [850]],
     'PP2309': [[-7400], [7600]],
 }
@@ -75,6 +75,7 @@ def format_realtime(df):
 if __name__ == '__main__':
     basic_df = basic.get_future_basics()
     contract_map = contract.contract_map
+    nstat_map = nstat.nstat_map
     target_dw_index_dir = {}
     target_up_index_dir = {}
     high_dir = {}
@@ -83,6 +84,7 @@ if __name__ == '__main__':
         realtime_df = None
         for code in init_target.keys():
             cont = contract_map.get(code)
+            nst = nstat_map.get(code)
             if cont is None:
                 print(code + ' is not in contract list!!!')
                 continue
@@ -127,6 +129,9 @@ if __name__ == '__main__':
                 target_up_index_dir[code] = 0
                 low_dir[code] = low
 
+            avg60d = nstat.get_attr(nst, 'avg60d')
+            pt60 = nstat.get_attr(nst, 'pt60')
+            realtime['avg60d'] = '[' + str(avg60d) + ',' + str(pt60) + ']'
             realtime['lo_hi'] = '[' + future_price(low) + '-' + future_price(high) + ']'
             # realtime['diff'] = future_price(high - low)
             price_diff = float(price) - float(pre_settle)
@@ -150,11 +155,11 @@ if __name__ == '__main__':
                 notify_util.notify('📣' + code + ' @' + date_util.time_str(),
                                    '️🔥🔥🔥' if high >= his_high else '☀️☀️☀️', '⬆️' + str(price))
 
-            realtime["pos"] = position
+            realtime["pos"] = str(position) + '-' + str(hist_pos)
             flag = '_' if low <= his_low else '^' if high >= his_high else ''
             realtime["code"] = flag + code
-            realtime["his_pos"] = str(hist_pos) + '^' + future_price(his_high) + '@' + his_high_date\
-                if hist_pos > 50 else str(hist_pos) + '_' + future_price(his_low) + '@' + his_low_date
+            realtime["his_hl"] = '^' + future_price(his_high) + '@' + his_high_date\
+                if hist_pos > 50 else '_' + future_price(his_low) + '@' + his_low_date
             target_list = init_target.get(code)
             target_diff = list()
             target_dw_index = target_dw_index_dir.get(code)
@@ -200,7 +205,7 @@ if __name__ == '__main__':
         realtime_df = realtime_df.drop(columns=['high'])
         final_df = format_realtime(realtime_df)
         print(
-            final_df[['code', 'open', 'lo_hi', 'close', 'bid_ask', 'change', 'pos', 'his_pos',
+            final_df[['code', 'open', 'lo_hi', 'close', 'bid_ask', 'change', 'pos', 'his_hl', 'avg60d',
                       'target', 't_diff', 'earning']])
         print(datetime.datetime.now())
         time.sleep(2)
