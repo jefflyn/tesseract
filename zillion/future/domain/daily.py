@@ -17,12 +17,19 @@ db = _dt.get_db()
 cursor = db.cursor()
 
 
+def delete_daily(code):
+    sql = "delete from trade_daily where code='%s';"
+    cursor.execute(sql % code)
+    db.commit()
+    print("Delete gap record ", code)
+
+
 def _save_daily(values=None):
     if values is not None and len(values) > 0:
         trade_dates = ','.join(set(["'" + e[1] + "'" for e in values]))
         codes = ','.join(set(["'" + e[2] + "'" for e in values]))
         try:
-            delete_sql = "delete from future.trade_daily where code in (" + codes \
+            delete_sql = "delete from trade_daily where code in (" + codes \
                          + ") and trade_date in (" + trade_dates + ");"
             cursor.execute(delete_sql)
             # 注意这里使用的是executemany而不是execute

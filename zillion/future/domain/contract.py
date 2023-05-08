@@ -91,10 +91,10 @@ def update_contract_main(code):
 
 def update_contract_hl(code, low=None, low_time=None, high=None, high_time=None):
     if low is not None and low_time is not None:
-        sql = "update contract set low=%d, low_time='%s', update_time=now() where code='%s' and `low` > " + str(low)
+        sql = "update contract set low=%d, low_time='%s', update_time=now() where code='%s'"
         result = cursor.execute(sql % (low, low_time, code))
     if high is not None and high_time is not None:
-        sql = "update contract set high=%d, high_time='%s', update_time=now() where code='%s' and `high` < " + str(high)
+        sql = "update contract set high=%d, high_time='%s', update_time=now() where code='%s'"
         result = cursor.execute(sql % (high, high_time, code))
     db.commit()
     refresh_contract_map(get_local_contract(code=code))

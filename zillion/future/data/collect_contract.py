@@ -71,6 +71,7 @@ if __name__ == '__main__':
         if symbol not in basic_symbols or code < main_code:
             contract.remove_contract_hist(code, [list(row.values)])
             gap.del_gap_record(code)
+            daily.get_daily()
         daily_df = daily.get_daily(code)
         if daily_df is None or daily_df.empty:
             daily.collect_hist_daily_ak([code])
