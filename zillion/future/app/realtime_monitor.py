@@ -7,6 +7,7 @@ from akshare.futures.symbol_var import symbol_varieties
 from zillion.future.domain import trade, basic, contract, nstat
 from zillion.future.future_util import calc_position
 from zillion.utils import notify_util, date_util
+from zillion.utils.date_util import convert_to_date
 from zillion.utils.price_util import future_price
 
 pd.set_option('display.width', None)
@@ -21,35 +22,35 @@ init_target = {
 
     # 'AG2306': [[-5500], [6000]],
     # 'SN2306': [[-200000], [228000]],
-    # 'NI2306': [[-166000], [220000]],
+    'NI2306': [[-165000], [183000]],
     # 'AL2306': [[-17345.0], [20000]],
-    # 'SI2308': [[-15000], [15500]],
+    'SI2308': [[-14000], [15000]],
 
-    'UR2309': [[-1924], [1936]],
-    'JM2309': [[-1250], [1600]],
+    'UR2309': [[-1880], [1930]],
+    'JM2309': [[-1300], [1600]],
     # 'J2309': [[-2000], [3000]],
 
     # 'RM2309': [[-2700], [3250]],
-    'OI2309': [[-7900], [8500]],
+    'OI2309': [[-7950], [8500]],
     # 'P2309': [[-6800], [8000]],
-    'PK2311': [[-10200], [10620]],
+    'PK2311': [[-9800], [10620]],
     # 'CJ2309': [[-9900], [10800]],
     # 'CF2309': [[-13000], [16000]],
 
-    'SP2309': [[-5050], [5200]],
-    'FG2309': [[-1650], [1800]],
-    'SA2309': [[-2000], [2050]],
-    'SF2309': [[-7280], [7500]],
+    # 'SP2309': [[-5050], [5300]],
+    'FG2309': [[-1670], [1800]],
+    'SA2309': [[-1900], [1960]],
+    'SF2309': [[-7250], [7500]],
     'I2309': [[-660], [850]],
-    'PP2309': [[-7200], [7400]],
+    'PP2309': [[-7150], [7400]],
 }
 
 holding_cost = {
     'TA2309': [-5946, 0], 'PP2309': [7293, 7], 'EB2309': [8000, 0], 'PG2309': [5000, 0],
-    'FG2309': [1789, 0], 'SA2309': [2006, 5], 'SF2309': [7360, 0], 'I2309': [736, 0],
-    'UR2309': [1940, 5], 'JM2309': [1400, 0], 'J2309': [2000, 0], 'SI2308': [15050, 0],
+    'FG2309': [1789, 0], 'SA2309': [1962, 4], 'SF2309': [7360, 0], 'I2309': [736, 0],
+    'UR2309': [1928, 7], 'JM2309': [1300, 0], 'J2309': [2000, 0], 'SI2308': [15050, 0],
     'OI2309': [8052, 0], 'P2309': [1974, 0], 'PK2311': [-10524, 0], 'RM2309': [-10524, 0],
-    'AL2306': [15000, 0], 'AG2307': [1234, 0], 'SN2306': [200000, 0], 'NI2306': [190000, 0],
+    'AL2306': [15000, 0], 'AG2307': [1234, 0], 'SN2306': [200000, 0], 'NI2306': [184000, 1],
     'SP2309': [5106, 0], 'CJ2309': [10080, 0], 'NR2307': [9000, 0], 'CF2309': [15000, 0]
 }
 
@@ -80,6 +81,7 @@ if __name__ == '__main__':
     target_up_index_dir = {}
     high_dir = {}
     low_dir = {}
+    today = date_util.today
     while True:
         realtime_df = None
         for code in init_target.keys():
@@ -90,9 +92,12 @@ if __name__ == '__main__':
                 continue
             his_low = cont.low
             his_low_date = cont.low_date
+            low_diff = date_util.date_diff(convert_to_date(his_low_date), today)
             his_high = cont.high
             his_high_date = cont.high_date
-
+            high_diff = date_util.date_diff(convert_to_date(his_high_date), today)
+            his_low_date = his_low_date[2:]
+            his_high_date = his_high_date[2:]
             realtime = trade.realtime_simple(code)
             price = realtime.iloc[0].at["close"]
             hist_pos = calc_position(price, his_low, his_high)
@@ -102,6 +107,8 @@ if __name__ == '__main__':
             low = realtime.iloc[0].at["low"]
             bid = realtime.iloc[0].at["bid"]
             ask = realtime.iloc[0].at["ask"]
+            hl_tag = '!' if low_diff < 8 or high_diff < 8 else ''
+            hl_tag = '_' if low < his_low else '^' if high > his_high else hl_tag
             if low < his_low:
                 contract.update_contract_hl(code, low, date_util.now_str())
                 print("update hist low to contract")
@@ -130,16 +137,17 @@ if __name__ == '__main__':
                 low_dir[code] = low
 
             avg60d = nstat.get_attr(nst, 'avg60d')
-            pt60 = nstat.get_attr(nst, 'pt60')
+            pt60 = round((price - avg60d) * 100 / avg60d, 2)
             realtime['avg60d'] = '(' + str(avg60d) + ',' + str(pt60) + ')'
-            realtime['lo_hi'] = '[' + future_price(low) + '-' + future_price(high) + ' ' + future_price(high - low) + ']'
+            realtime['lo_hi'] = '[' + future_price(low) + '-' + future_price(high) + ' ' + future_price(
+                high - low) + ']'
             # realtime['diff'] = future_price(high - low)
             price_diff = float(price) - float(pre_settle)
             realtime["change"] = str(round(price_diff / float(pre_settle) * 100, 2)) + "% " + future_price(price_diff)
-            open_flag = ' ↑' if open > pre_settle else (' ↓' if open < pre_settle else ' ')
-            realtime['open'] = '[' + future_price(pre_settle) + '-' + future_price(open) + open_flag \
+            open_flag = '↑' if open > pre_settle else ('↓' if open < pre_settle else ' ')
+            realtime['open'] = '[' + future_price(pre_settle) + '-' + future_price(open) + ' '\
                                + future_price(open - pre_settle) + ',' + str(
-                round((open - pre_settle) * 100 / pre_settle, 2)) + '%]'
+                round((open - pre_settle) * 100 / pre_settle, 2)) + '%]' + open_flag
             realtime['bid_ask'] = '(' + future_price(bid) + ',' + future_price(ask) + ')'
             position = 0
             if high != low:
@@ -156,10 +164,15 @@ if __name__ == '__main__':
                                    '️🔥🔥🔥' if high >= his_high else '☀️☀️☀️', '⬆️' + str(price))
 
             realtime["pos"] = str(position) + '-' + str(hist_pos)
-            flag = '_' if low <= his_low else '^' if high >= his_high else ''
-            realtime["code"] = flag + code
-            realtime["his_hl"] = '^' + future_price(his_high) + '@' + his_high_date\
-                if hist_pos > 50 else '_' + future_price(his_low) + '@' + his_low_date
+            realtime["code"] = hl_tag + code
+            # realtime["his_hl"] = '^' + future_price(his_high) + '@' + his_high_date \
+            #     if hist_pos > 50 else '_' + future_price(his_low) + '@' + his_low_date
+            up_ = '[' + his_low_date + '-' + his_high_date + ',' + future_price(his_low) + '-' + future_price(
+                his_high) + ']↑'
+            down_ = '[' + his_high_date + '-' + his_low_date + ',' + future_price(his_high) + '-' + future_price(
+                his_low) + ']↓'
+            realtime["his_hl"] = up_ if his_low_date < his_high_date else down_
+
             target_list = init_target.get(code)
             target_diff = []
             target_dw_index = target_dw_index_dir.get(code)
@@ -205,7 +218,7 @@ if __name__ == '__main__':
         realtime_df = realtime_df.drop(columns=['high'])
         final_df = format_realtime(realtime_df)
         print(
-            final_df[['code', 'open', 'change', 'lo_hi', 'close', 'bid_ask', 'pos', 'his_hl', 'avg60d',
+            final_df[['code', 'open', 'change', 'lo_hi', 'bid_ask', 'close', 'code', 'pos', 'avg60d', 'his_hl',
                       'target', 't_diff', 'earning']])
         print(datetime.datetime.now())
         time.sleep(2)

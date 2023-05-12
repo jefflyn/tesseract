@@ -47,8 +47,8 @@ def get_local_contract(symbol=None, code=None, main=False, selected=False):
 def refresh_contract_map(contract_df):
     for index, row in contract_df.iterrows():
         contract_map[index] = Contract(row['symbol'], row['code'],
-                                       row['low'], row['low_time'].replace('-', '')[2:8],
-                                       row['high'], row['high_time'].replace('-', '')[2:8])
+                                       row['low'], row['low_time'].replace('-', '')[0:8],
+                                       row['high'], row['high_time'].replace('-', '')[0:8])
 
 
 contract_df = get_local_contract()

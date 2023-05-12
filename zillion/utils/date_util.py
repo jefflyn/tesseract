@@ -340,7 +340,10 @@ def get_month_firstday_lastday(howmany=12):
 
 def date_diff(begin_date=now(), end_date=now(), type='days'):
     if type == 'days':
-        return (end_date - begin_date).days
+        if isinstance(begin_date, str):
+            return (parse_date_str(end_date) - parse_date_str(begin_date)).days
+        else:
+            return (end_date - begin_date).days
     elif type == 'minutes':
         return (end_date - begin_date).minutes
 

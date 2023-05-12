@@ -125,4 +125,9 @@ def add_gap(code_list):
 
 
 if __name__ == '__main__':
-    print('done @', date_util.now_str())
+    txt1 = 'aaa'
+    txt2 = 'bbb'
+    txt3 = "378.8 @ 201222\n714.4 @ 220609"
+
+    print(txt3)
+    # print('done @', date_util.now_str())
