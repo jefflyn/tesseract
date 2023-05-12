@@ -19,16 +19,7 @@ init_target = {
     # 'EB2306': [[-7000], [8700]],
     # 'PG2306': [[-4200], [5000]],
     # 'NR2307': [[-9200], [10000]],
-
-    # 'AG2306': [[-5500], [6000]],
-    # 'SN2306': [[-200000], [228000]],
-    'NI2306': [[-165000], [183000]],
-    # 'AL2306': [[-17345.0], [20000]],
-    'SI2308': [[-14000], [15000]],
-
-    'UR2309': [[-1880], [1930]],
-    'JM2309': [[-1300], [1600]],
-    # 'J2309': [[-2000], [3000]],
+    'PP2309': [[-7150], [7400]],
 
     # 'RM2309': [[-2700], [3250]],
     'OI2309': [[-7950], [8500]],
@@ -37,18 +28,27 @@ init_target = {
     # 'CJ2309': [[-9900], [10800]],
     # 'CF2309': [[-13000], [16000]],
 
+    # 'AG2306': [[-5500], [6000]],
+    # 'SN2306': [[-200000], [228000]],
+    'NI2306': [[-165000], [183000]],
+    # 'AL2306': [[-17345.0], [20000]],
+    'SI2308': [[-14000], [15000]],
+
     # 'SP2309': [[-5050], [5300]],
-    'FG2309': [[-1670], [1800]],
     'SA2309': [[-1900], [1960]],
+    'FG2309': [[-1670], [1800]],
     'SF2309': [[-7250], [7500]],
     'I2309': [[-660], [850]],
-    'PP2309': [[-7150], [7400]],
+
+    'JM2309': [[-1300], [1600]],
+    # 'J2309': [[-2000], [3000]],
+    'UR2309': [[-1880], [1930]],
 }
 
 holding_cost = {
     'TA2309': [-5946, 0], 'PP2309': [7293, 7], 'EB2309': [8000, 0], 'PG2309': [5000, 0],
     'FG2309': [1789, 0], 'SA2309': [1962, 4], 'SF2309': [7360, 0], 'I2309': [736, 0],
-    'UR2309': [1928, 7], 'JM2309': [1300, 0], 'J2309': [2000, 0], 'SI2308': [15050, 0],
+    'UR2309': [1928, 7], 'JM2309': [1300, 0], 'J2309': [2000, 0], 'SI2308': [14300, 10],
     'OI2309': [8052, 0], 'P2309': [1974, 0], 'PK2311': [-10524, 0], 'RM2309': [-10524, 0],
     'AL2306': [15000, 0], 'AG2307': [1234, 0], 'SN2306': [200000, 0], 'NI2306': [184000, 1],
     'SP2309': [5106, 0], 'CJ2309': [10080, 0], 'NR2307': [9000, 0], 'CF2309': [15000, 0]
@@ -145,7 +145,7 @@ if __name__ == '__main__':
             price_diff = float(price) - float(pre_settle)
             realtime["change"] = str(round(price_diff / float(pre_settle) * 100, 2)) + "% " + future_price(price_diff)
             open_flag = '↑' if open > pre_settle else ('↓' if open < pre_settle else ' ')
-            realtime['open'] = '[' + future_price(pre_settle) + '-' + future_price(open) + ' '\
+            realtime['open'] = '[' + future_price(pre_settle) + '-' + future_price(open) + ' ' \
                                + future_price(open - pre_settle) + ',' + str(
                 round((open - pre_settle) * 100 / pre_settle, 2)) + '%]' + open_flag
             realtime['bid_ask'] = '(' + future_price(bid) + ',' + future_price(ask) + ')'
@@ -218,7 +218,7 @@ if __name__ == '__main__':
         realtime_df = realtime_df.drop(columns=['high'])
         final_df = format_realtime(realtime_df)
         print(
-            final_df[['code', 'open', 'change', 'lo_hi', 'bid_ask', 'close', 'code', 'pos', 'avg60d', 'his_hl',
+            final_df[['code', 'open', 'change', 'lo_hi', 'close', 'bid_ask', 'code', 'pos', 'avg60d', 'his_hl',
                       'target', 't_diff', 'earning']])
         print(datetime.datetime.now())
         time.sleep(2)
