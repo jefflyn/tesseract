@@ -14,43 +14,42 @@ pd.set_option('display.width', None)
 pd.set_option('display.max_columns', None)
 
 init_target = {
-    'SC2306': [[-450], [550]],
-    # 'TA2309': [[-5600], [6000]],
-    # 'EB2306': [[-7000], [8700]],
-    # 'PG2306': [[-4200], [5000]],
-    # 'NR2307': [[-9200], [10000]],
-    'PP2309': [[-7150], [7400]],
+    'SC2307': [[-450], [550]],
+    # 'TA2309': [[-5200], [6000]],
+    # 'EB2309': [[-7000], [8700]],
+    # 'PG2309': [[-4200], [5000]],
+    # 'NR2309': [[-9200], [10000]],
+    'PP2309': [[-6800], [7400]],
 
     # 'RM2309': [[-2700], [3250]],
-    'OI2309': [[-7950], [8500]],
-    # 'P2309': [[-6800], [8000]],
-    'PK2311': [[-9800], [10620]],
+    'OI2309': [[-7400], [8000]],
+    'P2309': [[-6300], [8000]],
+    'PK2311': [[-9300], [10620]],
     # 'CJ2309': [[-9900], [10800]],
     # 'CF2309': [[-13000], [16000]],
 
-    # 'AG2306': [[-5500], [6000]],
-    # 'SN2306': [[-200000], [228000]],
-    'NI2306': [[-165000], [183000]],
-    # 'AL2306': [[-17345.0], [20000]],
-    'SI2308': [[-14000], [15000]],
-
     # 'SP2309': [[-5050], [5300]],
-    'SA2309': [[-1900], [1960]],
-    'FG2309': [[-1670], [1800]],
-    'SF2309': [[-7250], [7500]],
+    'SF2309': [[-6800], [7500]],
     'I2309': [[-660], [850]],
-
-    'JM2309': [[-1300], [1600]],
+    # 'JM2309': [[-1200], [1600]],
     # 'J2309': [[-2000], [3000]],
-    'UR2309': [[-1880], [1930]],
+    'UR2309': [[-1600], [1900]],
+    'SA2309': [[-1550], [1900]],
+    'FG2309': [[-1350], [1800]],
+
+    'AG2308': [[-5500], [6000]],
+    # 'SN2309': [[-200000], [228000]],
+    # 'NI2309': [[-150000], [183000]],
+    # 'AL2309': [[-17345.0], [20000]],
+    # 'SI2308': [[-12000], [15000]],
 }
 
 holding_cost = {
     'TA2309': [-5946, 0], 'PP2309': [7293, 7], 'EB2309': [8000, 0], 'PG2309': [5000, 0],
-    'FG2309': [1789, 0], 'SA2309': [1962, 4], 'SF2309': [7360, 0], 'I2309': [736, 0],
-    'UR2309': [1928, 7], 'JM2309': [1300, 0], 'J2309': [2000, 0], 'SI2308': [14300, 10],
-    'OI2309': [8052, 0], 'P2309': [1974, 0], 'PK2311': [-10524, 0], 'RM2309': [-10524, 0],
-    'AL2306': [15000, 0], 'AG2307': [1234, 0], 'SN2306': [200000, 0], 'NI2306': [184000, 1],
+    'FG2309': [1590, 10], 'SA2309': [1962, 4], 'SF2309': [7360, 0], 'I2309': [736, 0],
+    'UR2309': [1928, 7], 'JM2309': [1300, 0], 'J2309': [2000, 0], 'SI2308': [13200, 10],
+    'OI2309': [7900, 25], 'P2309': [1974, 0], 'PK2311': [9984, 10], 'RM2309': [-10524, 0],
+    'AL2307': [15000, 0], 'AG2308': [1234, 0], 'SN2307': [200000, 0], 'NI2307': [184000, 1],
     'SP2309': [5106, 0], 'CJ2309': [10080, 0], 'NR2307': [9000, 0], 'CF2309': [15000, 0]
 }
 
@@ -71,6 +70,10 @@ def format_realtime(df):
     df['ask'] = df['ask'].apply(lambda x: future_price(x))
     # df['settle'] = df['settle'].apply(lambda x: future_price(x))
     return df
+
+
+def format_percent(chg=None):
+    return ('+' + str(chg) if chg > 0 else str(chg)) + '%'
 
 
 if __name__ == '__main__':
@@ -126,7 +129,9 @@ if __name__ == '__main__':
                 is_long = True if cost > 0 else False
                 quantity = cost_info[1]
                 cost_diff = (price - cost) if is_long else (abs(cost) - price)
-                earning = future_price(cost_diff * (profit / step) * quantity)
+                b2z = round(cost_diff * 100 / price, 2)
+                # b2z = '-' + str(b2z) if cost_diff > 0 else str(abs(b2z))
+                earning = future_price(cost_diff * (profit / step) * quantity) + ' ' + format_percent(b2z)
                 earning = ('^' if is_long else '_') + future_price(cost_diff) + ',' + earning if quantity > 0 else ''
 
             if target_dw_index_dir.get(code) is None:
@@ -138,16 +143,17 @@ if __name__ == '__main__':
 
             avg60d = nstat.get_attr(nst, 'avg60d')
             pt60 = round((price - avg60d) * 100 / avg60d, 2)
-            realtime['avg60d'] = '(' + str(avg60d) + ',' + str(pt60) + ')'
+            realtime['avg60d'] = '(' + str(avg60d) + ',' + format_percent(pt60) + ')'
             realtime['lo_hi'] = '[' + future_price(low) + '-' + future_price(high) + ' ' + future_price(
                 high - low) + ']'
             # realtime['diff'] = future_price(high - low)
             price_diff = float(price) - float(pre_settle)
-            realtime["change"] = str(round(price_diff / float(pre_settle) * 100, 2)) + "% " + future_price(price_diff)
+            realtime["change"] = format_percent(round(price_diff / float(pre_settle) * 100, 2)) \
+                                 + future_price(price_diff)
             open_flag = '↑' if open > pre_settle else ('↓' if open < pre_settle else ' ')
             realtime['open'] = '[' + future_price(pre_settle) + '-' + future_price(open) + ' ' \
-                               + future_price(open - pre_settle) + ',' + str(
-                round((open - pre_settle) * 100 / pre_settle, 2)) + '%]' + open_flag
+                               + future_price(open - pre_settle) + ',' + format_percent(
+                round((open - pre_settle) * 100 / pre_settle, 2)) + ']' + open_flag
             realtime['bid_ask'] = '(' + future_price(bid) + ',' + future_price(ask) + ')'
             position = 0
             if high != low:
@@ -168,9 +174,11 @@ if __name__ == '__main__':
             # realtime["his_hl"] = '^' + future_price(his_high) + '@' + his_high_date \
             #     if hist_pos > 50 else '_' + future_price(his_low) + '@' + his_low_date
             up_ = '[' + his_low_date + '-' + his_high_date + ',' + future_price(his_low) + '-' + future_price(
-                his_high) + ']↑'
+                his_high) + ']↑' + '(' + str(round((his_high - his_low) * 100 / his_low, 2)) + ',' \
+                  + format_percent(round((price - his_high) * 100 / his_high, 2)) + ')'
             down_ = '[' + his_high_date + '-' + his_low_date + ',' + future_price(his_high) + '-' + future_price(
-                his_low) + ']↓'
+                his_low) + ']↓' + '(' + str(round((his_low - his_high) * 100 / his_high, 2)) + ',' \
+                    + format_percent(round((price - his_low) * 100 / his_low, 2)) + ')'
             realtime["his_hl"] = up_ if his_low_date < his_high_date else down_
 
             target_list = init_target.get(code)
@@ -218,7 +226,7 @@ if __name__ == '__main__':
         realtime_df = realtime_df.drop(columns=['high'])
         final_df = format_realtime(realtime_df)
         print(
-            final_df[['code', 'open', 'change', 'lo_hi', 'close', 'bid_ask', 'code', 'pos', 'avg60d', 'his_hl',
+            final_df[['code', 'open', 'change', 'lo_hi', 'close', 'bid_ask', 'pos', 'avg60d', 'his_hl',
                       'target', 't_diff', 'earning']])
         print(datetime.datetime.now())
         time.sleep(2)
