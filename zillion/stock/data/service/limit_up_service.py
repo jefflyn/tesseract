@@ -1,10 +1,10 @@
 import pandas as pd
 
+from zillion.future import db_util
+from zillion.future.db_util import get_db
 from zillion.gene import wave
 from zillion.stock.data import data_util
 from zillion.utils import date_util
-from zillion.utils import db_util
-from zillion.utils.db_util import get_db
 
 
 def sync_rds_limit_up_stat():

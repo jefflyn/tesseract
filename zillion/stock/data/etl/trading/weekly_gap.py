@@ -5,8 +5,8 @@ import time
 
 import tushare as ts
 
+from zillion.future.db_util import get_db
 from zillion.utils import date_util
-from zillion.utils.db_util import get_db
 from zillion.utils.pro_util import pro
 
 # 设定获取日线行情的初始日期和终止日期，其中终止日期设定为当天

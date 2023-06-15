@@ -4,7 +4,7 @@ from sys import argv
 
 import pandas as pd
 
-import zillion.utils.db_util as _dt
+import zillion.future.db_util as _dt
 from zillion.gene import limitup
 from zillion.gene import upnday
 from zillion.gene import wave

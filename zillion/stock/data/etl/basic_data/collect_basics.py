@@ -8,9 +8,9 @@ Created on 2019/02/07
 """
 import tushare as ts
 
+from zillion.future.db_util import get_db
 from zillion.utils import date_util
 from zillion.utils._utils import timer
-from zillion.utils.db_util import get_db
 
 
 @timer

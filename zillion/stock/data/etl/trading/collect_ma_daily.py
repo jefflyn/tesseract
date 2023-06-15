@@ -3,9 +3,9 @@ import time
 import numpy as np
 import tushare as ts
 
+from zillion.future.db_util import get_db
 from zillion.gene import maup
 from zillion.utils import date_util
-from zillion.utils.db_util import get_db
 from zillion.utils.pro_util import pro
 
 if __name__ == '__main__':

@@ -1,4 +1,4 @@
-from zillion.utils import db_util
+from zillion.future import db_util
 from zillion.utils.pro_util import pro
 
 if __name__ == '__main__':

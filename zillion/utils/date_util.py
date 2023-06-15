@@ -202,6 +202,9 @@ def parse_date_str(date_str, format=FORMAT_DEFAULT):
 
 
 def convert_to_date(date_str):
+    date_str = str(date_str)
+    if len(date_str) > 10 and date_str.index('-') > 0 and date_str.index(' ') > 0:
+        date_str = date_str.split(' ')[0]
     query_date = datetime.datetime.strptime(date_str, FORMAT_DEFAULT) if len(date_str) > 8 \
         else datetime.datetime.strptime(date_str, FORMAT_FLAT)
     return query_date

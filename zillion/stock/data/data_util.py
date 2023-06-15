@@ -3,9 +3,9 @@ import datetime
 import pandas as pd
 import tushare as ts
 
+from zillion.future.db_util import read_query
+from zillion.future.db_util import read_sql
 from zillion.utils import date_util
-from zillion.utils.db_util import read_query
-from zillion.utils.db_util import read_sql
 
 todaystr = datetime.datetime.now().strftime('%Y-%m-%d')
 yeardays = datetime.timedelta(days=-365)

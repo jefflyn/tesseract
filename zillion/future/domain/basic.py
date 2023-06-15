@@ -1,5 +1,5 @@
+from zillion.future.db_util import read_sql
 from zillion.future.future_constants import GOODS_TYPE_MAP
-from zillion.utils.db_util import read_sql
 
 
 def get_future_basics(type=None, night=None, on_target=None):

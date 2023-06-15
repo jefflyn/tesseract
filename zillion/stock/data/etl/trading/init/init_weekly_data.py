@@ -2,8 +2,8 @@ import datetime
 import random
 import time
 
+from zillion.future.db_util import get_db
 from zillion.utils import date_util
-from zillion.utils.db_util import get_db
 from zillion.utils.pro_util import pro
 
 time_temp = datetime.datetime.now() - datetime.timedelta(days=365)

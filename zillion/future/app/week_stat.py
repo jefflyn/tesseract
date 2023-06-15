@@ -1,7 +1,7 @@
 import pandas as pd
 
+from zillion.future import db_util
 from zillion.future.domain import daily, contract
-from zillion.utils import db_util
 
 if __name__ == '__main__':
     contracts = contract.get_local_contract()

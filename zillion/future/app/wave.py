@@ -3,7 +3,7 @@ from datetime import datetime
 import numpy as np
 import pandas as pd
 
-import zillion.utils.db_util as _dt
+import zillion.future.db_util as _dt
 from zillion.future.domain import trade, contract, daily
 from zillion.utils import date_util
 
@@ -34,6 +34,7 @@ def get_wave(code=None, hist_data=None, begin_low=True, duration=0, change=0):
 
 
 def wave_from(code, df, begin_low, direction='left', duration=0, change=0):
+    df = df[(df['low'] > 0.01) & (df['close'] > 0.01)]
     period_data = []
     if df.empty:
         return

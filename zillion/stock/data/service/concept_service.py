@@ -1,4 +1,4 @@
-from zillion.utils.db_util import read_sql
+from zillion.future.db_util import read_sql
 
 
 def get_concepts(codes=None):

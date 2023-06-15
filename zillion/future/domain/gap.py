@@ -1,4 +1,4 @@
-import zillion.utils.db_util as _dt
+import zillion.future.db_util as _dt
 from zillion.future.app import wave
 from zillion.future.domain import daily
 from zillion.utils import date_util

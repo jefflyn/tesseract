@@ -3,9 +3,10 @@ from datetime import datetime as dtime
 import numpy as np
 import pandas as pd
 
+from zillion.future import db_util
 from zillion.stock.data import data_util
+from zillion.utils import _utils
 from zillion.utils import date_util
-from zillion.utils import db_util, _utils
 
 start_date = date_util.DATE_BEFORE_90_DAYS
 

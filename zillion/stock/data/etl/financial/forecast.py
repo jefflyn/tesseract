@@ -1,7 +1,7 @@
 import datetime
 import time
 
-from zillion.utils.db_util import get_db
+from zillion.future.db_util import get_db
 from zillion.utils.pro_util import pro
 
 if __name__ == '__main__':
