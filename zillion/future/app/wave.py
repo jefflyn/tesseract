@@ -346,21 +346,21 @@ def update_contract_hl():
     cursor = db.cursor()
     try:
         cursor.execute(
-            "update contract c join wave_detail wd on c.code = wd.code and c.high = wd.begin_price "
+            "update contract c join wave_detail wd on c.code = wd.code and c.high < wd.begin_price "
             "set c.high_time = wd.begin, c.update_time=now() "
-            "where c.deleted = 0 and (c.high_time is null or c.high_time < wd.begin);")
+            "where c.deleted = 0;")
         cursor.execute(
-            "update contract c join wave_detail wd on c.code = wd.code and c.high = wd.end_price "
+            "update contract c join wave_detail wd on c.code = wd.code and c.high < wd.end_price "
             "set c.high_time = wd.end, c.update_time=now() "
-            "where c.deleted = 0 and (c.high_time is null or c.high_time < wd.end);")
+            "where c.deleted = 0;")
         cursor.execute(
-            "update contract c join wave_detail wd on c.code = wd.code and c.low = wd.begin_price "
-            "set c.low_time = wd.begin, c.update_time=now() "
-            "where c.deleted = 0 and (c.low_time is null or c.low_time < wd.begin);")
+            "update contract c join wave_detail wd on c.code = wd.code and c.low > wd.begin_price "
+            "set c.low = wd.begin_price, c.low_time = wd.begin, c.update_time=now() "
+            "where c.deleted = 0;")
         cursor.execute(
-            "update contract c join wave_detail wd on c.code = wd.code and c.low = wd.end_price "
-            "set c.low_time = wd.end, c.update_time=now() "
-            "where c.deleted = 0 and (c.low_time is null or c.low_time < wd.end);")
+            "update contract c join wave_detail wd on c.code = wd.code and c.low > wd.end_price "
+            "set c.low = wd.end_price and c.low_time = wd.end, c.update_time=now() "
+            "where c.deleted = 0;")
         db.commit()
         print('  >>> update_contract_hl done!')
     except Exception as err:
@@ -417,3 +417,4 @@ def redo_wave():
 
 if __name__ == '__main__':
     redo_wave()
+    # update_contract_hl()
