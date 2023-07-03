@@ -346,21 +346,21 @@ def update_contract_hl():
     cursor = db.cursor()
     try:
         cursor.execute(
-            "update contract c join wave_detail wd on c.code = wd.code and c.high < wd.begin_price "
-            "set c.high_time = wd.begin, c.update_time=now() "
-            "where c.deleted = 0;")
+            "update contract c join wave_detail wd on c.code = wd.code and (c.high < wd.begin_price or c.high=0) "
+            "set c.high = wd.begin_price, c.high_time = wd.begin, c.update_time=now() "
+            "where c.deleted = 0 and wd.begin_price > 0;")
         cursor.execute(
-            "update contract c join wave_detail wd on c.code = wd.code and c.high < wd.end_price "
-            "set c.high_time = wd.end, c.update_time=now() "
-            "where c.deleted = 0;")
+            "update contract c join wave_detail wd on c.code = wd.code and (c.high < wd.end_price  or c.high=0) "
+            "set c.high = wd.end_price, c.high_time = wd.end, c.update_time=now() "
+            "where c.deleted = 0 and wd.end_price > 0;")
         cursor.execute(
-            "update contract c join wave_detail wd on c.code = wd.code and c.low > wd.begin_price "
+            "update contract c join wave_detail wd on c.code = wd.code and (c.low > wd.begin_price or c.low=0) "
             "set c.low = wd.begin_price, c.low_time = wd.begin, c.update_time=now() "
-            "where c.deleted = 0;")
+            "where c.deleted = 0 and wd.begin_price > 0;")
         cursor.execute(
-            "update contract c join wave_detail wd on c.code = wd.code and c.low > wd.end_price "
+            "update contract c join wave_detail wd on c.code = wd.code and (c.low > wd.end_price or c.low=0) "
             "set c.low = wd.end_price and c.low_time = wd.end, c.update_time=now() "
-            "where c.deleted = 0;")
+            "where c.deleted = 0 and wd.end_price > 0;")
         db.commit()
         print('  >>> update_contract_hl done!')
     except Exception as err:
