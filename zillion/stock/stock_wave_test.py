@@ -24,7 +24,7 @@ def do_wave(code_list=['BABA']):
             stock_us_daily_df = akshare.stock_us_daily(symbol=code, adjust="qfq")
             stock_us_daily_df['date'] = stock_us_daily_df['date'].apply(lambda x: parse_date_str(x))
             db_stock.to_db(stock_us_daily_df, 'trade_daily_us')
-        wave_daily_df = stock_us_daily_df[stock_us_daily_df['date'] > '2015-12-31']
+        wave_daily_df = stock_us_daily_df[stock_us_daily_df['date'] > '2022-01-01']
         wave_df = wave.get_wave(code, hist_data=wave_daily_df, begin_low=True, duration=0, change=0)
         wave_str = wave.wave_to_str(wave_df)
         wave_list = wave.get_wave_list(wave_str)
