@@ -20,12 +20,19 @@ def add_realtime_data(code=None, local_last_trade_date=None):
 
 def get_wave(code=None, hist_data=None, begin_low=True, duration=0, change=0):
     left_data = wave_from(code, hist_data, begin_low, 'left', duration, change)
+    right_data = wave_from(code, hist_data, begin_low, 'right', duration, change)
+    result = None
     # sorted by date asc
     if left_data is not None:
         left_data.reverse()
-    right_data = wave_from(code, hist_data, begin_low, 'right', duration, change)
-    period_df = pd.DataFrame(left_data + right_data,
-                             columns=['code', 'begin', 'end', 'status', 'begin_price', 'end_price', 'days', 'change'])
+        result = left_data
+    if left_data is None and right_data is not None:
+        result = left_data
+    if left_data is not None and right_data is not None:
+        result = left_data + right_data
+    if result is None:
+        return
+    period_df = pd.DataFrame(result, columns=['code', 'begin', 'end', 'status', 'begin_price', 'end_price', 'days', 'change'])
     period_list = [period_df]
     if period_list is None or len(period_list) == 0:
         print('result is empty, please check the code is exist!')
