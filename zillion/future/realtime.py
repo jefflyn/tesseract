@@ -15,7 +15,7 @@ from zillion.utils.redis_util import redis_client
 group_list = ['tar', 'all', 'ag', 'om', 'ch1', 'ch2', 'ch3', 'bk', 'en', 'pm', 'nfm', 'fi']
 price_flash_key = 'PRICE_FLASH_'
 # 建立数据库连接
-db = get_db()
+db = get_db("future")
 # 使用cursor()方法创建一个游标对象
 cursor = db.cursor()
 

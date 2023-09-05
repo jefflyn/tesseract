@@ -77,7 +77,7 @@ if __name__ == '__main__':
             p_change = round(close_diff / float(pre_close) * 100, 2)
 
             # 建立数据库连接
-            db = get_db()
+            db = get_db("future")
             # 使用cursor()方法创建一个游标对象
             cursor = db.cursor()
             try:

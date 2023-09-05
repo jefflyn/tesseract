@@ -3,7 +3,7 @@ from zillion.future.db_util import read_sql
 from zillion.future.domain import basic
 
 # 建立数据库连接
-db = _dt.get_db()
+db = _dt.get_db("future")
 # 使用cursor()方法创建一个游标对象
 cursor = db.cursor()
 contract_map = {}
@@ -91,10 +91,10 @@ def update_contract_main(code):
 
 def update_contract_hl(code, low=None, low_time=None, high=None, high_time=None):
     if low is not None and low_time is not None:
-        sql = "update contract set low=%d, low_time='%s', update_time=now() where code='%s'"
+        sql = "update contract set low=%f, low_time='%s', update_time=now() where code='%s'"
         result = cursor.execute(sql % (low, low_time, code))
     if high is not None and high_time is not None:
-        sql = "update contract set high=%d, high_time='%s', update_time=now() where code='%s'"
+        sql = "update contract set high=%f, high_time='%s', update_time=now() where code='%s'"
         result = cursor.execute(sql % (high, high_time, code))
     db.commit()
     refresh_contract_map(get_local_contract(code=code))

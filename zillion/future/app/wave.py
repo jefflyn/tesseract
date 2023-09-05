@@ -349,26 +349,23 @@ def wave_to_db(wave_list=None, wave_detail_list=None):
 
 def update_contract_hl():
     # 建立数据库连接
-    db = _dt.get_db()
+    db = _dt.get_db("future")
     # 使用cursor()方法创建一个游标对象
     cursor = db.cursor()
     try:
         cursor.execute(
-            "update contract c join wave_detail wd on c.code = wd.code and (c.high < wd.begin_price or c.high=0) "
-            "set c.high = wd.begin_price, c.high_time = wd.begin, c.update_time=now() "
-            "where c.deleted = 0 and wd.begin_price > 0;")
+            "update contract c join (select code, least(a.mn1, a.mn2) min, greatest(a.mx1, a.mx2) max from (select code, min(begin_price) mn1, min(end_price) mn2, max(begin_price) mx1, max(end_price) mx2 from wave_detail group by code) a) wd on c.code = wd.code "
+            "set c.low=wd.min, c.high=wd.max, c.update_time=now() "
+            "where c.deleted = 0;")
+
         cursor.execute(
-            "update contract c join wave_detail wd on c.code = wd.code and (c.high < wd.end_price  or c.high=0) "
-            "set c.high = wd.end_price, c.high_time = wd.end, c.update_time=now() "
-            "where c.deleted = 0 and wd.end_price > 0;")
+            "update contract c join wave_detail wd on c.code=wd.code and c.low=wd.begin_price or c.low=wd.end_price "
+            "set c.low_time=case when wd.status='down' then wd.end else wd.begin end where c.deleted=0;")
+
         cursor.execute(
-            "update contract c join wave_detail wd on c.code = wd.code and (c.low > wd.begin_price or c.low=0) "
-            "set c.low = wd.begin_price, c.low_time = wd.begin, c.update_time=now() "
-            "where c.deleted = 0 and wd.begin_price > 0;")
-        cursor.execute(
-            "update contract c join wave_detail wd on c.code = wd.code and (c.low > wd.end_price or c.low=0) "
-            "set c.low = wd.end_price and c.low_time = wd.end, c.update_time=now() "
-            "where c.deleted = 0 and wd.end_price > 0;")
+            "update contract c join wave_detail wd on c.code=wd.code and c.high=wd.begin_price or c.high=wd.end_price "
+            "set c.high_time=case when wd.status='down' then wd.begin else wd.end end where c.deleted=0;")
+
         db.commit()
         print('  >>> update_contract_hl done!')
     except Exception as err:

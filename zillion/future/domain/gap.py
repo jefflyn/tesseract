@@ -4,7 +4,7 @@ from zillion.future.domain import daily
 from zillion.utils import date_util
 
 # 建立数据库连接
-db = _dt.get_db()
+db = _dt.get_db("future")
 # 使用cursor()方法创建一个游标对象
 cursor = db.cursor()
 

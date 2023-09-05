@@ -23,13 +23,13 @@ init_target = {
 
     # 'RM2401': [[-2700], [3600]],
     'OI2401': [[-9000], [9800]],
-    'P2401': [[-6300], [7800]],
+    'P2401': [[-6300], [8000]],
     'PK2311': [[-9300], [10800, 11000]],
     'CJ2401': [[-9900], [14000]],
     # 'CF2401': [[-16000], [17000]],
 
     # 'SP2401': [[-5050], [5500]],
-    'SF2310': [[-6740], [7200]],
+    'SF2311': [[-6740], [7400]],
     'I2401': [[-660], [880]],
     # 'JM2401': [[-1200], [1600]],
     # 'J2401': [[-2000], [3000]],
@@ -113,10 +113,10 @@ if __name__ == '__main__':
             hl_tag = '!' if low_diff < 8 or high_diff < 8 else ''
             hl_tag = '_' if low <= his_low else '^' if high >= his_high else hl_tag
             if low < his_low:
-                contract.update_contract_hl(code, low, date_util.now_str())
+                contract.update_contract_hl(code, low, date_util.now_str(), None, None)
                 print(code, "update hist low to contract")
             if high > his_high:
-                contract.update_contract_hl(code, high, date_util.now_str())
+                contract.update_contract_hl(code, None, None, high, date_util.now_str())
                 print(code, "update hist high to contract")
 
             earning = ''

@@ -3,7 +3,8 @@ import pymysql
 import sqlalchemy as sa
 from sqlalchemy import create_engine
 
-engine_rds = create_engine("mysql+pymysql://ruian:jefflyn0423@rm-bp1z8b6f51h4ujmz4co.mysql.rds.aliyuncs.com:3306/zillion?charset=UTF8MB4")
+engine_rds = create_engine(
+    "mysql+pymysql://ruian:jefflyn0423@rm-bp1z8b6f51h4ujmz4co.mysql.rds.aliyuncs.com:3306/zillion?charset=UTF8MB4")
 engine = create_engine("mysql+pymysql://linjingu:linjingu@127.0.0.1:3306/future?charset=UTF8MB4")
 
 
@@ -12,8 +13,14 @@ def get_db():
     return db
 
 
+def get_db(db_name=None):
+    db = pymysql.connect(host='127.0.0.1', user='linjingu', passwd='linjingu', db=db_name, charset='UTF8MB4')
+    return db
+
+
 def get_rds_db():
-    db = pymysql.connect(host='rm-bp1z8b6f51h4ujmz4co.mysql.rds.aliyuncs.com', user='ruian', passwd='jefflyn0423', db='zillion', charset='UTF8MB4')
+    db = pymysql.connect(host='rm-bp1z8b6f51h4ujmz4co.mysql.rds.aliyuncs.com', user='ruian', passwd='jefflyn0423',
+                         db='zillion', charset='UTF8MB4')
     return db
 
 
@@ -46,6 +53,7 @@ def read_query(sql):
     """
     return pd.read_sql_query(sql, engine)
 
+
 def read_query(sql):
     """
     Read SQL query into a DataFrame
@@ -68,5 +76,6 @@ def read_sql(sql, params):
 if __name__ == '__main__':
     # df = read_table('hist_trade_day')
     # df = read_query('select code, trade_date, close from hist_trade_day')
-    df = read_sql('select code, trade_date, close from hist_trade_day where code in :code', params={'code': ['600680', '600126']})
+    df = read_sql('select code, trade_date, close from hist_trade_day where code in :code',
+                  params={'code': ['600680', '600126']})
     print(df)
