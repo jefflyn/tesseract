@@ -39,18 +39,20 @@ def find_existing_gaps(data):
 
 
 if __name__ == "__main__":
-    stock_symbol = 'GOOGL'
-    start_date = '2023-03-01'  # 起始日期
-    end_date = date_util.get_today()  # 结束日期
+    codes = ['SPY', 'QQQ', 'AAPL', 'MSFT', 'GOOGL', 'AMZN', 'NVDA', 'META', 'TSLA', 'TSM', 'BABA', 'NFLX', 'AMD',
+             'INTC', 'AVGO', 'QCOM']
+    for stock_symbol in codes:
+        start_date = '2023-03-01'  # 起始日期
+        end_date = date_util.get_today()  # 结束日期
 
-    stock_data = get_stock_data(stock_symbol, start_date, end_date)
-    existing_gaps = find_existing_gaps(stock_data)
+        stock_data = get_stock_data(stock_symbol, start_date, end_date)
+        existing_gaps = find_existing_gaps(stock_data)
 
-    latest = stock_data.tail(1)
-    idx = latest.index.to_numpy()[0]
-    latest_date = latest.at[idx, 'date']
-    latest_price = latest.at[idx, 'close']
-    print(f"【{stock_symbol}】缺口统计：{start_date} 至 {latest_date}, 最新价格【{latest_price}】")
-    for date, gap_direction, gap, previous_price, next_price, room in existing_gaps:
-        print(f"日期：{date}, 缺口方向：{gap_direction}, 缺口大小：{gap:.2f}, "
-            f"缺口价格区间：{previous_price:.2f}-{next_price:.2f}, 缺口空间：{room:.2%}")
+        latest = stock_data.tail(1)
+        idx = latest.index.to_numpy()[0]
+        latest_date = latest.at[idx, 'date']
+        latest_price = latest.at[idx, 'close']
+        print(f"【{stock_symbol}】缺口统计：{start_date} 至 {latest_date}, 最新价格【{latest_price}】")
+        for date, gap_direction, gap, previous_price, next_price, room in existing_gaps:
+            print(f"日期：{date}, 缺口方向：{gap_direction}, 缺口大小：{gap:.2f}, "
+                  f"缺口价格区间：{previous_price:.2f}-{next_price:.2f}, 缺口空间：{room:.2%}")
