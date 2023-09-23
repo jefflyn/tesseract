@@ -15,13 +15,12 @@ def get_stock_data(stock_symbol, start_date, end_date):
 # 计算每天仍然存在的缺口
 def find_existing_gaps(data):
     gaps = []
-
     latest = stock_data.tail(1)
     idx = latest.index.to_numpy()[0]
     latest_price = latest.at[idx, 'close']
+    latest_date = latest.at[idx, 'date']
     high_list = list(data['high'])
     low_list = list(data['low'])
-    open_list = list(data['open'])
     date_list = list(data['date'])
     for index, row in data.iterrows():
         if index == len(high_list) - 1:
@@ -38,37 +37,42 @@ def find_existing_gaps(data):
         gap_size = None
         is_closed = 0
         closed_date = None
-        closed_days = 0
+        days = 0
         current_price = latest_price
-        for nxt_idx in range(index, len(high_list)):
+        for nxt_idx in range(index + 1, len(high_list)):
             # 下一日
             next_low = low_list[nxt_idx]
             next_high = high_list[nxt_idx]
-            next_open = open_list[nxt_idx]
             # 忽略当天回补的
-            if next_open > current_high >= next_low:
+            if next_low > current_high:
                 direction = "向上"
                 gap_from = current_high
-                gap_to = next_open
-                gap_size = round((next_open - current_high) * 100 / current_high, 2)
+                gap_to = next_low if gap_to is None or next_low < gap_to else gap_to
+                gap_size = round((next_low - current_high) * 100 / current_high, 2)
                 current_gap_size = round((current_high - latest_price) * 100 / latest_price, 2)
-            elif next_open < current_low <= next_high:
+                days = date_util.date_diff(current_date, latest_date)
+            elif next_high < current_low:
                 direction = "向下"
                 gap_from = current_low
-                gap_to = next_open
-                gap_size = round((next_open - current_low) * 100 / current_low, 2)
+                gap_to = next_high if gap_to is None or next_high > gap_to else gap_to
+                gap_size = round((next_high - current_low) * 100 / current_low, 2)
                 current_gap_size = round((current_low - latest_price) * 100 / latest_price, 2)
-            if direction is not None and (next_low <= current_high or next_high >= current_low):
+                days = date_util.date_diff(current_date, latest_date)
+            if direction is None:
+                break
+            if (direction == "向上" and next_low <= current_high) \
+                    or (direction == "向下" and next_high >= current_low):
                 is_closed = 1
                 closed_date = date_list[nxt_idx]
-                closed_days = date_util.date_diff(current_date, closed_date)
+                days = date_util.date_diff(current_date, closed_date)
                 current_gap_size = 0
                 break
+
         if direction is not None:
             data_to_insert = [(row['code'], current_date, direction, round(gap_from, 2), round(gap_to, 2), gap_size,
-                               is_closed, closed_date, closed_days, float(current_price), current_gap_size)]
+                               is_closed, closed_date, days, float(current_price), float(current_gap_size))]
             sql = "insert into gap_track (code, gap_date, direction, gap_from, gap_to, gap_size, is_closed, closed_date, " \
-                  "closed_days, current_price, current_gap_size) " \
+                  "days, current_price, current_gap_size) " \
                   "values (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);"
             db_manager.executemany(sql, data_to_insert)
     return gaps
@@ -77,7 +81,10 @@ def find_existing_gaps(data):
 if __name__ == "__main__":
     codes = ['SPY', 'QQQ', 'AAPL', 'MSFT', 'GOOGL', 'AMZN', 'NVDA', 'META', 'TSLA', 'TSM', 'BABA', 'NFLX', 'AMD',
              'INTC', 'AVGO', 'QCOM']
+    # codes = ['SPY']
     for stock_symbol in codes:
+        db_manager.execute("delete from gap_track where code='" + stock_symbol + "'")
+
         start_date = '2023-03-01'  # 起始日期
         end_date = date_util.get_today()  # 结束日期
 
