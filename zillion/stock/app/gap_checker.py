@@ -55,4 +55,5 @@ if __name__ == "__main__":
         print(f"【{stock_symbol}】缺口统计：{start_date} 至 {latest_date}, 最新价格【{latest_price}】")
         for date, gap_direction, gap, previous_price, next_price, room in existing_gaps:
             print(f"日期：{date}, 缺口方向：{gap_direction}, 缺口大小：{gap:.2f}, "
-                  f"缺口价格区间：{previous_price:.2f}-{next_price:.2f}, 缺口空间：{room:.2%}")
+                  f"缺口价格：{previous_price:.2f}-{next_price:.2f}, 缺口空间：{room:.2%}")
+        print("")

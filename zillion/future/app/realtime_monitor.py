@@ -14,7 +14,7 @@ pd.set_option('display.width', None)
 pd.set_option('display.max_columns', None)
 
 init_target = {
-    'SC2310': [[-450], [700]],
+    'SC2311': [[-450], [700]],
     # 'TA2401': [[-5200], [6000]],
     # 'EB2401': [[-7000], [8700]],
     # 'PG2401': [[-4000], [5000]],
@@ -22,14 +22,14 @@ init_target = {
     'PP2401': [[-6800], [8000]],
 
     # 'RM2401': [[-2700], [3600]],
-    'OI2401': [[-9000], [9800]],
+    'OI2401': [[-8000], [9800]],
     'P2401': [[-6300], [8000]],
     'PK2311': [[-9300], [10800, 11000]],
     'CJ2401': [[-9900], [14000]],
     # 'CF2401': [[-16000], [17000]],
 
     # 'SP2401': [[-5050], [5500]],
-    'SF2311': [[-6740], [7400]],
+    'SF2311': [[-6740], [8000]],
     'I2401': [[-660], [880]],
     # 'JM2401': [[-1200], [1600]],
     # 'J2401': [[-2000], [3000]],
@@ -95,7 +95,7 @@ if __name__ == '__main__':
                 continue
             his_low = cont.low
             his_low_date = cont.low_date
-            low_diff = date_util.date_diff(convert_to_date(his_low_date), today)
+            low_diff = date_util.date_diff(his_low_date, today)
             his_high = cont.high
             his_high_date = cont.high_date
             high_diff = date_util.date_diff(convert_to_date(his_high_date), today)

@@ -1,0 +1,95 @@
+from zillion.stock.data import daily
+from zillion.stock.db_stock import db_manager
+from zillion.utils import date_util
+
+
+# 获取股票数据
+def get_stock_data(stock_symbol, start_date, end_date):
+    # stock = yf.Ticker(stock_symbol)
+    # data = stock.history(start=start_date, end=end_date)
+    data_df = daily.get_daily(code=stock_symbol, start_date=start_date, end_date=end_date)
+    data_df = data_df.reset_index()
+    return data_df
+
+
+# 计算每天仍然存在的缺口
+def find_existing_gaps(data):
+    gaps = []
+
+    latest = stock_data.tail(1)
+    idx = latest.index.to_numpy()[0]
+    latest_price = latest.at[idx, 'close']
+    high_list = list(data['high'])
+    low_list = list(data['low'])
+    open_list = list(data['open'])
+    date_list = list(data['date'])
+    for index, row in data.iterrows():
+        if index == len(high_list) - 1:
+            break
+        current_date = row['date']
+        current_low = low_list[index]
+        current_high = high_list[index]
+        # 寻找之后数据中的最高价和最低价
+        # next_low = min(low_list[index + 1:])
+        # next_high = max(high_list[index + 1:])
+        direction = None
+        gap_from = None
+        gap_to = None
+        gap_size = None
+        is_closed = 0
+        closed_date = None
+        closed_days = 0
+        current_price = latest_price
+        for nxt_idx in range(index, len(high_list)):
+            # 下一日
+            next_low = low_list[nxt_idx]
+            next_high = high_list[nxt_idx]
+            next_open = open_list[nxt_idx]
+            # 忽略当天回补的
+            if next_open > current_high >= next_low:
+                direction = "向上"
+                gap_from = current_high
+                gap_to = next_open
+                gap_size = round((next_open - current_high) * 100 / current_high, 2)
+                current_gap_size = round((current_high - latest_price) * 100 / latest_price, 2)
+            elif next_open < current_low <= next_high:
+                direction = "向下"
+                gap_from = current_low
+                gap_to = next_open
+                gap_size = round((next_open - current_low) * 100 / current_low, 2)
+                current_gap_size = round((current_low - latest_price) * 100 / latest_price, 2)
+            if direction is not None and (next_low <= current_high or next_high >= current_low):
+                is_closed = 1
+                closed_date = date_list[nxt_idx]
+                closed_days = date_util.date_diff(current_date, closed_date)
+                current_gap_size = 0
+                break
+        if direction is not None:
+            data_to_insert = [(row['code'], current_date, direction, round(gap_from, 2), round(gap_to, 2), gap_size,
+                               is_closed, closed_date, closed_days, float(current_price), current_gap_size)]
+            sql = "insert into gap_track (code, gap_date, direction, gap_from, gap_to, gap_size, is_closed, closed_date, " \
+                  "closed_days, current_price, current_gap_size) " \
+                  "values (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);"
+            db_manager.executemany(sql, data_to_insert)
+    return gaps
+
+
+if __name__ == "__main__":
+    codes = ['SPY', 'QQQ', 'AAPL', 'MSFT', 'GOOGL', 'AMZN', 'NVDA', 'META', 'TSLA', 'TSM', 'BABA', 'NFLX', 'AMD',
+             'INTC', 'AVGO', 'QCOM']
+    for stock_symbol in codes:
+        start_date = '2023-03-01'  # 起始日期
+        end_date = date_util.get_today()  # 结束日期
+
+        stock_data = get_stock_data(stock_symbol, start_date, end_date)
+        existing_gaps = find_existing_gaps(stock_data)
+
+        # latest = stock_data.tail(1)
+        # idx = latest.index.to_numpy()[0]
+        # latest_date = latest.at[idx, 'date']
+        # latest_price = latest.at[idx, 'close']
+        # print(f"【{stock_symbol}】缺口统计：{start_date} 至 {latest_date}, 最新价格【{latest_price}】")
+        # for date, gap_direction, gap, previous_price, next_price, room in existing_gaps:
+        #     print(f"日期：{date}, 缺口方向：{gap_direction}, 缺口大小：{gap:.2f}, "
+        #           f"缺口价格：{previous_price:.2f}-{next_price:.2f}, 缺口空间：{room:.2%}")
+        print(stock_symbol, "find_existing_gaps done!")
