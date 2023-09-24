@@ -44,14 +44,14 @@ def find_existing_gaps(data):
             next_low = low_list[nxt_idx]
             next_high = high_list[nxt_idx]
             # 忽略当天回补的
-            if next_low > current_high:
+            if direction is None and next_low > current_high:
                 direction = "向上"
                 gap_from = current_high
                 gap_to = next_low if gap_to is None or next_low < gap_to else gap_to
                 gap_size = round((next_low - current_high) * 100 / current_high, 2)
                 current_gap_size = round((current_high - latest_price) * 100 / latest_price, 2)
                 days = date_util.date_diff(current_date, latest_date)
-            elif next_high < current_low:
+            elif direction is None and next_high < current_low:
                 direction = "向下"
                 gap_from = current_low
                 gap_to = next_high if gap_to is None or next_high > gap_to else gap_to
@@ -71,8 +71,8 @@ def find_existing_gaps(data):
         if direction is not None:
             data_to_insert = [(row['code'], current_date, direction, round(gap_from, 2), round(gap_to, 2), gap_size,
                                is_closed, closed_date, days, float(current_price), float(current_gap_size))]
-            sql = "insert into gap_track (code, gap_date, direction, gap_from, gap_to, gap_size, is_closed, closed_date, " \
-                  "days, current_price, current_gap_size) " \
+            sql = "insert into gap_track (code, gap_date, direct, gap_from, gap_to, gap_size, closed, closed_date, " \
+                  "days, curt_price, curt_gap_size) " \
                   "values (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);"
             db_manager.executemany(sql, data_to_insert)
     return gaps
@@ -81,11 +81,11 @@ def find_existing_gaps(data):
 if __name__ == "__main__":
     codes = ['SPY', 'QQQ', 'AAPL', 'MSFT', 'GOOGL', 'AMZN', 'NVDA', 'META', 'TSLA', 'TSM', 'BABA', 'NFLX', 'AMD',
              'INTC', 'AVGO', 'QCOM']
-    # codes = ['SPY']
+    # codes = ['BABA']
     for stock_symbol in codes:
         db_manager.execute("delete from gap_track where code='" + stock_symbol + "'")
 
-        start_date = '2023-03-01'  # 起始日期
+        start_date = '2023-01-01'  # 起始日期
         end_date = date_util.get_today()  # 结束日期
 
         stock_data = get_stock_data(stock_symbol, start_date, end_date)
