@@ -47,7 +47,9 @@ if __name__ == "__main__":
 
         stock_data = get_stock_data(stock_symbol, start_date, end_date)
         existing_gaps = find_existing_gaps(stock_data)
-
+        if len(existing_gaps) == 0:
+            continue
+        existing_gaps.reverse()
         latest = stock_data.tail(1)
         idx = latest.index.to_numpy()[0]
         latest_date = latest.at[idx, 'date']

@@ -17,7 +17,7 @@ def find_existing_gaps(data):
     gaps = []
     latest = stock_data.tail(1)
     idx = latest.index.to_numpy()[0]
-    latest_price = latest.at[idx, 'close']
+    latest_price = round(latest.at[idx, 'close'], 2)
     latest_date = latest.at[idx, 'date']
     high_list = list(data['high'])
     low_list = list(data['low'])
@@ -26,8 +26,8 @@ def find_existing_gaps(data):
         if index == len(high_list) - 1:
             break
         current_date = row['date']
-        current_low = low_list[index]
-        current_high = high_list[index]
+        current_low = round(low_list[index], 2)
+        current_high = round(high_list[index], 2)
         # 寻找之后数据中的最高价和最低价
         # next_low = min(low_list[index + 1:])
         # next_high = max(high_list[index + 1:])
@@ -41,8 +41,8 @@ def find_existing_gaps(data):
         current_price = latest_price
         for nxt_idx in range(index + 1, len(high_list)):
             # 下一日
-            next_low = low_list[nxt_idx]
-            next_high = high_list[nxt_idx]
+            next_low = round(low_list[nxt_idx], 2)
+            next_high = round(high_list[nxt_idx], 2)
             # 忽略当天回补的
             if direction is None and next_low > current_high:
                 direction = "向上"
