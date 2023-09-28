@@ -8,11 +8,12 @@ from utils.DbManager import DbManager
 engine = create_engine("mysql+pymysql://linjingu:linjingu@127.0.0.1:3306/stock?charset=UTF8MB4")
 
 db_manager = DbManager(
-        host="localhost",
-        username="linjingu",
-        password="linjingu",
-        database="stock"
-    )
+    host="localhost",
+    username="linjingu",
+    password="linjingu",
+    database="stock"
+)
+
 
 def get_db():
     db = pymysql.connect(host='127.0.0.1', user='linjingu', passwd='linjingu', db='stock', charset='UTF8MB4')
@@ -62,5 +63,7 @@ def read_sql(sql, params):
 if __name__ == '__main__':
     # df = read_table('hist_trade_day')
     # df = read_query('select code, trade_date, close from hist_trade_day')
-    df_data = read_sql('select ts_code code, trade_date date, open, high, low, close from stock_daily_us order by trade_date', params={})
+    df_data = read_sql(
+        'select ts_code code, trade_date date, open, high, low, close from stock_daily_us order by trade_date',
+        params={})
     print(df_data)

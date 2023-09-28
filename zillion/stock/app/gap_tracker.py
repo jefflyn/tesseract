@@ -1,3 +1,4 @@
+from zillion.stock.dao.BasicUS import BasicUS
 from zillion.stock.data import daily
 from zillion.stock.db_stock import db_manager
 from zillion.utils import date_util
@@ -79,8 +80,7 @@ def find_existing_gaps(data):
 
 
 if __name__ == "__main__":
-    codes = ['SPY', 'QQQ', 'AAPL', 'MSFT', 'GOOGL', 'AMZN', 'NVDA', 'META', 'TSLA', 'TSM', 'BABA', 'NFLX', 'AMD',
-             'INTC', 'AVGO', 'QCOM']
+    codes = BasicUS.get_selected_codes()
     # codes = ['BABA']
     for stock_symbol in codes:
         db_manager.execute("delete from gap_track where code='" + stock_symbol + "'")

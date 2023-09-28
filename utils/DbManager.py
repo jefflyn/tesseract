@@ -45,7 +45,7 @@ class DbManager:
         except mysql.connector.Error as e:
             print(f"Error executing batch: {e}")
 
-    def fetch_data(self, query):
+    def query(self, query):
         if not self.conn:
             self.connect()
         try:
@@ -88,7 +88,7 @@ if __name__ == "__main__":
 
     # 查询数据
     select_data_query = "SELECT * FROM users;"
-    data = db_manager.fetch_data(select_data_query)
+    data = db_manager.query(select_data_query)
     print(data)
 
     # 关闭连接

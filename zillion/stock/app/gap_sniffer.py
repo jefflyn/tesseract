@@ -1,3 +1,4 @@
+from zillion.stock.dao.BasicUS import BasicUS
 from zillion.stock.data import daily
 from zillion.utils import date_util
 
@@ -39,8 +40,7 @@ def find_existing_gaps(data):
 
 
 if __name__ == "__main__":
-    codes = ['SPY', 'QQQ', 'AAPL', 'MSFT', 'GOOGL', 'AMZN', 'NVDA', 'META', 'TSLA', 'TSM', 'BABA', 'NFLX', 'AMD',
-             'INTC', 'AVGO', 'QCOM']
+    codes = BasicUS.get_selected_codes()
     for stock_symbol in codes:
         start_date = '2023-03-01'  # 起始日期
         end_date = date_util.get_today()  # 结束日期
@@ -49,7 +49,7 @@ if __name__ == "__main__":
         existing_gaps = find_existing_gaps(stock_data)
         if len(existing_gaps) == 0:
             continue
-        existing_gaps.reverse()
+        # existing_gaps.reverse()
         latest = stock_data.tail(1)
         idx = latest.index.to_numpy()[0]
         latest_date = latest.at[idx, 'date']
