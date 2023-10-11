@@ -14,7 +14,7 @@ pd.set_option('display.width', None)
 pd.set_option('display.max_columns', None)
 
 init_target = {
-    'SC2311': [[-450], [700]],
+    'SC2311': [[-450], [750]],
     # 'TA2401': [[-5200], [6000]],
     # 'EB2401': [[-7000], [8700]],
     # 'PG2401': [[-4000], [5000]],
@@ -29,7 +29,7 @@ init_target = {
     # 'CF2401': [[-16000], [17000]],
 
     # 'SP2401': [[-5050], [5500]],
-    'SF2311': [[-6740], [8000]],
+    'SF2312': [[-7256], [7272]],
     'I2401': [[-660], [880]],
     # 'JM2401': [[-1200], [1600]],
     # 'J2401': [[-2000], [3000]],
@@ -38,19 +38,19 @@ init_target = {
     'FG2401': [[-1400], [1800]],
 
     # 'AG2312': [[-5500], [6000]],
-    # 'SN2310': [[-200000], [228000]],
-    # 'NI2310': [[-150000], [183000]],
-    # 'AL2310': [[-17345.0], [20000]],
-    # 'SI2311': [[-12000], [13530]],
+    # 'SN2401': [[-200000], [228000]],
+    # 'NI2401': [[-150000], [183000]],
+    # 'AL2401': [[-17345.0], [20000]],
+    # 'SI2401': [[-12000], [13530]],
 }
 
 holding_cost = {
-    'TA2309': [-5946, 0], 'PP2309': [-7164, 1], 'EB2309': [8000, 0], 'PG2309': [5000, 0],
-    'FG2309': [1546, 0], 'SA2309': [1962, 4], 'SF2310': [6844, 2], 'I2309': [736, 0],
-    'UR2309': [1928, 0], 'JM2309': [1300, 0], 'J2309': [2000, 0], 'SI2308': [12550, 0],
-    'OI2309': [-9654, 1200], 'P2309': [1974, 0], 'PK2311': [9984, 0], 'RM2309': [-10524, 0],
-    'AL2308': [15000, 0], 'AG2308': [1234, 0], 'SN2308': [200000, 0], 'NI2308': [184000, 1],
-    'SP2309': [5106, 0], 'CJ2309': [10080, 0], 'NR2309': [9000, 0], 'CF2309': [-16760, 0]
+    'TA2401': [-5946, 0], 'PP2401': [-7164, 0], 'EB2401': [8000, 0], 'PG2401': [5000, 0],
+    'FG2401': [1546, 0], 'SA2401': [1962, 0], 'SF2312': [7252, 3], 'I2401': [736, 0],
+    'UR2401': [1928, 0], 'JM2401': [1300, 0], 'J2401': [2000, 0], 'SI2308': [12550, 0],
+    'OI2401': [-9654, 0], 'P2401': [1974, 0], 'PK2311': [9984, 0], 'RM2401': [-10524, 0],
+    'AL2308': [15000, 0], 'AG2312': [1234, 0], 'SN2312': [200000, 0], 'NI2312': [184000, 0],
+    'SP2401': [5106, 0], 'CJ2401': [10080, 0], 'NR2401': [9000, 0], 'CF2401': [-16760, 0]
 }
 
 
@@ -64,11 +64,12 @@ def format_realtime(df):
     # df['open'] = df['open'].apply(lambda x: future_price(x))
     # df['low'] = df['low'].apply(lambda x: '_' + future_price(x))
     # df['high'] = df['high'].apply(lambda x: '^' + future_price(x))
-    # df['change'] = df['change'].apply(lambda x: str(round(x, 2)) + '%')
+    df['change'] = df['change'].apply(lambda x: format_percent(x))
     df['close'] = df['close'].apply(lambda x: '【' + future_price(x) + '】')
     df['bid'] = df['bid'].apply(lambda x: future_price(x))
     df['ask'] = df['ask'].apply(lambda x: future_price(x))
     # df['settle'] = df['settle'].apply(lambda x: future_price(x))
+    df['pos'] = df['pos'].map(str) + '-' + df['pos_hist'].map(str)
     return df
 
 
@@ -99,8 +100,7 @@ if __name__ == '__main__':
             his_high = cont.high
             his_high_date = cont.high_date
             high_diff = date_util.date_diff(convert_to_date(his_high_date), today)
-            his_low_date = his_low_date[2:]
-            his_high_date = his_high_date[2:]
+
             realtime = trade.realtime_simple(code)
             price = realtime.iloc[0].at["close"]
             hist_pos = calc_position(price, his_low, his_high)
@@ -147,8 +147,7 @@ if __name__ == '__main__':
                 high - low) + ']'
             # realtime['diff'] = future_price(high - low)
             price_diff = float(price) - float(pre_settle)
-            realtime["change"] = format_percent(round(price_diff / float(pre_settle) * 100, 2)) \
-                                 + ' ' + future_price(price_diff)
+            realtime["change"] = round(price_diff / float(pre_settle) * 100, 2)
             open_flag = '↑' if open > pre_settle else ('↓' if open < pre_settle else ' ')
             realtime['open'] = '[' + future_price(pre_settle) + '-' + future_price(open) + ' ' \
                                + future_price(open - pre_settle) + ',' + format_percent(
@@ -167,15 +166,17 @@ if __name__ == '__main__':
                 high_dir[code] = high
                 notify_util.notify('📣' + code + ' @' + date_util.time_str(),
                                    '️🔥🔥🔥' if high >= his_high else '☀️☀️☀️', '⬆️' + str(price))
-
-            realtime["pos"] = str(position) + '-' + str(hist_pos)
+            # str(position) + '-' + str(hist_pos)
+            realtime["pos"] = position
+            realtime["pos_hist"] = hist_pos
             realtime["code"] = hl_tag + code
             # realtime["his_hl"] = '^' + future_price(his_high) + '@' + his_high_date \
             #     if hist_pos > 50 else '_' + future_price(his_low) + '@' + his_low_date
-            up_ = '[' + his_low_date + '-' + his_high_date + ',' + future_price(his_low) + '-' + future_price(
+            up_ = '[' + his_low_date[2:] + '-' + his_high_date[2:] + ',' + future_price(his_low) + '-' + future_price(
                 his_high) + ']↑' + '(' + str(round((his_high - his_low) * 100 / his_low, 2)) + ',' \
                   + format_percent(round((price - his_high) * 100 / his_high, 2)) + ')'
-            down_ = '[' + his_high_date + '-' + his_low_date + ',' + future_price(his_high) + '-' + future_price(
+            down_ = '[' + his_high_date[2:] + '-' + his_low_date[2:] + ',' + future_price(
+                his_high) + '-' + future_price(
                 his_low) + ']↓' + '(' + str(round((his_low - his_high) * 100 / his_high, 2)) + ',' \
                     + format_percent(round((price - his_low) * 100 / his_low, 2)) + ')'
             realtime["his_hl"] = up_ if his_low_date < his_high_date else down_
@@ -223,6 +224,7 @@ if __name__ == '__main__':
         realtime_df = realtime_df.drop(columns=['pre_settle'])
         realtime_df = realtime_df.drop(columns=['low'])
         realtime_df = realtime_df.drop(columns=['high'])
+        realtime_df = realtime_df.sort_values(by=['pos'], ascending=False, ignore_index=True)
         final_df = format_realtime(realtime_df)
         print(
             final_df[['code', 'open', 'change', 'lo_hi', 'close', 'bid_ask', 'pos', 'avg60d', 'his_hl',
