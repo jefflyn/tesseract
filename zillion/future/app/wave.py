@@ -359,11 +359,11 @@ def update_contract_hl():
             "where c.deleted = 0;")
 
         cursor.execute(
-            "update contract c join wave_detail wd on c.code=wd.code and c.low=wd.begin_price or c.low=wd.end_price "
+            "update contract c join wave_detail wd on c.code=wd.code and (c.low=wd.begin_price or c.low=wd.end_price) "
             "set c.low_time=case when wd.status='down' then wd.end else wd.begin end where c.deleted=0;")
 
         cursor.execute(
-            "update contract c join wave_detail wd on c.code=wd.code and c.high=wd.begin_price or c.high=wd.end_price "
+            "update contract c join wave_detail wd on c.code=wd.code and (c.high=wd.begin_price or c.high=wd.end_price) "
             "set c.high_time=case when wd.status='down' then wd.begin else wd.end end where c.deleted=0;")
 
         db.commit()

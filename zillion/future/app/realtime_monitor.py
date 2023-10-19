@@ -4,6 +4,7 @@ import time
 import pandas as pd
 from akshare.futures.symbol_var import symbol_varieties
 
+from zillion.future import future_util
 from zillion.future.domain import trade, basic, contract, nstat
 from zillion.future.future_util import calc_position
 from zillion.utils import notify_util, date_util
@@ -14,22 +15,22 @@ pd.set_option('display.width', None)
 pd.set_option('display.max_columns', None)
 
 init_target = {
-    'SC2311': [[-450], [750]],
-    # 'TA2401': [[-5200], [6000]],
+    'SC2312': [[-450], [750]],
+    'TA2401': [[-5200], [8000]],
     # 'EB2401': [[-7000], [8700]],
     # 'PG2401': [[-4000], [5000]],
     # 'NR2401': [[-9200], [10000]],
-    'PP2401': [[-6800], [8000]],
+    # 'PP2401': [[-6800], [8000]],
 
     # 'RM2401': [[-2700], [3600]],
     'OI2401': [[-8000], [9800]],
     'P2401': [[-6300], [8000]],
-    'PK2311': [[-9300], [10800, 11000]],
-    'CJ2401': [[-9900], [14000]],
+    # 'PK2311': [[-9300], [10800, 11000]],
+    # 'CJ2401': [[-9900], [14000]],
     # 'CF2401': [[-16000], [17000]],
 
     # 'SP2401': [[-5050], [5500]],
-    'SF2312': [[-7256], [7272]],
+    'SF2312': [[-6052], [7052]],
     'I2401': [[-660], [880]],
     # 'JM2401': [[-1200], [1600]],
     # 'J2401': [[-2000], [3000]],
@@ -230,4 +231,6 @@ if __name__ == '__main__':
             final_df[['code', 'open', 'change', 'lo_hi', 'close', 'bid_ask', 'pos', 'avg60d', 'his_hl',
                       'target', 't_diff', 'earning']])
         print(datetime.datetime.now())
+        if not future_util.is_trade_time():
+            break
         time.sleep(2)
