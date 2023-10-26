@@ -48,7 +48,7 @@ def do_wave(code_list=['BABA'], from_date='2022-01-01', tb_name_suffix=None):
                 # df_data = pro.us_daily(ts_code=code')
                 stock_us_daily_df = akshare.stock_us_daily(symbol=code, adjust="qfq")
             except Exception as e:
-                print(e)
+                print(code, e)
                 continue
             stock_us_daily_df['code'] = code
             stock_us_daily_df['date'] = stock_us_daily_df['date'].apply(lambda x: parse_date_str(x))
@@ -95,6 +95,6 @@ if __name__ == '__main__':
     df_data = db_stock.read_sql('select code from basic_us_selected order by id', params={})
     codes = list(df_data['code'])
     do_wave(codes)
-    df_data = db_stock.read_sql('select code from basic_us_cn', params={})
+    df_data = db_stock.read_sql('select code from basic_us_cn order by id', params={})
     codes = list(df_data['code'])
     do_wave(codes, '2020-01-01', '_cn')
