@@ -31,7 +31,7 @@ def _save_daily(code=None, trade_df=None):
             print('  >>> insert daily error:', err)
 
 
-def do_wave(code_list=['BABA']):
+def do_wave(code_list=['BABA'], from_date='2022-01-01', tb_name_suffix=None):
     print(date_util.now_str())
     ############################################################
     # code_list = ['']
@@ -44,11 +44,15 @@ def do_wave(code_list=['BABA']):
     for code in code_list:
         stock_us_daily_df = None
         if stock_us_daily_df is None or stock_us_daily_df.empty is True:
-            # df_data = pro.us_daily(ts_code=code')
-            stock_us_daily_df = akshare.stock_us_daily(symbol=code, adjust="qfq")
+            try:
+                # df_data = pro.us_daily(ts_code=code')
+                stock_us_daily_df = akshare.stock_us_daily(symbol=code, adjust="qfq")
+            except Exception as e:
+                print(e)
+                continue
             stock_us_daily_df['code'] = code
             stock_us_daily_df['date'] = stock_us_daily_df['date'].apply(lambda x: parse_date_str(x))
-        wave_daily_df = stock_us_daily_df[stock_us_daily_df['date'] > '2022-01-01']
+        wave_daily_df = stock_us_daily_df[stock_us_daily_df['date'] > from_date]
         _save_daily(code, wave_daily_df)
         wave_df = wave.get_wave(code, hist_data=wave_daily_df, begin_low=True, duration=0, change=0)
         if wave_df is not None and size >= 1:
@@ -66,24 +70,31 @@ def do_wave(code_list=['BABA']):
         print(code, size)
         size = size - 1
 
-    wave_to_db(wave_data_list, wave_detail_list)
+    wave_to_db(wave_data_list, wave_detail_list, tb_name_suffix)
     print(date_util.now_str())
 
 
-def wave_to_db(wave_list=None, wave_detail_list=None):
+def wave_to_db(wave_list=None, wave_detail_list=None, tb_name_suffix=None):
     wave_df_result = pd.DataFrame(wave_list,
                                   columns=['code', 'code', 'start', 'end', 'a', 'b', 'c', 'd', 'ap', 'bp', 'cp', 'dp',
                                            'p'])
     wave_df_result['update_time'] = date_util.now()
-    db_stock.to_db(wave_df_result, 'wave')
+    wave_tb = 'wave'
+    wave_detail_tb = 'wave_detail'
+    if tb_name_suffix is not None:
+        wave_tb = wave_tb + tb_name_suffix
+        wave_detail_tb = wave_detail_tb + tb_name_suffix
+    db_stock.to_db(wave_df_result, wave_tb)
     wave_detail_result = pd.DataFrame(pd.concat(wave_detail_list),
                                       columns=['code', 'begin', 'end', 'status', 'begin_price', 'end_price',
                                                'change', 'days'])
-    db_stock.to_db(wave_detail_result, 'wave_detail')
+    db_stock.to_db(wave_detail_result, wave_detail_tb)
 
 
 if __name__ == '__main__':
     df_data = db_stock.read_sql('select code from basic_us_selected order by id', params={})
     codes = list(df_data['code'])
-    # codes = ['LIN']
     do_wave(codes)
+    df_data = db_stock.read_sql('select code from basic_us_cn', params={})
+    codes = list(df_data['code'])
+    do_wave(codes, '2020-01-01', '_cn')
