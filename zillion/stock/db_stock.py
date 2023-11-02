@@ -29,7 +29,6 @@ def to_db(data=None, tbname=None, if_exists='replace', db_engine=None):
         # data.to_sql(name=tbname, con=engine_rds, if_exists=if_exists, index=False, index_label=None)
     else:
         data.to_sql(name=tbname, con=engine, if_exists=if_exists, index=False, index_label=None)
-        # data.to_sql(name=tbname, con=engine_rds, if_exists=if_exists, index=False, index_label=None)
 
 
 def read_table(tbname):

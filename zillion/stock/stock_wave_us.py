@@ -63,9 +63,8 @@ def do_wave(code_list=['BABA'], from_date='2022-01-01', tb_name_suffix=None):
             wave_detail_list.append(wave_df)
             wave_list.append(wave_df.tail(1).iloc[0, 5])  # end_price
             wave_list.insert(0, code)
-            wave_list.insert(1, code)
-            wave_list.insert(2, list(wave_df['begin'])[0])
-            wave_list.insert(3, list(wave_df['end'])[-1])
+            wave_list.insert(1, list(wave_df['begin'])[0])
+            wave_list.insert(2, list(wave_df['end'])[-1])
             wave_data_list.append(wave_list)
         else:
             print(code, wave_df)
@@ -77,7 +76,7 @@ def do_wave(code_list=['BABA'], from_date='2022-01-01', tb_name_suffix=None):
 
 def wave_to_db(wave_list=None, wave_detail_list=None, tb_name_suffix=None):
     wave_df_result = pd.DataFrame(wave_list,
-                                  columns=['code', 'code', 'start', 'end', 'a', 'b', 'c', 'd', 'ap', 'bp', 'cp', 'dp',
+                                  columns=['code', 'start', 'end', 'a', 'b', 'c', 'd', 'ap', 'bp', 'cp', 'dp',
                                            'p'])
     wave_df_result['update_time'] = date_util.now()
     wave_tb = 'wave'
