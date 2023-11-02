@@ -57,5 +57,5 @@ def realtime_simple(code=None):
 
 
 if __name__ == '__main__':
-    df = _realtime(code='SA0')
+    df = _realtime(code='SF0')
     print(df)

@@ -42,12 +42,14 @@ def do_wave(code_list=['BABA'], from_date='2022-01-01', tb_name_suffix=None):
     wave_detail_list = []
     size = len(code_list)
     for code in code_list:
+        print(code, size)
         stock_us_daily_df = None
         if stock_us_daily_df is None or stock_us_daily_df.empty is True:
             try:
                 # df_data = pro.us_daily(ts_code=code')
                 stock_us_daily_df = akshare.stock_us_daily(symbol=code, adjust="qfq")
             except Exception as e:
+                size = size - 1
                 print(code, e)
                 continue
             stock_us_daily_df['code'] = code
@@ -67,11 +69,10 @@ def do_wave(code_list=['BABA'], from_date='2022-01-01', tb_name_suffix=None):
             wave_data_list.append(wave_list)
         else:
             print(code, wave_df)
-        print(code, size)
         size = size - 1
 
     wave_to_db(wave_data_list, wave_detail_list, tb_name_suffix)
-    print(date_util.now_str())
+    print(date_util.now_str(), "done")
 
 
 def wave_to_db(wave_list=None, wave_detail_list=None, tb_name_suffix=None):
@@ -98,3 +99,6 @@ if __name__ == '__main__':
     df_data = db_stock.read_sql('select code from basic_us_cn order by id', params={})
     codes = list(df_data['code'])
     do_wave(codes, '2020-01-01', '_cn')
+
+    # codes = ['SVA']
+    # do_wave(codes, '2020-01-01', '_sva')
