@@ -17,39 +17,39 @@ pd.set_option('display.max_columns', None)
 init_target = {
     'SC2312': [[-450], [750]],
     'TA2401': [[-5200], [8000]],
-    # 'EB2401': [[-7000], [8700]],
-    # 'PG2401': [[-4000], [5000]],
-    # 'NR2401': [[-9200], [10000]],
-    # 'PP2401': [[-6800], [8000]],
+    'PP2401': [[-6800], [8000]],
+    'PG2312': [[-4000], [5500]],
+    'EB2312': [[-7000], [8700]],
+    'NR2401': [[-10000], [11000]],
 
-    # 'RM2401': [[-2700], [3600]],
-    'OI2401': [[-8400], [8600]],
+    'RM2401': [[-2700], [3600]],
+    'OI2401': [[-8500], [8600]],
     'P2401': [[-6300], [8000]],
-    # 'PK2311': [[-9300], [10800, 11000]],
-    # 'CJ2401': [[-9900], [14000]],
-    # 'CF2401': [[-16000], [17000]],
+    'PK2401': [[-9000], [9500]],
+    'CJ2401': [[-12000], [15000]],
+    'CF2401': [[-15000], [16000]],
 
-    # 'SP2401': [[-5050], [5500]],
-    'SF2312': [[-7050], [7150]],
-    'I2401': [[-850], [950]],
-    # 'JM2401': [[-1200], [1600]],
-    # 'J2401': [[-2000], [3000]],
-    'UR2401': [[-1600], [2400]],
-    'SA2401': [[-1400], [2200]],
-    'FG2401': [[-1400], [1800]],
+    'SF2402': [[-7000], [7100]],
+    'I2401': [[-920], [930]],
+    'JM2401': [[-1200], [2000]],
+    'J2401': [[-2000], [3000]],
+    'UR2401': [[-2400], [2500]],
+    'SA2401': [[-1800], [1900]],
+    'FG2401': [[-1650], [1750]],
+    'SP2401': [[-6000], [6200]],
 
-    # 'AG2312': [[-5500], [6000]],
-    # 'SN2401': [[-200000], [228000]],
-    # 'NI2401': [[-150000], [183000]],
-    # 'AL2401': [[-17345.0], [20000]],
-    # 'SI2401': [[-12000], [13530]],
+    'AG2402': [[-5500], [6000]],
+    # 'SN2406': [[-200000], [228000]],
+    # 'NI2406': [[-140000], [150000]],
+    'AL2312': [[-17345.0], [20000]],
+    'SI2401': [[-12000], [15000]],
 }
 
 holding_cost = {
     'TA2401': [-5946, 0], 'PP2401': [-7164, 0], 'EB2401': [8000, 0], 'PG2401': [5000, 0],
-    'FG2401': [1546, 0], 'SA2401': [1962, 0], 'SF2312': [7252, 3], 'I2401': [736, 0],
+    'FG2401': [1546, 0], 'SA2401': [1962, 0], 'SF2302': [7252, 3], 'I2401': [-931, 1],
     'UR2401': [1928, 0], 'JM2401': [1300, 0], 'J2401': [2000, 0], 'SI2308': [12550, 0],
-    'OI2401': [8625, 1000], 'P2401': [1974, 0], 'PK2311': [9984, 0], 'RM2401': [-10524, 0],
+    'OI2401': [8603, 1000], 'P2401': [1974, 0], 'PK2311': [9984, 0], 'RM2401': [-10524, 0],
     'AL2308': [15000, 0], 'AG2312': [1234, 0], 'SN2312': [200000, 0], 'NI2312': [184000, 0],
     'SP2401': [5106, 0], 'CJ2401': [10080, 0], 'NR2401': [9000, 0], 'CF2401': [-16760, 0]
 }
@@ -194,7 +194,7 @@ if __name__ == '__main__':
                     target_price = target_arr[target_dw_index]
                     if price <= abs(target_price):
                         notify_util.notify('📣' + code + ' @' + date_util.time_str(),
-                                           '🏁' + str(abs(target_price)), '🌚' + price_str)
+                                           '🏁' + str(abs(target_price)), '📉' + price_str)
                         new_target = round(target_price - target_price * 0.001)
                         if new_target not in init_target[code][0]:
                             init_target[code][0].append(new_target)
@@ -206,7 +206,7 @@ if __name__ == '__main__':
                     target_price = target_arr[target_up_index]
                     if target_price <= price:
                         notify_util.notify('📣' + code + ' @' + date_util.time_str(),
-                                           '🏁' + str(target_price), '🌝️' + price_str)
+                                           '🏁' + str(target_price), '📈' + price_str)
                         new_target = round(target_price + target_price * 0.001)
                         if new_target not in init_target[code][1]:
                             init_target[code][1].append(new_target)
@@ -225,7 +225,8 @@ if __name__ == '__main__':
         realtime_df = realtime_df.drop(columns=['pre_settle'])
         realtime_df = realtime_df.drop(columns=['low'])
         realtime_df = realtime_df.drop(columns=['high'])
-        realtime_df = realtime_df.sort_values(by=['pos'], ascending=False, ignore_index=True)
+        # change pos
+        realtime_df = realtime_df.sort_values(by=['change'], ascending=False, ignore_index=True)
         final_df = format_realtime(realtime_df)
         print(
             final_df[['code', 'open', 'change', 'lo_hi', 'close', 'bid_ask', 'pos', 'avg60d', 'his_hl',

@@ -1,3 +1,4 @@
+import akshare
 import pandas as pd
 
 from zillion.future import db_util
@@ -8,13 +9,16 @@ pd.set_option('display.max_columns', None)
 
 
 if __name__ == '__main__':
-    code_list = ['SA2309']
+    code_list = ['I2401']
 
     wave_data_list = []
     for code in code_list:
         df_data = daily.get_daily(code)[['code', 'trade_date', 'open', 'high', 'low', 'close']]
         if df_data is None or df_data.empty:
             print("no daily data found!")
+            df_data = akshare.futures_zh_daily_sina(code)
+            df_data['code'] = code
+            df_data = df_data[['code', 'date', 'open', 'high', 'low', 'close']]
         df_data.columns = ['code', 'date', 'open', 'high', 'low', 'close']
         wave_df = wave.get_wave(code, hist_data=df_data, begin_low=True, duration=0, change=0)
         wave_str = wave.wave_to_str(wave_df)
