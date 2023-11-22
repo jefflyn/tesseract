@@ -128,7 +128,11 @@ def collect_hist_daily_ak(codes=None):
     seq = 1
     collect_time = date_util.now()
     for code in codes:
-        df_data = ak.futures_zh_daily_sina(code)
+        df_data = None
+        try:
+            df_data = ak.futures_zh_daily_sina(code)
+        except Exception as e:
+            print(code + ' error:', e)
         if df_data is None or df_data.empty:
             print(code + ' no daily data!')
             continue
@@ -156,7 +160,7 @@ def collect_hist_daily_ak(codes=None):
                               settle_change,
                               row['volume'], row['hold'], collect_time])
         _save_daily(data_list)
-        print("processing " + str(seq) + "/" + str(size) + " done!")
+        print(code, "processing " + str(seq) + "/" + str(size) + " done!")
         seq += 1
 
 

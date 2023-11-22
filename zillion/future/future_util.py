@@ -5,7 +5,6 @@ import pandas as pd
 from zillion.future.db_util import get_db
 from zillion.future.db_util import read_sql
 from zillion.future.domain import trade
-from zillion.future.future_constants import *
 from zillion.utils import date_util
 
 
@@ -32,26 +31,6 @@ def is_trade_time():
                     (night_open_time <= date_util.now() <= night_close_time)
     # print(current_time, day_open_time, day_close_time, night_open_time, night_close_time, is_trade_time)
     return is_trade_time
-
-
-def get_future_basics(type=None, night=None, on_target=None):
-    '''
-    查询商品合约详情，不包含金融产品
-    :param type:
-    :param night:
-    :param on_target:
-    :return:
-    '''
-    sql = "select * from basic where deleted = 0 "
-    if on_target is True:
-        sql += 'and target = :on_target '
-    if type is not None and type not in ['tar', 'all']:
-        sql += 'and goods_type = :type '
-    if night is not None:
-        sql += 'and night = :night '
-    params = {'type': GOODS_TYPE_MAP.get(type), 'night': night, 'on_target': 1}
-    df = read_sql(sql, params=params)
-    return df
 
 
 def add_realtime_data(codes=None, daily_df=None):

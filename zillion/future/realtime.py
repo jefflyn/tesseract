@@ -6,6 +6,7 @@ import requests
 
 from zillion.future import future_util, db_util
 from zillion.future.db_util import get_db
+from zillion.future.domain import basic
 from zillion.future.future_constants import *
 from zillion.utils import date_util
 from zillion.utils import notify_util
@@ -51,7 +52,7 @@ def re_exe(interval=10, group_type=None, sort_by=None):
     on_target = (group_type is None or group_type == 'tar')
     while True:
         is_trade_time = future_util.is_trade_time()
-        future_basics = future_util.get_future_basics(type=group_type, on_target=on_target)
+        future_basics = basic.get_future_basics(type=group_type, on_target=on_target)
         future_name_list = list(future_basics['name'])
         codes = ','.join(['nf_' + e for e in list(future_basics['symbol'])])
         req_url = 'https://hq.sinajs.cn/list='

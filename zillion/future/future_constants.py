@@ -30,3 +30,7 @@ GOODS_TYPE_MAP = {
     'nfm': NON_FERROUS_METAL,
     'fi': FINANCIAL
 }
+
+EXCHANGE_ALIAS_MAP = {
+    'cffex': 'CFFE', 'dce': 'DCE', 'czce': 'ZCE', 'shfe': 'SHF', 'gfex': 'GFE'
+}

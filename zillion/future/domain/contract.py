@@ -75,8 +75,8 @@ def save_contract(values=None, hist=False):
         table_name = 'contract' if hist is False else 'contract_hist'
         try:
             insert_sql = 'INSERT INTO ' + table_name + ' (symbol, code, ts_code, main, low, high, low_time, high_time, ' \
-                                                       'selected, create_time, update_time, deleted) VALUES ' \
-                                                       '(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)'
+                                                       'h_low, h_high, h_low_time, h_high_time, selected, create_time, update_time, deleted) VALUES ' \
+                                                       '(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)'
             cursor.executemany(insert_sql, values)
             db.commit()
         except Exception as err:

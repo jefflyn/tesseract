@@ -2,10 +2,11 @@ import requests
 
 from zillion.future import future_util
 from zillion.future.db_util import get_db
+from zillion.future.domain import basic
 from zillion.utils import date_util
 
 last_trade_date = date_util.get_previous_trade_day()
-future_basics = future_util.get_future_basics()
+future_basics = basic.get_future_basics()
 last_trade_data = future_util.get_future_daily(trade_date=last_trade_date)
 last_trade_data_names = list(last_trade_data['name'])
 last_trade_data.index = last_trade_data_names
