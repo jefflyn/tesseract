@@ -11,7 +11,7 @@ if __name__ == '__main__':
     trade_date = date_util.get_today()
     # trade_date = '2023-01-20'
     # 连续
-    code_list = contract.get_main_contract_code()
+    code_list = contract.get_0_contract_code()
     daily.collect_daily_ak(code_list, trade_date)
 
     contract_df = contract.get_local_contract()

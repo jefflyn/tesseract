@@ -337,7 +337,7 @@ def get_wave_list(wave_str=None, size=4):
 
 def wave_to_db(wave_list=None, wave_detail_list=None):
     wave_df_result = pd.DataFrame(wave_list,
-                                  columns=['code', 'code', 'start', 'end', 'a', 'b', 'c', 'd', 'ap', 'bp', 'cp', 'dp',
+                                  columns=['code', 'start', 'end', 'a', 'b', 'c', 'd', 'ap', 'bp', 'cp', 'dp',
                                            'p'])
     wave_df_result['update_time'] = date_util.now()
     _dt.to_db(wave_df_result, 'wave')
@@ -381,7 +381,7 @@ def get_high_low():
 def redo_wave():
     print(date_util.now_str())
     ############################################################
-    mian_codes = contract.get_main_contract_code()
+    mian_codes = contract.get_0_contract_code()
     codes = list(contract.get_local_contract()['code'])
     code_list = mian_codes + codes
     ############################################################
@@ -403,16 +403,15 @@ def redo_wave():
         wave_list = get_wave_list(wave_str)
         wave_list.append(wave_df.tail(1).iloc[0, 5])  # end_price
         wave_list.insert(0, code)
-        wave_list.insert(1, code.split('.')[0])
-        wave_list.insert(2, list(wave_df['begin'])[0])
-        wave_list.insert(3, list(wave_df['end'])[-1])
+        wave_list.insert(1, list(wave_df['begin'])[0])
+        wave_list.insert(2, list(wave_df['end'])[-1])
         wave_data_list.append(wave_list)
         # print(result)
         # print(wave_str)
         # wave_ab = get_wave_ab(wave_str, 33)
         # print(wave_ab)
         # print('get_wave_ab_fast', get_wave_ab_fast(wave_str))
-        print(size)
+        print(size, code)
         size = size - 1
 
     wave_to_db(wave_data_list, wave_detail_list)

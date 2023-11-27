@@ -165,7 +165,7 @@ def collect_hist_daily_ak(codes=None):
 
 
 if __name__ == '__main__':
-    # collect_hist_daily_ak(["A2305"])
-    collect_daily_ak(["SA2305"], cons.get_latest_data_date(date_util.now()))
+    collect_hist_daily_ak(["SA2405"])
+    collect_daily_ak(["SA2405"], cons.get_latest_data_date(date_util.now()))
 
 

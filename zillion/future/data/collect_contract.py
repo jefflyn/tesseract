@@ -48,7 +48,7 @@ if __name__ == '__main__':
             main_contract_map[symbol] = main_code
             if main_code not in contract_codes:
                 ts_code = main_code + '.' + exchange_ts
-                contract.save_contract([[symbol, main_code, ts_code, 1, 0, 0, None, None, 0, 0, None, None, 1,
+                contract.save_contract([[symbol, main_code, ts_code, 1, 0, 0, '', '', 0, 0, '', '', 1,
                                          time_now, time_now, 0]])
                 print("add new contract hist daily:", main_code)
                 daily.collect_hist_daily_ak([main_code])

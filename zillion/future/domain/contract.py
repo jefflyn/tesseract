@@ -1,6 +1,5 @@
 import zillion.future.db_util as _dt
 from zillion.future.db_util import read_sql
-from zillion.future.domain import basic
 
 # 建立数据库连接
 db = _dt.get_db("future")
@@ -55,13 +54,12 @@ contract_df = get_local_contract()
 refresh_contract_map(contract_df)
 
 
-def get_main_contract_code():
+def get_0_contract_code():
     '''
     连续合约
     :return:
     '''
-    symbol_exchange_map = basic.symbol_exchange_map(None)
-    return [symbol + '0' for symbol in symbol_exchange_map.keys()]
+    return [symbol + '0' for symbol in list(contract_df['symbol'])]
 
 
 def pre_main_contract(code, main):
@@ -80,7 +78,7 @@ def save_contract(values=None, hist=False):
             cursor.executemany(insert_sql, values)
             db.commit()
         except Exception as err:
-            print('  >>> insert error:', table_name, err)
+            print('  >>> insert error:', table_name, err, values)
 
 
 def update_contract_main(code):
