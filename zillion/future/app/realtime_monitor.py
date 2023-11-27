@@ -91,21 +91,23 @@ if __name__ == '__main__':
     while True:
         realtime_df = None
         for code in init_target.keys():
-            cont = contract_map.get(code)
+            contrac = contract_map.get(code)
             nst = nstat_map.get(code)
-            if cont is None:
+            if contrac is None:
                 print(code + ' is not in contract list!!!')
                 continue
-            his_low = cont.low
-            his_low_date = cont.low_date
-            low_diff = date_util.date_diff(his_low_date, today)
-            his_high = cont.high
-            his_high_date = cont.high_date
-            high_diff = date_util.date_diff(convert_to_date(his_high_date), today)
+            c_low = contrac.low
+            c_low_date = contrac.low_date
+            low_diff = date_util.date_diff(c_low_date, today)
+            c_high = contrac.high
+            c_high_date = contrac.high_date
+            high_diff = date_util.date_diff(convert_to_date(c_high_date), today)
+            h_low = contrac.h_low
+            h_high = contrac.h_high
 
             realtime = trade.realtime_simple(code)
             price = realtime.iloc[0].at["close"]
-            hist_pos = calc_position(price, his_low, his_high)
+            hist_pos = calc_position(price, c_low, c_high)
             pre_settle = realtime.iloc[0].at["pre_settle"]
             open = realtime.iloc[0].at["open"]
             high = realtime.iloc[0].at["high"]
@@ -113,12 +115,12 @@ if __name__ == '__main__':
             bid = realtime.iloc[0].at["bid"]
             ask = realtime.iloc[0].at["ask"]
             hl_tag = '!' if low_diff < 8 or high_diff < 8 else ''
-            hl_tag = '_' if low <= his_low else '^' if high >= his_high else hl_tag
-            if low < his_low:
-                contract.update_contract_hl(code, low, date_util.now_str(), None, None)
+            hl_tag = '_' if low <= c_low else '^' if high >= c_high else hl_tag
+            if low < c_low:
+                contract.update_hl(code, low, date_util.now_str(), None, None)
                 print(code, "update hist low to contract")
-            if high > his_high:
-                contract.update_contract_hl(code, None, None, high, date_util.now_str())
+            if high > c_high:
+                contract.update_hl(code, None, None, high, date_util.now_str())
                 print(code, "update hist high to contract")
 
             earning = ''
@@ -163,25 +165,27 @@ if __name__ == '__main__':
             if position == 0 and low_dir.get(code) > low:
                 low_dir[code] = low
                 notify_util.notify('📣' + code + ' @' + date_util.time_str(),
-                                   '❄️❄️❄️' if low <= his_low else '🌧🌧🌧', '⬇️' + str(price))
+                                   '❄️❄️❄️' if low <= c_low else '🌧🌧🌧', '⬇️' + str(price))
             elif position == 100 and high_dir.get(code) < high:
                 high_dir[code] = high
                 notify_util.notify('📣' + code + ' @' + date_util.time_str(),
-                                   '️🔥🔥🔥' if high >= his_high else '☀️☀️☀️', '⬆️' + str(price))
+                                   '️🔥🔥🔥' if high >= c_high else '☀️☀️☀️', '⬆️' + str(price))
             # str(position) + '-' + str(hist_pos)
             realtime["pos"] = position
             realtime["pos_hist"] = hist_pos
             realtime["code"] = hl_tag + code
             # realtime["his_hl"] = '^' + future_price(his_high) + '@' + his_high_date \
             #     if hist_pos > 50 else '_' + future_price(his_low) + '@' + his_low_date
-            up_ = '[' + his_low_date[4:] + '~' + his_high_date[4:] + ',' + future_price(his_low) + '-' + future_price(
-                his_high) + ']↑' + '(' + str(round((his_high - his_low) * 100 / his_low, 2)) + ',' \
-                  + format_percent(round((price - his_high) * 100 / his_high, 2)) + ')'
-            down_ = '[' + his_high_date[4:] + '~' + his_low_date[4:] + ',' + future_price(
-                his_high) + '-' + future_price(
-                his_low) + ']↓' + '(' + str(round((his_low - his_high) * 100 / his_high, 2)) + ',' \
-                    + format_percent(round((price - his_low) * 100 / his_low, 2)) + ')'
-            realtime["his_hl"] = up_ if his_low_date < his_high_date else down_
+            up_ = '[' + c_low_date[4:] + '~' + c_high_date[4:] + ',' + future_price(c_low) + '-' + future_price(
+                c_high) + ']↑' + '(' + str(round((c_high - c_low) * 100 / c_low, 2)) + ',' \
+                  + format_percent(round((price - c_high) * 100 / c_high, 2)) + ')'
+            down_ = '[' + c_high_date[4:] + '~' + c_low_date[4:] + ',' + future_price(
+                c_high) + '-' + future_price(
+                c_low) + ']↓' + '(' + str(round((c_low - c_high) * 100 / c_high, 2)) + ',' \
+                    + format_percent(round((price - c_low) * 100 / c_low, 2)) + ')'
+            realtime["ct_hl"] = up_ if c_low_date < c_high_date else down_
+            realtime["hist_hl"] = ('[' + future_price(h_low) + '-' + future_price(h_high)
+                                   + ' ' + str(calc_position(price, h_low, h_high)) + ']')
 
             target_list = init_target.get(code)
             target_diff = []
@@ -230,8 +234,8 @@ if __name__ == '__main__':
         realtime_df = realtime_df.sort_values(by=['pos'], ascending=True, ignore_index=True)
         final_df = format_realtime(realtime_df)
         print(
-            final_df[['code', 'open', 'change', 'lo_hi', 'close', 'bid_ask', 'pos', 'avg60d', 'his_hl',
-                      'target', 't_diff', 'earning']])
+            final_df[['code', 'open', 'change', 'lo_hi', 'close', 'bid_ask', 'pos', 'code', 'avg60d', 'ct_hl', 'hist_hl', 'earning']])
+                   ###   'target', 't_diff', 'earning']])
         print(datetime.datetime.now())
         if not future_util.is_trade_time():
             break

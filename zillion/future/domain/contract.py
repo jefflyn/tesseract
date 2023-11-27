@@ -15,14 +15,18 @@ class Contract:
     low_date = ''
     high = 0
     high_date = ''
+    h_low = 0
+    h_high = 0
 
-    def __init__(self, symbol, code, low, low_date, high, high_date):
+    def __init__(self, symbol, code, low, low_date, high, high_date, h_low, h_high):
         self.symbol = symbol
         self.code = code
         self.low = low
         self.low_date = low_date
         self.high = high
         self.high_date = high_date
+        self.h_low = h_low
+        self.h_high = h_high
 
 
 def get_local_contract(symbol=None, code=None, main=False, selected=False):
@@ -47,7 +51,8 @@ def refresh_contract_map(contract_df):
     for index, row in contract_df.iterrows():
         contract_map[index] = Contract(row['symbol'], row['code'],
                                        row['low'], row['low_time'].replace('-', '')[0:8],
-                                       row['high'], row['high_time'].replace('-', '')[0:8])
+                                       row['high'], row['high_time'].replace('-', '')[0:8],
+                                       row['h_low'], row['h_high'])
 
 
 contract_df = get_local_contract()
@@ -87,13 +92,24 @@ def update_contract_main(code):
     db.commit()
 
 
-def update_contract_hl(code, low=None, low_time=None, high=None, high_time=None):
-    if low is not None and low_time is not None:
-        sql = "update contract set low=%f, low_time='%s', update_time=now() where code='%s'"
-        result = cursor.execute(sql % (low, low_time, code))
-    if high is not None and high_time is not None:
-        sql = "update contract set high=%f, high_time='%s', update_time=now() where code='%s'"
-        result = cursor.execute(sql % (high, high_time, code))
+def update_hl(code, low=None, low_time=None, high=None, high_time=None, update_hist=False):
+    result = 0
+    if update_hist:
+        if low is not None and low_time is not None:
+            sql = "update contract set h_low=%f, h_low_time='%s', update_time=now() where code='%s'"
+            result = cursor.execute(sql % (low, low_time, code))
+            print('hist low !!!')
+        if high is not None and high_time is not None:
+            sql = "update contract set h_high=%f, h_high_time='%s', update_time=now() where code='%s'"
+            result += cursor.execute(sql % (high, high_time, code))
+            print('hist high !!!')
+    else:
+        if low is not None and low_time is not None:
+            sql = "update contract set low=%f, low_time='%s', update_time=now() where code='%s'"
+            result = cursor.execute(sql % (low, low_time, code))
+        if high is not None and high_time is not None:
+            sql = "update contract set high=%f, high_time='%s', update_time=now() where code='%s'"
+            result += cursor.execute(sql % (high, high_time, code))
     db.commit()
     refresh_contract_map(get_local_contract(code=code))
     return result

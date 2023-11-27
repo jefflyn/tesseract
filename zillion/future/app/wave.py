@@ -347,7 +347,7 @@ def wave_to_db(wave_list=None, wave_detail_list=None):
     _dt.to_db(wave_detail_result, 'wave_detail')
 
 
-def update_contract_hl():
+def update_contract_hl_sql():
     # 建立数据库连接
     db = _dt.get_db("future")
     # 使用cursor()方法创建一个游标对象
@@ -416,7 +416,7 @@ def redo_wave():
 
     wave_to_db(wave_data_list, wave_detail_list)
     print(date_util.now_str())
-    update_contract_hl()
+    update_contract_hl_sql()
 
 
 if __name__ == '__main__':
