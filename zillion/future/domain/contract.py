@@ -59,7 +59,7 @@ def get_0_contract_code():
     连续合约
     :return:
     '''
-    return [symbol + '0' for symbol in list(contract_df['symbol'])]
+    return [symbol + '0' for symbol in set(contract_df['symbol'])]
 
 
 def pre_main_contract(code, main):
