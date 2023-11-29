@@ -421,4 +421,3 @@ def redo_wave():
 
 if __name__ == '__main__':
     redo_wave()
-    # update_contract_hl()

@@ -93,14 +93,20 @@ def collect_daily_ak(codes=None, trade_date=None):
     for code in codes:
         # df_data = all_daily_df[(all_daily_df.symbol.str.upper() == code) & (all_daily_df.date == trade_date)]
         df_data = trade.realtime_for_daily(code)
-        realtime_date = date_util.parse_date_str(df_data.head(1).loc[0, 'date'])
-        if df_data is None or df_data.empty or date_util.parse_date_str(trade_date) != realtime_date:
+        if df_data is None or df_data.empty:
             print(code + ' no daily data!')
             continue
-        pre_close = last_trade_data.loc[code, 'close'] if last_trade_data.empty is False else None
-        if pre_close is None:
-            print(code, " pre daily data is empty!")
+        # realtime_date = date_util.parse_date_str(df_data.head(1).loc[0, 'date'])
+        # if df_data is None or df_data.empty or date_util.parse_date_str(trade_date) != realtime_date:
+        #     print(code + ' no daily data!')
+        #     continue
+        df_index = list(last_trade_data.index)
+        if code not in df_index:
+            print(code, " pre daily data not found! Refresh hist data!")
+            collect_hist_daily_ak([code])
             continue
+        pre_close = last_trade_data.loc[code, 'close'] if last_trade_data.empty is False else None
+
 
         df_data['pre_close'] = pre_close
         data_list = []
