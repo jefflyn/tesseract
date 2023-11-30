@@ -83,21 +83,24 @@ if __name__ == '__main__':
         last_cls_change = 0
         last_settle_change = 0
         close_change_n_list = []
+        size = last_n_data.values.size
         for index, row in last_n_data.iterrows():
             if index == 0:
                 last_close = row['close']
                 last_cls_change = round((last_close - row['pre_close']) * 100 / row['pre_close'], 2)
                 last_settle_change = round((last_close - row['pre_settle']) * 100 / row['pre_settle'], 2)
-            elif index == 2:
+            elif index == 2 and len(close_change_n_list) == 0:
                 close_change_n_list.append(round((last_close - row['close']) * 100 / row['close'], 2))
-            elif index == 4:
+            elif index == 4 and len(close_change_n_list) == 1:
                 close_change_n_list.append(round((last_close - row['close']) * 100 / row['close'], 2))
-            elif index == 6:
+            elif index == 6 and len(close_change_n_list) == 2:
                 close_change_n_list.append(round((last_close - row['close']) * 100 / row['close'], 2))
-
             close_change = row['close'] - row['pre_close']
             settle_change = row['close'] - row['pre_settle']
-
+        if len(close_change_n_list) == 1:
+            close_change_n_list.append(close_change_n_list[0])
+        if len(close_change_n_list) == 2:
+            close_change_n_list.append(close_change_n_list[1])
         last_cls_change_list = list(last_n_data['close_diff'])
         n_list = get_n(last_cls_change_list)
         p5t10 = round((avg5d - avg10d) * 100 / avg10d, 2)
@@ -110,8 +113,8 @@ if __name__ == '__main__':
                       + [round(price, 1), round(settle, 1), round(avg5d), round(avg10d), round(avg20d), round(avg60d)]
                       + [p5t10, pt5, pt10, pt20, pt60, trend_up, hist_pos] + [str(last_cls_change_list)])
 
-    df = pd.DataFrame(result, columns=['code', 'close_change', 'settle_change', 'up', 'days', '3d_change',
-                                       '5d_change', '7d_change',
+    df = pd.DataFrame(result, columns=['code', 'close_change', 'settle_change', 'up', 'days',
+                                       '3d_change', '5d_change', '7d_change',
                                        'price', 'settle', 'avg5d', 'avg10d', 'avg20d', 'avg60d',
                                        'p5t10', 'pt5', 'pt10', 'pt20', 'pt60', 'trend_up', 'hist_pos', 'change_list'])
     df['update_time'] = date_util.now()

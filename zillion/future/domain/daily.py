@@ -138,7 +138,7 @@ def collect_hist_daily_ak(codes=None):
         try:
             df_data = ak.futures_zh_daily_sina(code)
         except Exception as e:
-            print(code + ' error:', e)
+            print(code + ' futures_zh_daily_sina error:', e)
         if df_data is None or df_data.empty:
             print(code + ' no daily data!')
             continue

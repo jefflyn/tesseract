@@ -1,4 +1,5 @@
 import datetime
+import statistics
 import time
 
 import pandas as pd
@@ -10,6 +11,7 @@ from zillion.future.future_util import calc_position
 from zillion.utils import notify_util, date_util
 from zillion.utils.date_util import convert_to_date
 from zillion.utils.price_util import future_price
+from zillion.utils.redis_util import redis_client
 
 pd.set_option('display.width', None)
 pd.set_option('display.max_columns', None)
@@ -22,9 +24,9 @@ init_target = {
     'EB2401': [[-7000], [8800]],
     'NR2401': [[-10000], [12000]],
 
-    'SF2402': [[-6850], [6950]],
-    'I2401': [[-940], [1000]],
-    'I2405': [[-900], [1000]],
+    'SF2402': [[-6818], [6868]],
+    'I2401': [[-900], [1000]],
+    'I2405': [[-850], [950]],
     'JM2401': [[-1200], [2500]],
     'J2401': [[-2000], [3000]],
     'UR2401': [[-2240], [2450]],
@@ -39,19 +41,19 @@ init_target = {
     # 'AL2312': [[-17345.0], [20000]],
     # 'SI2401': [[-12000], [15000]],
 
-    'RM2401': [[-2750], [3000]],
+    'RM2401': [[-2840], [2850]],
     'OI2401': [[-8400], [8888]],
     'P2401': [[-6300], [8000]],
-    'PK2401': [[-8000], [9500]],
+    'PK2403': [[-8600], [9500]],
     'CJ2401': [[-14000], [15600]],
     'CF2401': [[-14500], [16200]],
 }
 
 holding_cost = {
-    'TA2401': [5752, 9], 'PP2401': [-7164, 0], 'EB2401': [8000, 0], 'PG2401': [5000, 0],
+    'TA2401': [5752, 0], 'PP2401': [-7164, 0], 'EB2401': [8000, 0], 'PG2401': [5000, 0],
     'FG2401': [1546, 0], 'SA2401': [2015, 3], 'SF2402': [6986, 3], 'I2401': [-931, 0],
     'UR2401': [-2373, 0], 'JM2401': [1300, 0], 'J2401': [2000, 0], 'SI2308': [12550, 0],
-    'OI2401': [-8830, 0], 'P2401': [1974, 0], 'PK2401': [9014, 0], 'RM2401': [2898, 0],
+    'OI2401': [-8830, 0], 'P2401': [1974, 0], 'PK2401': [9014, 0], 'RM2401': [2898, 4],
     'AL2308': [15000, 0], 'AG2312': [1234, 0], 'SN2312': [200000, 0], 'NI2312': [184000, 0],
     'SP2401': [-6156, 0], 'CJ2401': [-15230, 0], 'NR2401': [9000, 0], 'CF2401': [-16760, 0]
 }
@@ -145,9 +147,12 @@ if __name__ == '__main__':
             if target_up_index_dir.get(code) is None:
                 target_up_index_dir[code] = 0
                 low_dir[code] = low
+            change5d = nstat.get_attr(nst, '5d_change')
             avg60d = price if nst is None else nstat.get_attr(nst, 'avg60d')
+
             pt60 = round((price - avg60d) * 100 / avg60d, 2)
             realtime['avg60d'] = '(' + str(avg60d) + ',' + format_percent(pt60) + ')'
+            realtime['5d_chg'] = str(change5d) + '%'
             realtime['lo_hi'] = '[' + future_price(low) + '-' + future_price(high) + ' ' + future_price(
                 high - low) + ']'
             # realtime['diff'] = future_price(high - low)
@@ -233,11 +238,18 @@ if __name__ == '__main__':
         realtime_df = realtime_df.drop(columns=['high'])
         # change pos
         realtime_df = realtime_df.sort_values(by=['pos'], ascending=True, ignore_index=True)
+        # index ##
+        now_time = datetime.datetime.now()
+        key = 'index-' + date_util.curt_date
+        if now_time.minute in [0, 10, 20, 30, 40, 50]:
+            avg_ch = str(round(statistics.mean(list(realtime_df['change'])), 2)) + ''
+            redis_client.rpush(key, avg_ch)
+        # index end
         final_df = format_realtime(realtime_df)
         print(
-            final_df[['code', 'open', 'change', 'lo_hi', 'close', 'bid_ask', 'pos', 'code', 'avg60d', 'ct_hl', 'hist_hl', 'earning']])
+            final_df[['code', 'open', 'change', 'lo_hi', 'close', 'bid_ask', 'pos', 'code', '5d_chg', 'avg60d', 'ct_hl', 'hist_hl', 'earning']])
                    ###   'target', 't_diff', 'earning']])
-        print(datetime.datetime.now())
+        print(now_time, str(redis_client.lrange(key, 0, -1)))
         if not future_util.is_trade_time():
             break
         time.sleep(2)
