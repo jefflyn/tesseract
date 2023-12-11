@@ -40,7 +40,7 @@ def get_local_contract(symbol=None, code=None, main=False, selected=False):
     if selected is True:
         sql += 'and selected = 1 '
     params = {'symbol': symbol, 'code': code, 'main': main, 'selected': selected}
-    df = read_sql(sql, params=params)
+    df = read_sql(_dt.DB_FUTURE, sql, params=params)
     # df['low_time'] = np.where(df.low_time.notnull(), df.low_time, None)
     # df['high_time'] = np.where(df.high_time.notnull(), df.high_time, None)
     df.index = df["code"]

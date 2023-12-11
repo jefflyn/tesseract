@@ -24,14 +24,12 @@ init_target = {
     'EB2401': [[-7000], [8800]],
     'NR2402': [[-10000], [12000]],
 
-    'SF2402': [[-6800], [6850]],
-    'I2401': [[-900], [1000]],
-    'I2405': [[-850], [950]],
+    'SF2402': [[-6600], [7000]],
+    'I2405': [[-850], [990]],
     'JM2401': [[-1200], [2500]],
     'J2401': [[-2000], [3000]],
-    'UR2401': [[-2240], [2450]],
-    'SA2401': [[-2200], [2700]],
-    'SA2405': [[-1800], [2200]],
+    'UR2401': [[-2240], [2500]],
+    'SA2405': [[-1800], [2400]],
     'FG2401': [[-1650], [18700]],
     'SP2401': [[-5000], [6100]],
 
@@ -41,8 +39,8 @@ init_target = {
     # 'AL2312': [[-17345.0], [20000]],
     # 'SI2401': [[-12000], [15000]],
 
-    'RM2401': [[-2760], [2800]],
-    'OI2401': [[-8300], [8888]],
+    'RM2401': [[-2760], [2900]],
+    'OI2401': [[-8000], [8888]],
     'P2401': [[-6300], [8000]],
     'PK2403': [[-8600], [9500]],
     'CJ2405': [[-14000], [16000]],
@@ -245,7 +243,7 @@ if __name__ == '__main__':
         realtime_df = realtime_df.drop(columns=['low'])
         realtime_df = realtime_df.drop(columns=['high'])
         # change pos
-        realtime_df = realtime_df.sort_values(by=['pos'], ascending=True, ignore_index=True)
+        realtime_df = realtime_df.sort_values(by=['pos'], ascending=False, ignore_index=True)
         # index ##
         now_time = datetime.datetime.now()
         hour_minute = str(now_time.hour) + '' + str(now_time.minute)

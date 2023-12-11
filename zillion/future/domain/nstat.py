@@ -24,7 +24,7 @@ def get_attr(nstat_obj, attr_name):
 
 def get_all_stat():
     sql = "select * from n_stat"
-    df = _dt.read_query(sql)
+    df = _dt.read_query(_dt.DB_FUTURE, sql)
     df.index = df["code"]
     for index, row in df.iterrows():
         # print(row.index.values)

@@ -10,7 +10,7 @@ cursor = db.cursor()
 
 def get_all():
     sql = "select * from basic"
-    return read_sql(sql, params={})
+    return read_sql(_dt.DB_FUTURE, sql, params={})
 
 
 def get_future_basics(type=None, night=None, on_target=None):
@@ -29,7 +29,7 @@ def get_future_basics(type=None, night=None, on_target=None):
     if night is not None:
         sql += 'and night = :night '
     params = {'type': GOODS_TYPE_MAP.get(type), 'night': night, 'on_target': 1}
-    df = read_sql(sql, params=params)
+    df = read_sql(_dt.DB_FUTURE, sql, params=params)
     df.index = df["symbol"]
     return df
 
