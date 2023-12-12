@@ -26,7 +26,7 @@ def get_daily(code=None, trade_date=None, start_date=None, end_date=None):
         sql += 'and date <=:end '
     params = {'codes': code, 'trade_date': trade_date, 'start': start_date, 'end': end_date}
 
-    df = read_sql(sql, params=params)
+    df = read_sql(_dt.DB_STOCK, sql, params=params)
     df.index = list(df['code'])
     return df
 
