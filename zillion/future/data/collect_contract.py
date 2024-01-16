@@ -66,6 +66,8 @@ if __name__ == '__main__':
             if symbol not in symbol_list:
                 print(symbol, "add to basic")
                 basic.add_basic([symbol, '', exchange_ts, time_now])
+            if main_code=='M2405':
+                print('')
             update_contract_hl(main_code)
     # print(main_contract_map)
     if len(contract_codes) == 0:

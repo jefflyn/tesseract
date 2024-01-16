@@ -120,7 +120,7 @@ if __name__ == '__main__':
             bid = realtime.iloc[0].at["bid"]
             ask = realtime.iloc[0].at["ask"]
             hl_tag = '!' if low_diff < 8 or high_diff < 8 else ''
-            hl_tag = '_' if low <= c_low else '^' if high >= c_high else hl_tag
+            hl_tag = '_' if low <= c_low else ('^' if high >= c_high else hl_tag)
             if low < c_low:
                 contract.update_hl(code, low, date_util.now_str(), None, None)
                 print(code, "update contract low!")
