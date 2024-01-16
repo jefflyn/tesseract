@@ -118,4 +118,4 @@ if __name__ == '__main__':
                                        'price', 'settle', 'avg5d', 'avg10d', 'avg20d', 'avg60d',
                                        'p5t10', 'pt5', 'pt10', 'pt20', 'pt60', 'trend_up', 'hist_pos', 'change_list'])
     df['update_time'] = date_util.now()
-    db_util.to_db(df, 'n_stat', if_exists='replace')
+    db_util.to_db(df, 'n_stat', if_exists='replace', db_name='future')

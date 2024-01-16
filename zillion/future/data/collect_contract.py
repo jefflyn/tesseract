@@ -63,10 +63,10 @@ if __name__ == '__main__':
                                          time_now, time_now, 0]])
                 print("add new contract hist daily:", main_code)
                 daily.collect_hist_daily_ak([main_code])
-                update_contract_hl(main_code)
             if symbol not in symbol_list:
                 print(symbol, "add to basic")
                 basic.add_basic([symbol, '', exchange_ts, time_now])
+            update_contract_hl(main_code)
     # print(main_contract_map)
     if len(contract_codes) == 0:
         print('done!!!')

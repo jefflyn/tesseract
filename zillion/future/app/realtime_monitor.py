@@ -18,19 +18,19 @@ pd.set_option('display.max_columns', None)
 # nohup redis-server /Users/ruian/etc/redis.conf &
 init_target = {
     'SC2402': [[-450], [750]],
-    'TA2405': [[-5600], [5800]],
+    'TA2405': [[-5500], [6000]],
     'PP2405': [[-6800], [8000]],
     'PG2402': [[-4000], [5500]],
     'EB2402': [[-7000], [8800]],
-    'NR2402': [[-10000], [12000]],
+    'NR2403': [[-10000], [12000]],
 
-    'SF2402': [[-6600], [7000]],
-    'I2405': [[-850], [990]],
+    'SF2403': [[-6600], [6750]],
+    'I2405': [[-920], [1030]],
     'JM2405': [[-1200], [2500]],
     'J2405': [[-2000], [3000]],
-    'UR2405': [[-2240], [2500]],
+    'UR2405': [[-2020], [2100]],
     'SA2405': [[-1800], [2400]],
-    'FG2405': [[-1650], [18700]],
+    'FG2405': [[-1650], [1870]],
     'SP2405': [[-5000], [6100]],
 
     # 'AG2402': [[-5500], [6000]],
@@ -39,21 +39,24 @@ init_target = {
     # 'AL2312': [[-17345.0], [20000]],
     # 'SI2401': [[-12000], [15000]],
 
-    'RM2405': [[-2760], [2900]],
-    'OI2405': [[-8000], [8888]],
+    'RM2403': [[-2500], [2900]],
+    'OI2405': [[-7700], [8000]],
     'P2405': [[-6300], [8000]],
     'PK2403': [[-8600], [9500]],
-    'CJ2405': [[-14000], [16000]],
+    'CJ2405': [[-13000], [16000]],
     'CF2405': [[-14500], [16200]],
+
+    'EC2404': [[-1700], [2300]]
 }
 
 holding_cost = {
     'TA2401': [5752, 0], 'PP2401': [-7164, 0], 'EB2401': [8000, 0], 'PG2401': [5000, 0],
-    'FG2401': [1546, 0], 'SA2401': [2015, 3], 'SF2402': [6986, 3], 'I2401': [-931, 0],
-    'UR2401': [-2373, 0], 'JM2401': [1300, 0], 'J2401': [2000, 0], 'SI2308': [12550, 0],
-    'OI2401': [-8830, 0], 'P2401': [1974, 0], 'PK2401': [9014, 0], 'RM2401': [2862, 4],
+    'FG2401': [1546, 0], 'SA2401': [2015, 3], 'SF2402': [6986, 3], 'I2405': [-979, 2],
+    'UR2405': [2061, 0], 'JM2401': [1300, 0], 'J2401': [2000, 0], 'SI2308': [12550, 0],
+    'OI2405': [7978, 3], 'P2401': [1974, 0], 'PK2403': [8912, 0], 'RM2401': [2862, 4],
     'AL2308': [15000, 0], 'AG2312': [1234, 0], 'SN2312': [200000, 0], 'NI2312': [184000, 0],
-    'SP2401': [-6156, 0], 'CJ2401': [-15230, 0], 'NR2401': [9000, 0], 'CF2401': [-16760, 0]
+    'SP2401': [-6156, 0], 'CJ2401': [-15230, 0], 'NR2401': [9000, 0], 'CF2401': [-16760, 0],
+    'EC2404': [-2600, 1]
 }
 
 
@@ -122,13 +125,13 @@ if __name__ == '__main__':
                 contract.update_hl(code, low, date_util.now_str(), None, None)
                 print(code, "update contract low!")
             if low < h_low:
-                contract.update_hl(code, h_low, date_util.now_str(), None, None, True)
+                contract.update_hl(code, low, date_util.now_str(), None, None, True)
                 print(code, "update hist low!")
             if high > c_high:
                 contract.update_hl(code, None, None, high, date_util.now_str())
                 print(code, "update contract high!")
             if high > h_high:
-                contract.update_hl(code, None, None, h_high, date_util.now_str(), True)
+                contract.update_hl(code, None, None, high, date_util.now_str(), True)
                 print(code, "update hist high!")
 
             earning = ''
@@ -197,7 +200,7 @@ if __name__ == '__main__':
             realtime["ct_hl"] = up_ if c_low_date < c_high_date else down_
             hist_pos = calc_position(price, h_low, h_high)
             if hist_pos > 80 or hist_pos < 20:
-                hist_pos = str(hist_pos) + '️🌻' if hist_pos > 80 else str(hist_pos) + '️🥀'
+                hist_pos = str(hist_pos) + '🌞' if hist_pos > 80 else str(hist_pos) + '❄️'
             realtime["hist_hl"] = ('[' + future_price(h_low) + '-' + future_price(h_high) + ' ' + str(hist_pos) + ']')
             target_list = init_target.get(code)
             target_diff = []
