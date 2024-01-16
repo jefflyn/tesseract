@@ -37,7 +37,7 @@ def del_gap_record(code):
 
 
 def update_gap():
-    gap_df = _dt.read_sql('select * from gap_log where is_fill=0', params=None)
+    gap_df = _dt.read_sql('future', 'select * from gap_log where is_fill=0', params=None)
     for index, row in gap_df.iterrows():
         code = row['code']
         start_date = row['start_date']
@@ -97,6 +97,9 @@ def add_gap(code_list):
         high_list = list(df_data['high'])
         low_list = list(df_data['low'])
         hl_df = high_low_df[high_low_df.code == code]
+        if hl_df is None or hl_df.empty:
+            print(high_low_df)
+            continue
         c_low = hl_df.loc[code, 'low']
         c_high = hl_df.loc[code, 'high']
         for index, row in df_data.iterrows():

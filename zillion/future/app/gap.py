@@ -12,4 +12,4 @@ if __name__ == '__main__':
     # 更新gap信息
     gap.update_gap()
 
-    print('done @', date_util.now_str())
+    print('done @', date_util.now_str(), 'select * from gap_log')

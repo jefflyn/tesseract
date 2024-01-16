@@ -373,7 +373,7 @@ def update_contract_hl_sql():
 
 
 def get_high_low():
-    df = _dt.read_query('select code, GREATEST(ap, bp, cp, dp) high, LEAST(ap, bp, cp, dp) low from wave')
+    df = _dt.read_query('future','select code, GREATEST(ap, bp, cp, dp) high, LEAST(ap, bp, cp, dp) low from wave')
     df.index = list(df['code'])
     return df
 
