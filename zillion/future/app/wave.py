@@ -347,31 +347,6 @@ def wave_to_db(wave_list=None, wave_detail_list=None):
     _dt.to_db(wave_detail_result, 'wave_detail')
 
 
-def update_contract_hl_sql():
-    # 建立数据库连接
-    db = _dt.get_db("future")
-    # 使用cursor()方法创建一个游标对象
-    cursor = db.cursor()
-    try:
-        cursor.execute(
-            "update contract c join (select code, least(a.mn1, a.mn2) min, greatest(a.mx1, a.mx2) max from (select code, min(begin_price) mn1, min(end_price) mn2, max(begin_price) mx1, max(end_price) mx2 from wave_detail group by code) a) wd on c.code = wd.code "
-            "set c.low=wd.min, c.high=wd.max, c.update_time=now() "
-            "where c.deleted = 0;")
-
-        cursor.execute(
-            "update contract c join wave_detail wd on c.code=wd.code and (c.low=wd.begin_price or c.low=wd.end_price) "
-            "set c.low_time=case when wd.status='down' then wd.end else wd.begin end where c.deleted=0;")
-
-        cursor.execute(
-            "update contract c join wave_detail wd on c.code=wd.code and (c.high=wd.begin_price or c.high=wd.end_price) "
-            "set c.high_time=case when wd.status='down' then wd.begin else wd.end end where c.deleted=0;")
-
-        db.commit()
-        print('  >>> update_contract_hl done!')
-    except Exception as err:
-        print('  >>> update_contract_hl error:', err)
-
-
 def get_high_low():
     df = _dt.read_query('future','select code, GREATEST(ap, bp, cp, dp) high, LEAST(ap, bp, cp, dp) low from wave')
     df.index = list(df['code'])
@@ -416,7 +391,6 @@ def redo_wave():
 
     wave_to_db(wave_data_list, wave_detail_list)
     print(date_util.now_str())
-    update_contract_hl_sql()
 
 
 if __name__ == '__main__':

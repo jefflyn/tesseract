@@ -30,7 +30,7 @@ init_target = {
     'J2405': [[-2000], [3000]],
     'UR2405': [[-2020], [2100]],
     'SA2405': [[-1800], [2400]],
-    'FG2405': [[-1650], [1870]],
+    'FG2405': [[-1650], [1740]],
     'SP2405': [[-5000], [6100]],
 
     # 'AG2402': [[-5500], [6000]],
@@ -40,7 +40,7 @@ init_target = {
     # 'SI2401': [[-12000], [15000]],
 
     'RM2403': [[-2500], [2900]],
-    'OI2405': [[-7700], [8000]],
+    'OI2405': [[-7700], [8800]],
     'P2405': [[-6300], [8000]],
     'PK2403': [[-8600], [9500]],
     'CJ2405': [[-13000], [16000]],
@@ -51,9 +51,9 @@ init_target = {
 
 holding_cost = {
     'TA2401': [5752, 0], 'PP2401': [-7164, 0], 'EB2401': [8000, 0], 'PG2401': [5000, 0],
-    'FG2401': [1546, 0], 'SA2401': [2015, 3], 'SF2402': [6986, 3], 'I2405': [-979, 2],
+    'FG2405': [1749, 5], 'SA2401': [2015, 3], 'SF2402': [6986, 3], 'I2405': [-979, 2],
     'UR2405': [2061, 0], 'JM2401': [1300, 0], 'J2401': [2000, 0], 'SI2308': [12550, 0],
-    'OI2405': [7978, 3], 'P2401': [1974, 0], 'PK2403': [8912, 0], 'RM2401': [2862, 4],
+    'OI2405': [7978, 3], 'P2401': [1974, 0], 'PK2403': [8912, 0], 'RM2405': [2570, 10],
     'AL2308': [15000, 0], 'AG2312': [1234, 0], 'SN2312': [200000, 0], 'NI2312': [184000, 0],
     'SP2401': [-6156, 0], 'CJ2401': [-15230, 0], 'NR2401': [9000, 0], 'CF2401': [-16760, 0],
     'EC2404': [-2600, 1]
@@ -121,16 +121,16 @@ if __name__ == '__main__':
             ask = realtime.iloc[0].at["ask"]
             hl_tag = '!' if low_diff < 8 or high_diff < 8 else ''
             hl_tag = '_' if low <= c_low else ('^' if high >= c_high else hl_tag)
-            if low < c_low:
+            if float(low) < float(c_low):
                 contract.update_hl(code, low, date_util.now_str(), None, None)
                 print(code, "update contract low!")
-            if low < h_low:
+            if float(low) < float(h_low):
                 contract.update_hl(code, low, date_util.now_str(), None, None, True)
                 print(code, "update hist low!")
-            if high > c_high:
+            if float(high) > float(c_high):
                 contract.update_hl(code, None, None, high, date_util.now_str())
                 print(code, "update contract high!")
-            if high > h_high:
+            if float(high) > float(h_high):
                 contract.update_hl(code, None, None, high, date_util.now_str(), True)
                 print(code, "update hist high!")
 
@@ -246,7 +246,7 @@ if __name__ == '__main__':
         realtime_df = realtime_df.drop(columns=['low'])
         realtime_df = realtime_df.drop(columns=['high'])
         # change pos
-        realtime_df = realtime_df.sort_values(by=['pos'], ascending=False, ignore_index=True)
+        realtime_df = realtime_df.sort_values(by=['pos'], ascending=True, ignore_index=True)
         # index ##
         now_time = datetime.datetime.now()
         hour_minute = str(now_time.hour) + '' + str(now_time.minute)
