@@ -39,7 +39,7 @@ def get_engine(db_name):
     elif db_name == 'test':
         return create_engine("mysql+pymysql://linjingu:linjingu@127.0.0.1:3306/test?charset=UTF8MB4")
     else:
-        return create_engine("mysql+pymysql://linjingu:linjingu@127.0.0.1:3306/test?charset=UTF8MB4")
+        raise Exception("没指定数据库或数据库不存在!")
 
 
 # save to db

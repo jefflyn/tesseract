@@ -80,6 +80,7 @@ def get_daily(code=None, trade_date=None, start_date=None, end_date=None):
 def collect_daily_ak(codes=None, trade_date=None):
     '''
     日增量
+    :param trade_date:
     :param codes:
     :return:
     '''
@@ -138,7 +139,8 @@ def collect_hist_daily_ak(codes=None):
         try:
             df_data = ak.futures_zh_daily_sina(code)
         except Exception as e:
-            print(code + ' futures_zh_daily_sina error:', e)
+            print(code + ' futures_zh_daily_sina error, retry:', e)
+            df_data = ak.futures_zh_daily_sina(code)
         if df_data is None or df_data.empty:
             print(code + ' no daily data!')
             continue
@@ -171,7 +173,7 @@ def collect_hist_daily_ak(codes=None):
 
 
 if __name__ == '__main__':
-    collect_hist_daily_ak(["SA2405"])
-    collect_daily_ak(["SA2405"], cons.get_latest_data_date(date_util.now()))
+    collect_hist_daily_ak(["BU2403"])
+    # collect_daily_ak(["SA2405"], cons.get_latest_data_date(date_util.now()))
 
 

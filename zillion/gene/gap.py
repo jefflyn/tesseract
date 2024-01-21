@@ -98,6 +98,37 @@ def cal_gap(codes=None, seq='W'):
     return gap_df
 
 
+def find_existing_gaps(data):
+    '''
+
+    :param data: 日期升序
+    :return:
+    '''
+    gaps = []
+
+    latest = data.tail(1)
+    idx = latest.index.to_numpy()[0]
+    latest_price = latest.at[idx, 'close']
+    high_list = list(data['high'])
+    low_list = list(data['low'])
+    for index, row in data.iterrows():
+        if index == len(high_list) - 1:
+            break
+        current_low = low_list[index]
+        current_high = high_list[index]
+        # 寻找之后数据中的最高价和最低价
+        next_low = min(low_list[index + 1:])
+        next_high = max(high_list[index + 1:])
+
+        if next_high < current_low:
+            gaps.append((row['date'], "向下", current_low - next_high, current_low, next_high,
+                         (current_low - latest_price) / latest_price))
+        elif next_low > current_high:
+            gaps.append((row['date'], "向上", next_low - current_high, current_high, next_low,
+                         (current_high - latest_price) / latest_price))
+    return gaps
+
+
 if __name__ == '__main__':
     # codes = ['300123']
     codes = stock_pool

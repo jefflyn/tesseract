@@ -340,11 +340,11 @@ def wave_to_db(wave_list=None, wave_detail_list=None):
                                   columns=['code', 'start', 'end', 'a', 'b', 'c', 'd', 'ap', 'bp', 'cp', 'dp',
                                            'p'])
     wave_df_result['update_time'] = date_util.now()
-    _dt.to_db(wave_df_result, 'wave')
+    _dt.to_db(wave_df_result, tb_name='wave', db_name='future')
     wave_detail_result = pd.DataFrame(pd.concat(wave_detail_list),
                                       columns=['code', 'begin', 'end', 'status', 'begin_price', 'end_price',
                                                'change', 'days'])
-    _dt.to_db(wave_detail_result, 'wave_detail')
+    _dt.to_db(wave_detail_result, tb_name='wave_detail', db_name='future')
 
 
 def get_high_low():

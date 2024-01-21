@@ -16,7 +16,7 @@ def get_stock_data(stock_symbol, start_date, end_date):
 def find_existing_gaps(data):
     gaps = []
 
-    latest = stock_data.tail(1)
+    latest = data.tail(1)
     idx = latest.index.to_numpy()[0]
     latest_price = latest.at[idx, 'close']
     high_list = list(data['high'])

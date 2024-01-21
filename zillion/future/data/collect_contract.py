@@ -66,8 +66,6 @@ if __name__ == '__main__':
             if symbol not in symbol_list:
                 print(symbol, "add to basic")
                 basic.add_basic([symbol, '', exchange_ts, time_now])
-            if main_code=='M2405':
-                print('')
             update_contract_hl(main_code)
     # print(main_contract_map)
     if len(contract_codes) == 0:
@@ -91,7 +89,7 @@ if __name__ == '__main__':
         if code < main_code:
             contract.remove_contract_hist(code, [list(row.values)])
             gap.del_gap_record(code)
-            daily.get_daily()
+            daily.delete_daily(code)
         daily_df = daily.get_daily(code)
         if daily_df is None or daily_df.empty:
             daily.collect_hist_daily_ak([code])

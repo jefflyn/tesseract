@@ -7,17 +7,20 @@ pd.set_option('display.width', None)
 pd.set_option('display.max_columns', None)
 
 option = {'Referer': 'http://finance.sina.com.cn'}
-url = 'http://w.sinajs.cn/?list=nf_'
+url = 'http://w.sinajs.cn/?list='
+sina_prefix = 'nf_'
 
 
-def _realtime(code=None):
-    result = requests.get(url + code, headers=option).text
+def _realtime(codes=None):
+    codes = (sina_prefix + codes) if isinstance(codes, str) else ','.join([sina_prefix + c for c in codes])
+    result_txt = requests.get(url + codes, headers=option).text
     realtime_list = []
-    if result is not None and len(result.split(';')) > 0:
-        groups = result.split(';\n')
+    if result_txt is not None and len(result_txt.split(';')) > 0:
+        groups = result_txt.split(';\n')
         for content in groups:
             if len(content) == 0:
                 continue
+            code = content.split('=')[0].split('_')[-1]
             info = content.split('=')[1].replace('"', '').strip().split(',')
             if len(info) < 18:
                 continue
@@ -34,28 +37,17 @@ def _realtime(code=None):
 
 def realtime_for_daily(code=None):
     data_df = _realtime(code)
-    return data_df[['code', 'date', 'open', 'high', 'low', 'pre_close', 'close', 'settle', 'pre_settle', 'hold', 'volume']]
+    return data_df[
+        ['code', 'date', 'open', 'high', 'low', 'pre_close', 'close', 'settle', 'pre_settle', 'hold', 'volume']]
 
 
 def realtime_simple(code=None):
-    result = requests.get(url + code, headers=option).text
-    realtime_list = []
-    if result is not None and len(result.split(';')) > 0:
-        groups = result.split(';\n')
-        for content in groups:
-            if len(content) == 0:
-                continue
-            info = content.split('=')[1].replace('"', '').strip().split(',')
-            if len(info) < 18:
-                continue
-            trade_date = date_util.parse_date_str(info[17], date_util.FORMAT_FLAT)
-            realtime_list.append([code, trade_date, float(info[2]), float(info[3]), float(info[4]), float(info[8]),
-                                  float(info[6]), float(info[7]), float(info[10])])
-    realtime_df = pd.DataFrame(realtime_list, columns=['code', 'date', 'open', 'high', 'low', 'close', 'bid', 'ask',
-                                                       'pre_settle'])
-    return realtime_df
+    data_df = _realtime(code)
+    return data_df[['code', 'date', 'open', 'high', 'low', 'close', 'bid', 'ask', 'pre_settle']]
 
 
 if __name__ == '__main__':
-    df = _realtime(code='SF0')
-    print(df)
+    # df = _realtime(code='SF0')
+    # print(df)
+    result = _realtime(['PG2403', 'SA2405'])
+    print(result)
