@@ -43,11 +43,11 @@ def realtime_for_daily(code=None):
 
 def realtime_simple(code=None):
     data_df = _realtime(code)
-    return data_df[['code', 'date', 'open', 'high', 'low', 'close', 'bid', 'ask', 'pre_settle']]
+    return data_df[['code', 'date', 'open', 'high', 'low', 'close', 'bid', 'ask', 'settle', 'pre_settle']]
 
 
 if __name__ == '__main__':
-    # df = _realtime(code='SF0')
-    # print(df)
+    df = _realtime('SF0')
+    print(df)
     result = _realtime(['PG2403', 'SA2405'])
     print(result)
