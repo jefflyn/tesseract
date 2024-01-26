@@ -9,9 +9,14 @@ from zillion.utils import notify_util, date_util
 from zillion.utils.date_util import convert_to_date
 from zillion.utils.price_util import future_price
 
+columns = ['code', 'open', 'change', 'close', 'low', 'high', 'volume', 'amount', 'famout', 'current',
+           'wave',
+                   'bottom', 'uspace',
+                   'dspace', 'top', 'position', 'suggest']
 
 def realtime_monitor(df):
     print("")
+
 
 
 
@@ -19,16 +24,24 @@ if __name__ == '__main__':
     basic_df = basic.get_future_basics()
     contract_map = contract.contract_map
     nstat_map = nstat.nstat_map
-    target_dw_index_dir = {}
-    target_up_index_dir = {}
     high_dir = {}
     low_dir = {}
     today = date_util.today
-    hour_minute_map = {}
     while True:
-        realtime_df = trade._realtime(contract_map.keys())
+        realtime_df = trade.realtime(contract_map.keys())
+        result_data = []
         for index, realtime in realtime_df.iterrows():
             code = realtime['code']
+            pre_settle = realtime["pre_settle"]
+            open = realtime["open"]
+            high = realtime["high"]
+            low = realtime["low"]
+            bid = realtime["bid"]
+            ask = realtime["ask"]
+            price = realtime["close"]
+            price_diff = price-pre_settle
+            realtime["change"] = round(price_diff / float(pre_settle) * 100, 2)
+
             contra = contract_map.get(code)
             nst = nstat_map.get(code)
             c_low = contra.low
@@ -40,15 +53,10 @@ if __name__ == '__main__':
             h_low = contra.h_low
             h_high = contra.h_high
 
-            realtime = trade.realtime_simple(code)
-            price = realtime["close"]
+
             hist_pos = calc_position(price, c_low, c_high)
-            pre_settle = realtime["pre_settle"]
-            open = realtime["open"]
-            high = realtime["high"]
-            low = realtime["low"]
-            bid = realtime["bid"]
-            ask = realtime["ask"]
+
+
             # hl_tag = '!' if low_diff < 8 or high_diff < 8 else ''
             # hl_tag = '_' if low <= c_low else ('^' if high >= c_high else hl_tag)
             # if float(low) < float(c_low):
@@ -77,9 +85,7 @@ if __name__ == '__main__':
             realtime['5d_chg'] = str(change5d) + '%'
             realtime['lo_hi'] = '[' + future_price(low) + '-' + future_price(high) + ' ' + future_price(
                 high - low) + ']'
-            # realtime['diff'] = future_price(high - low)
-            price_diff = float(price) - float(pre_settle)
-            realtime["change"] = round(price_diff / float(pre_settle) * 100, 2)
+
             open_flag = '↑' if open > pre_settle else ('↓' if open < pre_settle else ' ')
             realtime['open'] = '[' + future_price(pre_settle) + '-' + future_price(open) + ' ' \
                                + future_price(open - pre_settle) + ',' + format_percent(
@@ -117,12 +123,14 @@ if __name__ == '__main__':
             if realtime_df is None:
                 realtime_df = realtime
             else:
-                realtime_df = pd.concat([realtime_df, realtime], ignore_index=True)
+                realtime_df =
+            result_data.append([])
 
-        db_util.to_db(realtime_df, 'realtime', db_name='future')
+        result_df = pd.DataFrame(result_data, columns=columns)
+        db_util.to_db(result_df, 'realtime', db_name='future')
         # index end
         print(
-            final_df[['code', 'open', 'change', 'lo_hi', 'close', 'bid_ask', 'pos', 'code', '5d_chg', 'avg_60_20', 'ct_hl',
+            result_list[['code', 'open', 'change', 'lo_hi', 'close', 'bid_ask', 'pos', 'code', '5d_chg', 'avg_60_20', 'ct_hl',
                       'hist_hl', 'earning']])
         if not future_util.is_trade_time():
             break

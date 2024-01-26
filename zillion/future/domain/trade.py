@@ -35,6 +35,10 @@ def _realtime(codes=None):
     return realtime_df
 
 
+def realtime(codes=None):
+    return _realtime(codes)
+
+
 def realtime_for_daily(code=None):
     data_df = _realtime(code)
     return data_df[
