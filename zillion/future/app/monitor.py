@@ -9,15 +9,15 @@ from zillion.utils import notify_util, date_util
 from zillion.utils.date_util import convert_to_date
 from zillion.utils.price_util import future_price
 
-columns = ['code', 'open', 'change', 'close', 'low', 'high', 'volume', 'amount', 'famout', 'current',
-           'wave',
-                   'bottom', 'uspace',
-                   'dspace', 'top', 'position', 'suggest']
+columns = ['code', 'pre_settle', 'open', 'open_type', 'gap', 'gap_desc', 'is_fill',
+           'change', 'lim_down', 'lim_up', 'close', 'bid', 'ask', 'volume', 'amount',
+           'a5d', 'a20d', 'a60d', 'a5d_ch', 'a20d_ch', 'a60d_ch',
+           'ca', 'cb', 'c_tr', 'cap_ch', 'cbp_ch',
+           'low', 'high', 'pos', 'lim_pos', 'c_low', 'c_high', 'c_pos', 'h_low', 'h_high', 'h_pos']
+
 
 def realtime_monitor(df):
     print("")
-
-
 
 
 if __name__ == '__main__':
@@ -39,7 +39,7 @@ if __name__ == '__main__':
             bid = realtime["bid"]
             ask = realtime["ask"]
             price = realtime["close"]
-            price_diff = price-pre_settle
+            price_diff = price - pre_settle
             realtime["change"] = round(price_diff / float(pre_settle) * 100, 2)
 
             contra = contract_map.get(code)
@@ -53,9 +53,7 @@ if __name__ == '__main__':
             h_low = contra.h_low
             h_high = contra.h_high
 
-
             hist_pos = calc_position(price, c_low, c_high)
-
 
             # hl_tag = '!' if low_diff < 8 or high_diff < 8 else ''
             # hl_tag = '_' if low <= c_low else ('^' if high >= c_high else hl_tag)
@@ -81,7 +79,8 @@ if __name__ == '__main__':
             trend_flag = '🌗' if price >= avg20d else '🌑'
 
             pt60 = round((price - avg60d) * 100 / avg60d, 2)
-            realtime['avg_60_20'] = '(' + str(avg60d) + ',' + format_percent(pt60) + ',' + str(avg20d) + ')' + trend_flag
+            realtime['avg_60_20'] = '(' + str(avg60d) + ',' + format_percent(pt60) + ',' + str(
+                avg20d) + ')' + trend_flag
             realtime['5d_chg'] = str(change5d) + '%'
             realtime['lo_hi'] = '[' + future_price(low) + '-' + future_price(high) + ' ' + future_price(
                 high - low) + ']'
@@ -110,9 +109,11 @@ if __name__ == '__main__':
             realtime["code"] = hl_tag + code
             # realtime["his_hl"] = '^' + future_price(his_high) + '@' + his_high_date \
             #     if hist_pos > 50 else '_' + future_price(his_low) + '@' + his_low_date
-            up_ = '[' + future_price(c_low) + '-' + future_price(c_high) + ']↑' + '(' + format_percent(round((c_high - c_low) * 100 / c_low, 1)) + ',' \
+            up_ = '[' + future_price(c_low) + '-' + future_price(c_high) + ']↑' + '(' + format_percent(
+                round((c_high - c_low) * 100 / c_low, 1)) + ',' \
                   + format_percent(round((price - c_high) * 100 / c_high, 1)) + ')'
-            down_ = '[' + future_price(c_high) + '-' + future_price(c_low) + ']↓' + '(' + format_percent(round((c_low - c_high) * 100 / c_high, 1)) + ',' \
+            down_ = '[' + future_price(c_high) + '-' + future_price(c_low) + ']↓' + '(' + format_percent(
+                round((c_low - c_high) * 100 / c_high, 1)) + ',' \
                     + format_percent(round((price - c_low) * 100 / c_low, 2)) + ')'
             realtime["ct_hl"] = up_ if c_low_date < c_high_date else down_
             hist_pos = calc_position(price, h_low, h_high)
@@ -130,8 +131,9 @@ if __name__ == '__main__':
         db_util.to_db(result_df, 'realtime', db_name='future')
         # index end
         print(
-            result_list[['code', 'open', 'change', 'lo_hi', 'close', 'bid_ask', 'pos', 'code', '5d_chg', 'avg_60_20', 'ct_hl',
-                      'hist_hl', 'earning']])
+            result_list[
+                ['code', 'open', 'change', 'lo_hi', 'close', 'bid_ask', 'pos', 'code', '5d_chg', 'avg_60_20', 'ct_hl',
+                 'hist_hl', 'earning']])
         if not future_util.is_trade_time():
             break
         time.sleep(2)

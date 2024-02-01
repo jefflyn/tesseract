@@ -53,6 +53,13 @@ def _daily_all_ak(date=None):
     return all_data
 
 
+def get_last_trading(codes=None):
+    trade_date = date_util.get_today()
+
+    last_trade_date = cons.last_trading_day(date_util.parse_date_str(trade_date, FORMAT_FLAT))
+    return get_daily(code=codes, trade_date=last_trade_date)
+
+
 def get_daily(code=None, trade_date=None, start_date=None, end_date=None):
     sql = "select * from trade_daily where 1=1 "
     if code is not None:

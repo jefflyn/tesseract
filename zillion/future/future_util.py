@@ -26,11 +26,10 @@ def is_trade_time():
     night_open_time = datetime.datetime(current_time.year, current_time.month, current_time.day, hour=21, minute=1)
     night_close_time = datetime.datetime(current_time.year, current_time.month, current_time.day, hour=23, minute=50)
 
-    is_trade_time = (morning_open_time <= date_util.now() <= morning_close_time) or \
-                    (afternoon_open_time <= date_util.now() <= afternoon_close_time) or \
-                    (night_open_time <= date_util.now() <= night_close_time)
     # print(current_time, day_open_time, day_close_time, night_open_time, night_close_time, is_trade_time)
-    return is_trade_time
+    return (morning_open_time <= date_util.now() <= morning_close_time) or \
+        (afternoon_open_time <= date_util.now() <= afternoon_close_time) or \
+        (night_open_time <= date_util.now() <= night_close_time)
 
 
 def add_realtime_data(codes=None, daily_df=None):
