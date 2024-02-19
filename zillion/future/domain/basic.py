@@ -10,8 +10,9 @@ cursor = db.cursor()
 
 def get_all():
     sql = "select * from basic"
-    return read_sql(_dt.DB_FUTURE, sql, params={})
-
+    df = read_sql(_dt.DB_FUTURE, sql, params={})
+    df.index = df['symbol']
+    return df
 
 def get_future_basics(type=None, night=None, on_target=None):
     '''

@@ -135,7 +135,7 @@ if __name__ == '__main__':
             result_data.append(result_list)
         result_df = pd.DataFrame(result_data, columns=columns)
         db_util.to_db(result_df, 'realtime', db_name='future')
+        print(now)
         if not future_util.is_trade_time():
             break
-        print(now)
         time.sleep(2)
