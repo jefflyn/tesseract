@@ -85,7 +85,7 @@ if __name__ == '__main__':
         not_main = row['main'] != 1
         main_code = main_contract_map.get(symbol)
         # symbol not in symbol_list or no main contract
-        if code < main_code or main_code is None:
+        if main_code is None or code < main_code:
             contract.remove_contract_hist(code, [list(row.values)])
             gap.del_gap_record(code)
             daily.delete_daily(code)

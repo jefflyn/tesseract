@@ -28,7 +28,7 @@ class Contract:
         self.high_date = high_date
         self.h_low = h_low
         self.h_high = h_high
-        self.limit
+        self.limit = limit
 
 
 def get_local_contract(symbol=None, code=None, main=False, selected=False):
@@ -120,6 +120,7 @@ def update_hl(code, low=None, low_time=None, high=None, high_time=None, update_h
 def remove_contract_hist(code, values=None):
     sql = "delete from contract where code='%s';"
     cursor.execute(sql % code)
+    db.commit()
     save_contract(values, True)
     print("Remove contract:", code)
 

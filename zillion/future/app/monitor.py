@@ -33,7 +33,7 @@ def update_hl(low, high, c_low, c_high, h_low, h_high):
 def get_open_gap(open, pre_settle, low, high, pre_low, pre_high):
     gap = 0
     gap_price = 0
-    is_fill = -1
+    is_fill = 0
     # open
     if open > pre_settle:
         open_type = '高开'
@@ -46,13 +46,13 @@ def get_open_gap(open, pre_settle, low, high, pre_low, pre_high):
         open_type = '_跳空低开'
         gap = round((open - pre_low) * 100 / pre_low, 2)
         gap_price = pre_low
-        is_fill = 0
+        is_fill = -1
     elif open > pre_high:
         open_type = '_跳空高开'
         gap = round((open - pre_high) * 100 / pre_high, 2)
         gap_price = pre_high
-        is_fill = 0
-    if (open_type == -1 and high >= pre_low) or (open_type == 1 and low <= pre_high):
+        is_fill = -1
+    if (open_type == '_跳空低开' and high >= pre_low) or (open_type == '_跳空高开' and low <= pre_high):
         is_fill = 1
         print("filled")
     return [pre_settle, open, open_type, gap, gap_price, is_fill]
@@ -107,7 +107,10 @@ if __name__ == '__main__':
             # part2 ['change', 'lim_down', 'lim_up', 'close', 'bid', 'ask', 'volume', 'hold']
             price_diff = price - pre_settle
             change = round(price_diff / float(pre_settle) * 100, 2)
-            part2 = [change, contra.limit, contra.limit, price, realtime['bid'], realtime['ask'], realtime['volume'], realtime['hold']]
+            lim_down = round(pre_settle * (1 - contra.limit / 100))
+            lim_up = round(pre_settle * (1 + contra.limit / 100))
+            part2 = [change, lim_down, lim_up,
+                     price, realtime['bid'], realtime['ask'], realtime['volume'], realtime['hold']]
 
             # part3 ['a5d', 'a20d', 'a60d', 'a5d_ch', 'a20d_ch', 'a60d_ch']
             # change5d = nstat.get_attr(nst, '5d_change') if nst is not None else 0
@@ -115,8 +118,8 @@ if __name__ == '__main__':
             avg20d = price if nst is None else nstat.get_attr(nst, 'avg20d')
             avg60d = price if nst is None else nstat.get_attr(nst, 'avg60d')
             part3 = [avg5d, avg20d, avg60d, round((price - avg5d) * 100 / avg5d, 2),
-                                         round((price - avg20d) * 100 / avg20d, 2),
-                                         round((price - avg60d) * 100 / avg60d, 2)]
+                     round((price - avg20d) * 100 / avg20d, 2),
+                     round((price - avg60d) * 100 / avg60d, 2)]
             # part4 ['cot_a', 'cot_b', 'cot_trd', 'cota_ch', 'cotb_ch']
             c_low_date = contra.low_date
             c_high_date = contra.high_date
@@ -130,7 +133,8 @@ if __name__ == '__main__':
             pos = calc_position(price, low, high)
             c_pos = calc_position(price, c_low, c_high)
             h_pos = calc_position(price, h_low, h_high)
-            part5 = [low, high, pos, 'lim_pos', c_low, c_high, c_pos, h_low, h_high, h_pos, date_util.now()]
+            part5 = [low, high, pos, calc_position(price, lim_down, lim_up), c_low, c_high, c_pos, h_low, h_high, h_pos,
+                     date_util.now()]
             result_list = result_list + part1 + part2 + part3 + part4 + part5
             result_data.append(result_list)
         result_df = pd.DataFrame(result_data, columns=columns)
