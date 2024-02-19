@@ -378,6 +378,7 @@ def shift_date(type='d', from_date=None, n=-1, format='YYYY-MM-DD'):
     return target.format(format)
 
 
+
 if __name__ == '__main__':
     print(get_now_hour())
     print(get_next_trade_day('2021-12-06'))

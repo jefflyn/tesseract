@@ -141,6 +141,8 @@ def add_log(name, log_type, pct_change, content, remark, price=None, position=No
 
 
 def calc_position(price, low, high):
+    if low == high:
+        return 0
     return round((price - low) / (high - low) * 100)
 
 

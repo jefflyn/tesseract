@@ -1,3 +1,5 @@
+from datetime import datetime
+
 import akshare as ak
 import numpy as np
 import pandas as pd
@@ -53,11 +55,14 @@ def _daily_all_ak(date=None):
     return all_data
 
 
-def get_last_trading(codes=None):
-    trade_date = date_util.get_today()
-
-    last_trade_date = cons.last_trading_day(date_util.parse_date_str(trade_date, FORMAT_FLAT))
-    return get_daily(code=codes, trade_date=last_trade_date)
+def get_pre_trading(codes=None):
+    now = date_util.now()
+    if 21 <= now.hour <= 23:
+        pre_trade_date = cons.get_latest_data_date(now)
+    else:
+        open_time = datetime(now.year, now.month, now.day, hour=9, minute=0, second=0)
+        pre_trade_date = cons.get_latest_data_date(open_time)
+    return get_daily(code=codes, trade_date=pre_trade_date)
 
 
 def get_daily(code=None, trade_date=None, start_date=None, end_date=None):
@@ -147,7 +152,7 @@ def collect_hist_daily_ak(codes=None):
             df_data = ak.futures_zh_daily_sina(code)
         except Exception as e:
             print(code + ' futures_zh_daily_sina error, retry:', e)
-            df_data = ak.futures_zh_daily_sina(code)
+            # df_data = ak.futures_zh_daily_sina(code)
         if df_data is None or df_data.empty:
             print(code + ' no daily data!')
             continue
@@ -180,7 +185,8 @@ def collect_hist_daily_ak(codes=None):
 
 
 if __name__ == '__main__':
-    collect_hist_daily_ak(["BU2403"])
+    # get_pre_trading([])
+    collect_hist_daily_ak(["SA2405"])
     # collect_daily_ak(["SA2405"], cons.get_latest_data_date(date_util.now()))
 
 

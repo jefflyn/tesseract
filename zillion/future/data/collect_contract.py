@@ -13,9 +13,12 @@ pd.set_option('display.max_columns', None)
 
 
 def update_contract_hl(code):
+    print("update_contract_hl:", code)
     daily_df = daily.get_daily(code)
     low_list = list(daily_df['low'])
     high_list = list(daily_df['high'])
+    if len(low_list) == 0 or len(high_list) == 0:
+        return
     date_list = list(daily_df['trade_date'])
     lowest = min(low_list)
     lowest_date = date_list[low_list.index(lowest)]
@@ -34,7 +37,6 @@ def update_contract_hl(code):
     highest = max(high_list)
     highest_date = date_list[high_list.index(highest)]
     contract.update_hl(code, lowest, lowest_date, highest, highest_date, True)
-
     return rows
 
 
