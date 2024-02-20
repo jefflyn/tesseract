@@ -7,30 +7,32 @@ from zillion.future import future_util, db_util
 from zillion.future.domain import trade, basic, contract, nstat, daily
 from zillion.future.future_util import calc_position
 from zillion.utils import date_util
+from zillion.utils.price_util import future_price
 
 columns = ['code', 'pre_set', 'open', 'type', 'gap', 'gap_pr', 'fill',
            'change', 'limdw', 'limup', 'close', 'bid', 'ask', 'volume', 'hold',
            'a5d', 'a20d', 'a60d', 'a5d_ch', 'a20d_ch', 'a60d_ch',
            'cot_a', 'cot_b', 'trend', 'cota_ch', 'cotb_ch',
-           'low', 'high', 'pos', 'lim_pos', 'c_low', 'c_high', 'c_pos', 'h_low', 'h_high', 'h_pos', 'update_time']
+           'lo_hi', 'pos', 'lim_pos', 'c_lo_hi', 'c_pos', 'h_lo_hi', 'h_pos', 'update_time']
 
 
 def realtime_monitor(df):
     print('')
 
 
-def update_hl(low, high, c_low, c_high, h_low, h_high):
+def update_hl(code, low, high, c_low, c_high, h_low, h_high):
     if float(low) < float(c_low):
         contract.update_hl(code, low, date_util.now_str(), None, None)
-    if float(low) < float(h_low):
-        contract.update_hl(code, low, date_util.now_str(), None, None, True)
     if float(high) > float(c_high):
         contract.update_hl(code, None, None, high, date_util.now_str())
+
+    if float(low) < float(h_low):
+        contract.update_hl(code, low, date_util.now_str(), None, None, True)
     if float(high) > float(h_high):
         contract.update_hl(code, None, None, high, date_util.now_str(), True)
 
 
-def get_open_gap(open, pre_settle, low, high, pre_low, pre_high):
+def get_open_gap(code, open, pre_settle, low, high, pre_low, pre_high):
     gap = 0
     gap_price = 0
     is_fill = 0
@@ -54,7 +56,7 @@ def get_open_gap(open, pre_settle, low, high, pre_low, pre_high):
         is_fill = -1
     if (open_type == '_跳空低开' and high >= pre_low) or (open_type == '_跳空高开' and low <= pre_high):
         is_fill = 1
-        print("filled")
+        print(code, "filled")
     return [pre_settle, open, open_type, gap, gap_price, is_fill]
 
 
@@ -97,12 +99,12 @@ if __name__ == '__main__':
             c_high = contra.high
             h_low = contra.h_low
             h_high = contra.h_high
-            update_hl(low, high, c_low, c_high, h_low, h_high)
+            update_hl(code, low, high, c_low, c_high, h_low, h_high)
             # n stat
             nst = nstat_map.get(code)
 
             # part1 ['pre_settle', 'open', 'open_type', 'gap', 'gap_price', 'is_fill']
-            part1 = get_open_gap(open, pre_settle, low, high, pre_low, pre_high)
+            part1 = get_open_gap(code, open, pre_settle, low, high, pre_low, pre_high)
 
             # part2 ['change', 'lim_down', 'lim_up', 'close', 'bid', 'ask', 'volume', 'hold']
             price_diff = price - pre_settle
@@ -129,11 +131,13 @@ if __name__ == '__main__':
             cota_ch = round((price - cot_a) * 100 / cot_a, 2)
             cotb_ch = round((price - cot_b) * 100 / cot_b, 2)
             part4 = [cot_a, cot_b, cot_trd, cota_ch, cotb_ch]
-            # part5 ['low', 'high', 'pos', 'lim_pos', 'c_low', 'c_high', 'c_pos', 'h_low', 'h_high', 'h_pos']
+            # part5 ['lo_hi', 'pos', 'lim_pos', 'c_lo_hi', 'c_pos', 'h_lo_hi', 'h_pos', 'update_time']
             pos = calc_position(price, low, high)
             c_pos = calc_position(price, c_low, c_high)
             h_pos = calc_position(price, h_low, h_high)
-            part5 = [low, high, pos, calc_position(price, lim_down, lim_up), c_low, c_high, c_pos, h_low, h_high, h_pos,
+            part5 = [future_price(low) + '-' + future_price(high), pos, calc_position(price, lim_down, lim_up),
+                     future_price(c_low) + '-' + future_price(c_high), c_pos,
+                     future_price(h_low) + '-' + future_price(h_high), h_pos,
                      date_util.now()]
             result_list = result_list + part1 + part2 + part3 + part4 + part5
             result_data.append(result_list)
