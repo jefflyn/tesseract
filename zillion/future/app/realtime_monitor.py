@@ -7,6 +7,7 @@ from akshare.futures.symbol_var import symbol_varieties
 
 from zillion.future import future_util
 from zillion.future.domain import trade, basic, contract, nstat
+from zillion.future.domain.daily import get_pre_trading
 from zillion.future.future_util import calc_position
 from zillion.utils import notify_util, date_util
 from zillion.utils.date_util import convert_to_date
@@ -20,16 +21,16 @@ init_target = {
     'SC2404': [[-450], [750]],
     # 'TA2405': [[-5500], [6500]],
     # 'PP2405': [[-6800], [8000]],
-    'PG2403': [[-4050], [4260]],
+    'PG2403': [[-4050], [4300]],
     # 'EB2403': [[-7000], [9000]],
     # 'NR2403': [[-10000], [12000]],
 
-    'SF2405': [[-6500], [6604, 6666]],
-    # 'I2405': [[-920], [1030]],
+    'SF2405': [[-6500], [6600, 6666]],
+    'I2405': [[-890], [920]],
     # 'JM2405': [[-1200], [2500]],
     # 'J2405': [[-2000], [3000]],
     # 'UR2405': [[-2090], [2200]],
-    'SA2405': [[-1800], [2400]],
+    # 'SA2405': [[-1800], [2400]],
     'FG2405': [[-1600], [1900]],
     'SP2405': [[-5000], [5800]],
 
@@ -55,7 +56,7 @@ holding_cost = {
     'TA2405': [5752, 0], 'PP2405': [-7164, 0], 'EB2403': [8000, 0], 'PG2403': [4350, 4],
     'FG2405': [1814, 5], 'SA2405': [2015, 0], 'UR2405': [2148, 5], 'SP2405': [5672, 4],
 
-    'SF2405': [6476, 10], 'I2405': [-979, 0], 'JM2405': [1300, 0], 'J2405': [2000, 0],
+    'SF2405': [6476, 10], 'I2405': [904, 5], 'JM2405': [1300, 0], 'J2405': [2000, 0],
     'AL2308': [15000, 0], 'SI2308': [12550, 0], 'AG2406': [5989, 3], 'SN2403': [200000, 0], 'NI2403': [124000, 0]
 }
 
@@ -87,6 +88,7 @@ if __name__ == '__main__':
     basic_df = basic.get_future_basics()
     contract_map = contract.contract_map
     nstat_map = nstat.nstat_map
+    last_daily = get_pre_trading(list(init_target.keys()))
     target_dw_index_dir = {}
     target_up_index_dir = {}
     high_dir = {}
@@ -176,7 +178,17 @@ if __name__ == '__main__':
             price_diff = float(price) - float(pre_settle)
             realtime["change"] = round(price_diff / float(pre_settle) * 100, 2)
             open_flag = '↑' if open > pre_settle else ('↓' if open < pre_settle else ' ')
-            realtime['open'] = '[' + future_price(pre_settle) + '-' + future_price(open) + ' ' \
+            last = last_daily[last_daily.code == code]
+            pre_low = last.iloc[0].at['low']
+            pre_high = last.iloc[0].at['high']
+            gap_p = ''
+            if open < pre_low:
+                open_flag = '🍌'
+                gap_p = pre_low
+            elif open > pre_high:
+                open_flag = '🌶️'
+                gap_p = pre_high
+            realtime['open'] = future_price(gap_p) + '[' + future_price(pre_settle) + '-' + future_price(open) + ' ' \
                                + future_price(open - pre_settle) + ',' + format_percent(
                 round((open - pre_settle) * 100 / pre_settle, 2)) + ']' + open_flag
             realtime['bid_ask'] = '(' + future_price(bid) + ',' + future_price(ask) + ')'

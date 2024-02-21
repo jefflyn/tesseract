@@ -2,6 +2,7 @@ import zillion.future.db_util as _dt
 from zillion.future.app import wave
 from zillion.future.domain import daily
 from zillion.utils import date_util
+from zillion.utils.price_util import future_price
 
 # 建立数据库连接
 db = _dt.get_db("future")
@@ -116,14 +117,14 @@ def add_gap(code_list):
                 highest_index = high_list.index(next_high, index + 1)
                 c_pos = round((begin_low - c_low) * 100 / (c_high - c_low), 1)
                 save_gap([(row['code'], row['code'].split('.')[0], row['date'], date_list[highest_index], '跳空低开',
-                           begin_low, c_pos, next_high,
+                           future_price(begin_low), c_pos, future_price(next_high),
                            round((next_high - begin_low) * 100 / begin_low, 2), 0, date_util.now(), date_util.now())])
             # 跳空高开缺口
             if begin_high < next_low:
                 lowest_index = low_list.index(next_low, index + 1)
                 c_pos = round((begin_high - c_low) * 100 / (c_high - c_low), 1)
                 save_gap([(row['code'], row['code'].split('.')[0], row['date'], date_list[lowest_index], '跳空高开',
-                           begin_high, c_pos, next_low,
+                           future_price(begin_high), c_pos, future_price(next_low),
                            round((next_low - begin_high) * 100 / begin_high, 2), 0, date_util.now(), date_util.now())])
 
 

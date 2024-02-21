@@ -2,7 +2,7 @@ from zillion.future.domain import contract, gap
 from zillion.utils import date_util
 
 if __name__ == '__main__':
-    main_code_list = contract.get_0_contract_code()
+    main_code_list = []  # contract.get_0_contract_code()
 
     contract_df = contract.get_local_contract()
     code_list = list(contract_df['code'])
