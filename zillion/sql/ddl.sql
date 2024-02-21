@@ -44,15 +44,15 @@ create table basic
 	symbol varchar(4) not null comment '商品代号'
 		primary key,
 	name varchar(16) not null comment '商品名',
-	type varchar(8) not null comment '分类',
-	amount int not null comment '合同每单位数量',
-	unit varchar(4) not null comment '单位',
-	step decimal(6,2) not null comment '每跳点数',
-	profit int not null comment '每跳毛利',
-	exchange varchar(16) not null comment '所属交易所',
-	night tinyint not null comment '是否夜盘（0=否 1=是）',
-	relative varchar(128) null comment '相关联symbol',
-	remark varchar(64) null comment 'remark',
+	type varchar(8) default '' not null comment '分类',
+	amount int default 0 not null comment '合同每单位数量',
+	unit varchar(4) default '' not null comment '单位',
+	step decimal(6,2) default 0.00 not null comment '每跳点数',
+	profit int default 0 not null comment '每跳毛利',
+	`limit` int default -1 not null comment 'limit up/down',
+	exchange varchar(16) default '' not null comment '所属交易所',
+	night tinyint default -1 not null comment '是否夜盘（0=否 1=是）',
+	relative varchar(64) null comment '相关联symbol',
 	deleted tinyint default 0 not null,
 	update_time timestamp not null on update CURRENT_TIMESTAMP comment '更新时间'
 )
@@ -90,10 +90,15 @@ create table contract
 		primary key,
 	ts_code varchar(12) not null comment 'ts code',
 	main tinyint default 0 not null comment '主力=1',
+	`limit` int null comment 'limit up/down',
 	low decimal(10,2) not null comment '合约最低',
 	high decimal(10,2) not null comment '合约最高',
 	low_time varchar(20) null comment '新低时间',
 	high_time varchar(20) null comment '新低时间',
+	h_low decimal(10,2) null comment 'hist low',
+	h_high decimal(10,2) null comment 'hist high',
+	h_low_time varchar(20) null,
+	h_high_time varchar(20) null,
 	selected tinyint default 0 not null comment '0=否 1=是',
 	create_time datetime not null comment '创建时间',
 	update_time datetime not null on update CURRENT_TIMESTAMP comment '更新时间',
@@ -115,10 +120,15 @@ create table contract_hist
 		primary key,
 	ts_code varchar(12) not null comment 'ts code',
 	main tinyint default 0 not null comment '主力=1',
+	`limit` int default 0 null,
 	low decimal(10,2) not null comment '合约最低',
 	high decimal(10,2) not null comment '合约最高',
 	low_time varchar(20) null comment '新低时间',
 	high_time varchar(20) null comment '新低时间',
+	h_low decimal(10,2) null,
+	h_high decimal(10,2) null,
+	h_low_time varchar(20) null,
+	h_high_time varchar(20) null,
 	selected tinyint default 0 not null comment '0=否 1=是',
 	create_time datetime not null comment '创建时间',
 	update_time datetime not null comment '更新时间',
@@ -226,47 +236,6 @@ create table future_user
 	password varchar(100) not null
 );
 
-create table gap_log
-(
-	ts_code varchar(20) not null,
-	code varchar(16) null comment 'code',
-	start_date varchar(10) null comment '产生缺口日期',
-	end_date varchar(10) not null comment '缺口结束日期',
-	gap_type varchar(10) not null comment '类型',
-	start_price decimal(10,2) not null comment '缺口开始价格',
-	cpos decimal(10,1) not null comment '合约位置',
-	end_price decimal(10,2) not null comment '缺口结束价格',
-	gap_rate decimal(10,2) not null comment '缺口大小%',
-	is_fill tinyint default 0 not null comment '是否已回补（0=未回补，1=已回补）',
-	fill_date varchar(10) null comment '回补日期',
-	`check` tinyint null,
-	create_time datetime null comment '插入时间',
-	update_time datetime null comment '更新时间',
-	constraint idx_gap_log_code_date
-		unique (code, start_date)
-)
-comment '缺口记录';
-
-create table gap_log_test
-(
-	ts_code varchar(20) not null,
-	code varchar(16) null comment 'code',
-	start_date varchar(10) null comment '产生缺口日期',
-	end_date varchar(10) not null comment '缺口结束日期',
-	gap_type varchar(10) not null comment '类型',
-	start_price decimal(10,2) not null comment '缺口开始价格',
-	end_price decimal(10,2) not null comment '缺口结束价格',
-	gap_rate decimal(10,2) not null comment '缺口大小%',
-	is_fill tinyint default 0 not null comment '是否已回补（0=未回补，1=已回补）',
-	fill_date varchar(10) null comment '回补日期',
-	`check` tinyint null,
-	create_time datetime null comment '插入时间',
-	update_time datetime null comment '更新时间',
-	constraint idx_gap_log_code_date
-		unique (code, start_date)
-)
-comment '缺口记录';
-
 create table live
 (
 	trade_date varchar(10) not null comment 'trade date',
@@ -315,38 +284,84 @@ create table n_stat
 	pt20 double null,
 	pt60 double null,
 	trend_up tinyint(1) null,
+	hist_pos bigint null,
 	change_list text null,
 	update_time datetime null
 );
 
-create table open_gap
+create table open_gap_log
 (
 	trade_date varchar(10) not null comment 'trade date',
-	code varchar(8) not null,
-	name varchar(10) not null comment 'name',
-	category varchar(8) default '' not null comment 'category',
+	code varchar(8) not null comment 'code',
 	pre_close decimal(10,2) not null comment 'pre close',
 	pre_settle decimal(10,2) not null comment 'pre settle',
-	pre_high decimal(10,2) null comment 'pre high',
 	pre_low decimal(10,2) null comment 'pre low',
+	pre_high decimal(10,2) null comment 'pre high',
 	open decimal(10,2) not null comment 'current open',
-	open_change decimal(10,2) not null comment 'open change',
+	open_change decimal(10,2) not null comment 'open change percentage base on pre settle price',
+	gap_type varchar(10) not null comment 'gap type',
 	gap_rate decimal(10,2) not null comment 'gap rate',
-	day_gap tinyint null comment 'is day gap',
-	contract_position tinyint not null comment 'contract relative pos',
-	remark varchar(64) null comment 'remark',
+	contract_pos tinyint not null comment 'contract relative pos of open price',
+	filled tinyint default 0 not null comment 'is filled',
+	filled_date datetime null comment 'filled date',
 	buy_low decimal(10,2) not null comment 'low price for buy',
 	sell_high decimal(10,2) not null comment 'high price for sell',
 	suggest tinyint default 0 not null comment '-1=sell, 0=none, 1=buy',
 	suggest_price decimal(10,2) null comment 'suggest price',
-	create_time timestamp default CURRENT_TIMESTAMP not null,
+	checked tinyint null comment 'is checked',
+	create_time datetime not null comment 'insert time',
+	update_time datetime not null comment 'update time',
 	constraint uidx_open_gap_code_trade_date
 		unique (code, trade_date)
 )
 comment 'open gap log';
 
 create index idx_open_gap_trade_date
-	on open_gap (trade_date);
+	on open_gap_log (trade_date);
+
+create table realtime
+(
+	code text null,
+	pre_set double null,
+	open double null,
+	type text null,
+	gap double null,
+	gap_pr double null,
+	fill bigint null,
+	`change` double null,
+	limdw bigint null,
+	limup bigint null,
+	close double null,
+	bid double null,
+	ask double null,
+	volume double null,
+	hold double null,
+	a5d bigint null,
+	a20d bigint null,
+	a60d bigint null,
+	a5d_ch double null,
+	a20d_ch double null,
+	a60d_ch double null,
+	cot_a double null,
+	cot_b double null,
+	trend text null,
+	cota_ch double null,
+	cotb_ch double null,
+	lo_hi text null,
+	pos bigint null,
+	lim_pos bigint null,
+	c_lo_hi text null,
+	c_pos bigint null,
+	h_lo_hi text null,
+	h_pos bigint null,
+	update_time datetime null
+);
+
+create table test_emoji
+(
+	a text null,
+	b text null
+);
 
 create table trade_daily
 (
@@ -535,4 +550,8 @@ create table week_stat
 	constraint future_week_stat_pk
 		unique (code, week)
 );
+
+create definer = root@localhost function STR_SPLIT(s text, del char, i int) returns varchar(32) deterministic security invoker
+-- missing source code
+;
 
