@@ -31,7 +31,7 @@ def update_gap_record(end_price, end_date, code, start_date):
 
 
 def del_gap_record(code):
-    sql = "delete from gap_log where code='%s';"
+    sql = "delete from open_gap_log where code='%s';"
     cursor.execute(sql % code)
     db.commit()
     print("Delete gap record ", code)

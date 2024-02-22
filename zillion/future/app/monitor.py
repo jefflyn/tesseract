@@ -60,12 +60,17 @@ def get_open_gap(code, open, pre_settle, low, high, pre_low, pre_high):
     return [pre_settle, open, open_type, gap, gap_price, is_fill]
 
 
+def log_index_change():
+
+
+
 if __name__ == '__main__':
     basic_df = basic.get_future_basics()
     contract_map = contract.contract_map
     contract_codes = list(contract_map.keys())
     last_daily = daily.get_pre_trading(contract_codes)
     nstat_map = nstat.nstat_map
+    add_flag = False
     while True:
         codes = contract_codes
         now = date_util.now()
@@ -143,6 +148,24 @@ if __name__ == '__main__':
             result_data.append(result_list)
         result_df = pd.DataFrame(result_data, columns=columns)
         db_util.to_db(result_df, 'realtime', db_name='future')
+
+        ## add index log begin
+        time_str = str(now.hour) + ':' + str(now.minute)
+        result_df['date'] = now.date()
+        result_df['time'] = time_str
+        df_mean = result_df.groupby(['date', 'time'])[['change']].mean()
+        df_mean.insert(loc=0, column='date', value=now.date())
+        df_mean.insert(loc=1, column='time', value=time_str)
+        df_mean = df_mean.reset_index(drop=True)
+        at_minutes = now.minute in [1, 11, 21, 31, 41, 51]
+        if at_minutes is False:
+            add_flag = False
+        if future_util.is_trade_time() and add_flag is False and at_minutes:
+            df_mean['change'] = df_mean['change'].apply(lambda x: round(x, 2))
+            db_util.to_db(df_mean, 'realtime_index', if_exists='append', db_name='future')
+            add_flag = True
+        print(df_mean)
+        ## add index log end
         print(now)
         if not future_util.is_trade_time():
             break

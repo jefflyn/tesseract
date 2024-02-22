@@ -99,3 +99,4 @@ if __name__ == '__main__':
             update_contract_hl(code)
         if code == main_code and not_main is True:
             contract.update_contract_main(code)
+    print(time_now)
