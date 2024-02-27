@@ -128,11 +128,89 @@ def add_gap(code_list):
                            round((next_low - begin_high) * 100 / begin_high, 2), 0, date_util.now(), date_util.now())])
 
 
+
+# 计算每天仍然存在的缺口
+def find_existing_gaps(data):
+    gaps = []
+    latest = data.tail(1)
+    idx = latest.index.to_numpy()[0]
+    latest_price = round(latest.at[idx, 'close'], 2)
+    latest_date = latest.at[idx, 'trade_date']
+    high_list = list(data['high'])
+    low_list = list(data['low'])
+    date_list = list(data['trade_date'])
+    for index, row in data.iterrows():
+        if index == len(high_list) - 1:
+            break
+        current_date = row['trade_date']
+        current_low = round(low_list[index], 2)
+        current_high = round(high_list[index], 2)
+        # 寻找之后数据中的最高价和最低价
+        # next_low = min(low_list[index + 1:])
+        # next_high = max(high_list[index + 1:])
+        direction = None
+        gap_from = None
+        gap_to = None
+        gap_size = None
+        is_closed = 0
+        closed_date = None
+        days = 0
+        current_price = latest_price
+        for nxt_idx in range(index + 1, len(high_list)):
+            # 下一日
+            next_low = round(low_list[nxt_idx], 2)
+            next_high = round(high_list[nxt_idx], 2)
+            # 忽略当天回补的
+            if direction is None and next_low > current_high:
+                direction = "向上"
+                gap_from = current_high
+                gap_to = next_low if gap_to is None or next_low < gap_to else gap_to
+                gap_size = round((next_low - current_high) * 100 / current_high, 2)
+                current_gap_size = round((current_high - latest_price) * 100 / latest_price, 2)
+                days = date_util.date_diff(current_date, latest_date)
+            elif direction is None and next_high < current_low:
+                direction = "向下"
+                gap_from = current_low
+                gap_to = next_high if gap_to is None or next_high > gap_to else gap_to
+                gap_size = round((next_high - current_low) * 100 / current_low, 2)
+                current_gap_size = round((current_low - latest_price) * 100 / latest_price, 2)
+                days = date_util.date_diff(current_date, latest_date)
+            if direction is None:
+                break
+            if (direction == "向上" and next_low <= current_high) \
+                    or (direction == "向下" and next_high >= current_low):
+                is_closed = 1
+                closed_date = date_list[nxt_idx]
+                days = date_util.date_diff(current_date, closed_date)
+                current_gap_size = 0
+                break
+
+        # if direction is not None:
+            # [(row['code'], current_date, row['close'], row['settle'], row['low'], row['high'], row['open'],
+            # open_change,gap_type,gap_rate,contract_pos,
+            # is_closed, closed_date, buy_low,sell_high,suggest,suggest_price,checked,create_time,update_time)]
+            # data_to_insert = [(row['code'], current_date, pre_close, pre_settle, pre_low,pre_high,
+            # open,open_change,gap_type,gap_rate,contract_pos,
+            # is_closed, closed_date, buy_low,sell_high,suggest,suggest_price,checked,create_time,update_time)]
+            #
+            #     [(row['code'], current_date, direction, round(gap_from, 2), round(gap_to, 2), gap_size,
+            #                    is_closed, closed_date, days, float(current_price), float(current_gap_size))]
+            # print(data_to_insert)
+
+    return gaps
+
+
+
 if __name__ == '__main__':
+    trade_data = daily.get_daily('SA2405')
+    trade_data = trade_data.reset_index()
+
+    find_existing_gaps(trade_data)
+
     txt1 = 'aaa'
     txt2 = 'bbb'
     txt3 = "378.8 @ 201222\n714.4 @ 220609"
 
     print(txt3)
     # print('done @', date_util.now_str())
-    add_gap(['BU2406'])
+    # add_gap(['BU2406'])

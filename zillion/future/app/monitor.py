@@ -60,10 +60,6 @@ def get_open_gap(code, open, pre_settle, low, high, pre_low, pre_high):
     return [pre_settle, open, open_type, gap, gap_price, is_fill]
 
 
-def log_index_change():
-
-
-
 if __name__ == '__main__':
     basic_df = basic.get_future_basics()
     contract_map = contract.contract_map
