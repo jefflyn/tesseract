@@ -129,7 +129,7 @@ if __name__ == '__main__':
             cot_a = c_low if c_low_date < c_high_date else c_high
             cot_b = c_high if c_low_date < c_high_date else c_low
             cot_trd = 'up' if c_low_date < c_high_date else 'down'
-            cota_ch = round((price - cot_a) * 100 / cot_a, 2)
+            cota_ch = round((cot_b - cot_a) * 100 / cot_a, 2)
             cotb_ch = round((price - cot_b) * 100 / cot_b, 2)
             part4 = [cot_a, cot_b, cot_trd, cota_ch, cotb_ch]
             # part5 ['lo_hi', 'pos', 'lim_pos', 'c_lo_hi', 'c_pos', 'h_lo_hi', 'h_pos', 'update_time']

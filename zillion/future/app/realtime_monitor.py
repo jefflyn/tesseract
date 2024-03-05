@@ -1,5 +1,4 @@
 import datetime
-import statistics
 import time
 
 import pandas as pd
@@ -12,7 +11,6 @@ from zillion.future.future_util import calc_position
 from zillion.utils import notify_util, date_util
 from zillion.utils.date_util import convert_to_date
 from zillion.utils.price_util import future_price
-from zillion.utils.redis_util import redis_client
 
 pd.set_option('display.width', None)
 pd.set_option('display.max_columns', None)
@@ -21,31 +19,31 @@ init_target = {
     'SC2404': [[-450], [750]],
     # 'TA2405': [[-5500], [6500]],
     # 'PP2405': [[-6800], [8000]],
-    'PG2404': [[-4050], [4300]],
+    'PG2404': [[-4500], [4800]],
     # 'EB2405': [[-7000], [9000]],
     # 'NR2404': [[-11535], [13000]],
 
-    # 'SF2405': [[-6500], [6750]],
+    'SF2405': [[-6500], [6750]],
     # 'I2405': [[-870], [900]],
     # 'JM2405': [[-1200], [2500]],
     # 'J2405': [[-2000], [3000]],
     # 'UR2405': [[-2090], [2200]],
     # 'SA2405': [[-1770], [1819]],
-    'FG2405': [[-1686], [1776]],
-    'SP2405': [[-5000], [5900]],
+    # 'FG2405': [[-1600], [1776]],
+    'SP2405': [[-5750], [5900]],
 
-    # 'AG2406': [[-5800], [6000]],
-    # 'SN2406': [[-200000], [22800 0]],
+    'AG2406': [[-5800], [6150]],
+    # 'SN2404': [[-216500], [228000]],
     # 'NI2405': [[-123000], [127500]],
     # 'AL2312': [[-17345.0], [20000]],
     # 'SI2405': [[-12000], [15000]],
-    'LC2407': [[-106000], [110000]],
+    'LC2407': [[-105000], [117000]],
 
-    'RM2405': [[-2400], [2485]],
-    'OI2405': [[-7650], [7785]],
+    # 'RM2405': [[-2400], [2626]],
+    'OI2405': [[-7650], [7916]],
     # 'P2405': [[-7000], [8000]],
     # 'CJ2405': [[-12000], [13000]],
-    # 'CF2405': [[-14500], [16200]],
+    # 'CF2405': [[-15760], [16200]],
 
 }
 
@@ -166,7 +164,7 @@ if __name__ == '__main__':
             avg60d = price if nst is None else nstat.get_attr(nst, 'avg60d')
             avg5d_flag = '🌘' if price >= avg5d else '🌑'
             realtime['close'] = str(avg5d) + '【' + future_price(price) + '】' + avg5d_flag
-            trend_flag = '🌗' if price >= avg20d else '🌑'
+            trend_flag = '🌖' if price >= avg20d >= avg60d else '🌗' if price >= avg20d else '🌑'
 
             pt60 = round((price - avg60d) * 100 / avg60d, 2)
             realtime['avg_60_20'] = '(' + str(avg60d) + ',' + format_percent(pt60) + ',' + str(
@@ -267,23 +265,24 @@ if __name__ == '__main__':
         realtime_df = realtime_df.drop(columns=['high'])
         # change pos
         realtime_df = realtime_df.sort_values(by=['pos'], ascending=True, ignore_index=True)
-        # index ##
         now_time = datetime.datetime.now()
-        hour_minute = str(now_time.hour) + '' + str(now_time.minute)
-        key = 'index-' + date_util.curt_date
-        if hour_minute not in hour_minute_map.keys() and now_time.minute in [1, 11, 21, 31, 41, 51] \
-                and future_util.is_trade_time():
-            avg_ch = str(round(statistics.mean(list(realtime_df['change'])), 2)) + ''
-            redis_client.lpush(key, hour_minute + ': ' + avg_ch)
-            hour_minute_map[hour_minute] = avg_ch
-        # index end
+        # index start ##
+        # hour_minute = str(now_time.hour) + '' + str(now_time.minute)
+        # key = 'index-' + date_util.curt_date
+        # if hour_minute not in hour_minute_map.keys() and now_time.minute in [1, 11, 21, 31, 41, 51] \
+        #         and future_util.is_trade_time():
+        #     avg_ch = str(round(statistics.mean(list(realtime_df['change'])), 2)) + ''
+        #     redis_client.lpush(key, hour_minute + ': ' + avg_ch)
+        #     hour_minute_map[hour_minute] = avg_ch
+        # # index end
         final_df = format_realtime(realtime_df)
         print(
             final_df[
                 ['code', 'open', 'change', 'lo_hi', 'close', 'bid_ask', 'pos', '5d_chg', 'avg_60_20', 'ct_hl',
                  'hist_hl', 'earning']])
         ###   'target', 't_diff', 'earning']])
-        print(now_time, str(redis_client.lrange(key, 0, -1)))
+        # print(now_time, str(redis_client.lrange(key, 0, -1)))
+        print(now_time)
         if not future_util.is_trade_time():
             break
         time.sleep(2)

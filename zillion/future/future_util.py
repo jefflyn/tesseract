@@ -19,11 +19,11 @@ def is_trade_time():
     :return:
     '''
     current_time = date_util.now()
-    morning_open_time = datetime.datetime(current_time.year, current_time.month, current_time.day, hour=9, minute=1)
+    morning_open_time = datetime.datetime(current_time.year, current_time.month, current_time.day, hour=9, minute=0, second=30)
     morning_close_time = datetime.datetime(current_time.year, current_time.month, current_time.day, hour=11, minute=30)
-    afternoon_open_time = datetime.datetime(current_time.year, current_time.month, current_time.day, hour=13, minute=30)
-    afternoon_close_time = datetime.datetime(current_time.year, current_time.month, current_time.day, hour=15, minute=0)
-    night_open_time = datetime.datetime(current_time.year, current_time.month, current_time.day, hour=21, minute=1)
+    afternoon_open_time = datetime.datetime(current_time.year, current_time.month, current_time.day, hour=13, minute=29, second=30)
+    afternoon_close_time = datetime.datetime(current_time.year, current_time.month, current_time.day, hour=15, minute=0, second=3)
+    night_open_time = datetime.datetime(current_time.year, current_time.month, current_time.day, hour=21, minute=0, second=30)
     night_close_time = datetime.datetime(current_time.year, current_time.month, current_time.day, hour=23, minute=50)
 
     # print(current_time, day_open_time, day_close_time, night_open_time, night_close_time, is_trade_time)
