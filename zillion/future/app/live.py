@@ -14,49 +14,6 @@ from zillion.utils.price_util import future_price
 
 pd.set_option('display.width', None)
 pd.set_option('display.max_columns', None)
-# nohup redis-server /Users/ruian/etc/redis.conf &
-init_target = {
-    'SC2404': [[-450], [750]],
-    # 'TA2405': [[-5500], [6500]],
-    # 'PP2405': [[-6800], [8000]],
-    'PG2404': [[-4500], [4800]],
-    # 'EB2405': [[-7000], [9000]],
-    # 'NR2404': [[-11535], [13000]],
-
-    'SF2405': [[-6500], [6750]],
-    # 'I2405': [[-870], [900]],
-    # 'JM2405': [[-1200], [2500]],
-    # 'J2405': [[-2000], [3000]],
-    # 'UR2405': [[-2090], [2200]],
-    # 'SA2405': [[-1770], [1819]],
-    # 'FG2405': [[-1600], [1776]],
-    'SP2405': [[-5750], [5900]],
-
-    'AG2406': [[-5800], [6150]],
-    # 'SN2404': [[-216500], [228000]],
-    # 'NI2405': [[-123000], [127500]],
-    # 'AL2312': [[-17345.0], [20000]],
-    # 'SI2405': [[-12000], [15000]],
-    'LC2407': [[-105000], [117000]],
-
-    # 'RM2405': [[-2400], [2626]],
-    'OI2405': [[-7650], [7916]],
-    # 'P2405': [[-7000], [8000]],
-    # 'CJ2405': [[-12000], [13000]],
-    # 'CF2405': [[-15760], [16200]],
-
-}
-
-holding_cost = {
-    'OI2405': [7730, 10], 'P2405': [1974, 0], 'RM2405': [2500, 5],
-    'CJ2405': [12715, 0], 'CF2405': [-16760, 0], 'NR2404': [11560, 0],
-
-    'TA2405': [5752, 0], 'PP2405': [-7164, 0], 'EB2403': [8000, 0], 'PG2403': [4350, 4],
-    'FG2405': [1814, 5], 'SA2405': [2015, 0], 'UR2405': [2148, 5], 'SP2405': [5672, 4],
-
-    'SF2405': [6476, 0], 'I2405': [904, 0], 'JM2405': [1300, 0], 'J2405': [2000, 0],
-    'AL2308': [15000, 0], 'SI2308': [12550, 0], 'AG2406': [5989, 3], 'SN2403': [200000, 0], 'NI2403': [124000, 0], 'LC2407': [-105750, 6]
-}
 
 
 def format_realtime(df):
@@ -82,7 +39,7 @@ def format_percent(chg=None):
     return ('+' + str(chg) if chg > 0 else str(chg)) + '%'
 
 
-if __name__ == '__main__':
+def show(init_target, holding_cost):
     basic_df = basic.get_future_basics()
     contract_map = contract.contract_map
     nstat_map = nstat.nstat_map
@@ -122,7 +79,7 @@ if __name__ == '__main__':
             low = realtime.iloc[0].at["low"]
             bid = realtime.iloc[0].at["bid"]
             ask = realtime.iloc[0].at["ask"]
-            hl_tag = '!' if low_diff < 8 or high_diff < 8 else ''
+            hl_tag = '!!' if low_diff < 5 or high_diff < 5 else '!' if low_diff < 8 or high_diff < 8 else ''
             hl_tag = '_' if low <= c_low else ('^' if high >= c_high else hl_tag)
             if float(low) < float(c_low):
                 contract.update_hl(code, low, date_util.now_str(), None, None)

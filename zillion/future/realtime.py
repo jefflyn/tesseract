@@ -492,7 +492,7 @@ def delete_price_flash_cached():
 
 if __name__ == '__main__':
     """
-    python realtime.py argv1 argv2[c|p]
+    python live.py argv1 argv2[c|p]
     nohup /usr/local/bin/redis-server /usr/local/etc/redis.conf &
     nohup /usr/local/bin/redis-server /etc/redis.conf &
     """

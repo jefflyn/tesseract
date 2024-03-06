@@ -246,12 +246,12 @@ def calc_a1v_ratio(df):
 
 if __name__ == '__main__':
     """
-    python realtime.py df 1 false p
+    python live.py df 1 false p
     nohup /usr/local/bin/redis-server /usr/local/etc/redis.conf &
     nohup /usr/local/bin/redis-server /etc/redis.conf &
     """
     if len(argv) < 2:
-        print("Invalid args! At least 2 args like: python realtime.py df ...")
+        print("Invalid args! At least 2 args like: python live.py df ...")
         sys.exit(0)
     type = argv[1]
     if type not in keys:
