@@ -1,5 +1,6 @@
 import datetime
 import time
+from statistics import mean
 
 import pandas as pd
 from akshare.futures.symbol_var import symbol_varieties
@@ -222,24 +223,18 @@ def show(init_target, holding_cost):
         realtime_df = realtime_df.drop(columns=['high'])
         # change pos
         realtime_df = realtime_df.sort_values(by=['pos'], ascending=True, ignore_index=True)
+        # for printing
         now_time = datetime.datetime.now()
-        # index start ##
-        # hour_minute = str(now_time.hour) + '' + str(now_time.minute)
-        # key = 'index-' + date_util.curt_date
-        # if hour_minute not in hour_minute_map.keys() and now_time.minute in [1, 11, 21, 31, 41, 51] \
-        #         and future_util.is_trade_time():
-        #     avg_ch = str(round(statistics.mean(list(realtime_df['change'])), 2)) + ''
-        #     redis_client.lpush(key, hour_minute + ': ' + avg_ch)
-        #     hour_minute_map[hour_minute] = avg_ch
-        # # index end
+        mean_change = round(mean(list(realtime_df['change'])), 2)
+
         final_df = format_realtime(realtime_df)
         print(
             final_df[
                 ['code', 'open', 'change', 'lo_hi', 'close', 'bid_ask', 'pos', '5d_chg', 'avg_60_20', 'ct_hl',
                  'hist_hl', 'earning']])
         ###   'target', 't_diff', 'earning']])
-        # print(now_time, str(redis_client.lrange(key, 0, -1)))
-        print(now_time)
+
+        print(now_time, format_percent(mean_change))
         if not future_util.is_trade_time():
             break
         time.sleep(2)
