@@ -94,7 +94,7 @@ def wave_to_db(wave_list=None, wave_detail_list=None, tb_name_suffix=None):
 if __name__ == '__main__':
     df_data = db_stock.read_sql('select code from basic_us_selected order by id', params={})
     codes = list(df_data['code'])
-    do_wave(codes)
+    do_wave(codes, '2020-01-01',)
     df_data = db_stock.read_sql('select code from basic_us_cn order by id', params={})
     codes = list(df_data['code'])
     do_wave(codes, '2020-01-01', '_cn')
