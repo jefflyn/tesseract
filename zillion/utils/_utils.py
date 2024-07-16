@@ -1,9 +1,6 @@
 import os
-import platform
 import time
 from datetime import datetime
-
-import pdfkit
 
 
 def timer(func):
@@ -12,12 +9,14 @@ def timer(func):
     :param func:
     :return:
     '''
+
     def decor(*args):
         start_time = time.time()
         func(*args)
         end_time = time.time()
         d_time = end_time - start_time
         print("total consume time is", d_time)
+
     return decor
 
 
@@ -58,31 +57,6 @@ def chdir(path=None):
     if path is None:
         return os.getcwd()
     os.chdir(path)
-
-
-def save_to_pdf(htmlstr=None, desc=None):
-    options = {
-        'page-size': 'A4',  # Letter
-        'minimum-font-size': 33,
-        'margin-top': '0.75in',
-        'margin-right': '0.75in',
-        'margin-bottom': '0.75in',
-        'margin-left': '0.75in',
-        'encoding': "UTF-8",
-        'custom-header': [
-            ('Accept-Encoding', 'gzip')
-        ],
-        'no-outline': None,
-    }
-    sysstr = platform.system()
-    if sysstr == "Windows":
-        config = pdfkit.configuration(wkhtmltopdf=r'D:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe')
-        pdfkit.from_string(htmlstr, desc, options=options, configuration=config)
-    elif sysstr == "Linux":
-        print("Call Linux tasks")
-    else:
-        pdfkit.from_string(htmlstr, desc, options=options)
-    print('save to pdf successfully')
 
 
 if __name__ == '__main__':

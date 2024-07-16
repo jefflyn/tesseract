@@ -68,7 +68,7 @@ if __name__ == '__main__':
                 limit = basic_df.loc[symbol, 'limit']
                 contract.save_contract([[symbol, main_code, ts_code, 1, limit, 0, 0, '', '', 0, 0, '', '', 1,
                                          time_now, time_now, 0]])
-                print("add new contract hist daily:", main_code)
+                print("  >>> add new contract hist daily:", main_code)
                 daily.collect_hist_daily_ak([main_code])
 
             if symbol not in symbol_list:

@@ -26,6 +26,6 @@ if __name__ == '__main__':
         symbol = symbol_varieties(code)
         limit = basic_df.loc[symbol, 'limit']
         contract.save_contract([[symbol, code, code, 1, limit, 0, 0, '', '', 0, 0, '', '', 1, time_now, time_now, 0]])
-        print("add new contract hist daily:", code)
+        print("  >>> add new contract hist daily:", code)
         daily.collect_hist_daily_ak([code])
         update_contract_hl(code)
