@@ -4,11 +4,13 @@ import time
 import akshare
 import pandas as pd
 
-from zillion.utils import date_util
+from zillion.utils import date_util, notify_util
 from zillion.utils.date_util import now_str, today
 
 pd.set_option('display.width', None)
 pd.set_option('display.max_columns', None)
+
+baba_target_price = 80.0
 
 
 def format_realtime(df):
@@ -38,6 +40,11 @@ def hk_realtime_em(code=None):
     # db_stock.to_db(df, 'basic_hk')
     if code is not None:
         df = df[df['代码'].isin(code)]
+    baba_pr = df.loc[df['代码'] == '09988', '最新价'].iloc[0]
+    global baba_target_price
+    if baba_pr > baba_target_price:
+        notify_util.notify('📣 baba @' + date_util.time_str(),  '️🏁🏁🏁', '⬆️' + str(baba_pr))
+        baba_target_price = baba_pr * 1.01
     return format_realtime(df)
 
 

@@ -80,8 +80,10 @@ def show(init_target, holding_cost):
             low = realtime.iloc[0].at["low"]
             bid = realtime.iloc[0].at["bid"]
             ask = realtime.iloc[0].at["ask"]
-            hl_tag = '!!' if low_diff < 5 or high_diff < 5 else '!' if low_diff < 8 or high_diff < 8 else ''
-            hl_tag = '_' if low <= c_low else ('^' if high >= c_high else hl_tag)
+            hl_tag = '5_' if low_diff < 6 or high_diff < 6 else '7_' if low_diff < 8 or high_diff < 8 else ''
+            hl_tag = 'c_' if low <= c_low else ('c^' if high >= c_high else hl_tag)
+            hl_tag = 'h_' if low <= h_low else ('h^' if high >= h_high else hl_tag)
+
             if float(low) < float(c_low):
                 contract.update_hl(code, low, date_util.now_str(), None, None)
                 print(code, "update contract low!")

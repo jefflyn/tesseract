@@ -1,9 +1,10 @@
 from operator import add
+
 from pyspark import SparkContext
 
 if __name__ == "__main__":
     sc = SparkContext(appName="PythonWordCount")
-    lines = sc.textFile('README.txt')
+    lines = sc.textFile('data/ml-100k/README')
     count = lines.count
     print(count)
     counts = lines.flatMap(lambda x: x.split(' ')).map(lambda x: (x, 1)).reduceByKey(add)
