@@ -52,6 +52,7 @@ def show(init_target, holding_cost):
     today = date_util.today
     hour_minute_map = {}
     while True:
+        limit_info = []
         realtime_df = None
         for code in init_target.keys():
             contra = contract_map.get(code)
@@ -84,6 +85,13 @@ def show(init_target, holding_cost):
             hl_tag = 'c_' if low <= c_low else ('c^' if high >= c_high else hl_tag)
             hl_tag = 'h_' if low <= h_low else ('h^' if high >= h_high else hl_tag)
             limit_tag = '^' if ask == 0 or ask is None else ('_' if bid == 0 or bid is None else '')
+            price_diff = float(price) - float(pre_settle)
+            change = round(price_diff / float(pre_settle) * 100, 2)
+            realtime["change"] = change
+            if high == price:
+                limit_info.append(code + ' limit up @' + str(price) + ',' + format_percent(change))
+            elif price == low:
+                limit_info.append(code + ' limit down @' + str(price) + ',' + format_percent(change))
 
             if float(low) < float(c_low):
                 contract.update_hl(code, low, date_util.now_str(), None, None)
@@ -133,9 +141,7 @@ def show(init_target, holding_cost):
             realtime['5d_chg'] = str(change5d) + '%'
             realtime['lo_hi'] = '[' + future_price(low) + '-' + future_price(high) + ' ' + future_price(
                 high - low) + ']'
-            # realtime['diff'] = future_price(high - low)
-            price_diff = float(price) - float(pre_settle)
-            realtime["change"] = round(price_diff / float(pre_settle) * 100, 2)
+
             open_flag = '↑' if open > pre_settle else ('↓' if open < pre_settle else ' ')
             last = last_daily[last_daily.code == code]
             pre_low = last.iloc[0].at['low']
@@ -237,7 +243,7 @@ def show(init_target, holding_cost):
                  'hist_hl', 'earning']])
         ###   'target', 't_diff', 'earning']])
 
-        print(now_time, format_percent(mean_change))
+        print(now_time, format_percent(mean_change), limit_info)
         if not future_util.is_trade_time():
             break
         time.sleep(2)
