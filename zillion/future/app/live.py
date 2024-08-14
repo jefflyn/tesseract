@@ -83,6 +83,7 @@ def show(init_target, holding_cost):
             hl_tag = '5_' if low_diff < 6 or high_diff < 6 else '7_' if low_diff < 8 or high_diff < 8 else ''
             hl_tag = 'c_' if low <= c_low else ('c^' if high >= c_high else hl_tag)
             hl_tag = 'h_' if low <= h_low else ('h^' if high >= h_high else hl_tag)
+            limit_tag = '^' if ask == 0 or ask is None else ('_' if bid == 0 or bid is None else '')
 
             if float(low) < float(c_low):
                 contract.update_hl(code, low, date_util.now_str(), None, None)
@@ -166,7 +167,7 @@ def show(init_target, holding_cost):
             # str(position) + '-' + str(hist_pos)
             realtime["pos"] = position
             realtime["pos_hist"] = hist_pos
-            realtime["code"] = hl_tag + code
+            realtime["code"] = hl_tag + code + limit_tag
             # realtime["his_hl"] = '^' + future_price(his_high) + '@' + his_high_date \
             #     if hist_pos > 50 else '_' + future_price(his_low) + '@' + his_low_date
             up_ = '[' + future_price(c_low) + '-' + future_price(c_high) + ']↑' + '(' + format_percent(
