@@ -89,9 +89,9 @@ def show(init_target, holding_cost):
             change = round(price_diff / float(pre_settle) * 100, 2)
             realtime["change"] = change
             if high == price:
-                limit_info.append(code + ' limit up @' + str(price) + ',' + format_percent(change))
+                limit_info.append(code + ' LIMIT UP @' + str(price) + ' ' + format_percent(change))
             elif price == low:
-                limit_info.append(code + ' limit down @' + str(price) + ',' + format_percent(change))
+                limit_info.append(code + ' LIMIT DOWN @' + str(price) + ' ' + format_percent(change))
 
             if float(low) < float(c_low):
                 contract.update_hl(code, low, date_util.now_str(), None, None)

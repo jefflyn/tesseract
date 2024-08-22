@@ -4,6 +4,7 @@ import pandas as pd
 from akshare.futures.symbol_var import symbol_varieties
 
 from zillion.future import future_util, db_util
+from zillion.future.app.live import format_percent
 from zillion.future.domain import trade, basic, contract, nstat, daily
 from zillion.future.future_util import calc_position
 from zillion.utils import date_util
@@ -56,7 +57,7 @@ def get_open_gap(code, open, pre_settle, low, high, pre_low, pre_high):
         is_fill = -1
     if (open_type == '_跳空低开' and high >= pre_low) or (open_type == '_跳空高开' and low <= pre_high):
         is_fill = 1
-        print(code, "filled")
+        # print(code, "filled")
     return [pre_settle, open, open_type, gap, gap_price, is_fill]
 
 
@@ -77,6 +78,9 @@ if __name__ == '__main__':
         # print(codes)
         # print(list(realtime_df['code']))
         result_data = []
+        limit_up_info = []
+        limit_dw_info = []
+        big_change = []
         for index, realtime in realtime_df.iterrows():
             code = realtime['code']
             result_list = [code]
@@ -114,6 +118,12 @@ if __name__ == '__main__':
             lim_up = round(pre_settle * (1 + contra.limit / 100))
             part2 = [change, lim_down, lim_up,
                      price, realtime['bid'], realtime['ask'], realtime['volume'], realtime['hold']]
+            if abs(change) > 3:
+                big_change.append(code + ' ' + format_percent(change) + ' @' + str(price))
+            if high == price:
+                limit_up_info.append(code + ' UP @' + str(price) + ' ' + format_percent(change))
+            elif price == low:
+                limit_dw_info.append(code + ' DOWN @' + str(price) + ' ' + format_percent(change))
 
             # part3 ['a5d', 'a20d', 'a60d', 'a5d_ch', 'a20d_ch', 'a60d_ch']
             # change5d = nstat.get_attr(nst, '5d_change') if nst is not None else 0
@@ -152,17 +162,21 @@ if __name__ == '__main__':
         df_mean = result_df.groupby(['date', 'time'])[['change']].mean()
         df_mean.insert(loc=0, column='date', value=now.date())
         df_mean.insert(loc=1, column='time', value=time_str)
+        df_mean['change'] = df_mean['change'].apply(lambda x: round(x, 2))
         df_mean = df_mean.reset_index(drop=True)
         at_minutes = now.minute in [1, 11, 21, 31, 41, 51]
         if at_minutes is False:
             add_flag = False
         if future_util.is_trade_time() and add_flag is False and at_minutes:
-            df_mean['change'] = df_mean['change'].apply(lambda x: round(x, 2))
             db_util.to_db(df_mean, 'realtime_index', if_exists='append', db_name='future')
             add_flag = True
+        df_mean['change'] = df_mean['change'].apply(lambda x: format_percent(x))
         print(df_mean)
         ## add index log end
         print(now)
+        print(big_change)
+        print(limit_up_info)
+        print(limit_dw_info)
         if not future_util.is_trade_time():
             break
         time.sleep(2)
