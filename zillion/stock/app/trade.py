@@ -10,7 +10,7 @@ from zillion.utils.date_util import now_str, today
 pd.set_option('display.width', None)
 pd.set_option('display.max_columns', None)
 
-baba_target_price = 82.0
+baba_target_price = 85.0
 
 
 def format_realtime(df):

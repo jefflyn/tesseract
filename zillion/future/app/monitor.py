@@ -96,8 +96,11 @@ if __name__ == '__main__':
             # basic = basic_df[basic_df.symbol == symbol]
             # daily
             last = last_daily[last_daily.code == code]
-            pre_low = last.iloc[0].at['low']
-            pre_high = last.iloc[0].at['high']
+            if last is None or last.empty:
+                continue
+            else:
+                pre_low = last.iloc[0].at['low']
+                pre_high = last.iloc[0].at['high']
             # contract
             contra = contract_map.get(code)
             c_low = contra.low
@@ -119,11 +122,11 @@ if __name__ == '__main__':
             part2 = [change, lim_down, lim_up,
                      price, realtime['bid'], realtime['ask'], realtime['volume'], realtime['hold']]
             if abs(change) > 3:
-                big_change.append(code + ' ' + format_percent(change) + ' @' + str(price))
+                big_change.append(code + ' ' + format_percent(change) + ' @' + future_price(price))
             if high == price:
-                limit_up_info.append(code + ' UP @' + str(price) + ' ' + format_percent(change))
+                limit_up_info.append(code + ' UP @' + future_price(price) + ' ' + format_percent(change))
             elif price == low:
-                limit_dw_info.append(code + ' DOWN @' + str(price) + ' ' + format_percent(change))
+                limit_dw_info.append(code + ' DOWN @' + future_price(price) + ' ' + format_percent(change))
 
             # part3 ['a5d', 'a20d', 'a60d', 'a5d_ch', 'a20d_ch', 'a60d_ch']
             # change5d = nstat.get_attr(nst, '5d_change') if nst is not None else 0
