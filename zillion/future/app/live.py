@@ -81,7 +81,7 @@ def show(init_target, holding_cost):
             low = realtime.iloc[0].at["low"]
             bid = realtime.iloc[0].at["bid"]
             ask = realtime.iloc[0].at["ask"]
-            hl_tag = '5_' if low_diff < 6 or high_diff < 6 else '7_' if low_diff < 8 or high_diff < 8 else ''
+            hl_tag = '5_' if low_diff < 6 else '5^' if high_diff < 6 else '7_' if low_diff < 8 else '7^' if high_diff < 8 else ''
             hl_tag = 'c_' if low <= c_low else ('c^' if high >= c_high else hl_tag)
             hl_tag = 'h_' if low <= h_low else ('h^' if high >= h_high else hl_tag)
             limit_tag = '^' if ask == 0 or ask is None else ('_' if bid == 0 or bid is None else '')
