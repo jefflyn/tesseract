@@ -164,12 +164,13 @@ def show(init_target, holding_cost):
                 position = 100
             if position == 0 and low_dir.get(code) > low:
                 low_dir[code] = low
-                notify_util.notify('📣' + code + ' @' + date_util.time_str(),
-                                   '❄️❄️❄️' if low <= c_low else '🌧🌧🌧', '⬇️' + str(price))
+                # ❄️=contrat low 💣=his low 🌧=day low
+                flag = '❄️❄️❄️' if low <= c_low else '💣💣💣' if low <= h_low else '🌧🌧🌧'
+                notify_util.notify('📣' + code + ' @' + date_util.time_str(), flag, '⬇️' + str(price))
             elif position == 100 and high_dir.get(code) < high:
                 high_dir[code] = high
-                notify_util.notify('📣' + code + ' @' + date_util.time_str(),
-                                   '️🔥🔥🔥' if high >= c_high else '☀️☀️☀️', '⬆️' + str(price))
+                flag = '🔥🔥🔥' if high >= c_high else '🎉🎉🎉' if low <= h_low else '☀️☀️☀️'
+                notify_util.notify('📣' + code + ' @' + date_util.time_str(), flag, '⬆️' + str(price))
             # str(position) + '-' + str(hist_pos)
             realtime["pos"] = position
             realtime["pos_hist"] = hist_pos
