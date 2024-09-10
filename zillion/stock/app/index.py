@@ -6,7 +6,7 @@ import pandas as pd
 import tushare as ts
 
 import zillion.utils.sms_util as sms
-from zillion.gene import wave
+from zillion.stock.gene import wave
 from zillion.utils import date_util, _utils, date_const
 from zillion.utils.redis_util import redis_client
 

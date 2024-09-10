@@ -1,4 +1,4 @@
-from zillion.app.selection import selector
+from zillion.stock.app.selection import selector
 
 
 if __name__ == '__main__':

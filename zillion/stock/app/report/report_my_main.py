@@ -1,7 +1,7 @@
 from datetime import datetime
 
-from zillion.app import report
-from zillion.app.selection import selector
+from zillion.stock.app import report
+from zillion.stock.app.selection import selector
 from zillion.stock.data import data_util
 
 if __name__ == '__main__':

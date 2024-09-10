@@ -124,9 +124,9 @@ if __name__ == '__main__':
             if abs(change) > 3:
                 big_change.append(code + ' ' + format_percent(change) + ' @' + future_price(price))
             if high == price:
-                limit_up_info.append(code + ' UP @' + future_price(price) + ' ' + format_percent(change))
+                limit_up_info.append(code + ' @' + future_price(price) + ' ' + format_percent(change))
             elif price == low:
-                limit_dw_info.append(code + ' DOWN @' + future_price(price) + ' ' + format_percent(change))
+                limit_dw_info.append(code + ' @' + future_price(price) + ' ' + format_percent(change))
 
             # part3 ['a5d', 'a20d', 'a60d', 'a5d_ch', 'a20d_ch', 'a60d_ch']
             # change5d = nstat.get_attr(nst, '5d_change') if nst is not None else 0
@@ -178,8 +178,8 @@ if __name__ == '__main__':
         ## add index log end
         print(now)
         print(big_change)
-        print(limit_up_info)
-        print(limit_dw_info)
+        print('UP', limit_up_info)
+        print('DOWN', limit_dw_info)
         if not future_util.is_trade_time():
             break
         time.sleep(2)

@@ -3,7 +3,7 @@ from sys import argv
 
 import pandas as pd
 
-from zillion.gene import trump
+from zillion.stock.gene import trump
 
 pd.set_option('display.width', 600)
 

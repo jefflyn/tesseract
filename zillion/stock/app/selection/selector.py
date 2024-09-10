@@ -5,11 +5,9 @@ from sys import argv
 import pandas as pd
 
 import zillion.future.db_util as _dt
-from zillion.gene import limitup
-from zillion.gene import upnday
-from zillion.gene import wave
 from zillion.stock.data import data_util
 from zillion.stock.data.service import concept_service
+from zillion.stock.gene import wave, limitup, upnday
 from zillion.utils import date_const
 from zillion.utils import date_util
 from zillion.utils._utils import timer

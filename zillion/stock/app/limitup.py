@@ -3,7 +3,7 @@ from sys import argv
 
 import pandas as pd
 
-from zillion.gene import limitup
+from zillion.stock.gene import limitup
 
 pd.set_option('display.width', 600)
 

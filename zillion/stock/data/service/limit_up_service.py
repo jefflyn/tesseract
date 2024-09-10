@@ -2,8 +2,8 @@ import pandas as pd
 
 from zillion.future import db_util
 from zillion.future.db_util import get_db
-from zillion.gene import wave
 from zillion.stock.data import data_util
+from zillion.stock.gene import wave
 from zillion.utils import date_util
 
 

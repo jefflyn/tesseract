@@ -11,11 +11,9 @@ import numpy as np
 import pandas as pd
 
 import zillion.future.db_util as _dt
-from zillion.app import realtime
-from zillion.gene import limitup
-from zillion.gene import maup
-from zillion.gene import wave
+from zillion.stock.app import realtime
 from zillion.stock.data import data_util
+from zillion.stock.gene import maup, wave, limitup
 
 sender = '649054380@qq.com'
 passw = 'pznntikuyzfvbchb'

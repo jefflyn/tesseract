@@ -1,5 +1,5 @@
-from zillion.app.selection import select_x
-from zillion.app.selection import selector
+from zillion.stock.app.selection import select_x
+from zillion.stock.app.selection import selector
 
 if __name__ == '__main__':
     print('start selector main ...')

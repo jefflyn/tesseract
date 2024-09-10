@@ -2,7 +2,7 @@ import pandas as pd
 
 from utils.mail import mail_util
 from zillion.future import db_util
-from zillion.gene import limitup
+from zillion.stock.gene import limitup
 from zillion.utils import date_util
 
 if __name__ == '__main__':

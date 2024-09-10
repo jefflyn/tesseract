@@ -1,3 +1,6 @@
+from sqlalchemy import Column, Integer, String
+from sqlalchemy.ext.declarative import declarative_base
+
 import zillion.future.db_util as _dt
 from zillion.future.db_util import read_sql
 
@@ -7,8 +10,14 @@ db = _dt.get_db("future")
 cursor = db.cursor()
 contract_map = {}
 
+Base = declarative_base()
 
-class Contract:
+
+class Contract(Base):
+    __tablename__ = 'contract'  # 这表明这个类映射到名为 'contracts' 的表
+    id = Column(Integer, primary_key=True)
+    column_name = Column(String)
+
     symbol = ''
     code = ''
     low = 0

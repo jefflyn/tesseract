@@ -14,6 +14,7 @@ def get_all():
     df.index = df['symbol']
     return df
 
+
 def get_future_basics(type=None, night=None, on_target=None):
     '''
     查询商品合约详情，不包含金融产品
@@ -58,6 +59,21 @@ def symbol_exchange_map(basic_df):
         exchange = row['exchange']
         result_map[symbol] = exchange
     return result_map
+
+
+from sqlalchemy import Column, String
+from sqlalchemy.ext.declarative import declarative_base
+
+Base = declarative_base()
+
+
+class Basic(Base):
+    __tablename__ = 'basic'
+    symbol = Column(String, primary_key=True)  # 主键
+    name = Column(String(16))
+
+    def __repr__(self):
+        return f"<Basic(symbol={self.symbol}, name={self.name})>"
 
 
 if __name__ == '__main__':
