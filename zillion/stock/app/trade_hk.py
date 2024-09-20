@@ -2,15 +2,21 @@ import datetime
 import time
 
 import akshare
+import numpy as np
 import pandas as pd
 
 from zillion.utils import date_util, notify_util
 from zillion.utils.date_util import now_str, today
+from zillion.utils.position_util import calc_position
 
 pd.set_option('display.width', None)
 pd.set_option('display.max_columns', None)
 
-baba_target_price = 85.0
+baba_target_price = 90.0
+
+
+def custom_function(row):
+    return calc_position(float(row['最新价']), float(row['最低']), float(row['最高']))
 
 
 def format_realtime(df):
@@ -19,7 +25,10 @@ def format_realtime(df):
     :param df:
     :return:
     """
+    df.insert(3, 'pos', np.nan)
+    df['pos'] = df.apply(custom_function, axis=1)
     df['涨跌幅'] = df['涨跌幅'].map(str) + '%'
+    df['最新价'] = '【' + df['最新价'].map(str) + '】'
     df = df.drop(columns=['序号'])
     return df
 
@@ -43,7 +52,7 @@ def hk_realtime_em(code=None):
     baba_pr = df.loc[df['代码'] == '09988', '最新价'].iloc[0]
     global baba_target_price
     if baba_pr > baba_target_price:
-        notify_util.notify('📣 baba @' + date_util.time_str(),  '️🏁🏁🏁', '⬆️' + str(baba_pr))
+        notify_util.notify('📣 baba @' + date_util.time_str(), '️🏁🏁🏁', '⬆️' + str(baba_pr))
         baba_target_price = baba_pr * 1.01
     return format_realtime(df)
 

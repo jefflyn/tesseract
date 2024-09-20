@@ -1,6 +1,6 @@
-if __name__ == '__main__':
-    price = 12011.00
-    bottom = 8908.00
-    top = 12916.00
-    position = (price - bottom) / (top - bottom) * 100
-    print(str(round(position, 2)) + '%')
+
+
+def calc_position(price, low, high):
+    if low == high:
+        return 0
+    return round((price - low) / (high - low) * 100)

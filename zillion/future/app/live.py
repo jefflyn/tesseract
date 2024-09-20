@@ -185,8 +185,9 @@ def show(init_target, holding_cost):
                     + format_percent(round((price - c_low) * 100 / c_low, 2)) + ')'
             realtime["ct_hl"] = up_ if c_low_date < c_high_date else down_
             hist_pos = calc_position(price, h_low, h_high)
+            hist_flag = '*' if h_high == c_high or h_low == c_low else ''
             if hist_pos > 80 or hist_pos < 20:
-                hist_pos = str(hist_pos) + '🌞' if hist_pos > 80 else str(hist_pos) + '❄️'
+                hist_pos = str(hist_pos) + '🌞' + hist_flag if hist_pos > 80 else str(hist_pos) + '❄️' + hist_flag
             realtime["hist_hl"] = ('[' + future_price(h_low) + '-' + future_price(h_high) + ' ' + str(hist_pos) + ']')
             target_list = init_target.get(code)
             target_diff = []

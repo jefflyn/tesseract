@@ -119,8 +119,8 @@ def update_hl(code, low=None, low_time=None, high=None, high_time=None, update_h
         if high is not None and high_time is not None:
             sql = "update contract set high=%f, high_time='%s', update_time=now() where code='%s' and (high=0 or high<%f)"
             result += cursor.execute(sql % (high, high_time, code, high))
-    if result > 0:
-        print(code, 'update contract high low !!!')
+    # if result > 0:
+    #     print(code, 'update contract high low !!!')
     db.commit()
     refresh_contract_map(get_local_contract(code=code))
     return result
