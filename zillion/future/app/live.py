@@ -144,8 +144,8 @@ def show(init_target, holding_cost):
 
             open_flag = '↑' if open > pre_settle else ('↓' if open < pre_settle else ' ')
             last = last_daily[last_daily.code == code]
-            pre_low = last.iloc[0].at['low']
-            pre_high = last.iloc[0].at['high']
+            pre_low = low if last.empty else last.iloc[0].at['low']
+            pre_high = high if last.empty else last.iloc[0].at['high']
             gap_p = ''
             if open < pre_low:
                 open_flag = '🍌'
