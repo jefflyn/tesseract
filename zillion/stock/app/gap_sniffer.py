@@ -42,7 +42,7 @@ def find_existing_gaps(data):
 if __name__ == "__main__":
     codes = BasicUS.get_selected_codes()
     for stock_symbol in codes:
-        start_date = '2023-03-01'  # 起始日期
+        start_date = '2020-01-01'  # 起始日期
         end_date = date_util.get_today()  # 结束日期
 
         stock_data = get_stock_data(stock_symbol, start_date, end_date)

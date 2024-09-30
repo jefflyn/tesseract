@@ -80,7 +80,8 @@ if __name__ == '__main__':
         result_data = []
         limit_up_info = []
         limit_dw_info = []
-        big_change = []
+        up_high = []
+        deep_down = []
         for index, realtime in realtime_df.iterrows():
             code = realtime['code']
             result_list = [code]
@@ -121,8 +122,10 @@ if __name__ == '__main__':
             lim_up = round(pre_settle * (1 + contra.limit / 100))
             part2 = [change, lim_down, lim_up,
                      price, realtime['bid'], realtime['ask'], realtime['volume'], realtime['hold']]
-            if abs(change) > 3:
-                big_change.append(code + ' ' + format_percent(change) + ' @' + future_price(price))
+            if change > 3:
+                up_high.append(code + ' ' + format_percent(change) + ' @' + future_price(price))
+            if change < -3:
+                deep_down.append(code + ' ' + format_percent(change) + ' @' + future_price(price))
             if high == price:
                 limit_up_info.append(code + ' @' + future_price(price) + ' ' + format_percent(change))
             elif price == low:
@@ -177,9 +180,8 @@ if __name__ == '__main__':
         print(df_mean)
         ## add index log end
         print(now)
-        print(big_change)
-        print('UP', limit_up_info)
-        print('DOWN', limit_dw_info)
+        print('UP', up_high, limit_up_info)
+        print('DOWN', deep_down, limit_dw_info)
         if not future_util.is_trade_time():
             break
         time.sleep(2)
