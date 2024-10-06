@@ -2,11 +2,12 @@ import datetime
 import random
 import time
 
-from zillion.future.db_util import get_db
-from zillion.utils import date_util
 from zillion.utils.pro_util import pro
 
-time_temp = datetime.datetime.now() - datetime.timedelta(days=365)
+from zillion.future.db_util import get_db
+from zillion.utils import date_util
+
+time_temp = datetime.datetime.now() - datetime.timedelta(days=7)
 start_dt = time_temp.strftime('%Y%m%d')
 time_temp = datetime.datetime.now() - datetime.timedelta(days=0)
 end_dt = time_temp.strftime('%Y%m%d')
@@ -32,7 +33,6 @@ def collect_weekly():
     c_len = df.shape[0]
     if c_len == 0:
         print(last_trade_date + " no trade data found yet")
-        # sys.exit(0)
     total = cursor.execute('select ts_code from basics')
     if total == 0:
         print("no stock found, process end!")
@@ -40,14 +40,14 @@ def collect_weekly():
     stock_pool = [ts_code_tuple[0] for ts_code_tuple in cursor.fetchall()]
     print("Collect trade data from " + start_dt + " to " + end_dt)
     # 1分钟不超过200次调用
-    begin_time = date_util.now()
+    begin_time = datetime.datetime.now()
     for i in range(len(stock_pool)):
         try:
             # 打印进度
-            print('Seq: ' + str(i + 1) + ' of ' + str(total) + '   Code: ' + str(stock_pool[i]))
-            # 每分钟最多访问该接口120次
+            if i % 200 == 0:
+                print('Seq: ' + str(i + 1) + ' of ' + str(total) + '   Code: ' + str(stock_pool[i]))
             if i > 0 and i % 118 == 0:
-                end_time = date_util.now()
+                end_time = datetime.datetime.now()
                 time_diff = (end_time - begin_time).seconds
                 sleep_time = 60 - time_diff
                 if sleep_time > 0:
@@ -60,8 +60,8 @@ def collect_weekly():
                 continue
             c_len = df.shape[0]
         except Exception as e:
-            # print(e)
             print('No DATA Code: ' + str(i))
+            print(e)
             time.sleep(60)
             df = pro.weekly(api=pro, ts_code=stock_pool[i], adj='qfq', start_date=start_dt, end_date=end_dt)
             # 打印进度

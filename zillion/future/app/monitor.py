@@ -180,8 +180,10 @@ if __name__ == '__main__':
         print(df_mean)
         ## add index log end
         print(now)
-        print('UP', up_high, limit_up_info)
-        print('DOWN', deep_down, limit_dw_info)
+        print('UP', up_high)
+        print(limit_up_info)
+        print('DOWN', deep_down)
+        print(limit_dw_info)
         if not future_util.is_trade_time():
             break
         time.sleep(2)

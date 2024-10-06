@@ -2,11 +2,11 @@ import datetime
 import time
 
 import tushare as ts
+from zillion.utils.pro_util import pro
 
 import zillion.stock.data.service.hist_trade_service as hts
 from zillion.future.db_util import get_db
 from zillion.utils import date_util
-from zillion.utils.pro_util import pro
 
 INIT_DATA_START_DATE = '20100101'
 

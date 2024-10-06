@@ -1,12 +1,17 @@
 import datetime
 import time
 
-from zillion.future.db_util import get_db
 from zillion.utils.pro_util import pro
 
+import zillion.future.db_util as _dt
+from zillion.future.db_util import get_db
+
 if __name__ == '__main__':
-    # df = pro.concept()
-    # _dt.to_db(df, 'concept')
+    '''
+    概念数据初始化
+    '''
+    df = pro.concept()
+    _dt.to_db(df, 'concept')
 
     db = get_db()
     cursor = db.cursor()
@@ -58,6 +63,13 @@ if __name__ == '__main__':
             except Exception as err:
                 print(err)
                 continue
+
+    # insert into concepts group by code
+    concept_sql = "insert into concepts select cd.code, GROUP_CONCAT(c.name separator ' ') as concepts from concept_detail cd " \
+                  "inner join concept c on cd.concept_code=c.code group by code;"
+    # cursor.execute(concept_sql)
+    db.commit()
     cursor.close()
     db.close()
     print('All Finished!')
+

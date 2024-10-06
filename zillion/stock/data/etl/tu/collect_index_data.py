@@ -1,13 +1,12 @@
 import datetime
-import sys
 import time
 
 import tushare as ts
+from zillion.utils.pro_util import pro
 
 from zillion.future.db_util import get_db
 from zillion.stock.data.data_util import INDEX_LIST
 from zillion.utils import date_util
-from zillion.utils.pro_util import pro
 
 if __name__ == '__main__':
     # 建立数据库连接
@@ -19,18 +18,18 @@ if __name__ == '__main__':
     total = cursor.execute(check_sql)
     if total > 0:
         print(last_trade_date + " trade data existed")
-        sys.exit(0)
-    last_trade_date = date_util.get_latest_trade_date()[0]
+        # sys.exit(0)
+    # df = pro.index_daily(ts_code=index_code, start_date=last_trade_date, end_date=last_trade_date)
     df = ts.pro_bar(api=pro, ts_code=index_code, asset='I', start_date=last_trade_date, end_date=last_trade_date)
     c_len = df.shape[0]
     if c_len == 0:  # 没有记录退出
         print(last_trade_date + " no index data found yet")
-        sys.exit(0)
+        # sys.exit(0)
 
     # 设定获取日线行情的初始日期和终止日期，其中终止日期设定为当天
     time_temp = datetime.datetime.now() - datetime.timedelta(days=2)
-    # start_dt = time_temp.strftime('%Y%m%d')
-    start_dt = '20150101'
+    start_dt = time_temp.strftime('%Y%m%d')
+    # start_dt = '20100101'
     time_temp = datetime.datetime.now() - datetime.timedelta(days=0)
     end_dt = time_temp.strftime('%Y%m%d')
     print("Collect index data from " + start_dt + " to " + end_dt)
