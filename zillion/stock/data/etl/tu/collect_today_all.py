@@ -1,7 +1,6 @@
 import tushare as ts
 
-from zillion.future import db_util
-from zillion.utils import date_util
+from zillion.utils import date_util, db_util
 
 if __name__ == '__main__':
     today_str = date_util.get_today()

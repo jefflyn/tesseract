@@ -1,19 +1,13 @@
 import sys
 from sys import argv
 
-from zillion.utils import _utils
-
 default_commission = 5.0 # 最低佣金
 commission_rate = 0.00025  # bs 佣金比率 总金额 万2.5
 transfer_rate = 0.00002  # bs 过户手续费比率 总金额 万0.2
 tax_rate = 0.001  # s 卖出印花税比例 总金额 千1
 
 
-def is_valid_price(price):
-    if _utils.isnumber(price) is False or float(price) < 0:
-        print('price must be numeric and not negative')
-        return False
-    return True
+
 
 
 def is_valid_share(share):

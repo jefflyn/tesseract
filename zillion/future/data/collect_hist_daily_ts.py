@@ -1,6 +1,6 @@
 import math
 
-import zillion.future.db_util as _dt
+import zillion.utils.db_util as _dt
 from zillion.utils import date_util, pro_util
 
 

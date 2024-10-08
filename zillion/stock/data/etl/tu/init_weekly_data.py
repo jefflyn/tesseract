@@ -4,8 +4,8 @@ import time
 
 from zillion.utils.pro_util import pro
 
-from zillion.future.db_util import get_db
 from zillion.utils import date_util
+from zillion.utils.db_util import get_db
 
 time_temp = datetime.datetime.now() - datetime.timedelta(days=365)
 start_dt = time_temp.strftime('%Y%m%d')

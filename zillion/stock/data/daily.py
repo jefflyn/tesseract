@@ -1,6 +1,6 @@
-import zillion.future.db_util as _dt
-from zillion.future.db_util import read_sql
+import zillion.utils.db_util as _dt
 from zillion.utils import date_util
+from zillion.utils.db_util import read_sql
 
 
 def get_daily(code=None, trade_date=None, start_date=None, end_date=None):

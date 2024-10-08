@@ -2,10 +2,9 @@ import statistics
 
 import pandas as pd
 
-from zillion.future import db_util
 from zillion.future.domain import contract, daily
 from zillion.future.future_util import calc_position
-from zillion.utils import date_util
+from zillion.utils import date_util, db_util
 
 
 def get_n(change_list):

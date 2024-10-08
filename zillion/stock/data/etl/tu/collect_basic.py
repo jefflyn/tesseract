@@ -9,7 +9,7 @@ Created on 2019/01/01
 
 from zillion.utils.pro_util import pro
 
-from zillion.future.db_util import get_db
+from zillion.utils.db_util import get_db
 
 if __name__ == '__main__':
     # 查询当前所有正常上市交易的股票列表

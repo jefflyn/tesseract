@@ -4,8 +4,7 @@ import string
 
 from googletrans import Translator
 
-from zillion.future import db_util
-from zillion.utils import date_util
+from zillion.utils import date_util, db_util
 
 # 建立数据库连接
 db = db_util.get_db("test")

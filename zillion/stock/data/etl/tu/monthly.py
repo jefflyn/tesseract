@@ -5,8 +5,8 @@ import time
 
 from zillion.utils.pro_util import pro
 
-from zillion.future.db_util import get_db
 from zillion.utils import date_util
+from zillion.utils.db_util import get_db
 
 if __name__ == '__main__':
     # 建立数据库连接

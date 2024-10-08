@@ -124,37 +124,37 @@ def suggest_by_position(code, position):
     :return:
     '''
     if code in INDEX_SH:
-        if _utils.is_inrange(position, 0, 11):
+        if _utils.in_range(position, 0, 11):
             return 'suck'
-        elif _utils.is_inrange(position, 11, 30):
+        elif _utils.in_range(position, 11, 30):
             return 'buy'
-        elif _utils.is_inrange(position, 30, 40):
+        elif _utils.in_range(position, 30, 40):
             return 'hold'
-        elif _utils.is_inrange(position, 40, 55):
+        elif _utils.in_range(position, 40, 55):
             return 'sell'
-        elif _utils.is_inrange(position, 55):
+        elif _utils.in_range(position, 55):
             return 'out'
     elif code in INDEX_SZ:
-        if _utils.is_inrange(position, 0, 20):
+        if _utils.in_range(position, 0, 20):
             return 'suck'
-        elif _utils.is_inrange(position, 20, 35):
+        elif _utils.in_range(position, 20, 35):
             return 'buy'
-        elif _utils.is_inrange(position, 35, 60):
+        elif _utils.in_range(position, 35, 60):
             return 'hold'
-        elif _utils.is_inrange(position, 60, 75):
+        elif _utils.in_range(position, 60, 75):
             return 'sell'
-        elif _utils.is_inrange(position, 75):
+        elif _utils.in_range(position, 75):
             return 'out'
     elif code in INDEX_CYB:
-        if _utils.is_inrange(position, 0, 30):
+        if _utils.in_range(position, 0, 30):
             return 'suck'
-        elif _utils.is_inrange(position, 30, 50):
+        elif _utils.in_range(position, 30, 50):
             return 'buy'
-        elif _utils.is_inrange(position, 50, 65):
+        elif _utils.in_range(position, 50, 65):
             return 'hold'
-        elif _utils.is_inrange(position, 65, 75):
+        elif _utils.in_range(position, 65, 75):
             return 'sell'
-        elif _utils.is_inrange(position, 75):
+        elif _utils.in_range(position, 75):
             return 'out'
     else:
         return 'shit'

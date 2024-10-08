@@ -1,3 +1,16 @@
+def isnumber(a):
+    try:
+        float(a)
+        return True
+    except:
+        return False
+
+
+def is_valid_price(price):
+    if isnumber(price) is False or float(price) < 0:
+        print('price must be numeric and not negative')
+        return False
+    return True
 
 
 def future_price(price):

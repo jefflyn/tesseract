@@ -1,5 +1,4 @@
-from zillion.future import db_util
-from zillion.utils import date_const
+from zillion.utils import date_const, db_util
 from zillion.utils.redis_util import redis_client
 
 

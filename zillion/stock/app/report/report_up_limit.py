@@ -1,9 +1,8 @@
 import pandas as pd
 
 from utils.mail import mail_util
-from zillion.future import db_util
 from zillion.stock.gene import limitup
-from zillion.utils import date_util
+from zillion.utils import date_util, db_util
 
 if __name__ == '__main__':
     content = 'Please find the attaches for today up limit report details.'

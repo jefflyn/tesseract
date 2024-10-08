@@ -1,9 +1,9 @@
 import akshare
 import pandas as pd
 
-from zillion.future import db_util
 from zillion.future.app import wave
 from zillion.future.domain import daily
+from zillion.utils import db_util
 
 pd.set_option('display.max_columns', None)
 

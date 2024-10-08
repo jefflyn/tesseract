@@ -1,4 +1,4 @@
-import zillion.future.db_util as _dt
+import zillion.utils.db_util as _dt
 
 # 建立数据库连接
 db = _dt.get_db("future")

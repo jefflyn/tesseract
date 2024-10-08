@@ -1,8 +1,8 @@
 import tushare as ts
 
-from zillion.future.db_util import get_db
 from zillion.stock.data.data_util import INDEX_DICT
 from zillion.utils import date_util
+from zillion.utils.db_util import get_db
 
 
 def collect_index_hist_k(start=None):

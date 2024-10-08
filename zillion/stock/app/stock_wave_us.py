@@ -1,7 +1,7 @@
 import akshare
 import pandas as pd
 
-import zillion.future.db_util as _dt
+import zillion.utils.db_util as _dt
 from zillion.future.app import wave
 from zillion.stock import db_stock
 from zillion.utils import date_util

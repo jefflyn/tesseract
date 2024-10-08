@@ -4,9 +4,9 @@ import numpy as np
 import tushare as ts
 from zillion.utils.pro_util import pro
 
-from zillion.future.db_util import get_db
 from zillion.stock.gene import maup
 from zillion.utils import date_util
+from zillion.utils.db_util import get_db
 
 if __name__ == '__main__':
     # 设定获取日线行情的初始日期和终止日期，其中终止日期设定为当天

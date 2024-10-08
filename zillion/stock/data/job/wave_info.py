@@ -1,8 +1,8 @@
 import zillion.stock.data.service.hist_trade_service as hts
-from zillion.future.db_util import get_db
 from zillion.stock.data import data_util
 from zillion.stock.gene import wave
 from zillion.utils import date_util
+from zillion.utils.db_util import get_db
 
 # 建立数据库连接
 db = get_db()

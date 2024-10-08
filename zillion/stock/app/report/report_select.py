@@ -1,9 +1,8 @@
 import pandas as pd
 
-import zillion.future.db_util as _dt
+import zillion.utils.db_util as _dt
 from utils.mail import mail_util
-from zillion.future import db_util
-from zillion.utils import date_const
+from zillion.utils import date_const, db_util
 from zillion.utils import date_util
 
 if __name__ == '__main__':

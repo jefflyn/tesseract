@@ -9,7 +9,7 @@ class BasicDAO:
     def get_all_basic(self):
         return self.session.query(Basic).all()
 
-    def get_basic_by_symbol(self, symbol):
+    def get_basic_by_symbol(self, symbol) -> Basic:
         return self.session.query(Basic).filter(Basic.symbol == symbol).first()
     #
     # def add_user(self, name, email):

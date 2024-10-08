@@ -5,8 +5,7 @@ import sys
 
 from zillion.utils.pro_util import pro
 
-from zillion.future import db_util
-from zillion.utils import date_util
+from zillion.utils import date_util, db_util
 
 if __name__ == '__main__':
     """

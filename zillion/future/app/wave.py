@@ -3,7 +3,7 @@ from datetime import datetime
 import numpy as np
 import pandas as pd
 
-import zillion.future.db_util as _dt
+import zillion.utils.db_util as _dt
 from zillion.future.domain import trade, contract, daily
 from zillion.utils import date_util
 

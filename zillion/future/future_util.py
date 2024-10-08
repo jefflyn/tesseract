@@ -2,10 +2,10 @@ import datetime
 
 import pandas as pd
 
-from zillion.future.db_util import get_db
-from zillion.future.db_util import read_sql
 from zillion.future.domain import trade
 from zillion.utils import date_util
+from zillion.utils.db_util import get_db
+from zillion.utils.db_util import read_sql
 
 
 def select_from_sql(sql=None):
@@ -140,10 +140,6 @@ def add_log(name, log_type, pct_change, content, remark, price=None, position=No
     db.close()
 
 
-def calc_position(price, low, high):
-    if low == high:
-        return 0
-    return round((price - low) / (high - low) * 100)
 
 
 if __name__ == '__main__':

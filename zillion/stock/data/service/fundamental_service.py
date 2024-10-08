@@ -1,4 +1,4 @@
-from zillion.future.db_util import read_sql
+from zillion.utils.db_util import read_sql
 
 
 def get_fundamental(codes=None):

@@ -4,9 +4,9 @@ import time
 import tushare as ts
 from zillion.utils.pro_util import pro
 
-from zillion.future.db_util import get_db
 from zillion.stock.data import data_util
 from zillion.utils import date_util
+from zillion.utils.db_util import get_db
 
 INIT_DATA = True
 INIT_DATA_START_DATE = '20100101'
