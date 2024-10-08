@@ -6,8 +6,8 @@ from akshare.futures.symbol_var import symbol_varieties
 from zillion.future import future_util
 from zillion.future.app.live import format_percent
 from zillion.future.domain import trade, basic, contract, nstat, daily
-from zillion.future.future_util import calc_position
 from zillion.utils import date_util, db_util
+from zillion.utils.position_util import calc_position
 from zillion.utils.price_util import future_price
 
 columns = ['code', 'pre_set', 'open', 'type', 'gap', 'gap_pr', 'fill',

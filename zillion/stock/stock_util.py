@@ -11,3 +11,4 @@ def is_halting(code, latest_date_str=None):
         return True
     else:
         return False
+

@@ -257,14 +257,14 @@ def get_next_trade_day(trade_date=get_today()):
     :param trade_date:'yyyy-MM-dd'
     :return: str 'yyyy-MM-dd'
     """
-    hist_date = hist_date_list[hist_date_list.cal_date == trade_date]
-    index = hist_date.index.to_numpy()[0]
-    for i in range(1, 15):
-        if index - i < 0:
-            break
-        next_hist_date = hist_date_list.loc[index - i, ['cal_date', 'is_open']]
-        if next_hist_date[1] == 1:
-            return next_hist_date.iat[0]
+    # hist_date = hist_date_list[hist_date_list.cal_date == trade_date]
+    # index = hist_date.index.to_numpy()[0]
+    # for i in range(1, 15):
+    #     if index - i < 0:
+    #         break
+    #     next_hist_date = hist_date_list.loc[index - i, ['cal_date', 'is_open']]
+    #     if next_hist_date[1] == 1:
+    #         return next_hist_date.iat[0]
 
 
 def get_trade_day(nday=-4):
@@ -377,21 +377,14 @@ def shift_date(type='d', from_date=None, n=-1, format='YYYY-MM-DD'):
         target = local.shift(years=n)
     return target.format(format)
 
+import pandas_market_calendars as mcal
 
 
 if __name__ == '__main__':
-    print(get_now_hour())
-    print(get_next_trade_day('2021-12-06'))
-    print(get_previous_trade_day('2021-12-08'))
-    # init_trade_date_list()
-    print(get_latest_trade_date(-5))
-    # print(get_month_firstday_lastday(8))
-    print(get_previous_month_end('2021-12-31'))
-    # print(get_week_firstday_lastday(-8))
-    # print(get_week_firstday_lastday(-7))
-    # print(get_week_firstday_lastday(-6))
-    # print(get_week_firstday_lastday(-5))
-    # print(get_week_firstday_lastday(-4))
-    # print(get_week_firstday_lastday(-3))
-    # print(get_week_firstday_lastday(-2))
-    # print(get_week_firstday_lastday(-1))
+    print(mcal.get_calendar_names())
+    xshg = mcal.get_calendar('XSHG')
+    xshg.
+    # schedule = nyse.schedule.loc['2023-01-01':'2023-12-31']
+
+    # Print the business days
+    print(xshg)
