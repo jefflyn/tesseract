@@ -18,6 +18,13 @@ class BasicADAO:
         self.session.commit()
         return new_basic
 
+    def update_name(self, code, name):
+        basic = self.get_by_code(code)
+        if basic:
+            basic.name = name
+            self.session.commit()
+        return basic
+
     def delete(self, code):
         basic = self.get_by_code(code)
         if basic:

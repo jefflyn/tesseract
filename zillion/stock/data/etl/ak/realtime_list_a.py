@@ -5,7 +5,7 @@ import pandas as pd
 
 from zillion.db.DataSourceFactory import session_stock
 from zillion.stock.dao.basic_a_dao import BasicADAO
-from zillion.utils import db_util
+from zillion.utils import db_util, date_util
 from zillion.utils.date_util import now
 
 pd.set_option('display.width', None)
@@ -39,4 +39,8 @@ for index, row in result.iterrows():
         except Exception as e:
             traceback.print_exc()
     else:
-        print(now())
+        days = date_util.date_diff(basic.list_date, now())
+        if days <= 30 and basic.name != row['名称']:
+            basic_dao.update_name(code, row['名称'])
+            print(code, 'update basic name', row['名称'])
+
