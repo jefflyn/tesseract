@@ -383,7 +383,6 @@ import pandas_market_calendars as mcal
 if __name__ == '__main__':
     print(mcal.get_calendar_names())
     xshg = mcal.get_calendar('XSHG')
-    xshg.
     # schedule = nyse.schedule.loc['2023-01-01':'2023-12-31']
 
     # Print the business days

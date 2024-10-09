@@ -45,12 +45,44 @@ def hist_a():
     :return:
     '''
     # 东方财富-沪深京 A 股日频率数据; 历史数据按日频率更新, 当日收盘价请在收盘后获取
-    stock_zh_a_hist_df = ak.stock_zh_a_hist(symbol="000001", period="daily", start_date="20170301", end_date='20240528',
-                                            adjust="")
+    stock_zh_a_hist_df = ak.stock_zh_a_hist(symbol="000001", period="daily", start_date="19910403", end_date='20241008',
+                                            adjust="qfq")
     print(stock_zh_a_hist_df)
 
 
-def limit():
+def index_realtime_a():
+    '''
+    实时指数数据 https://akshare.akfamily.xyz/data/index/index.html#id1
+    :return:
+    '''
+    # 东方财富网-行情中心-沪深京指数
+    stock_zh_index_spot_em_df = ak.stock_zh_index_spot_em(symbol="上证系列指数")
+    print(stock_zh_index_spot_em_df)
+
+    # 新浪财经-中国股票指数数据
+    stock_zh_index_spot_sina_df = ak.stock_zh_index_spot_sina()
+    print(stock_zh_index_spot_sina_df)
+
+
+def index_hist_a():
+    '''
+    指数历史数据 https://akshare.akfamily.xyz/data/index/index.html#id3
+    :return:
+    '''
+    # 历史行情数据-新浪
+    stock_zh_index_daily_df = ak.stock_zh_index_daily(symbol="sz399552")
+    print(stock_zh_index_daily_df)
+
+    # 历史行情数据-东方财富
+    stock_zh_index_daily_em_df = ak.stock_zh_index_daily_em(symbol="sz399812")
+    print(stock_zh_index_daily_em_df)
+
+    # 东方财富网-中国股票指数-行情数据
+    index_zh_a_hist_df = ak.index_zh_a_hist(symbol="000016", period="daily", start_date="19700101", end_date="22220101")
+    print(index_zh_a_hist_df)
+
+
+def limit_a():
     '''
     涨停股池
     :return:
@@ -82,5 +114,5 @@ def realtime_us():
 
 
 if __name__ == "__main__":
-    info_a()
+    index_hist_a()
 
