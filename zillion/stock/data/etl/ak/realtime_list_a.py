@@ -35,12 +35,15 @@ for index, row in result.iterrows():
             list_date = info.loc[info['item'] == '上市时间', 'value'].iloc[0]
             total_equity = info.loc[info['item'] == '总股本', 'value'].iloc[0]
             flow_equity = info.loc[info['item'] == '流通股', 'value'].iloc[0]
-            basic_dao.add(code, row['名称'], industry, list_date, total_equity, flow_equity)
+            total_cap = info.loc[info['item'] == '总市值', 'value'].iloc[0]
+            flow_cap = info.loc[info['item'] == '流通市值', 'value'].iloc[0]
+
+            basic_dao.add(code, row['名称'], industry, list_date, total_equity, flow_equity, total_cap, flow_cap)
         except Exception as e:
             traceback.print_exc()
     else:
         days = date_util.date_diff(basic.list_date, now())
-        if days <= 30 and basic.name != row['名称']:
-            basic_dao.update_name(code, row['名称'])
+        if days <= 30:
+            basic_dao.update(code, row['名称'], row['总市值'], row['流通市值'])
             print(code, 'update basic name', row['名称'])
 

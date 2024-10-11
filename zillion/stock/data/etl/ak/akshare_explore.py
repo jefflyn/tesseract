@@ -13,7 +13,7 @@ def info_a():
     '''
 
     # 东方财富-个股-股票信息
-    df = ak.stock_individual_info_em(symbol="301618")
+    df = ak.stock_individual_info_em(symbol="600520")
     print(df.values)
 
 
@@ -114,5 +114,5 @@ def realtime_us():
 
 
 if __name__ == "__main__":
-    index_realtime_a()
+    info_a()
 
