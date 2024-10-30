@@ -40,6 +40,7 @@ for index, row in result.iterrows():
 
             basic_dao.add(code, row['名称'], industry, list_date, total_equity, flow_equity, total_cap, flow_cap)
         except Exception as e:
+            print(basic, info)
             traceback.print_exc()
     else:
         days = date_util.date_diff(basic.list_date, now())
