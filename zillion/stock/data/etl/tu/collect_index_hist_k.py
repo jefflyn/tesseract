@@ -1,7 +1,7 @@
 import tushare as ts
 
+from utils.datetime import date_util
 from zillion.stock.data.data_util import INDEX_DICT
-from zillion.utils import date_util
 from zillion.utils.db_util import get_db
 
 

@@ -3,7 +3,8 @@ import math
 import pandas as pd
 
 import zillion.utils.db_util as _dt
-from zillion.utils import date_util, pro_util
+from utils.datetime import date_util
+from zillion.utils import pro_util
 
 pd.set_option('display.width', None)
 pd.set_option('display.max_columns', None)

@@ -6,10 +6,11 @@ import pandas as pd
 import tushare as ts
 from tushare.stock import cons as ct
 
+from utils.datetime import date_util
 from zillion.stock.app import cost as cost_util
 from zillion.stock.data import data_util as _dt
 from zillion.stock.gene import wave
-from zillion.utils import date_util, db_util
+from zillion.utils import db_util
 
 keys = ['pos', 'pa', 'cf', 'df', 'sim', 'combo', 'map', 'new']
 

@@ -5,11 +5,12 @@ from statistics import mean
 import pandas as pd
 from akshare.futures.symbol_var import symbol_varieties
 
+from utils.datetime import date_util
+from utils.datetime.date_util import convert_to_date
 from zillion.future import future_util
 from zillion.future.domain import trade, basic, contract, nstat
 from zillion.future.domain.daily import get_pre_trading
-from zillion.utils import notify_util, date_util
-from zillion.utils.date_util import convert_to_date
+from zillion.utils import notify_util
 from zillion.utils.position_util import calc_position
 from zillion.utils.price_util import future_price
 

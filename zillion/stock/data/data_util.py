@@ -3,7 +3,7 @@ import datetime
 import pandas as pd
 import tushare as ts
 
-from zillion.utils import date_util
+from utils.datetime import date_util
 from zillion.utils.db_util import read_query
 from zillion.utils.db_util import read_sql
 

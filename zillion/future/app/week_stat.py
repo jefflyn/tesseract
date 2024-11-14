@@ -5,8 +5,8 @@ from zillion.utils import db_util
 
 if __name__ == '__main__':
     contracts = contract.get_local_contract()
-    week_start = '2023-01-16'
-    week_end = '2023-01-20'
+    week_start = '2024-11-11'
+    week_end = '2024-11-15'
     week_stat_data = []
     for index, row in contracts.iterrows():
         code = row['code']
@@ -21,4 +21,4 @@ if __name__ == '__main__':
         week_change = round((close - pre_close) * 100 / pre_close, 2)
         week_stat_data.append([row['code'], week_end, round(close - pre_close, 1), float(week_change)])
     wave_df_result = pd.DataFrame(week_stat_data, columns=['code', 'week', 'change', 'pct_change'])
-    db_util.to_db(wave_df_result, 'week_stat', if_exists='append')
+    db_util.to_db(wave_df_result, 'week_stat', if_exists='append', db_name='future')

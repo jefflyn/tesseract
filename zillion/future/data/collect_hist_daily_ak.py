@@ -1,7 +1,7 @@
 import pandas as pd
 
+from utils.datetime import date_util
 from zillion.future.domain import daily, contract
-from zillion.utils import date_util
 
 pd.set_option('display.width', None)
 pd.set_option('display.max_columns', None)

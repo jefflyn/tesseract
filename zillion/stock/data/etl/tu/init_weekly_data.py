@@ -4,7 +4,7 @@ import time
 
 from zillion.utils.pro_util import pro
 
-from zillion.utils import date_util
+from utils.datetime import date_util
 from zillion.utils.db_util import get_db
 
 time_temp = datetime.datetime.now() - datetime.timedelta(days=365)

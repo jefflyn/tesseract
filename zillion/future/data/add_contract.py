@@ -1,9 +1,9 @@
 import pandas as pd
 from akshare.futures.symbol_var import symbol_varieties
 
+from utils.datetime import date_util
 from zillion.future.data.collect_contract import update_contract_hl
 from zillion.future.domain import contract, daily, basic
-from zillion.utils import date_util
 
 pd.set_option('display.width', None)
 pd.set_option('display.max_columns', None)

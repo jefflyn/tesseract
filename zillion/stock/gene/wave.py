@@ -8,7 +8,7 @@ import pandas as pd
 matplotlib.use('TkAgg')
 matplotlib.rcParams['font.sans-serif'] = 'SimHei'
 import matplotlib.pyplot as plt
-from zillion.utils import date_util
+from utils.datetime import date_util
 import tushare as ts
 from zillion.stock.data import data_util
 

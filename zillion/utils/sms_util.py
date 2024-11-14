@@ -2,7 +2,7 @@ from qcloudsms_py import SmsSingleSender
 from qcloudsms_py.httpclient import HTTPError
 from twilio.rest import Client
 
-from zillion.utils import date_const
+from utils.datetime import date_const
 from zillion.utils.redis_util import redis_client
 
 # 短信应用SDK AppID

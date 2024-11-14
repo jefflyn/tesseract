@@ -3,8 +3,9 @@ import time
 
 import tushare as ts
 
+from utils.datetime import date_const
 from zillion.stock.data import data_util
-from zillion.utils import sms_util, date_const
+from zillion.utils import sms_util
 from zillion.utils.redis_util import redis_client
 
 pre_key_today = data_util.todaystr + '_'

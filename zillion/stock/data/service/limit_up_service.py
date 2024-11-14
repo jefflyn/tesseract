@@ -1,8 +1,9 @@
 import pandas as pd
 
+from utils.datetime import date_util
 from zillion.stock.data import data_util
 from zillion.stock.gene import wave
-from zillion.utils import date_util, db_util
+from zillion.utils import db_util
 from zillion.utils.db_util import get_db
 
 

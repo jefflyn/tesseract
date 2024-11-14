@@ -1,6 +1,6 @@
 import tushare as ts
 
-from zillion.utils import date_util
+from utils.datetime import date_util
 from zillion.utils.db_util import get_db
 
 

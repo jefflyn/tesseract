@@ -3,10 +3,11 @@ import traceback
 import akshare as ak
 import pandas as pd
 
+from utils.datetime import date_util
+from utils.datetime.date_util import now
 from zillion.db.DataSourceFactory import session_stock
 from zillion.stock.dao.basic_a_dao import BasicADAO
-from zillion.utils import db_util, date_util
-from zillion.utils.date_util import now
+from zillion.utils import db_util
 
 pd.set_option('display.width', None)
 pd.set_option('display.max_columns', None)
@@ -40,7 +41,7 @@ for index, row in result.iterrows():
 
             basic_dao.add(code, row['名称'], industry, list_date, total_equity, flow_equity, total_cap, flow_cap)
         except Exception as e:
-            print(basic, info)
+            print('error:', basic, info)
             traceback.print_exc()
     else:
         days = date_util.date_diff(basic.list_date, now())

@@ -7,9 +7,9 @@ from akshare.futures import cons
 from akshare.futures.symbol_var import symbol_varieties
 
 import zillion.utils.db_util as _dt
+from utils.datetime import date_util
+from utils.datetime.date_util import FORMAT_FLAT
 from zillion.future.domain import trade
-from zillion.utils import date_util
-from zillion.utils.date_util import FORMAT_FLAT
 from zillion.utils.db_util import read_sql
 
 # 建立数据库连接

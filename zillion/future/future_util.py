@@ -2,8 +2,8 @@ import datetime
 
 import pandas as pd
 
+from utils.datetime import date_util
 from zillion.future.domain import trade
-from zillion.utils import date_util
 from zillion.utils.db_util import get_db
 from zillion.utils.db_util import read_sql
 

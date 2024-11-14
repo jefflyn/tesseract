@@ -5,7 +5,7 @@ from datetime import timedelta
 
 from zillion.utils.pro_util import pro
 
-from zillion.utils import date_util
+from utils.datetime import date_util
 
 
 def init_trade_date_list():

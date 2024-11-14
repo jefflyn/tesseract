@@ -2,8 +2,9 @@ import datetime
 
 import pandas as pd
 
+from utils.datetime import date_util
 from zillion.stock.data import data_util
-from zillion.utils import date_util, db_util
+from zillion.utils import db_util
 
 LIMITUP_MIN = 9.9
 LIMITUP_FROM_DAYS = -365

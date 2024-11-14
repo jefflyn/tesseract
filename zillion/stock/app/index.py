@@ -6,8 +6,9 @@ import pandas as pd
 import tushare as ts
 
 import zillion.utils.sms_util as sms
+from utils.datetime import date_const, date_util
 from zillion.stock.gene import wave
-from zillion.utils import date_util, _utils, date_const
+from zillion.utils import _utils
 from zillion.utils.redis_util import redis_client
 
 INDEX_SH = ['000001', '000016', '000300']

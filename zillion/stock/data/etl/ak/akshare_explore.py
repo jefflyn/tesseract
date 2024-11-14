@@ -1,6 +1,8 @@
 import akshare as ak
 import pandas as pd
 
+from utils.datetime import date_util
+
 pd.set_option('display.width', None)
 pd.set_option('display.max_rows', None)
 pd.set_option('display.max_columns', None)
@@ -56,12 +58,17 @@ def index_realtime_a():
     :return:
     '''
     # 东方财富网-行情中心-沪深京指数
+    start_time = date_util.now()
     stock_zh_index_spot_em_df = ak.stock_zh_index_spot_em(symbol="上证系列指数")
-    print(stock_zh_index_spot_em_df)
+    time_diff = date_util.now() - start_time
+    print(time_diff, stock_zh_index_spot_em_df)
 
+
+    start_time = date_util.now()
     # 新浪财经-中国股票指数数据
     stock_zh_index_spot_sina_df = ak.stock_zh_index_spot_sina()
-    print(stock_zh_index_spot_sina_df)
+    time_diff = date_util.now() - start_time
+    print(time_diff, stock_zh_index_spot_sina_df)
 
 
 def index_hist_a():
@@ -114,5 +121,5 @@ def realtime_us():
 
 
 if __name__ == "__main__":
-    info_a()
+    index_realtime_a()
 

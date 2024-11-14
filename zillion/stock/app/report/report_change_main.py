@@ -4,8 +4,8 @@ import pandas as pd
 import tushare as ts
 
 import zillion.utils.db_util as _dt
+from utils.datetime import date_util as _dateutil
 from zillion.stock.data import data_util
-from zillion.utils import date_util as _dateutil
 
 basics = data_util.get_basics(cyb=False)
 today = _dateutil.get_today()

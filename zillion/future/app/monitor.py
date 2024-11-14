@@ -3,10 +3,11 @@ import time
 import pandas as pd
 from akshare.futures.symbol_var import symbol_varieties
 
+from utils.datetime import date_util
 from zillion.future import future_util
 from zillion.future.app.live import format_percent
 from zillion.future.domain import trade, basic, contract, nstat, daily
-from zillion.utils import date_util, db_util
+from zillion.utils import db_util
 from zillion.utils.position_util import calc_position
 from zillion.utils.price_util import future_price
 

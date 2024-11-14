@@ -3,9 +3,9 @@ import pandas as pd
 from akshare.futures.cons import market_exchange_symbols
 from akshare.futures.symbol_var import symbol_varieties
 
+from utils.datetime import date_util
 from zillion.future.domain import contract, basic, daily, gap
 from zillion.future.future_constants import EXCHANGE_ALIAS_MAP
-from zillion.utils import date_util
 
 pd.set_option('display.width', None)
 pd.set_option('display.max_columns', None)

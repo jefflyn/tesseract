@@ -4,8 +4,8 @@ import time
 import tushare as ts
 from zillion.utils.pro_util import pro
 
+from utils.datetime import date_util
 from zillion.stock.data.data_util import INDEX_LIST
-from zillion.utils import date_util
 from zillion.utils.db_util import get_db
 
 if __name__ == '__main__':

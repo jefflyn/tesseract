@@ -1,9 +1,9 @@
 import pandas as pd
 
 import zillion.utils.db_util as _dt
+from utils.datetime import date_const, date_util
 from utils.mail import mail_util
-from zillion.utils import date_const, db_util
-from zillion.utils import date_util
+from zillion.utils import db_util
 
 if __name__ == '__main__':
     content = 'Please find the attaches for the selection report details.'
