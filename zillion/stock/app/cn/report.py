@@ -11,7 +11,7 @@ import numpy as np
 import pandas as pd
 
 import zillion.utils.db_util as _dt
-from zillion.stock.app import realtime
+from zillion.stock.app.cn import realtime
 from zillion.stock.data import data_util
 from zillion.stock.gene import maup, wave, limitup
 

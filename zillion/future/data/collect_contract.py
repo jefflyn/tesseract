@@ -48,7 +48,7 @@ if __name__ == '__main__':
     main_contract_map = dict()
     print('market exchange:', list(market_exchange_symbols.keys()))
     for key in market_exchange_symbols.keys():
-        print('<<<', key, '>>>')
+        print('Exchange: <<<', key, '>>>')
         if 'cffex' == key:
             print(key, 'skip...')
             continue
@@ -57,6 +57,9 @@ if __name__ == '__main__':
         main_contracts = match_main_contract_df.split(",")
         for main_code in main_contracts:
             symbol = symbol_varieties(main_code)
+            if symbol not in symbol_list:
+                print(symbol, "not in basic. Error error error!!!")
+                continue
             deleted_symbol = basic_df.loc[symbol, 'deleted']
             if deleted_symbol == 1:
                 contract.remove_contract_hist(main_code, None)

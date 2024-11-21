@@ -2,7 +2,7 @@ import time
 import tkinter
 from tkinter import *
 
-import zillion.stock.app.realtime as realtime
+import zillion.stock.app.cn.realtime as realtime
 from zillion.stock.data import data_util
 
 
