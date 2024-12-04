@@ -121,5 +121,5 @@ def realtime_us():
 
 
 if __name__ == "__main__":
-    index_realtime_a()
+    index_hist_a()
 
