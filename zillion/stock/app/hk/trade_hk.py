@@ -9,6 +9,7 @@ from utils.datetime import date_util
 from utils.datetime.date_util import now_str, today
 from zillion.utils import notify_util
 from zillion.utils.position_util import calc_position
+from zillion.utils.price_util import format_large_number
 
 pd.set_option('display.width', None)
 pd.set_option('display.max_columns', None)
@@ -30,6 +31,7 @@ def format_realtime(df):
     df['pos'] = df.apply(custom_function, axis=1)
     df['涨跌幅'] = df['涨跌幅'].map(str) + '%'
     df['最新价'] = '【' + df['最新价'].map(str) + '】'
+    df['成交额'] = df['成交额'].apply(lambda x: str(format_large_number(x)))
     df = df.drop(columns=['序号'])
     return df
 

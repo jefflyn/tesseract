@@ -89,9 +89,9 @@ def show(init_target, holding_cost):
             price_diff = float(price) - float(pre_settle)
             change = round(price_diff / float(pre_settle) * 100, 2)
             realtime["change"] = change
-            if high == price:
+            if change >= 4 and high == price:
                 limit_info.append(code + ' LIMIT UP @' + str(price) + ' ' + format_percent(change))
-            elif price == low:
+            elif change <= -4 and price == low:
                 limit_info.append(code + ' LIMIT DOWN @' + str(price) + ' ' + format_percent(change))
 
             if float(low) < float(c_low):
