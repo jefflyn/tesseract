@@ -10,7 +10,7 @@ pd.set_option('display.max_columns', None)
 
 
 if __name__ == '__main__':
-    code = 'FG2409'
+    code = 'SP2505'
     time_now = date_util.now()
     basic_df = basic.get_all()
     contract_df = contract.get_local_contract()
