@@ -58,6 +58,7 @@ for w in word_list:
     else:
         cnt = df.at[0, 'count']
         sql = "UPDATE word_stat SET count=%d, update_time='%s' WHERE WORD='%s'" % (cnt + 1, date_util.now(), w)
+        print(sql)
     cursor.execute(sql)
 
     db.commit()
