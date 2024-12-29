@@ -12,6 +12,14 @@ pd.set_option('display.max_columns', None)
 
 
 def update_contract_hl(code):
+    rows = _update_contract_hl(code)
+    #####
+    c_code = symbol_varieties(code) + '0'
+    _update_contract_hl(c_code, update_hist=True)
+    return rows
+
+
+def _update_contract_hl(code, update_hist=False):
     daily_df = daily.get_daily(code)
     low_list = list(daily_df['low'])
     high_list = list(daily_df['high'])
@@ -22,19 +30,9 @@ def update_contract_hl(code):
     lowest_date = date_list[low_list.index(lowest)]
     highest = max(high_list)
     highest_date = date_list[high_list.index(highest)]
-    rows = contract.update_hl(code, lowest, lowest_date, highest, highest_date)
+    rows = contract.update_hl(code, lowest, lowest_date, highest, highest_date, update_hist)
     if rows > 0:
         print("update contract hl success:", code)
-    #####
-    daily_df = daily.get_daily(symbol_varieties(code) + '0')
-    low_list = list(daily_df['low'])
-    high_list = list(daily_df['high'])
-    date_list = list(daily_df['trade_date'])
-    lowest = min(low_list)
-    lowest_date = date_list[low_list.index(lowest)]
-    highest = max(high_list)
-    highest_date = date_list[high_list.index(highest)]
-    contract.update_hl(code, lowest, lowest_date, highest, highest_date, True)
     return rows
 
 
