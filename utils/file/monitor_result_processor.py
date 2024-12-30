@@ -1,6 +1,6 @@
 import pandas as pd
 
-from zillion.future import db_util
+from zillion.utils import db_util
 
 
 def extract_numbers(s):

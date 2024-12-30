@@ -1,8 +1,8 @@
 import numpy as np
 import pandas as pd
 
-from zillion.future import db_util
 from zillion.stock.data import data_util as _dt
+from zillion.utils import db_util
 
 
 def scan_wave_change(wave_data=None, tb_name='wave_change_ref'):

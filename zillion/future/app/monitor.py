@@ -3,11 +3,12 @@ import time
 import pandas as pd
 from akshare.futures.symbol_var import symbol_varieties
 
-from zillion.future import future_util, db_util
+from utils.datetime import date_util
+from zillion.future import future_util
 from zillion.future.app.live import format_percent
 from zillion.future.domain import trade, basic, contract, nstat, daily
-from zillion.future.future_util import calc_position
-from zillion.utils import date_util
+from zillion.utils import db_util
+from zillion.utils.position_util import calc_position
 from zillion.utils.price_util import future_price
 
 columns = ['code', 'pre_set', 'open', 'type', 'gap', 'gap_pr', 'fill',
@@ -80,7 +81,8 @@ if __name__ == '__main__':
         result_data = []
         limit_up_info = []
         limit_dw_info = []
-        big_change = []
+        up_high = []
+        deep_down = []
         for index, realtime in realtime_df.iterrows():
             code = realtime['code']
             result_list = [code]
@@ -121,12 +123,15 @@ if __name__ == '__main__':
             lim_up = round(pre_settle * (1 + contra.limit / 100))
             part2 = [change, lim_down, lim_up,
                      price, realtime['bid'], realtime['ask'], realtime['volume'], realtime['hold']]
-            if abs(change) > 3:
-                big_change.append(code + ' ' + format_percent(change) + ' @' + future_price(price))
-            if high == price:
-                limit_up_info.append(code + ' @' + future_price(price) + ' ' + format_percent(change))
-            elif price == low:
-                limit_dw_info.append(code + ' @' + future_price(price) + ' ' + format_percent(change))
+            if change > 3:
+                up_high.append(code + ' ' + format_percent(change) + ' @' + future_price(price))
+            if change < -3:
+                deep_down.append(code + ' ' + format_percent(change) + ' @' + future_price(price))
+            # limit up & down
+            if high == price and change >= 4:
+                limit_up_info.append(code + ' ' + format_percent(change) + ' @' + future_price(price))
+            elif price == low and change <= -4:
+                limit_dw_info.append(code + ' ' + format_percent(change) + ' @' + future_price(price))
 
             # part3 ['a5d', 'a20d', 'a60d', 'a5d_ch', 'a20d_ch', 'a60d_ch']
             # change5d = nstat.get_attr(nst, '5d_change') if nst is not None else 0
@@ -177,9 +182,10 @@ if __name__ == '__main__':
         print(df_mean)
         ## add index log end
         print(now)
-        print(big_change)
-        print('UP', limit_up_info)
-        print('DOWN', limit_dw_info)
+        print('UP', up_high)
+        print('--', limit_up_info)
+        print('DOWN', deep_down)
+        print('--', limit_dw_info)
         if not future_util.is_trade_time():
             break
         time.sleep(2)

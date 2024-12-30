@@ -3,9 +3,9 @@ from datetime import datetime
 import numpy as np
 import pandas as pd
 
-import zillion.future.db_util as _dt
+import zillion.utils.db_util as _dt
+from utils.datetime import date_util
 from zillion.future.domain import trade, contract, daily
-from zillion.utils import date_util
 
 
 def add_realtime_data(code=None, local_last_trade_date=None):

@@ -3,15 +3,23 @@ import pandas as pd
 from akshare.futures.cons import market_exchange_symbols
 from akshare.futures.symbol_var import symbol_varieties
 
+from utils.datetime import date_util
 from zillion.future.domain import contract, basic, daily, gap
 from zillion.future.future_constants import EXCHANGE_ALIAS_MAP
-from zillion.utils import date_util
 
 pd.set_option('display.width', None)
 pd.set_option('display.max_columns', None)
 
 
 def update_contract_hl(code):
+    rows = _update_contract_hl(code)
+    #####
+    c_code = symbol_varieties(code) + '0'
+    _update_contract_hl(c_code, update_hist=True)
+    return rows
+
+
+def _update_contract_hl(code, update_hist=False):
     daily_df = daily.get_daily(code)
     low_list = list(daily_df['low'])
     high_list = list(daily_df['high'])
@@ -22,19 +30,9 @@ def update_contract_hl(code):
     lowest_date = date_list[low_list.index(lowest)]
     highest = max(high_list)
     highest_date = date_list[high_list.index(highest)]
-    rows = contract.update_hl(code, lowest, lowest_date, highest, highest_date)
+    rows = contract.update_hl(code, lowest, lowest_date, highest, highest_date, update_hist)
     if rows > 0:
         print("update contract hl success:", code)
-    #####
-    daily_df = daily.get_daily(symbol_varieties(code) + '0')
-    low_list = list(daily_df['low'])
-    high_list = list(daily_df['high'])
-    date_list = list(daily_df['trade_date'])
-    lowest = min(low_list)
-    lowest_date = date_list[low_list.index(lowest)]
-    highest = max(high_list)
-    highest_date = date_list[high_list.index(highest)]
-    contract.update_hl(code, lowest, lowest_date, highest, highest_date, True)
     return rows
 
 
@@ -48,7 +46,7 @@ if __name__ == '__main__':
     main_contract_map = dict()
     print('market exchange:', list(market_exchange_symbols.keys()))
     for key in market_exchange_symbols.keys():
-        print('<<<', key, '>>>')
+        print('Exchange: <<<', key, '>>>')
         if 'cffex' == key:
             print(key, 'skip...')
             continue
@@ -57,6 +55,9 @@ if __name__ == '__main__':
         main_contracts = match_main_contract_df.split(",")
         for main_code in main_contracts:
             symbol = symbol_varieties(main_code)
+            if symbol not in symbol_list:
+                print(symbol, "not in basic. Error error error!!!")
+                continue
             deleted_symbol = basic_df.loc[symbol, 'deleted']
             if deleted_symbol == 1:
                 contract.remove_contract_hist(main_code, None)

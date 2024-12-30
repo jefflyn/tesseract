@@ -1,7 +1,7 @@
-import zillion.future.db_util as _dt
+import zillion.utils.db_util as _dt
+from utils.datetime import date_util
 from zillion.future.app import wave
 from zillion.future.domain import daily
-from zillion.utils import date_util
 from zillion.utils.price_util import future_price
 
 # 建立数据库连接

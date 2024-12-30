@@ -1,6 +1,7 @@
-import zillion.future.db_util as _dt
-from zillion.utils import date_const
 from zillion.utils._utils import timer
+
+import zillion.utils.db_util as _dt
+from utils.datetime import date_const
 
 one_year_ago = date_const.ONE_YEAR_AGO_YYYYMMDD
 

@@ -1,8 +1,8 @@
 from sqlalchemy import Column, Integer, String
 from sqlalchemy.ext.declarative import declarative_base
 
-import zillion.future.db_util as _dt
-from zillion.future.db_util import read_sql
+import zillion.utils.db_util as _dt
+from zillion.utils.db_util import read_sql
 
 # 建立数据库连接
 db = _dt.get_db("future")
