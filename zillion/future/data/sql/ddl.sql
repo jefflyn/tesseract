@@ -56,7 +56,7 @@ create table basic
     deleted     tinyint       default 0    not null,
     update_time timestamp                  not null on update CURRENT_TIMESTAMP comment '更新时间'
 )
-    comment '合约基本信息';
+    comment '基本信息';
 
 create table collect
 (
