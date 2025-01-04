@@ -12,10 +12,10 @@ def convert_2_text(file_name) :
 
     # 转换为小写，去掉标点符号、数字和中文字符
     text = text.replace('\u00A0', ' ')
-    re.sub(r'\s+', ' ', text)
     text = re.sub(r'[^\x00-\x7f]', '', text)  # 去掉非ASCII字符（中文等）
     text = re.sub(r'\d+', '', text)  # 去掉数字
     text = text.translate(str.maketrans('', '', string.punctuation))  # 去掉标点符号
+    text = re.sub(r'\s+', ' ', text)
 
     return text
 

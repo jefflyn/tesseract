@@ -26,12 +26,11 @@ for word in word_map.keys():
     upsert_vocabulary(word, word_token['lemma'], word_token['pos'], get_synset(word))
     df = db_util.read_sql('app', 'SELECT * FROM vocabulary_ryan WHERE word = :wd', params={'wd': word})
     if df is None or df.empty:
-        print(word)
         sql = ("INSERT INTO vocabulary_ryan(word, count_times, update_time) VALUES ('%s', %d,'%s')"
                % (word, 1, date_util.now()))
     else:
         cnt = df.at[0, 'count_times']
         sql = "UPDATE vocabulary_ryan SET count_times=%d, update_time='%s' WHERE WORD='%s'" % (cnt + 1, date_util.now(), word)
-        print(sql)
+    print(sql)
     cursor.execute(sql)
     db.commit()
