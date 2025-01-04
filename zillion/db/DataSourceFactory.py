@@ -3,6 +3,7 @@ from sqlalchemy.orm import sessionmaker, scoped_session
 
 db_stock = 'stock'
 db_future = 'future'
+db_app = 'app'
 
 config = {
     'data_sources': {
@@ -15,6 +16,13 @@ config = {
         },
         db_stock: {
             'url': 'mysql+pymysql://linjingu:linjingu@127.0.0.1:3306/stock?charset=UTF8MB4',
+            'pool_size': 5,  # 连接池大小5
+            'max_overflow': 10,  # 允许的最大溢出连接数10
+            'pool_timeout': 10,  # 获取连接超时时间10秒
+            'pool_recycle': 3600  # 连接最大生命周期3600秒（1小时）
+        },
+        db_app: {
+            'url': 'mysql+pymysql://linjingu:linjingu@127.0.0.1:3306/app?charset=UTF8MB4',
             'pool_size': 5,  # 连接池大小5
             'max_overflow': 10,  # 允许的最大溢出连接数10
             'pool_timeout': 10,  # 获取连接超时时间10秒
@@ -63,3 +71,4 @@ factory = DataSourceFactory(config)
 # 获取并使用会话
 session_future = factory.get_session(db_future)
 session_stock = factory.get_session(db_stock)
+session_app = factory.get_session(db_app)

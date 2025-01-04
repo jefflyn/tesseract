@@ -8,7 +8,7 @@ from utils.datetime import date_util
 from zillion.utils import db_util
 
 # 建立数据库连接
-db = db_util.get_db("test")
+db = db_util.get_db("word")
 # 使用cursor()方法创建一个游标对象
 cursor = db.cursor()
 
@@ -21,7 +21,7 @@ This is a sample text with several words. This text has some repeated words, and
 """
 
 # 从文件中读取文本
-with open('data.txt', 'r') as file:
+with open('data_ryan.txt', 'r') as file:
     text = file.read()
 
 # 将文本转换为小写

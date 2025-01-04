@@ -8,7 +8,7 @@ if __name__ == '__main__':
     content = """  <html>  <head>  <meta name="pdfkit-page-size" content="Legal"/>  <meta name="pdfkit-orientation" content="Landscape"/> </head><body>"""
     content1 = report.generate_report2(title='pa', filename='pa')
     content2 = report.generate_report2(title='cf', filename='cf')
-    # content2 = report.generate_report2(title='Tracking zillion report', monitor=True, filename='app/monitormy.txt')
+    # content2 = report.generate_report2(title='Tracking zillion report', monitor=True, filename='word/monitormy.txt')
     content = content + content1 + content2 + '</body></html>'
     # content = content + content12 + '</body></html>'
 

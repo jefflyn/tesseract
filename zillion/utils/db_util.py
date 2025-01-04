@@ -38,6 +38,8 @@ def get_engine(db_name):
         return create_engine("mysql+pymysql://linjingu:linjingu@127.0.0.1:3306/stock?charset=UTF8MB4")
     elif db_name == 'test':
         return create_engine("mysql+pymysql://linjingu:linjingu@127.0.0.1:3306/test?charset=UTF8MB4")
+    elif db_name == 'app':
+        return create_engine("mysql+pymysql://linjingu:linjingu@127.0.0.1:3306/app?charset=UTF8MB4")
     else:
         raise Exception("没指定数据库或数据库不存在!")
 
