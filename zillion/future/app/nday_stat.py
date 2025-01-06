@@ -4,8 +4,8 @@ import pandas as pd
 
 from utils.datetime import date_util
 from zillion.future.domain import contract, daily
-from zillion.future.future_util import calc_position
 from zillion.utils import db_util
+from zillion.utils.position_util import calc_position
 
 
 def get_n(change_list):
