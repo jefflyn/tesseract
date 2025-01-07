@@ -1,6 +1,10 @@
 import re
 import string
 
+def contains_punctuation(word):
+    # 正则表达式匹配任意标点符号
+    pattern = r'[^\w\s]'
+    return bool(re.search(pattern, word))
 
 def convert_2_text(file_name) :
     # 读取文本
