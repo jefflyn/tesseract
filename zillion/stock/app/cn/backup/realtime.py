@@ -7,7 +7,7 @@ import tushare as ts
 from tushare.stock import cons as ct
 
 from utils.datetime import date_util
-from zillion.stock.app.cn import cost as cost_util
+from zillion.stock.app.cn.backup import cost as cost_util
 from zillion.stock.data import data_util as _dt
 from zillion.stock.gene import wave
 from zillion.utils import db_util

@@ -176,5 +176,5 @@ if __name__ == '__main__':
             wdf = wave_df[wave_df.code == code]
             list_df.append(wave.format_wave_data(wdf, is_index=True), )
         # figure display
-        wave.plot_wave(list_df, filename='../wave_index.png', columns=3)
+        wave.plot_wave(list_df, filename='../../wave_index.png', columns=3)
 

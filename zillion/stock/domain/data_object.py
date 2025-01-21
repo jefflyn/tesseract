@@ -23,12 +23,12 @@ class BasicA(Base):
     def __repr__(self):
         return f"<BasicA(code={self.code}, name={self.name})>"
 
-    def __init__(self, code, name, industry, list_date, total_equity, flow_equity, total_cap, flow_cap):
+    def __init__(self, code, name, industry, list_date, total_equity, flow_equity, total_capital, flow_capital):
         self.code = code
         self.name = name
         self.industry = industry
         self.list_date = list_date
         self.total_equity = total_equity
         self.flow_equity = flow_equity
-        self.total_capital = total_cap
-        self.flow_capital = flow_cap
+        self.total_capital = total_capital
+        self.flow_capital = flow_capital

@@ -13,7 +13,8 @@ class BasicADAO:
 
     def add(self, code, name, industry, list_date, total_equity, flow_equity, total_cap, flow_cap):
         new_basic = BasicA(code=code, name=name, industry=industry, list_date=list_date,
-                           total_equity=total_equity, flow_equity=flow_equity, total_capital=total_cap, flow_capital=flow_cap)
+                           total_equity=total_equity, flow_equity=flow_equity,
+                           total_capital=total_cap, flow_capital=flow_cap)
         self.session.add(new_basic)
         self.session.commit()
         return new_basic
