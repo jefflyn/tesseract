@@ -1,6 +1,6 @@
 from utils.datetime import date_util
-from zillion.stock.dao.BasicUS import BasicUS
-from zillion.stock.data import daily
+from zillion.stock.dao.basic_us_dao import BasicUsDAO
+from zillion.stock.dao import daily_quote_dao
 
 
 # 获取股票数据
@@ -40,7 +40,7 @@ def find_existing_gaps(data):
 
 
 if __name__ == "__main__":
-    codes = BasicUS.get_selected_codes()
+    codes = BasicUsDAO.get_selected_codes()
     for stock_symbol in codes:
         start_date = '2020-01-01'  # 起始日期
         end_date = date_util.get_today()  # 结束日期

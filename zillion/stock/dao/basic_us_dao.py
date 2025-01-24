@@ -1,7 +1,7 @@
 from zillion.stock.db_stock import db_manager
 
 
-class BasicUS:
+class BasicUsDAO:
     # 构造方法（初始化方法）
     def __init__(self, code, name, selected):
         self.code = code
@@ -19,5 +19,5 @@ class BasicUS:
 
 
 if __name__ == '__main__':
-    a = BasicUS.get_selected_codes()
+    a = BasicUsDAO.get_selected_codes()
     print(a)

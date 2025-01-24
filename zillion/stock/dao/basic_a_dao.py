@@ -1,4 +1,4 @@
-from zillion.stock.domain.data_object import BasicA
+from zillion.stock.data.data_object import BasicA
 
 
 class BasicADAO:

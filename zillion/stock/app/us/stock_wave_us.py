@@ -6,6 +6,7 @@ from utils.datetime import date_util
 from utils.datetime.date_util import parse_date_str
 from zillion.future.app import wave
 from zillion.stock import db_stock
+from zillion.utils import wave_util
 
 # 建立数据库连接
 db = _dt.get_db("stock")
@@ -56,7 +57,7 @@ def do_wave(code_list=['BABA'], from_date='2022-01-01', tb_name_suffix=None):
             stock_us_daily_df['date'] = stock_us_daily_df['date'].apply(lambda x: parse_date_str(x))
         wave_daily_df = stock_us_daily_df[stock_us_daily_df['date'] > from_date]
         _save_daily(code, wave_daily_df)
-        wave_df = wave.get_wave(code, hist_data=wave_daily_df, begin_low=True, duration=0, change=0)
+        wave_df = wave_util.get_wave(code, hist_data=wave_daily_df, begin_low=True, duration=0, change=0)
         if wave_df is not None and size >= 1:
             wave_str = wave.wave_to_str(wave_df)
             wave_list = wave.get_wave_list(wave_str)

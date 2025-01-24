@@ -1,9 +1,8 @@
 import akshare
 import pandas as pd
 
-from zillion.future.app import wave
 from zillion.future.domain import daily
-from zillion.utils import db_util
+from zillion.utils import db_util, wave_util
 
 pd.set_option('display.max_columns', None)
 
@@ -20,11 +19,11 @@ if __name__ == '__main__':
             df_data['code'] = code
             df_data = df_data[['code', 'date', 'open', 'high', 'low', 'close']]
         df_data.columns = ['code', 'date', 'open', 'high', 'low', 'close']
-        wave_df = wave.get_wave(code, hist_data=df_data, begin_low=True, duration=0, change=0)
-        wave_str = wave.wave_to_str(wave_df)
+        wave_df = wave_util.get_wave(code, hist_data=df_data, begin_low=True, duration=0, change=0)
+        wave_str = wave_util.wave_to_str(wave_df)
         if wave_str == '':
             print(code)
-        wave_list = wave.get_wave_list(wave_str)
+        wave_list = wave_util.get_wave_list(wave_str)
         wave_list.append(wave_df.tail(1).iloc[0, 5])  # end_price
         wave_list.insert(0, code)
         wave_list.insert(1, list(wave_df['begin'])[0])

@@ -1,6 +1,6 @@
 from utils.datetime import date_util
-from zillion.stock.dao.BasicUS import BasicUS
-from zillion.stock.data import daily
+from zillion.stock.dao.basic_us_dao import BasicUsDAO
+from zillion.stock.dao import daily_quote_dao
 from zillion.stock.db_stock import db_manager
 
 
@@ -80,7 +80,7 @@ def find_existing_gaps(data):
 
 
 if __name__ == "__main__":
-    codes = BasicUS.get_selected_codes()
+    codes = BasicUsDAO.get_selected_codes()
     # codes = ['BABA']
     for stock_symbol in codes:
         db_manager.execute("delete from gap_track where code='" + stock_symbol + "'")
