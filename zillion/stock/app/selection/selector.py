@@ -8,7 +8,7 @@ from zillion.utils._utils import timer
 import zillion.utils.db_util as _dt
 from utils.datetime import date_const, date_util
 from zillion.stock.data import data_util
-from zillion.stock.data.service import concept_service
+from zillion.stock.app.cn.service import concept_service
 from zillion.stock.gene import wave, limitup, upnday
 
 last_trade_date = date_util.get_latest_trade_date(1)[0]

@@ -1,5 +1,6 @@
 import zillion.utils.db_util as _dt
 from utils.datetime import date_util
+from zillion.db.DataSourceFactory import session_stock
 from zillion.utils.db_util import read_sql
 
 
@@ -8,11 +9,8 @@ class DailyQuoteDAO:
         self.session = session
 
 
+    @staticmethod
     def get_daily_a(code=None, trade_date=None, start_date=None, end_date=None):
-        # 建立数据库连接
-        db = _dt.get_db("stock")
-        # 使用cursor()方法创建一个游标对象
-        cursor = db.cursor()
         sql = "select * from stock.daily_quote_a where 1=1 "
         if code is not None:
             if isinstance(code, str):
@@ -35,6 +33,11 @@ class DailyQuoteDAO:
         df.index = list(df['code'])
         return df
 
+
+if __name__ == '__main__':
+    daily_quote_dao = DailyQuoteDAO(session_stock)
+    df = daily_quote_dao.get_daily_a(code='000001', start_date='2019-01-01', end_date='2019-01-31')
+    print(df)
 
 
 

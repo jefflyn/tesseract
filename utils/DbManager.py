@@ -66,7 +66,7 @@ class DbManager:
 # 示例用法
 if __name__ == "__main__":
     db_manager = DbManager(
-        host="localhost",
+        host="127.0.0.1",
         username="linjingu",
         password="linjingu",
         database="stock"

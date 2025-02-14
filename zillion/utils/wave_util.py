@@ -137,7 +137,7 @@ def wave_to_str(wave_df=None, size=4, change=10):
     :param wave_df:
     :param size:
     :param change:
-    :return: 1.4,-1.9,2.12|10,20,13|15.4,10.9,20.12
+    :return: 1.4,-1.9,2.12|10,20,13|15.4,10.9,20.12 -> change|days|price
     """
     wave_change_str = ''
     if wave_df is None or size < 1:

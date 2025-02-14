@@ -4,7 +4,7 @@ import time
 import tushare as ts
 from zillion.utils.pro_util import pro
 
-import zillion.stock.data.service.hist_trade_service as hts
+import zillion.stock.app.cn.service.hist_trade_service as hts
 from utils.datetime import date_util
 from zillion.utils.db_util import get_db
 

@@ -10,7 +10,7 @@ from zillion.utils.position_util import calc_position
 pd.set_option('display.width', None)
 pd.set_option('display.max_columns', None)
 
-baba_target_price = 120.0
+baba_target_price = 130.0
 
 
 def custom_function(row):

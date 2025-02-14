@@ -8,7 +8,7 @@ from utils.DbManager import DbManager
 engine = create_engine("mysql+pymysql://linjingu:linjingu@127.0.0.1:3306/stock?charset=UTF8MB4")
 
 db_manager = DbManager(
-    host="localhost",
+    host="127.0.0.1",
     username="linjingu",
     password="linjingu",
     database="stock"

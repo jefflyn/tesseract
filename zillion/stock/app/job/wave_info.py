@@ -1,4 +1,4 @@
-import zillion.stock.data.service.hist_trade_service as hts
+import zillion.stock.app.cn.service.hist_trade_service as hts
 from utils.datetime import date_util
 from zillion.stock.data import data_util
 from zillion.stock.gene import wave

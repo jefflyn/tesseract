@@ -4,7 +4,6 @@ import pandas as pd
 import zillion.utils.db_util as _dt
 from utils.datetime import date_util
 from utils.datetime.date_util import parse_date_str
-from zillion.future.app import wave
 from zillion.stock import db_stock
 from zillion.utils import wave_util
 
