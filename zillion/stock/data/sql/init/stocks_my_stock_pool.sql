@@ -73,17 +73,17 @@ create table basic_us_cn
 )
     comment '中概';
 
-create table basic_us_selected
-(
-    id       bigint auto_increment
-        primary key,
-    code     varchar(16)       not null,
-    name     varchar(128)      null,
-    selected tinyint default 0 not null,
-    constraint basic_us_selected_code_uindex
-        unique (code)
-)
-    comment '精选';
+CREATE TABLE `basic_us_selected` (
+  `name` varchar(256) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `cname` varchar(32) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `category` varchar(16) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `symbol` varchar(16) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `market` varchar(16) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `tag` varchar(128) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  PRIMARY KEY (`symbol`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci
+
+
 
 create table gap_track
 (
@@ -144,20 +144,6 @@ create table stock_a_daily
     涨跌额 double null,
     换手率 double null
 );
-
-create table trade_daily_us
-(
-    code   varchar(20) null,
-    date   varchar(12) not null,
-    open   double      null,
-    high   double      null,
-    low    double      null,
-    close  double      null,
-    volume double      null
-);
-
-create index trade_daily_us_code_index
-    on trade_daily_us (code);
 
 create table users
 (
@@ -224,4 +210,17 @@ create table wave_detail_cn
     `change`    double null,
     days        bigint null
 );
+
+CREATE TABLE `daily_quote_us` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `code` varchar(10) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL COMMENT '合约代码',
+  `date` varchar(10) COLLATE utf8mb3_unicode_ci NOT NULL COMMENT '交易日期',
+  `open` decimal(10,2) DEFAULT NULL COMMENT '开盘价',
+  `high` decimal(10,2) DEFAULT NULL COMMENT '最高价',
+  `low` decimal(10,2) DEFAULT NULL COMMENT '最低价',
+  `close` decimal(10,2) DEFAULT NULL COMMENT '收盘价',
+  `volume` int DEFAULT NULL COMMENT '交易量',
+  PRIMARY KEY (`id`),
+  KEY `idx_trade_daily_us` (`code`,`date`)
+) ENGINE=InnoDB AUTO_INCREMENT=7736 DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci COMMENT='每日行情'
 

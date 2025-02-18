@@ -1,14 +1,14 @@
 from utils.datetime import date_util
+from zillion.db.DataSourceFactory import session_stock
 from zillion.stock.dao.basic_us_dao import BasicUsDAO
-from zillion.stock.dao import daily_quote_dao
+from zillion.stock.dao.daily_quote_dao import DailyQuoteDAO
 from zillion.stock.db_stock import db_manager
 
 
 # 获取股票数据
 def get_stock_data(stock_symbol, start_date, end_date):
-    # stock = yf.Ticker(stock_symbol)
-    # data = stock.history(start=start_date, end=end_date)
-    data_df = daily.get_daily(code=stock_symbol, start_date=start_date, end_date=end_date)
+    daily_quote_dao = DailyQuoteDAO(session_stock)
+    data_df = daily_quote_dao.get_daily(label='us', code=stock_symbol, start_date=start_date, end_date=end_date)
     data_df = data_df.reset_index()
     return data_df
 

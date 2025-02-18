@@ -10,8 +10,16 @@ class DailyQuoteDAO:
 
 
     @staticmethod
-    def get_daily_a(code=None, trade_date=None, start_date=None, end_date=None):
-        sql = "select * from stock.daily_quote_a where 1=1 "
+    def get_daily(label, code=None, trade_date=None, start_date=None, end_date=None):
+        if label == 'a':
+            table = 'daily_quote_a'
+        elif label == 'hk':
+            table = 'daily_quote_hk'
+        elif label == 'us':
+            table = 'daily_quote_us'
+        else:
+            table = ''
+        sql = "select * from stock." + table + " where 1=1 "
         if code is not None:
             if isinstance(code, str):
                 codes = list()
@@ -36,7 +44,7 @@ class DailyQuoteDAO:
 
 if __name__ == '__main__':
     daily_quote_dao = DailyQuoteDAO(session_stock)
-    df = daily_quote_dao.get_daily_a(code='000001', start_date='2019-01-01', end_date='2019-01-31')
+    df = daily_quote_dao.get_daily(table='daily_quote_a', code='000001', start_date='2019-01-01', end_date='2019-01-31')
     print(df)
 
 

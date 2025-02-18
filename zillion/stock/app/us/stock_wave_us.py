@@ -20,10 +20,10 @@ def _save_daily(code=None, trade_df=None):
             for index, row in trade_df.iterrows():
                 data_list.append([code, row['date'], row['open'], row['high'], row['low'],
                                   row['close'], row['volume']])
-            delete_sql = "delete from trade_daily_us where code is null or code = '" + code + "'"
+            delete_sql = "delete from daily_quote_us where code is null or code = '" + code + "'"
             cursor.execute(delete_sql)
             # 注意这里使用的是executemany而不是execute
-            insert_sql = 'INSERT INTO trade_daily_us (code, date, open, high, low, close, volume) VALUES ' \
+            insert_sql = 'INSERT INTO daily_quote_us (code, date, open, high, low, close, volume) VALUES ' \
                          '(%s, %s, %s, %s, %s, %s, %s)'
             cursor.executemany(insert_sql, data_list)
             db.commit()
@@ -31,7 +31,7 @@ def _save_daily(code=None, trade_df=None):
             print('  >>> insert daily error:', err)
 
 
-def do_wave(code_list=['BABA'], from_date='2022-01-01', tb_name_suffix=None):
+def do_wave(code_list=['BABA'], from_date='2022-01-01', tb_name_suffix=None, change=0):
     print(date_util.now_str())
     ############################################################
     # code_list = ['']
@@ -56,10 +56,10 @@ def do_wave(code_list=['BABA'], from_date='2022-01-01', tb_name_suffix=None):
             stock_us_daily_df['date'] = stock_us_daily_df['date'].apply(lambda x: parse_date_str(x))
         wave_daily_df = stock_us_daily_df[stock_us_daily_df['date'] > from_date]
         _save_daily(code, wave_daily_df)
-        wave_df = wave_util.get_wave(code, hist_data=wave_daily_df, begin_low=True, duration=0, change=0)
+        wave_df = wave_util.get_wave(code, hist_data=wave_daily_df, begin_low=True, duration=0, change=change)
         if wave_df is not None and size >= 1:
-            wave_str = wave.wave_to_str(wave_df)
-            wave_list = wave.get_wave_list(wave_str)
+            wave_str = wave_util.wave_to_str(wave_df)
+            wave_list = wave_util.get_wave_list(wave_str)
             wave_detail_list.append(wave_df)
             wave_list.append(wave_df.tail(1).iloc[0, 5])  # end_price
             wave_list.insert(0, code)
@@ -92,12 +92,9 @@ def wave_to_db(wave_list=None, wave_detail_list=None, tb_name_suffix=None):
 
 
 if __name__ == '__main__':
-    df_data = db_stock.read_sql('select code from basic_us_selected order by id', params={})
-    codes = list(df_data['code'])
-    do_wave(codes, '2020-01-01',)
-    df_data = db_stock.read_sql('select code from basic_us_cn order by id', params={})
-    codes = list(df_data['code'])
-    do_wave(codes, '2020-01-01', '_cn')
+    df_data = db_stock.read_sql('select symbol from basic_us_selected', params={})
+    codes = list(df_data['symbol'])
+    do_wave(codes, '2022-10-01',)
 
-    # codes = ['SVA']
-    # do_wave(codes, '2020-01-01', '_sva')
+    # codes = ['BABA']
+    # do_wave(codes, '2023-01-23', '_baba', change=10)
