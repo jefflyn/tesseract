@@ -14,7 +14,7 @@ from zillion.utils.price_util import format_large_number
 pd.set_option('display.width', None)
 pd.set_option('display.max_columns', None)
 
-baba_target_price = 120.0
+baba_target_price = 130.0
 
 
 def custom_function(row):
@@ -76,7 +76,7 @@ def hk_realtime_sn(code=None):
 
 
 if __name__ == '__main__':
-    open_time = datetime.datetime(today.year, today.month, today.day, hour=16, minute=30, second=30)
+    open_time = datetime.datetime(today.year, today.month, today.day, hour=16, minute=00, second=30)
     while True:
         print(hk_realtime_em(['00700', '09988', '03690', '09999', '09888',
                               '09618', '01810', '02015', '01024', '09961']))
