@@ -105,22 +105,27 @@ def update_contract_main(code):
 
 def update_hl(code, low=None, low_time=None, high=None, high_time=None, update_hist=False):
     result = 0
+    update_tag = ''
     if update_hist:
         if low is not None and low_time is not None:
             sql = "update contract set h_low=%f, h_low_time='%s', update_time=now() where code='%s' and (h_low=0 or h_low>%f)"
             result = cursor.execute(sql % (low, low_time, code, low))
+            update_tag = 'update hist low !!!'
         if high is not None and high_time is not None:
             sql = "update contract set h_high=%f, h_high_time='%s', update_time=now() where code='%s' and (h_high=0 or h_high<%f)"
             result += cursor.execute(sql % (high, high_time, code, high))
+            update_tag = 'update hist high !!!'
     else:
         if low is not None and low_time is not None:
             sql = "update contract set low=%f, low_time='%s', update_time=now() where code='%s' and (low=0 or low>%f)"
             result = cursor.execute(sql % (low, low_time, code, low))
+            update_tag = 'update contract low !!!'
         if high is not None and high_time is not None:
             sql = "update contract set high=%f, high_time='%s', update_time=now() where code='%s' and (high=0 or high<%f)"
             result += cursor.execute(sql % (high, high_time, code, high))
-    # if result > 0:
-    #     print(code, 'update contract high low !!!')
+            update_tag = 'update contract high !!!'
+    if result > 0:
+        print(code, update_tag)
     db.commit()
     refresh_contract_map(get_local_contract(code=code))
     return result

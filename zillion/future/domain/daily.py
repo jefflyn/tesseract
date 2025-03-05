@@ -133,7 +133,7 @@ def collect_daily_ak(codes=None, trade_date=None):
                               settle_change,
                               row['volume'], row['hold'], collect_time])
         _save_daily(data_list)
-        print("processing " + str(seq) + "/" + str(size) + " done!")
+        print(code, "processing " + str(seq) + "/" + str(size) + " done!")
         seq += 1
 
 

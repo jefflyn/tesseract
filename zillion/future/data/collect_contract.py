@@ -4,36 +4,13 @@ from akshare.futures.cons import market_exchange_symbols
 from akshare.futures.symbol_var import symbol_varieties
 
 from utils.datetime import date_util
+from zillion.future.data.update_contract import update_contract_hl
 from zillion.future.domain import contract, basic, daily, gap
 from zillion.future.future_constants import EXCHANGE_ALIAS_MAP
 
 pd.set_option('display.width', None)
 pd.set_option('display.max_columns', None)
 
-
-def update_contract_hl(code):
-    rows = _update_contract_hl(code)
-    #####
-    c_code = symbol_varieties(code) + '0'
-    _update_contract_hl(c_code, update_hist=True)
-    return rows
-
-
-def _update_contract_hl(code, update_hist=False):
-    daily_df = daily.get_daily(code)
-    low_list = list(daily_df['low'])
-    high_list = list(daily_df['high'])
-    if len(low_list) == 0 or len(high_list) == 0:
-        return
-    date_list = list(daily_df['trade_date'])
-    lowest = min(low_list)
-    lowest_date = date_list[low_list.index(lowest)]
-    highest = max(high_list)
-    highest_date = date_list[high_list.index(highest)]
-    rows = contract.update_hl(code, lowest, lowest_date, highest, highest_date, update_hist)
-    if rows > 0:
-        print("update contract hl success:", code)
-    return rows
 
 
 if __name__ == '__main__':

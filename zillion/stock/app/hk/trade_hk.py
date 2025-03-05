@@ -14,7 +14,7 @@ from zillion.utils.price_util import format_large_number
 pd.set_option('display.width', None)
 pd.set_option('display.max_columns', None)
 
-baba_target_price = 130.0
+baba_target_price = 150.0
 
 
 def custom_function(row):

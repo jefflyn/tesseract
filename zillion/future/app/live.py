@@ -230,6 +230,8 @@ def show(init_target, holding_cost):
                 realtime_df = realtime
             else:
                 realtime_df = pd.concat([realtime_df, realtime], ignore_index=True)
+        if realtime_df is None:
+            return
         realtime_df = realtime_df.drop(columns=['pre_settle'])
         realtime_df = realtime_df.drop(columns=['low'])
         realtime_df = realtime_df.drop(columns=['high'])

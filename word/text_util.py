@@ -1,5 +1,7 @@
 import re
-import string
+
+from nlp import spacy_nlp
+
 
 def contains_punctuation(word):
     # 正则表达式匹配任意标点符号
@@ -33,3 +35,9 @@ def get_words(text):
     word_list = list(unique_words)
     word_list.sort()
     return word_list
+
+
+if __name__ == '__main__':
+    text = convert_2_text('test.txt')
+    word_map = spacy_nlp.get_token_map(text)
+    print(word_map)
