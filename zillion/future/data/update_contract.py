@@ -26,7 +26,7 @@ def _update_contract_hl(code, daily_df, update_hist=False):
     low_list = list(daily_df['low'])
     high_list = list(daily_df['high'])
     if len(low_list) == 0 or len(high_list) == 0:
-        return
+        return 0
     date_list = list(daily_df['trade_date'])
     lowest = min(low_list)
     lowest_date = date_list[low_list.index(lowest)]

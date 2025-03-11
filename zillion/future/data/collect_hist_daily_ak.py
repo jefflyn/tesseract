@@ -15,5 +15,6 @@ if __name__ == '__main__':
 
     # 连续
     code_list = contract.get_0_contract_code()
+    # code_list = ['PS0']
     daily.collect_hist_daily_ak(code_list)
     print('done @', date_util.now_str())
