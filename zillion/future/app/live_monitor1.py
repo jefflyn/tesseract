@@ -6,11 +6,11 @@ pd.set_option('display.width', None)
 pd.set_option('display.max_columns', None)
 # nohup redis-server /Users/ruian/etc/redis.conf &
 init_target = {
-    'SC2504': [[-450], [750]],
+    'SC2505': [[-450], [750]],
     'TA2505': [[-4600], [6500]],
     'PP2505': [[-6800], [8000]],
     'PG2504': [[-4000], [6000]],
-    'EB2504': [[-8000], [10000]],
+    'EB2505': [[-5000], [10000]],
     'NR2505': [[-11200], [16000]],
     'SP2505': [[-5500], [6500]],
 

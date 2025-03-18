@@ -46,7 +46,10 @@ def us_realtime(code=None):
     print(akshare.stock_us_spot())
 
 
-def hk_realtime_em(code=None):
+def hk_realtime(code=None):
+    '''
+    实时行情数据-东财
+    '''
     df = akshare.stock_hk_spot_em()
     # df['time'] = date_util.now_str()
     # db_stock.to_db(df, 'basic_hk')
@@ -60,7 +63,10 @@ def hk_realtime_em(code=None):
     return format_realtime(df)
 
 
-def hk_realtime_mb_em(code=None):
+def hk_realtime_em(code=None):
+    '''
+    实时行情数据-东财
+    '''
     df = akshare.stock_hk_main_board_spot_em()
     if code is not None:
         df = df[df['代码'].isin(code)]
@@ -68,6 +74,9 @@ def hk_realtime_mb_em(code=None):
 
 
 def hk_realtime_sn(code=None):
+    '''
+    实时行情数据-新浪
+    '''
     df = akshare.stock_hk_spot()
     # db_stock.to_db(df, 'basic_hk_sn')
     if code is not None:
@@ -76,12 +85,12 @@ def hk_realtime_sn(code=None):
 
 
 if __name__ == '__main__':
+    print(hk_realtime_sn(['09988']))
     open_time = datetime.datetime(today.year, today.month, today.day, hour=16, minute=00, second=30)
     while True:
-        print(hk_realtime_em(['00700', '09988', '03690', '09999', '09888',
+        print(hk_realtime(['00700', '09988', '03690', '09999', '09888',
                               '09618', '01810', '02015', '01024', '09961']))
         print('time:', now_str())
         time.sleep(5)
         if date_util.now() > open_time:
             break
-    # print(hk_realtime_sn(['09988']))
