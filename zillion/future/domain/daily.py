@@ -137,7 +137,7 @@ def collect_daily_ak(codes=None, trade_date=None):
         seq += 1
 
 
-def collect_hist_daily_ak(codes=None):
+def collect_hist_daily_ak(codes=None, trade_date=None):
     '''
     历史全量
     :param codes:
@@ -153,6 +153,8 @@ def collect_hist_daily_ak(codes=None):
         except Exception as e:
             print(code + ' futures_zh_daily_sina error, retry:', e)
             # df_data = ak.futures_zh_daily_sina(code)
+        if df_data is not None and trade_date is not None:
+            df_data = df_data[df_data.date <= trade_date].tail(2)
         if df_data is None or df_data.empty:
             print(code + ' no daily data!')
             continue
@@ -171,6 +173,8 @@ def collect_hist_daily_ak(codes=None):
         # print(df_data.tail(10))
         data_list = []
         for index, row in df_data.iterrows():
+            if row['pre_settle'] == 0:
+                continue
             close_change = round((row['close'] - row['pre_settle']) * 100 / row['pre_settle'], 2) if row[
                                                                                                          'pre_settle'] > 0 else 0
             settle_change = round((row['settle'] - row['pre_settle']) * 100 / row['pre_settle'], 2) if row[
