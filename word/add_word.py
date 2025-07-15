@@ -11,6 +11,9 @@ db = db_util.get_db("app")
 # 使用cursor()方法创建一个游标对象
 cursor = db.cursor()
 
+'''
+data_objects update table name
+'''
 text = text_util.convert_2_text('add_word.txt')
 word_map = spacy_nlp.get_token_map(text)
 print('total words:', len(word_map.keys()))

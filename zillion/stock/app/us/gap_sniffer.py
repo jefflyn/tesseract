@@ -40,6 +40,9 @@ def find_existing_gaps(data):
 
 
 if __name__ == "__main__":
+    '''
+    run stock_wave_us.py firstly
+    '''
     codes = BasicUsDAO.get_selected_codes()
     for stock_symbol in codes:
         start_date = '2020-01-01'  # 起始日期

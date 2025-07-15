@@ -7,7 +7,7 @@ Base = declarative_base()
 
 class Vocabulary(Base):
     '''
-    vocabulary 表对应的 SQLAlchemy 模型
+    vocabulary 表对应的 SQLAlchemy 模型 e.g. vocabulary_xxx
     '''
     __tablename__ = 'vocabulary'
     # 表字段
