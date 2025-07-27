@@ -14,6 +14,9 @@ words = df['word'].dropna().unique()
 os.makedirs("audio", exist_ok=True)
 
 def tts(text, filename):
+    """
+    mv ./**.mp3 /Users/linjingu/Library/Application\ Support/Anki2/Ryan/collection.media/
+    """
     filepath = os.path.join("audio", filename)
     # filepath = "/Users/linjingu/Library/Application Support/Anki2/Ryan/collection.media/" + filename
     if not os.path.exists(filepath) and text.strip():

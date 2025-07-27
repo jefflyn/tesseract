@@ -9,6 +9,9 @@ nlp = spacy.load("en_core_web_sm")
 
 def get_token_map(text):
     doc = nlp(text)
+    # 打印所有命名实体及其类型
+    for ent in doc.ents:
+        print(ent.text, ent.label_)
     result_map = {}
     for token in doc:
         print(f"Word: {token.text}, POS: {token.pos_}, Lemma: {token.lemma_}")
@@ -16,4 +19,4 @@ def get_token_map(text):
     return result_map
 
 if __name__ == '__main__':
-    print(get_token_map('hello china China Hello'))
+    print(get_token_map('Barack Obama was born in Hawaii and worked at the White House.'))
