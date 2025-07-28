@@ -15,7 +15,7 @@ os.makedirs("audio", exist_ok=True)
 
 def tts(text, filename):
     """
-    mv ./**.mp3 /Users/linjingu/Library/Application\ Support/Anki2/Ryan/collection.media/
+    # mv ./**.mp3 /Users/linjingu/Library/Application\ Support/Anki2/Ryan/collection.media/
     """
     filepath = os.path.join("audio", filename)
     # filepath = "/Users/linjingu/Library/Application Support/Anki2/Ryan/collection.media/" + filename
@@ -24,7 +24,7 @@ def tts(text, filename):
         tts.save(filepath)
     return f"[sound:{filename}]"
 
-def get_meaning_and_example(word):
+def get_oxford_info(word):
     url = f"https://www.oxfordlearnersdictionaries.com/definition/english/{word}"
     print(url)
     headers = {"User-Agent": "Mozilla/5.0"}
@@ -40,7 +40,46 @@ def get_meaning_and_example(word):
     ipa = soup.select_one(".phon").get_text(strip=True) if soup.select_one(".phon") else ""
     # for phon in phonetics:
     #     print(phon.text.strip())
-    return meaning, example, ipa
+    # --- 1️⃣ Verb Forms (动词变形) ---
+    verb_forms = ''
+    verb_section = soup.find_all("td", {"class": "verb_form"})
+    forms = soup.find("span", attrs={"xt": ["ptof", "ppof"]})
+
+    if verb_section and len(verb_section) > 0:
+        verb_forms = "Verb Forms: " + " ".join([v.text.strip().split(" ")[-1] for v in verb_section])
+    elif forms:
+        verb_forms = forms.text.strip()
+
+    # --- 2️⃣ Idioms (习语) ---
+    # idioms_data = []
+    idioms_data = ''
+    idiom_blocks = soup.find_all("span", class_="idm-g")
+    for index, block in enumerate(idiom_blocks, start=1):
+        idiom_text = block.find("span", class_="idm")
+        idiom_def = block.find("span", class_="def")
+
+        if idiom_text:
+            idiom = idiom_text.text.strip()
+            definition = idiom_def.text.strip() if idiom_def else ""
+            # idioms_data.append({"idiom": idiom, "definition": definition})
+            idioms_data = idioms_data + f"{index}.{idiom}: {definition}\n"
+
+    # --- 3️⃣ Noun Plural Forms (名词复数) ---
+    plural_forms = ''
+    grammar_span = soup.find("span", {"class": "inflected_form"})
+    plural_of = soup.find("span", {"xt": "plof"})
+    if grammar_span:
+        plural_forms = "Plural Forms: " + grammar_span.text.strip()
+    elif plural_of:
+        plural_forms = plural_of.text.strip()
+    return {
+        "meaning": meaning,
+        "example": example,
+        "ipa": ipa,
+        "verb_forms": verb_forms,
+        "idioms": idioms_data,
+        "plurals": plural_forms
+    }
 
 def dummy_image_url(word):
     return f"https://source.unsplash.com/160x160/?{word}"
@@ -62,27 +101,29 @@ rows = []
 total = len(words)
 try:
     for word in words:
-        meaning, example, ipa = get_meaning_and_example(word)
-        print(word, "get_meaning_and_example:", meaning, example, ipa)
+        word_info = get_oxford_info(word)
+        print(word, "get_oxford_info:", word_info)
         # download_google_image(word)
-        print(total - 1, word)
-        total = total - 1
 
         image = f"<img src='{word}.jpg'>"
         sound_word = tts(word, f"{word}_sound.mp3")
-        sound_meaning = tts(meaning, f"{word}_meaning.mp3")
-        sound_example = tts(example, f"{word}_example.mp3")
+        sound_meaning = tts(word_info.get('meaning'), f"{word}_meaning.mp3")
+        sound_example = tts(word_info.get('example'), f"{word}_example.mp3")
 
         rows.append({
             "Word": word,
-            "IPA": ipa,
+            "IPA": word_info.get('ipa'),
             "Image": image,
             "Sound": sound_word,
-            "Meaning": meaning,
+            "Meaning": word_info.get('meaning'),
             "Sound_Meaning": sound_meaning,
-            "Example": example,
-            "Sound_Example": sound_example
+            "Example": word_info.get('example'),
+            "Sound_Example": sound_example,
+            "Verb_Forms": word_info.get('verb_forms'),
+            "Idioms": word_info.get('idioms'),
+            "Plural_Forms": word_info.get('plurals'),
         })
+        print(f"{len(rows)}/{total}", word)
 except Exception as e:
     print("error", e)
 
