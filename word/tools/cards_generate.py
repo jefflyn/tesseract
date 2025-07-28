@@ -62,7 +62,7 @@ def get_oxford_info(word):
             idiom = idiom_text.text.strip()
             definition = idiom_def.text.strip() if idiom_def else ""
             # idioms_data.append({"idiom": idiom, "definition": definition})
-            idioms_data = idioms_data + f"{index}.{idiom}: {definition}\n"
+            idioms_data = idioms_data + f"{index}.{idiom}: {definition}<br>"
 
     # --- 3️⃣ Noun Plural Forms (名词复数) ---
     plural_forms = ''
