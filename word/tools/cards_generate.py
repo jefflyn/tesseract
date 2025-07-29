@@ -25,7 +25,8 @@ def tts(text, filename):
     return f"[sound:{filename}]"
 
 def get_oxford_info(word):
-    url = f"https://www.oxfordlearnersdictionaries.com/definition/english/{word}"
+    lookup_word = str(word).lower()
+    url = f"https://www.oxfordlearnersdictionaries.com/definition/english/{lookup_word}"
     print(url)
     headers = {"User-Agent": "Mozilla/5.0"}
     resp = requests.get(url, headers=headers)
@@ -43,7 +44,7 @@ def get_oxford_info(word):
     # --- 1️⃣ Verb Forms (动词变形) ---
     verb_forms = ''
     verb_section = soup.find_all("td", {"class": "verb_form"})
-    forms = soup.find("span", attrs={"xt": ["ptof", "ppof"]})
+    forms = soup.find("span", attrs={"xt": ["ptof", "ppof", "ptppof"]})
 
     if verb_section and len(verb_section) > 0:
         verb_forms = "Verb Forms: " + " ".join([v.text.strip().split(" ")[-1] for v in verb_section])
@@ -102,7 +103,7 @@ total = len(words)
 try:
     for word in words:
         word_info = get_oxford_info(word)
-        print(word, "get_oxford_info:", word_info)
+        print(" ", word, "-> get_oxford_info:", word_info)
         # download_google_image(word)
 
         image = f"<img src='{word}.jpg'>"
@@ -123,7 +124,7 @@ try:
             "Idioms": word_info.get('idioms'),
             "Plural_Forms": word_info.get('plurals'),
         })
-        print(f"{len(rows)}/{total}", word)
+        print(f"  {len(rows)}/{total}", word)
 except Exception as e:
     print("error", e)
 
