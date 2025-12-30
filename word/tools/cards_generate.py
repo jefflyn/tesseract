@@ -4,6 +4,9 @@ import requests
 from gtts import gTTS
 from bs4 import BeautifulSoup
 
+from utils.datetime.date_util import now
+from zillion.utils import notify_util
+
 # words = ["apple", "cat", "jump", "tangible"]
 # 修改为你的 CSV 文件路径
 input_csv = "words.csv"
@@ -13,7 +16,9 @@ df = pd.read_csv(input_csv, header=None, names=["word"])
 words = df['word'].dropna().unique()
 os.makedirs("audio", exist_ok=True)
 
-def tts(text, filename):
+def tts(text, filename, get_audio=True):
+    if get_audio is False:
+        return filename
     """
     # mv ./**.mp3 /Users/linjingu/Library/Application\ Support/Anki2/Ryan/collection.media/
     """
@@ -25,11 +30,25 @@ def tts(text, filename):
     return f"[sound:{filename}]"
 
 def get_oxford_info(word):
+    beginning = now()
     lookup_word = str(word).lower()
     url = f"https://www.oxfordlearnersdictionaries.com/definition/english/{lookup_word}"
     print(url)
     headers = {"User-Agent": "Mozilla/5.0"}
-    resp = requests.get(url, headers=headers)
+    try:
+        resp = requests.get(url, headers=headers)
+    except Exception as e:
+        notify_util.alert("查询词典异常", e)
+        print("error", e)
+        return {
+            "meaning": 'meaning',
+            "example": 'example',
+            "ipa": 'ipa',
+            "verb_forms": 'verb_forms',
+            "idioms": 'idioms_data',
+            "plurals": 'plural_forms'
+        }
+
     soup = BeautifulSoup(resp.text, "html.parser")
     # print(soup.prettify())  # 或者
     # print("example", soup.select_one(".unx"))
@@ -73,6 +92,7 @@ def get_oxford_info(word):
         plural_forms = "Plural Forms: " + grammar_span.text.strip()
     elif plural_of:
         plural_forms = plural_of.text.strip()
+    print('cost:', now() - beginning)
     return {
         "meaning": meaning,
         "example": example,
@@ -100,33 +120,33 @@ def download_google_image(word, save_dir="images"):
 
 rows = []
 total = len(words)
-try:
-    for word in words:
-        word_info = get_oxford_info(word)
-        print(" ", word, "-> get_oxford_info:", word_info)
-        # download_google_image(word)
+# try:
+for word in words:
+    word_info = get_oxford_info(word)
+    print(" ", word, "-> get_oxford_info:", word_info)
+    # download_google_image(word)
 
-        image = f"<img src='{word}.jpg'>"
-        sound_word = tts(word, f"{word}_sound.mp3")
-        sound_meaning = tts(word_info.get('meaning'), f"{word}_meaning.mp3")
-        sound_example = tts(word_info.get('example'), f"{word}_example.mp3")
+    image = f"<img src='{word}.jpg'>"
+    sound_word = tts(word, f"{word}_sound.mp3", False)
+    sound_meaning = tts(word_info.get('meaning'), f"{word}_meaning.mp3", False)
+    sound_example = tts(word_info.get('example'), f"{word}_example.mp3", False)
 
-        rows.append({
-            "Word": word,
-            "IPA": word_info.get('ipa'),
-            "Image": image,
-            "Sound": sound_word,
-            "Meaning": word_info.get('meaning'),
-            "Sound_Meaning": sound_meaning,
-            "Example": word_info.get('example'),
-            "Sound_Example": sound_example,
-            "Verb_Forms": word_info.get('verb_forms'),
-            "Idioms": word_info.get('idioms'),
-            "Plural_Forms": word_info.get('plurals'),
-        })
-        print(f"  {len(rows)}/{total}", word)
-except Exception as e:
-    print("error", e)
+    rows.append({
+        "Word": word,
+        "IPA": word_info.get('ipa'),
+        "Image": image,
+        "Sound": sound_word,
+        "Meaning": word_info.get('meaning'),
+        "Sound_Meaning": sound_meaning,
+        "Example": word_info.get('example'),
+        "Sound_Example": sound_example,
+        "Verb_Forms": word_info.get('verb_forms'),
+        "Plural_Forms": word_info.get('plurals'),
+    })
+    print(f"  {len(rows)}/{total}", word)
+# except Exception as e:
+#     notify_util.alert("处理失败", e)
+#     print("error", e)
 
 df = pd.DataFrame(rows)
 df.to_csv("_cards.csv", index=False, header=None, encoding="utf-8-sig")
