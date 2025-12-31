@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>导航面板</title>
+
+<style>
+  * {
+    box-sizing: border-box;
+  }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto;
+    font-size: 15px;
+    background: #f3f4f6;
+  }
+
+  /* Tabs */
+  .tabs {
+    display: flex;
+    height: 42px;
+    background: #1f2937;
+    color: #cbd5e1;
+  }
+
+  .tab {
+    padding: 0 18px;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    border-right: 1px solid #374151;
+  }
+
+  .tab.active {
+    background: #111827;
+    color: #fff;
+  }
+
+  /* Content */
+  .tab-content {
+    display: none;
+    height: calc(100vh - 42px);
+    overflow: auto;
+  }
+
+  .tab-content.active {
+    display: block;
+  }
+
+  /* Table */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #fff;
+    min-width: 1200px;
+  }
+
+  thead {
+    position: sticky;
+    top: 0;
+    background: #e5e7eb;
+    z-index: 2;
+  }
+
+  th, td {
+    padding: 6px 8px;
+    border: 1px solid #e5e7eb;
+    white-space: nowrap;
+  }
+
+  th {
+    font-weight: 600;
+  }
+
+  td {
+    cursor: pointer;
+  }
+
+  td:hover {
+    background: #eef2ff;
+  }
+
+  /* Toast */
+  .toast {
+    position: fixed;
+    bottom: 16px;
+    right: 16px;
+    background: #111827;
+    color: #fff;
+    padding: 6px 12px;
+    border-radius: 6px;
+    opacity: 0;
+    transition: opacity .2s;
+  }
+
+  .toast.show {
+    opacity: 1;
+  }
+</style>
+</head>
+<body>
+
+<!-- Tabs -->
+<div class="tabs">
+  <div class="tab active" data-tab="tab1"><b>《技术原理》</b></div>
+  <div class="tab" data-tab="tab2"><b>《项目场景》</b></div>
+  <div class="tab" data-tab="tab3"><b>《AI知识》</b></div>
+  <div class="tab" data-tab="tab4"><b>《非技术》</b></div>
+</div>
+
+<!-- style="background-color: yellow;"-->
+
+<!-- Tab 1 -->
+<div class="tab-content active" id="tab1">
+  <table>
+    <tbody>
+
+    <tr><td>JVM 类加载 JDK</td><td>ArrayList <br>LinkedList<br></td><td style="background-color: yellow;">Java锁原理原理</td><td style="background-color: yellow;">AOP原理和应用</td><td>数据库 事务</td><td style="background-color: yellow;">CAP和BASE理论<br>Zookeeper原理<br>怎么保证一致性<br>一致性算法</td></tr>
+<tr><td>JVM线程</td><td style="background-color: yellow;">HashMap<br>怎么解决hash冲突<br>ConcurrentHashMap原理<br></td><td>死锁与活锁</td><td>Spring原理 IOC</td><td>SQL执行过程</td><td style="background-color: yellow;">分布式锁原理 <br>怎么使用</td></tr>
+<tr><td style="background-color: yellow;">JVM内存管理 </td><td>ConcurrentHashMap原理<br></td><td>线程池原理以及调优</td><td>Spring bean</td><td style="background-color: yellow;">MySQL索引原理<br>注意事项</td><td style="background-color: yellow;">Redis实现锁的缺点</td></tr>
+<tr><td>运行时内存</td><td>HashSet怎么保证唯一 </td><td>队列和扩容优劣</td><td>生命周期管理</td><td>死锁排查和解决</td><td>Redisson怎么实现的<br>加锁解锁同一个线程</td></tr>
+<tr><td style="background-color: yellow;">垃圾回收和算法 </td><td>线程安全集合<br>怎么保证线程安全</td><td></td><td>Spring循环依赖怎么解决</td><td>数据库锁原理</td><td style="background-color: yellow;">Redis为什么性能高</td></tr>
+<tr><td>何为大对象 </td><td>Java异常处理</td><td>线程共享</td><td>哪些循环依赖无法解决</td><td>什么情况锁行和表</td><td>Redis持久化策略</td></tr>
+<tr><td>分代分区 <br>新老生代回收器</td><td>Java反射原理和应用</td><td>ThreadLocal<br>ThreadLocalMap</td><td>为什么不使用二级缓存</td><td>悲观锁和乐观锁</td><td>Redis高可用和集群方式</td></tr>
+<tr><td style="background-color: yellow;">CMS和G1收集器</td><td>Java对象复制原理</td><td>synchronized <br>ReentrantLock原理</td><td style="background-color: yellow;">Spring代理模式</td><td>聚簇索引介绍</td><td>分布式缓存怎么设计</td></tr>
+<tr><td style="background-color: yellow;">OOM FullGC原因和排查</td><td></td><td>volatile的作用</td><td>单例模式实现</td><td>慢SQL优化<br>执行计划<br>优化深度分页</td><td>如何实现滑动窗口</td></tr>
+<tr><td>Arrays.asList()的问题</td><td>Java线程介绍 <br>生命周期</td><td>Java阻塞队列</td><td>Spring常见设计模式</td><td style="background-color: yellow;">数据库事务介绍<br>幻读</td><td>缓存怎么保证数据一致性</td></tr>
+<tr><td>Java性能优化</td><td>终止线程的方式</td><td>CAS和AQS原理</td><td style="background-color: yellow;">注解失效原理以及解决</td><td style="background-color: yellow;">分布式事务原理</td><td style="background-color: yellow;">缓存穿透、缓存雪崩、</td></tr>
+<tr><td>减少GC开销</td><td>线程上下文切换</td><td>Java并发工具类和原理</td><td>Spring怎么管理事务</td><td style="background-color: yellow;">分布式事务或<br>数据一致性方案<br>具体实现组件</td><td>缓存失效、热点缓存重建</td></tr>
+<tr><td>Java引用类型</td><td>sleep wait </td><td></td><td>Spring Boot原理</td><td>两阶段提交<br>缺点和解决</td><td>消息队列的使用场景</td></tr>
+<tr><td>Java IO流</td><td>start run</td><td></td><td>Spring MVC的工作流程</td><td>分库分表 场景 方案</td><td style="background-color: yellow;">Kafka为什么高性能<br>存储设计</td></tr>
+<tr><td>BIO NIO AIO</td><td>守护线程 后台线程</td><td></td><td>BeanFactory<br>FactoryBean </td><td>JdbcShading<br>失败了怎么查询默认表<br></td><td style="background-color: yellow;">RocketMQ的原理<br>怎么保证消息发送消费成功</td></tr>
+<tr><td style="background-color: yellow;">Java类加载原理</td><td>线程间怎么通讯</td><td></td><td></td><td>TCC和SAGA补偿</td><td>消息丢失<br>消息重复<br>消息顺序性<br>消息限速<br>问题处理</td></tr>
+<tr><td>jdk8及以上的新特性</td><td></td><td></td><td>MyBatis遇到的坑</td><td>本地事务+ <br>Outbox/事务消息</td><td style="background-color: yellow;">出现消息堆积怎么处理</td></tr>
+<tr><td>Java开发规范</td><td></td><td></td><td>MyBatis原理</td><td></td><td style="background-color: yellow;">RocketMQ和Kafka<br>选型对比</td></tr>
+<tr><td></td><td></td><td></td><td>MyBatis缓存原理</td><td></td><td>消费者poll/pull还是push</td></tr>
+<tr><td>Lambda原理和坑</td><td></td><td></td><td></td><td>Elasticsearch<br>原理和场景</td><td>RocketMQ消息事务原理</td></tr>
+
+    </tbody>
+  </table>
+</div>
+
+<!-- Tab 2 -->
+<div class="tab-content" id="tab2">
+  <table>
+    <tbody>
+
+    <tr><td>与同类技术的差异对比</td><td>优缺点以及应用场景</td><td>实际举例</td><td>如何优化和设计</td><td>怎么做到的</td><td>展开详细说明</td></tr>
+<tr><td>场景设计</td><td>设计思想</td><td>架构设计 微服务</td><td>请介绍你的项目<br>共享充电宝</td><td>缓存、消息、分布式锁</td><td>结合项目说明</td></tr>
+<tr><td>高并发支付系统设计</td><td>系统设计原则和考量点</td><td>微服务设计 背景 优缺点</td><td>你的职责和工作内容</td><td>多级缓存设计</td><td>为什么选这个方案</td></tr>
+<tr><td>秒杀系统设计</td><td>DDD设计介绍</td><td style="background-color: yellow;">拆分原则，你怎么拆 <br>共享充电宝项目</td><td>详细讲一下技术架构</td><td>一致性问题</td><td>Redis为什么性能高<br>如何实现滑动窗口</td></tr>
+<tr><td>高并发订单系统设计</td><td style="background-color: yellow;">结合项目DDD设计</td><td>拆分后带来哪些新问题<br>怎么解决</td><td>怎么做技术选型？<br>保证高性能 高可用</td><td style="background-color: yellow;">分布式锁如何实现？<br>用Redis有什么坑？</td><td style="background-color: yellow;">缓存穿透、缓存雪崩、<br>缓存失效、热点缓存重建</td></tr>
+<tr><td></td><td style="background-color: yellow;">消费端幂等的设计方案</td><td>服务注册与发现怎么做<br>Eureka+Nacos</td><td>为什么这样设计？</td><td>CAP和BASE</td><td>Redis高可用和集群方式</td></tr>
+<tr><td style="background-color: yellow;">为什么选这个方案</td><td>微服务负载均衡怎么做的</td><td>Mesh架构和传统方式对比</td><td>代码重构怎么做？</td><td>MQ用来解决什么问题？<br>会有什么新问题？</td><td>Redis持久化策略</td></tr>
+<tr><td><default></td><td>架构怎么拆服务</td><td>怎么做限流 熔断 降级</td><td>系统性能优化怎么做</td><td>如何保证消息不丢、<br>不重、不乱？</td><td>B1英语口语回答</td></tr>
+<tr><td style="background-color: yellow;">B1英语口语<br>自我介绍</td><td></td><td style="background-color: yellow;">怎么保证一个服务异常<br>不拖垮整个系统</td><td>遇到的线上问题有哪些<br>怎么解决</td><td style="background-color: yellow;">消息积压如何处理？</td><td></td></tr>
+<tr><td style="background-color: yellow;">RocketMQ消息事务原理</td><td>为什么不能直接用<br>MQ的事务消息？</td><td>如何保证数据一致性？</td><td style="background-color: yellow;">怎么做code review<br>质量把控 单元测试</td><td>已经堆积的消息，<br>增加queue没用</td><td></td></tr>
+<tr><td>B1英语口语回答</td><td>最终一致性方案</td><td style="background-color: yellow;">本地事务+ <br>Outbox/事务消息</td><td>研发规范<br>架构评审怎么做</td><td>RocketMQ和Kafka<br>选型对比</td><td></td></tr>
+<tr><td></td><td>本地事务 + RocketMQ<br>执行流程<br>为什么引入本地事务表？</td><td>分布式事务原理？<br>为什么不用分布式事务XA</td><td>怎么跨团队推动项目</td><td style="background-color: yellow;">如何排查一次跨多个服务的<br>慢请求</td><td><<-线上问题处理问题</td></tr>
+<tr><td></td><td>事务日志表 + 状态机策略<br>事务日志表爆炸了怎么办</td><td>什么情况选强一致性？<br>什么时候接受最终一致</td><td>微服务系统监控<br>钉钉 阿里云日志 <br>Prometheus + Grafana</td><td>如何做日志、指标、链路统一</td><td></td></tr>
+<tr><td></td><td>死信队列怎么处理？</td><td>强一致性方案</td><td>如果重做这个项目<br>会在哪些地方改进？</td><td></td><td></td></tr>
+<tr><td></td><td>本地消息表方案</td><td>高并发系统瓶颈</td><td>海量数据库表切换方案</td><td></td><td></td></tr>
+<tr><td></td><td style="background-color: yellow;">配合幂等+补偿+重试</td><td style="background-color: yellow;">如何应对突发流量？</td><td>TIDB主键的生成原理<br>以及出现性能问题</td><td></td><td></td></tr>
+<tr><td></td><td></td><td>系统雪崩处理</td><td>为什么选择OceanBase<br>替换TiDB</td><td></td><td></td></tr>
+<tr><td></td><td>TCC 乐观锁 状态机<br>半强一致性</td><td style="background-color: yellow;">分库分表 场景 方案<br>JDBCshading<br>失败了怎么查询默认表<br><br><br></td><td>大表出现性能问题<br>运维困难<br>公司阿里云生态</td><td></td><td></td></tr>
+
+
+    </tbody>
+  </table>
+</div>
+
+<!-- Tab 3 -->
+<div class="tab-content" id="tab3">
+  <table>
+    <tbody>
+
+    <tr><td>如何理解大模型<br>和传统程序的区别</td><td></td><td></td><td>介绍概念原理</td><td></td><td></td></tr>
+<tr><td>GPT LLaMA大模型<br>适合做什么？</td><td></td><td></td><td>与同类技术的差异对比</td><td></td><td></td></tr>
+<tr><td>参数 参数规模 <br>Token</td><td></td><td></td><td>优缺点以及应用场景</td><td></td><td></td></tr>
+<tr><td>AI和后端系统的关系</td><td></td><td></td><td>好的 实际举例</td><td></td><td></td></tr>
+<tr><td>如何设计一个<br>基于LLM的后端系统</td><td></td><td></td><td>如何优化和设计</td><td></td><td></td></tr>
+<tr><td>系统架构和模块设计</td><td></td><td></td><td>怎么做到的或<br>怎么处理冲突</td><td></td><td></td></tr>
+<tr><td>什么是Agent智能体？<br>和普通Chat区别<br>Agent 架构</td><td></td><td></td><td>展开详细说明</td><td></td><td></td></tr>
+<tr><td>RAG<br>向量数据库<br>为什么需要？</td><td></td><td></td><td>B1英语口语回答</td><td></td><td></td></tr>
+<tr><td>如何选择向量数据库？</td><td></td><td></td><td></td><td></td><td></td></tr>
+<tr><td>提示工程 核心原则</td><td></td><td></td><td></td><td></td><td></td></tr>
+<tr><td>LangChain 框架</td><td></td><td></td><td></td><td></td><td></td></tr>
+<tr><td>FastGPT<br>概述与核心价值</td><td></td><td></td><td></td><td></td><td></td></tr>
+<tr><td>LLM产生幻觉怎么避免？</td><td></td><td></td><td></td><td></td><td></td></tr>
+<tr><td>Java如何高并发安全调用LLM？</td><td></td><td></td><td></td><td></td><td></td></tr>
+<tr><td>如何在AI应用中做缓存？</td><td></td><td></td><td></td><td></td><td></td></tr>
+<tr><td>AI服务怎么做监控和成本控制？</td><td></td><td></td><td></td><td></td><td></td></tr>
+<tr><td>AI输出造成业务影响，谁负责？</td><td></td><td></td><td></td><td></td><td></td></tr>
+<tr><td>系统如何设计？</td><td></td><td></td><td></td><td></td><td></td></tr>
+<tr><td>跨行业经验复制与应用</td><td></td><td></td><td></td><td></td><td></td></tr>
+<tr><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+
+    </tbody>
+  </table>
+</div>
+
+<div class="toast" id="toast">已复制</div>
+
+<script>
+  /* Tab 切换 */
+  document.querySelectorAll('.tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      tab.classList.add('active');
+      document.getElementById(tab.dataset.tab).classList.add('active');
+    });
+  });
+
+  /* 点击复制 */
+  document.querySelectorAll('td').forEach(td => {
+    td.addEventListener('click', () => {
+      const text = td.innerText;
+      navigator.clipboard.writeText(text).then(() => showToast(text));
+    });
+  });
+
+  function showToast(text) {
+    const toast = document.getElementById('toast');
+    toast.innerText = '已复制: ' + text;
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 1200);
+  }
+</script>
+
+</body>
+</html>

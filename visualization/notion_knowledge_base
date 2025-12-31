@@ -1,0 +1,88 @@
+// AI 时代后端工程师 Notion 技术知识库结构
+digraph {
+	fontname="Microsoft YaHei" fontsize=12 rankdir=TB
+	Notion [label="AI 时代后端工程师
+Notion 技术知识库" color=lightblue shape=box style=filled]
+	"核心后端技术" [label="核心后端技术" color=lightgoldenrod1 shape=folder style=filled]
+	Notion -> "核心后端技术"
+	"核心后端技术_Java 基础与进阶" [label="Java 基础与进阶" color=white shape=note style=filled]
+	"核心后端技术" -> "核心后端技术_Java 基础与进阶"
+	"核心后端技术_Spring 全家桶" [label="Spring 全家桶" color=white shape=note style=filled]
+	"核心后端技术" -> "核心后端技术_Spring 全家桶"
+	"核心后端技术_数据库与缓存" [label="数据库与缓存" color=white shape=note style=filled]
+	"核心后端技术" -> "核心后端技术_数据库与缓存"
+	"核心后端技术_消息队列" [label="消息队列" color=white shape=note style=filled]
+	"核心后端技术" -> "核心后端技术_消息队列"
+	"核心后端技术_分布式与微服务" [label="分布式与微服务" color=white shape=note style=filled]
+	"核心后端技术" -> "核心后端技术_分布式与微服务"
+	"系统架构与高可用" [label="系统架构与高可用" color=lightgoldenrod1 shape=folder style=filled]
+	Notion -> "系统架构与高可用"
+	"系统架构与高可用_架构设计原则" [label="架构设计原则" color=white shape=note style=filled]
+	"系统架构与高可用" -> "系统架构与高可用_架构设计原则"
+	"系统架构与高可用_高并发处理" [label="高并发处理" color=white shape=note style=filled]
+	"系统架构与高可用" -> "系统架构与高可用_高并发处理"
+	"系统架构与高可用_高可用与容灾" [label="高可用与容灾" color=white shape=note style=filled]
+	"系统架构与高可用" -> "系统架构与高可用_高可用与容灾"
+	"系统架构与高可用_数据一致性" [label="数据一致性" color=white shape=note style=filled]
+	"系统架构与高可用" -> "系统架构与高可用_数据一致性"
+	"系统架构与高可用_CAP & BASE 理论" [label="CAP & BASE 理论" color=white shape=note style=filled]
+	"系统架构与高可用" -> "系统架构与高可用_CAP & BASE 理论"
+	"系统架构与高可用_限流/熔断/降级" [label="限流/熔断/降级" color=white shape=note style=filled]
+	"系统架构与高可用" -> "系统架构与高可用_限流/熔断/降级"
+	"AI + 后端融合能力" [label="AI + 后端融合能力" color=lightgoldenrod1 shape=folder style=filled]
+	Notion -> "AI + 后端融合能力"
+	"AI + 后端融合能力_AI 工具链使用" [label="AI 工具链使用" color=white shape=note style=filled]
+	"AI + 后端融合能力" -> "AI + 后端融合能力_AI 工具链使用"
+	"AI + 后端融合能力_Prompt Engineering" [label="Prompt Engineering" color=white shape=note style=filled]
+	"AI + 后端融合能力" -> "AI + 后端融合能力_Prompt Engineering"
+	"AI + 后端融合能力_AI API 集成" [label="AI API 集成" color=white shape=note style=filled]
+	"AI + 后端融合能力" -> "AI + 后端融合能力_AI API 集成"
+	"AI + 后端融合能力_向量数据库" [label="向量数据库" color=white shape=note style=filled]
+	"AI + 后端融合能力" -> "AI + 后端融合能力_向量数据库"
+	"AI + 后端融合能力_AI 安全与合规" [label="AI 安全与合规" color=white shape=note style=filled]
+	"AI + 后端融合能力" -> "AI + 后端融合能力_AI 安全与合规"
+	"AI + 后端融合能力_AI 驱动的业务场景" [label="AI 驱动的业务场景" color=white shape=note style=filled]
+	"AI + 后端融合能力" -> "AI + 后端融合能力_AI 驱动的业务场景"
+	"DevOps 与云原生" [label="DevOps 与云原生" color=lightgoldenrod1 shape=folder style=filled]
+	Notion -> "DevOps 与云原生"
+	"DevOps 与云原生_容器化" [label="容器化" color=white shape=note style=filled]
+	"DevOps 与云原生" -> "DevOps 与云原生_容器化"
+	"DevOps 与云原生_Kubernetes" [label=Kubernetes color=white shape=note style=filled]
+	"DevOps 与云原生" -> "DevOps 与云原生_Kubernetes"
+	"DevOps 与云原生_CI/CD" [label="CI/CD" color=white shape=note style=filled]
+	"DevOps 与云原生" -> "DevOps 与云原生_CI/CD"
+	"DevOps 与云原生_服务监控" [label="服务监控" color=white shape=note style=filled]
+	"DevOps 与云原生" -> "DevOps 与云原生_服务监控"
+	"DevOps 与云原生_日志采集" [label="日志采集" color=white shape=note style=filled]
+	"DevOps 与云原生" -> "DevOps 与云原生_日志采集"
+	"DevOps 与云原生_云服务" [label="云服务" color=white shape=note style=filled]
+	"DevOps 与云原生" -> "DevOps 与云原生_云服务"
+	"数据与分析" [label="数据与分析" color=lightgoldenrod1 shape=folder style=filled]
+	Notion -> "数据与分析"
+	"数据与分析_数据建模" [label="数据建模" color=white shape=note style=filled]
+	"数据与分析" -> "数据与分析_数据建模"
+	"数据与分析_实时计算" [label="实时计算" color=white shape=note style=filled]
+	"数据与分析" -> "数据与分析_实时计算"
+	"数据与分析_数据仓库" [label="数据仓库" color=white shape=note style=filled]
+	"数据与分析" -> "数据与分析_数据仓库"
+	"数据与分析_BI 工具" [label="BI 工具" color=white shape=note style=filled]
+	"数据与分析" -> "数据与分析_BI 工具"
+	"业务与产品理解" [label="业务与产品理解" color=lightgoldenrod1 shape=folder style=filled]
+	Notion -> "业务与产品理解"
+	"业务与产品理解_领域驱动设计" [label="领域驱动设计" color=white shape=note style=filled]
+	"业务与产品理解" -> "业务与产品理解_领域驱动设计"
+	"业务与产品理解_常见业务场景" [label="常见业务场景" color=white shape=note style=filled]
+	"业务与产品理解" -> "业务与产品理解_常见业务场景"
+	"业务与产品理解_业务建模与拆解" [label="业务建模与拆解" color=white shape=note style=filled]
+	"业务与产品理解" -> "业务与产品理解_业务建模与拆解"
+	"职业发展与软技能" [label="职业发展与软技能" color=lightgoldenrod1 shape=folder style=filled]
+	Notion -> "职业发展与软技能"
+	"职业发展与软技能_技术写作" [label="技术写作" color=white shape=note style=filled]
+	"职业发展与软技能" -> "职业发展与软技能_技术写作"
+	"职业发展与软技能_团队协作与沟通" [label="团队协作与沟通" color=white shape=note style=filled]
+	"职业发展与软技能" -> "职业发展与软技能_团队协作与沟通"
+	"职业发展与软技能_系统复盘与总结" [label="系统复盘与总结" color=white shape=note style=filled]
+	"职业发展与软技能" -> "职业发展与软技能_系统复盘与总结"
+	"职业发展与软技能_技术选型与成本评估" [label="技术选型与成本评估" color=white shape=note style=filled]
+	"职业发展与软技能" -> "职业发展与软技能_技术选型与成本评估"
+}
