@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Java 导航页面</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <!-- 页面内容 -->
+  <div id="tabs-container">
+    <button class="tab-button" onclick="showTab(1)">Tab 1</button>
+    <button class="tab-button" onclick="showTab(2)">Tab 2</button>
+    <button class="tab-button" onclick="showTab(3)">Tab 3</button>
+  </div>
+
+  <div id="table-container">
+    <!-- 表格会动态加载 -->
+  </div>
+
+  <!-- 弹窗 -->
+  <div id="modal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeModal()">&times;</span>
+      <h2 id="modal-title"></h2>
+      <p id="modal-details"></p>
+      <ul id="modal-sub-items"></ul>
+    </div>
+  </div>
+
+  <!-- ① 先加载数据 -->
+  <script src="js/data.js?v=20260101"></script>
+
+  <!-- ② 再加载逻辑 -->
+  <script src="js/app.js"></script>
+</body>
+</html>
+
