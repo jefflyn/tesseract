@@ -44,44 +44,61 @@ table, th, td {
 
 th, td {
     padding: 10px;
-    text-align: center;
+    text-align: left;
 }
 
 td {
     cursor: pointer;
 }
 
-/* 弹窗 */
+td:hover {
+    background: #eef2ff;
+}
+
+/* 弹窗样式 */
 .modal {
     display: none;
     position: fixed;
-    z-index: 1;
+    top: 0; /* 固定在页面顶部 */
     left: 0;
-    top: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
+    background-color: rgba(0, 0, 0, 0.3); /* 背景色加深，带有半透明效果 */
+    z-index: 1000;
+    overflow: auto; /* 防止内容超出 */
+    padding: 20px;
+}
+
+.modal-title:hover {
+    color: royalblue;
 }
 
 .modal-content {
-    background-color: #fff;
+    position: relative;
+    font-size: 14px; /* 设置详情内容字体大小 */
+    background-color: #f5f5f5; /* 护眼色：米色背景 */
     padding: 20px;
-    margin: 15% auto;
+    max-height: 80%; /* 限制最大高度 */
+    overflow-y: auto; /* 支持滚动 */
+    border-radius: 8px;
+    margin: 0 auto;
     width: 80%;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
 }
 
+/* 关闭按钮 */
 .close {
     color: #aaa;
-    float: right;
-    font-size: 28px;
+    font-size: 30px;
     font-weight: bold;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    cursor: pointer;
 }
 
-.close:hover,
-.close:focus {
+.close:hover {
     color: black;
-    text-decoration: none;
-    cursor: pointer;
 }
 
 ul {
@@ -98,3 +115,35 @@ li {
 li:hover {
     text-decoration: underline;
 }
+
+
+/* Toast */
+.toast {
+    position: fixed;
+    bottom: 16px;
+    right: 16px;
+    background: #111827;
+    color: #fff;
+    padding: 6px 12px;
+    border-radius: 6px;
+    opacity: 0;
+    transition: opacity .2s;
+}
+
+.toast.show {
+    opacity: 1;
+}
+
+/* Toast 提示样式 */
+/*.toast {*/
+/*  position: fixed;*/
+/*  bottom: 20px;*/
+/*  left: 50%;*/
+/*  transform: translateX(-50%);*/
+/*  background-color: #4CAF50;*/
+/*  color: white;*/
+/*  padding: 10px 20px;*/
+/*  border-radius: 5px;*/
+/*  font-size: 16px;*/
+/*  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);*/
+/*}*/
