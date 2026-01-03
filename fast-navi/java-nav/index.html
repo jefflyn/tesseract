@@ -1,17 +1,24 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Java 导航页面</title>
+  <title>Java导航看板</title>
   <link rel="stylesheet" href="css/style.css">
 </head>
+
 <body>
   <!-- 页面内容 -->
-  <div id="tabs-container">
-    <button class="tab-button" onclick="showTab(1)">Tab 1</button>
-    <button class="tab-button" onclick="showTab(2)">Tab 2</button>
-    <button class="tab-button" onclick="showTab(3)">Tab 3</button>
+<!--  <div id="tabs-container">-->
+<!--    <button class="tab-button" onclick="showTab(1)">Tab 1</button>-->
+<!--    <button class="tab-button" onclick="showTab(2)">Tab 2</button>-->
+<!--    <button class="tab-button" onclick="showTab(3)">Tab 3</button>-->
+<!--  </div>-->
+  <div class="tabs-container">
+    <div class="tab active" onclick="showTab(1)"><b>《技术原理》</b></div>
+    <div class="tab" onclick="showTab(2)"><b>《项目场景》</b></div>
+    <div class="tab" onclick="showTab(3)"><b>《AI知识》</b></div>
+    <div class="tab" onclick="showTab(4)"><b>《非技术》</b></div>
   </div>
 
   <div id="table-container">
@@ -35,4 +42,3 @@
   <script src="js/app.js"></script>
 </body>
 </html>
-
