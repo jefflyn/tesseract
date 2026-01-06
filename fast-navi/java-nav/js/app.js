@@ -120,25 +120,13 @@ function showModal(data) {
 // 关闭弹窗功能
 function closeModal(event) {
     // 如果点击的是背景，关闭弹窗
-    if (event && event.target.id === 'modal') {
+    if (event && (event.target.id === 'modal' || event.target.className === 'close')) {
         const modal = document.getElementById('modal');
         modal.style.display = 'none';
     }
 }
 
 /* 显示 Toast 提示 */
-function showToast2(text) {
-    const toast = document.createElement('div');
-    toast.innerText = `已复制：${text}`;
-    toast.className = 'toast';
-    document.body.appendChild(toast);
-
-    // 自动消失
-    setTimeout(() => {
-        toast.remove();
-    }, 2000);
-}
-
 function showToast(text) {
     const toast = document.getElementById('toast');
     toast.innerText = '已复制: ' + text;
@@ -154,3 +142,47 @@ function showTab(tabType) {
 
 // 默认加载第一个 Tab
 showTab(1);
+
+
+// 字体大小控制
+const FONT_MIN = 12;
+const FONT_MAX = 20;
+const FONT_STEP = 1;
+const FONT_DEFAULT = 14;
+
+function getFontSize() {
+  return parseInt(
+    getComputedStyle(document.documentElement)
+      .getPropertyValue('--base-font-size')
+  );
+}
+
+function setFontSize(size) {
+  document.documentElement.style.setProperty(
+    '--base-font-size',
+    size + 'px'
+  );
+  localStorage.setItem('baseFontSize', size);
+}
+
+/* 初始化字体大小（刷新不丢失） */
+(function initFontSize() {
+  const saved = localStorage.getItem('baseFontSize');
+  setFontSize(saved ? Number(saved) : FONT_DEFAULT);
+})();
+
+/* 事件绑定 */
+document.getElementById('font-increase').onclick = () => {
+  const size = Math.min(getFontSize() + FONT_STEP, FONT_MAX);
+  setFontSize(size);
+};
+
+document.getElementById('font-decrease').onclick = () => {
+  const size = Math.max(getFontSize() - FONT_STEP, FONT_MIN);
+  setFontSize(size);
+};
+
+document.getElementById('font-reset').onclick = () => {
+  setFontSize(FONT_DEFAULT);
+};
+

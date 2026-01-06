@@ -9,17 +9,20 @@
 
 <body>
 <!-- 页面内容 -->
-<!--  <div id="tabs-container">-->
-<!--    <button class="tab-button" onclick="showTab(1)">Tab 1</button>-->
-<!--    <button class="tab-button" onclick="showTab(2)">Tab 2</button>-->
-<!--    <button class="tab-button" onclick="showTab(3)">Tab 3</button>-->
-<!--  </div>-->
 <div class="tabs-container">
     <div class="tab active" onclick="showTab(1)"><b>《技术原理》</b></div>
-    <div class="tab" onclick="showTab(2)"><b>《项目场景》</b></div>
-    <div class="tab" onclick="showTab(3)"><b>《AI知识》</b></div>
-    <div class="tab" onclick="showTab(4)"><b>《非技术》</b></div>
+    <div class="tab" onclick="showTab(2)"><b>《架构技术》</b></div>
+    <div class="tab" onclick="showTab(3)"><b>《项目场景》</b></div>
+    <div class="tab" onclick="showTab(4)"><b>《AI知识》</b></div>
+    <div class="tab" onclick="showTab(5)"><b>《非技术》</b></div>
+
+    <div class="font-controls">
+        <button id="font-decrease">A−</button>
+        <button id="font-reset">Reset</button>
+        <button id="font-increase">A+</button>
+    </div>
 </div>
+
 
 <div id="table-container">
     <!-- 表格会动态加载 -->
@@ -30,7 +33,7 @@
 <!-- 弹窗 -->
 <div id="modal" class="modal" onclick="closeModal(event)">
     <div class="modal-content" onclick="event.stopPropagation()">
-        <span class="close" onclick="closeModal()">&times;</span>
+        <span class="close" onclick="closeModal(event)">&times;</span>
         <h2 class="modal-title" id="modal-title"></h2>
         <div id="modal-details"></div>
         <ul id="modal-sub-items"></ul>

@@ -1,4 +1,12 @@
 /* style.css */
+:root {
+  --base-font-size: 14px;
+}
+
+body {
+  font-size: var(--base-font-size);
+}
+
 /* Tabs */
 .tabs-container {
     display: flex;
@@ -18,6 +26,28 @@
 .tab.active {
     background: #111827;
     color: #fff;
+}
+
+/* 字体控制按钮容器 */
+.font-controls {
+  display: flex;
+  gap: 6px;
+  margin: 8px 0 12px;
+  align-items: center;
+}
+
+/* 按钮样式 */
+.font-controls button {
+  padding: 4px 10px;
+  font-size: 14px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  background-color: #f5f7f2; /* 护眼浅绿灰 */
+  cursor: pointer;
+}
+
+.font-controls button:hover {
+  background-color: #e8efe2;
 }
 
 /* Content */
@@ -75,7 +105,7 @@ td:hover {
 
 .modal-content {
     position: relative;
-    font-size: 14px; /* 设置详情内容字体大小 */
+    /*font-size: 14px; !* 设置详情内容字体大小 *!*/
     background-color: #f5f5f5; /* 护眼色：米色背景 */
     padding: 20px;
     max-height: 80%; /* 限制最大高度 */
@@ -133,17 +163,3 @@ li:hover {
 .toast.show {
     opacity: 1;
 }
-
-/* Toast 提示样式 */
-/*.toast {*/
-/*  position: fixed;*/
-/*  bottom: 20px;*/
-/*  left: 50%;*/
-/*  transform: translateX(-50%);*/
-/*  background-color: #4CAF50;*/
-/*  color: white;*/
-/*  padding: 10px 20px;*/
-/*  border-radius: 5px;*/
-/*  font-size: 16px;*/
-/*  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);*/
-/*}*/
