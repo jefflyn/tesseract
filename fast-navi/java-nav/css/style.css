@@ -68,18 +68,35 @@ table {
     border-collapse: collapse;
 }
 
-table, th, td {
-    border: 1px solid #ddd;
+/*table, th, td {*/
+/*    border: 1px solid #ddd;*/
+/*}*/
+
+/*th, td {*/
+/*    padding: 10px;*/
+/*    text-align: left;*/
+/*}*/
+
+/*td {*/
+/*    cursor: pointer;*/
+/*}*/
+table {
+  border-collapse: collapse;
+  width: 100%;
+  table-layout: fixed;   /* 非常关键：防止列被内容撑大 */
 }
 
-th, td {
-    padding: 10px;
-    text-align: left;
+td, th {
+  border: 1px solid #dcdcdc;
+  padding: 3px 6px;      /* 原来一般是 8~12，这里直接砍半 */
+  font-size: 14px;       /* 紧凑的关键 */
+  line-height: 1.5;      /* 减少行高 */
+  vertical-align: middle;
+  white-space: nowrap;  /* 不自动换行 */
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-td {
-    cursor: pointer;
-}
 
 td:hover {
     background: #eef2ff;

@@ -4,6 +4,13 @@
     <meta charset="UTF-8"/>
     <title>导航看板布局编辑器</title>
     <style>
+        .item.used::before {
+            content: '✓';
+            color: #67c23a;
+            font-weight: bold;
+            margin-left: 6px;
+        }
+
         body {
             font-family: Arial, sans-serif;
             margin: 0;
@@ -24,12 +31,14 @@
 
         .item {
             display: flex;
-            justify-content: space-between;
+            justify-content: flex-start; /* 关键 */
             align-items: center;
+            gap: 6px; /* 控制间距，比 space-between 好 */
             padding: 6px;
             border-bottom: 1px solid #eee;
             font-size: 12px;
         }
+
 
         .item button {
             font-size: 12px;
@@ -168,13 +177,27 @@
     function renderSidebar() {
         const box = document.getElementById('dataList');
         box.innerHTML = '';
+
+        const usedSet = getUsedIdSet();   // ⭐ 新增
         let i = 0;
+
         dataMap.forEach(d => {
             const div = document.createElement('div');
             div.className = 'item';
             i++;
+
+            // ⭐ 已使用标记
+            if (usedSet.has(d.id)) {
+                div.classList.add('used');
+            }
+
             div.innerHTML = `<span>${i}.${d.title}</span><button>＋</button>`;
-            div.querySelector('button').onclick = () => addToCell(d.id);
+
+            div.querySelector('button').onclick = () => {
+                addToCell(d.id);
+                renderSidebar();   // ⭐ 关键：操作后刷新左侧状态
+            };
+
             box.appendChild(div);
         });
     }
@@ -296,6 +319,20 @@
     }
 
     init();
+
+    function getUsedIdSet() {
+        const used = new Set();
+        grid.forEach(row => {
+            row.forEach(cellId => {
+                if (cellId != null) {
+                    used.add(cellId);
+                }
+            });
+        });
+        return used;
+    }
+
+
 </script>
 </body>
 </html>
