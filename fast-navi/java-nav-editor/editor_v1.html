@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Java导航布局编辑器</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: system-ui;
+        }
+
+        .container {
+            display: flex;
+            height: 100vh;
+        }
+
+        .left, .right {
+            padding: 12px;
+            overflow-y: auto;
+        }
+
+        .left {
+            width: 320px;
+            border-right: 1px solid #ddd;
+        }
+
+        .right {
+            flex: 1;
+        }
+
+        .item {
+            display: flex;
+            justify-content: space-between;
+            padding: 6px;
+            border: 1px solid #ccc;
+            margin-bottom: 6px;
+            font-size: 13px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 8px;
+        }
+
+        .cell {
+            border: 1px solid #aaa;
+            padding: 6px;
+            font-size: 12px;
+            background: #f9f9f9;
+        }
+
+        .cell.empty {
+            background: #f0f0f0;
+            border-style: dashed;
+        }
+
+        .controls button {
+            font-size: 11px;
+            margin-right: 2px;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+    <!-- 左侧数据池 -->
+    <div class="left">
+        <h3>数据池</h3>
+        <div id="dataList"></div>
+    </div>
+
+    <!-- 右侧布局 -->
+    <div class="right">
+        <h3>
+            当前布局（6 列）
+            <button onclick="saveLayout()">💾 保存</button>
+        </h3>
+        <div id="layout"></div>
+    </div>
+</div>
+
+<script>
+    const API_BASE = 'http://localhost:8000';
+    const currentType = 1;
+    const MAX_COL = 6;
+
+    let dataList = [];
+    let layoutState = [];
+
+    /* ========= 初始化 ========= */
+    loadDataList();
+    loadLayout();
+
+    /* ========= 数据池 ========= */
+    function loadDataList() {
+        fetch(`${API_BASE}/api/nav/data?type=${currentType}`)
+            .then(r => r.json())
+            .then(res => {
+                dataList = res;
+                renderDataList();
+            });
+    }
+
+    function renderDataList() {
+        const el = document.getElementById('dataList');
+        el.innerHTML = '';
+        dataList.forEach(d => {
+            const div = document.createElement('div');
+            div.className = 'item';
+            div.innerHTML = `
+      <span>${d.title}</span>
+      <button onclick="addToLayout(${d.id})">➕</button>
+    `;
+            el.appendChild(div);
+        });
+    }
+
+    /* ========= 布局加载 ========= */
+    function loadLayout() {
+        fetch(`${API_BASE}/api/nav/layout?type=${currentType}`)
+            .then(r => r.json())
+            .then(res => {
+                layoutState = res;
+                renderLayout();
+            });
+    }
+
+    /* ========= 添加 ========= */
+    function addToLayout(dataId) {
+        if (layoutState.some(x => x.data_id === dataId)) return;
+
+        // 如果当前还没有任何布局
+        if (layoutState.length === 0) {
+            layoutState.push({
+                data_id: dataId,
+                row_index: 1,
+                col_index: 1
+            });
+            renderLayout();
+            return;
+        }
+
+        const lastRow = Math.max(...layoutState.map(x => x.row_index));
+        const lastRowItems = layoutState.filter(x => x.row_index === lastRow);
+
+        let row = lastRow;
+        let col = lastRowItems.length + 1;
+
+        if (col > MAX_COL) {
+            row += 1;
+            col = 1;
+        }
+
+        layoutState.push({
+            data_id: dataId,
+            row_index: row,
+            col_index: col
+        });
+
+        renderLayout();
+    }
+
+
+    /* ========= 移动 ========= */
+    function move(item, dr, dc) {
+        const newRow = item.row_index + dr;
+        const newCol = item.col_index + dc;
+
+        if (newCol < 1 || newCol > MAX_COL || newRow < 1) return;
+
+        const target = layoutState.find(
+            x => x.row_index === newRow && x.col_index === newCol
+        );
+
+        if (target) {
+            [item.row_index, target.row_index] = [target.row_index, item.row_index];
+            [item.col_index, target.col_index] = [target.col_index, item.col_index];
+        } else {
+            item.row_index = newRow;
+            item.col_index = newCol;
+        }
+
+        renderLayout();
+    }
+
+    function removeItem(item) {
+        layoutState = layoutState.filter(x => x !== item);
+        normalize();
+        renderLayout();
+    }
+
+    function normalize() {
+        const rows = [...new Set(layoutState.map(x => x.row_index))].sort();
+        let r = 1;
+        rows.forEach(row => {
+            const items = layoutState
+                .filter(x => x.row_index === row)
+                .sort((a, b) => a.col_index - b.col_index);
+            items.forEach((it, idx) => {
+                it.row_index = r;
+                it.col_index = idx + 1;
+            });
+            r++;
+        });
+    }
+
+    /* ========= 渲染 ========= */
+    function renderLayout() {
+        layoutState = layoutState.filter(
+            x => x.row_index >= 1 && x.col_index >= 1
+        );
+        const el = document.getElementById('layout');
+        el.innerHTML = '';
+
+        const rows = Math.max(1, ...layoutState.map(x => x.row_index));
+
+        for (let r = 1; r <= rows; r++) {
+            const grid = document.createElement('div');
+            grid.className = 'grid';
+
+            for (let c = 1; c <= MAX_COL; c++) {
+                const cell = document.createElement('div');
+                const item = layoutState.find(x => x.row_index === r && x.col_index === c);
+
+                if (!item) {
+                    cell.className = 'cell empty';
+                    grid.appendChild(cell);
+                    continue;
+                }
+
+                const data = dataList.find(d => d.id === item.data_id);
+
+                cell.className = 'cell';
+                cell.innerHTML = `
+        <!-- div>${data ? data.title : item.data_id}</div -->
+        <div>${data.title}</div>
+        <div class="controls">
+          <button onclick="move(itemRef(${item.data_id}),0,-1)">←</button>
+          <button onclick="move(itemRef(${item.data_id}),0,1)">→</button>
+          <button onclick="move(itemRef(${item.data_id}),-1,0)">↑</button>
+          <button onclick="move(itemRef(${item.data_id}),1,0)">↓</button>
+          <button onclick="removeItem(itemRef(${item.data_id}))">✖</button>
+        </div>
+      `;
+                grid.appendChild(cell);
+            }
+            el.appendChild(grid);
+        }
+    }
+
+    function itemRef(id) {
+        return layoutState.find(x => x.data_id === id);
+    }
+
+    /* ========= 保存 ========= */
+    function saveLayout() {
+        fetch(`${API_BASE}/api/nav/layout/save`, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                type: currentType,
+                layout: layoutState
+            })
+        }).then(() => alert('保存成功'));
+    }
+</script>
+
+</body>
+</html>

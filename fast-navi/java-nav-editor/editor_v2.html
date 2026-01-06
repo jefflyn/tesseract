@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8"/>
+    <title>导航看板布局编辑器</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            display: flex;
+            height: 100vh;
+        }
+
+        .sidebar {
+            width: 280px;
+            border-right: 1px solid #ddd;
+            padding: 10px;
+            overflow-y: auto;
+        }
+
+        .sidebar h3 {
+            margin-top: 0;
+        }
+
+        .item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 6px;
+            border-bottom: 1px solid #eee;
+            font-size: 12px;
+        }
+
+        .item button {
+            font-size: 12px;
+        }
+
+        .main {
+            flex: 1;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .toolbar {
+            margin-bottom: 8px;
+        }
+
+        .toolbar button {
+            margin-right: 6px;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            table-layout: fixed;
+        }
+
+        td {
+            border: 1px solid #ccc;
+            height: 48px;
+            text-align: center;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        td.selected {
+            outline: 2px solid #4caf50;
+        }
+
+        td.empty {
+            background: #fafafa;
+        }
+
+        .footer {
+            margin-top: 8px;
+            font-size: 15px;
+            color: #555;
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="sidebar">
+    <h3>可选数据</h3>
+    <label>
+        类型：
+        <select id="typeSelect">
+            <option value="1">基础知识</option>
+            <option value="2">架构技术</option>
+            <option value="3">系统设计</option>
+            <option value="4">AI知识</option>
+            <option value="5">非技术</option>
+        </select>
+    </label>
+    <div id="dataList"></div>
+</div>
+
+<div class="main">
+    <div class="toolbar">
+        <button onclick="addRow()">＋ 行</button>
+        <button onclick="deleteRow()">－ 行</button>
+        <button onclick="addCol()">＋ 列</button>
+        <button onclick="deleteCol()">－ 列</button>
+        <button onclick="clearCell()">清空单元格</button>
+        <button onclick="saveLayout()">保存</button>
+    </div>
+
+    <table id="gridTable"></table>
+    <div class="footer" id="status"></div>
+</div>
+
+<script>
+    // ================= 配置 =================
+    const API_BASE = 'http://localhost:8000';
+    const TYPE = 1;
+    const typeSelect = document.getElementById("typeSelect");
+
+    const MAX_COL = 6;
+
+    // ================= 状态 =================
+    let grid = [];
+    let selected = {row: 0, col: 0};
+    let dataMap = new Map();
+    let originalMap = new Map();
+    let structureChanged = false; // ⭐ 行列结构是否变化
+
+
+    // ================= 初始化 =================
+    let currentType = typeSelect.value
+
+    typeSelect.onchange = () => {
+        currentType = typeSelect.value
+        dataMap = new Map();
+        init();
+    };
+
+    async function init() {
+        await loadData();
+        await loadLayout();
+        renderSidebar();
+        renderGrid();
+    }
+
+    async function loadData() {
+        const res = await fetch(`${API_BASE}/api/nav/data?type=` + currentType);
+        const list = await res.json();
+        list.forEach(d => dataMap.set(d.id, d));
+    }
+
+    async function loadLayout() {
+        const res = await fetch(`${API_BASE}/api/nav/layout?type=` + currentType);
+        const list = await res.json();
+
+        let maxRow = 0;
+        list.forEach(i => maxRow = Math.max(maxRow, i.row_index));
+
+        grid = Array.from({length: maxRow + 1 || 1}, () => Array(MAX_COL).fill(null));
+
+        list.forEach(i => {
+            grid[i.row_index][i.col_index] = i.data_id;
+            originalMap.set(i.data_id, {row: i.row_index, col: i.col_index});
+        });
+    }
+
+    // ================= 渲染 =================
+    function renderSidebar() {
+        const box = document.getElementById('dataList');
+        box.innerHTML = '';
+        let i = 0;
+        dataMap.forEach(d => {
+            const div = document.createElement('div');
+            div.className = 'item';
+            i++;
+            div.innerHTML = `<span>${i}.${d.title}</span><button>＋</button>`;
+            div.querySelector('button').onclick = () => addToCell(d.id);
+            box.appendChild(div);
+        });
+    }
+
+    function renderGrid() {
+        const table = document.getElementById('gridTable');
+        table.innerHTML = '';
+        let i = 0;
+        grid.forEach((row, r) => {
+            const tr = document.createElement('tr');
+            const td = document.createElement('td');
+            i++;
+            td.innerText = i + '';
+            tr.appendChild(td);
+            row.forEach((cell, c) => {
+                const td = document.createElement('td');
+                if (r === selected.row && c === selected.col) td.classList.add('selected');
+                if (!cell) td.classList.add('empty');
+                td.innerText = cell ? dataMap.get(cell)?.title || cell : '';
+                td.onclick = () => {
+                    selected = {row: r, col: c};
+                    renderGrid();
+                };
+                tr.appendChild(td);
+            });
+            table.appendChild(tr);
+        });
+    }
+
+    // ================= 操作 =================
+    function addToCell(id) {
+        grid[selected.row][selected.col] = id;
+        renderGrid();
+    }
+
+    function addRow() {
+        grid.splice(selected.row + 1, 0, Array(MAX_COL).fill(null));
+        structureChanged = true;
+        renderGrid();
+    }
+
+    function deleteRow() {
+        if (grid.length <= 1) return;
+        grid.splice(selected.row, 1);
+        selected.row = Math.max(0, selected.row - 1);
+        structureChanged = true;
+        renderGrid();
+    }
+
+    function addCol() {
+        if (grid[0].length >= MAX_COL) return alert('最多 6 列');
+        grid.forEach(r => r.splice(selected.col + 1, 0, null));
+        structureChanged = true;
+        renderGrid();
+    }
+
+    function deleteCol() {
+        if (grid[0].length <= 1) return;
+        grid.forEach(r => r.splice(selected.col, 1));
+        selected.col = Math.max(0, selected.col - 1);
+        structureChanged = true;
+        renderGrid();
+    }
+
+    function clearCell() {
+        grid[selected.row][selected.col] = null;
+        renderGrid();
+    }
+
+    // ================= 保存 =================
+    async function saveLayout() {
+        if (structureChanged) {
+            await saveFull();
+        } else {
+            await saveDiff();
+        }
+        document.getElementById('status').innerText = '保存成功';
+        structureChanged = false;
+    }
+
+    async function saveDiff() {
+        const currentMap = new Map();
+        grid.forEach((row, r) => row.forEach((cell, c) => {
+            if (cell) currentMap.set(cell, {row: r, col: c});
+        }));
+
+        const insert = [];
+        const update = [];
+        const del = [];
+
+        currentMap.forEach((pos, id) => {
+            if (!originalMap.has(id)) {
+                insert.push({data_id: id, row_index: pos.row, col_index: pos.col});
+            } else {
+                const old = originalMap.get(id);
+                if (old.row !== pos.row || old.col !== pos.col) {
+                    update.push({data_id: id, row_index: pos.row, col_index: pos.col});
+                }
+            }
+        });
+
+        originalMap.forEach((_, id) => {
+            if (!currentMap.has(id)) del.push(id);
+        });
+
+        await fetch(`${API_BASE}/api/nav/layout/save-diff`, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({type: currentType, insert, update, delete: del})
+        });
+    }
+
+    async function saveFull() {
+        await fetch(`${API_BASE}/api/nav/layout/save-full`, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({type: currentType, grid})
+        });
+    }
+
+    init();
+</script>
+</body>
+</html>
