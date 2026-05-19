@@ -103,7 +103,7 @@ function showModal(data) {
     if (data.subItems && data.subItems.length > 0) {
         data.subItems.forEach(item => {
             const li = document.createElement('li');
-            li.innerText = item;
+            li.innerText = '>>> ' +  item;
             li.onclick = () => {
                 // 点击复制到剪贴板
                 navigator.clipboard.writeText(item);
