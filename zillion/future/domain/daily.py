@@ -1,3 +1,4 @@
+import os
 from datetime import datetime
 
 import akshare as ak
@@ -137,6 +138,86 @@ def collect_daily_ak(codes=None, trade_date=None):
         seq += 1
 
 
+def fetch_daily_ak(codes=None, trade_date=None):
+    size = len(codes)
+    seq = 1
+    data_list = []
+    for code in codes:
+        df_data = None
+        try:
+            df_data = ak.futures_zh_daily_sina(code)
+        except Exception as e:
+            print(code + ' futures_zh_daily_sina error, retry:', e)
+            # df_data = ak.futures_zh_daily_sina(code)
+        if df_data is not None and trade_date is not None:
+            df_data = df_data[df_data.date <= trade_date].tail(1)
+        if df_data is None or df_data.empty:
+            print(code + ' no daily data!')
+            continue
+        # replace_values = {'oi': 0, 'oi_chg': 0}
+        # df_data.fillna(value=replace_values, inplace=True)
+        df_data['settle'] = np.where(df_data.settle > 0, df_data.settle, df_data.close)
+        df_data['close'] = np.where(df_data.close > 0, df_data.close, df_data.settle)
+        settle_list = list(df_data['settle'])
+        settle_list.insert(0, 0)
+        settle_list.pop(len(settle_list) - 1)
+        close_list = list(df_data['close'])
+        close_list.insert(0, 0)
+        close_list.pop(len(close_list) - 1)
+        df_data['pre_settle'] = settle_list
+        df_data['pre_close'] = close_list
+        # print(df_data.tail(10))
+
+        for index, row in df_data.iterrows():
+            data_list.append([symbol_varieties(code), row['date'], code, row['open'], row['high'], row['low'],
+                              row['close'], row['settle'], row['pre_close'], row['pre_settle'], row['volume'], row['hold']])
+        # Handle None trade_date by using today's date
+        if trade_date is None:
+            trade_date = date_util.get_today(FORMAT_FLAT)
+        print(code, "processing " + trade_date + " [" + str(seq) + "/" + str(size) + "] done!")
+        seq += 1
+
+    df = pd.DataFrame(data_list, columns=['symbol', 'date', 'code', 'open', 'high', 'low', 'close', 'settle', 'pre_close', 'pre_settle', 'volume', 'hold'])
+    df["update_time"] = date_util.now()
+    save_fetch_result(df)
+    return df
+
+
+def save_fetch_result(df, filename='fetch_daily_result.parquet'):
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    filepath = os.path.join(base_dir, filename)
+    try:
+        df.to_parquet(filepath, engine='pyarrow', compression='snappy')
+        print(f"Data saved to {filepath}")
+    except Exception as e:
+        print(f"Parquet save failed: {e}, trying CSV format...")
+        csv_filepath = filepath.replace('.parquet', '.csv')
+        df.to_csv(csv_filepath, index=False)
+        print(f"Data saved to {csv_filepath}")
+
+
+def load_latest_daily(filename='fetch_daily_result.parquet'):
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    filepath = os.path.join(base_dir, filename)
+
+    if not os.path.exists(filepath):
+        csv_filepath = filepath.replace('.parquet', '.csv')
+        if not os.path.exists(csv_filepath):
+            print(f"File not found: {filepath} or {csv_filepath}")
+            return None
+        filepath = csv_filepath
+
+    try:
+        if filepath.endswith('.parquet'):
+            return pd.read_parquet(filepath, engine='pyarrow')
+        else:
+            return pd.read_csv(filepath)
+    except Exception as e:
+        print(f"Load failed: {e}")
+        return None
+
+
+
 def collect_hist_daily_ak(codes=None, trade_date=None):
     '''
     历史全量
@@ -184,6 +265,10 @@ def collect_hist_daily_ak(codes=None, trade_date=None):
                               settle_change,
                               row['volume'], row['hold'], collect_time])
         _save_daily(data_list)
+        # Handle None trade_date by using today's date
+        if trade_date is None:
+            trade_date = date_util.get_today(FORMAT_FLAT)
+
         print(code, "processing " + trade_date + " [" + str(seq) + "/" + str(size) + "] done!")
         seq += 1
 

@@ -11,8 +11,8 @@ if __name__ == '__main__':
     contract_df = contract.get_local_contract()
     # 主力
     code_list = list(contract_df['code'])
-    # daily.collect_hist_daily_ak(code_list)
-    daily.collect_hist_daily_ak(codes=code_list, trade_date='2026-05-12')
+    daily.collect_hist_daily_ak(code_list)
+    # daily.collect_hist_daily_ak(codes=code_list, trade_date='2026-05-12')
 
     # 连续
     # code_list = contract.get_0_contract_code()
