@@ -1,3 +1,5 @@
+from utils.datetime import date_util
+from utils.datetime.date_util import FORMAT_FLAT
 from zillion.future.dao.contract_dao import ContractDAO
 from zillion.future.domain import daily
 
