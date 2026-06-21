@@ -1,3 +1,7 @@
+50 16,18 * * 1-5 /Users/linjingu/work/my-git/tesseract/zillion/cron/future/update_latest_daily.sh >> ~/future.log 2>&1
+59 08,20 * * 1-5 /Users/linjingu/work/my-git/tesseract/zillion/cron/future/open_gap_notice.sh >> ~/future.log 2>&1
+
+
 00 0,2,4,6,8 * * 1-6 ps -ef | grep realtime.py | grep -v grep | awk '{print $2}' | xargs kill -9 >> ~/future.log 2>&1
 00 09 * * 1-5 /Users/ruian/work/my-git/tesseract/stocks/cron/future_realtime_start.sh >> ~/future.log 2>&1
 30 09,13,16 * * 1-5 /Users/ruian/work/my-git/tesseract/stocks/cron/collect_basic_daily.sh > ~/stocks.log 2>&1

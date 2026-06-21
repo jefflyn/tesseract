@@ -1,0 +1,35 @@
+# Futures Data Management System
+
+A Minimum Viable Product (MVP) for futures data scraping, analysis, and email notification system built with Python Flask and Vue3.
+
+## 📋 Overview
+
+This system provides automated futures market data collection from Chinese commodity exchanges, including:
+
+- Real-time basic futures information
+- Main contract tracking and management
+- Daily trading data (K-line) collection
+- Scheduled automatic updates
+- Email notifications for daily reports
+
+## 🛠️ Tech Stack
+
+### Backend
+
+- **Language**: Python 3.8+
+- **Framework**: Flask (RESTful API)
+- **Data Source**: akshare (financial data interface)
+- **Database**: SQLite
+- **Scheduler**: schedule library
+- **Email**: SMTP protocol
+
+### Frontend
+
+- **Framework**: Vue 3 (Composition API)
+- **UI Library**: Element Plus
+- **Build Tool**: Vite
+- **HTTP Client**: Axios
+
+## 📁 Project Structure
+
+gotit/ ├── backend/ # Backend application │ ├── dao/ # Data Access Objects │ │ ├── init.py │ │ └── database.py # SQLite database manager │ ├── scraper/ # Data scraping modules │ │ ├── init.py │ │ └── futures_scraper.py # Futures data scraper │ ├── notification/ # Notification services │ │ ├── init.py │ │ └── email_service.py # Email notification service │ ├── server.py # Flask API server │ └── scheduler.py # Scheduled task runner │ ├── frontend/ # Frontend application │ ├── src/ │ │ ├── components/ # Vue components │ │ │ ├── BasicsTab.vue # Basic info management │ │ │ ├── ContractsTab.vue # Contract management │ │ │ └── DailyDataTab.vue # Daily data viewer │ │ ├── App.vue # Main app component │ │ └── main.js # Application entry point │ ├── index.html # HTML template │ ├── package.json # Node dependencies │ └── vite.config.js # Vite configuration │ ├── .env.example # Environment variables template ├── install_backend.sh # Backend installation script ├── install_frontend.sh # Frontend installation script ├── start.sh # Quick start script ├── .gitignore # Git ignore rules └── README.md # This file

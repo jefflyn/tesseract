@@ -1,15 +1,25 @@
+import time
+
 from akshare.futures.symbol_var import symbol_varieties
 
+from utils.datetime import date_util
+from utils.datetime.date_util import FORMAT_FLAT
 from utils.mail import mail_util
-from zillion.future.dao.basic_dao import BasicDAO
+from zillion.future.dao.gap_dao import GapTacticsDAO
 from zillion.future.domain import daily, trade
 from zillion.utils.price_util import future_price
 
+GAP_STRAT = {''  :  {'key': 'code', 'label': '合约代码'}
+             }
+
+
 if __name__ == '__main__':
-    basic_dao = BasicDAO('future_sqlite')
-    basic_map = basic_dao.get_all_basic_as_map()
+    gap_dao = GapTacticsDAO('future_sqlite')
+    gap_map = gap_dao.get_all_gap_tactics_as_map()
     df = daily.load_latest_daily("fetch_daily_result.parquet")
     if df is not None and not df.empty:
+        print('sleep for 5 seconds ...')
+        time.sleep(5)
         df_dict = df.set_index('code').to_dict(orient='index')
         print(f"Loaded {len(df_dict)} records")
 
@@ -30,7 +40,7 @@ if __name__ == '__main__':
                     gap_p = round((open_p - pre_low) * 100 / pre_low, 2)
                     gap_list.append({
                         'code': code,
-                        'name': basic_map[symbol].name, 'type': basic_map[symbol].type,
+                        'name': gap_map[symbol].name, 'type': gap_map[symbol].industry,
                         'gap_type': '跳空低开',
                         'gap_per': str(gap_p) + '%', 'op': '',
                         'suggest_p': future_price(pre_low)
@@ -39,11 +49,12 @@ if __name__ == '__main__':
                     gap_p = round((open_p - pre_high) * 100 / pre_high, 2)
                     gap_list.append({
                         'code': code,
-                        'name': basic_map[symbol].name, 'type': basic_map[symbol].type,
+                        'name': gap_map[symbol].name, 'type': gap_map[symbol].industry,
                         'gap_type': '跳空高开',
                         'gap_per': str(gap_p) + '%', 'op': '',
                         'suggest_p': future_price(pre_high)
                     })
+            gap_list = [gap for gap in gap_list if abs(float(gap['gap_per'].replace('%', ''))) >= 0.5]
             # Sort by gap_per in descending order (extract numeric value from percentage string)
             gap_list.sort(key=lambda x: float(x['gap_per'].replace('%', '')), reverse=True)
             print(gap_list)
@@ -60,7 +71,7 @@ if __name__ == '__main__':
             # Send email
             success = mail_util.send_mobile_friendly_email(
                 to_users=['jefflyn0321@qq.com'],
-                subject='Daily Open Gap Report',
+                subject='【' + date_util.get_today(FORMAT_FLAT) + '】Daily Open Gap Report',
                 title='📊Daily Open Gap Report',
                 data=gap_list,
                 columns=columns

@@ -66,3 +66,17 @@ create index idx_future_daily_code
 create index idx_future_daily_code_date
     on future.trade_daily (code, trade_date);
 
+CREATE TABLE "gap_tactics"
+(
+    symbol      varchar(4)                not null,
+    name        varchar(16)               not null,
+    change      decimal(6, 2) default 0.5 not null,
+    up_tactic   varchar(16),
+    down_tactic varchar(16),
+    gap_type    varchar(16),
+    industry    varchar(8),
+    action      varchar(32)
+, top10 integer default 0 not null)
+
+
+
