@@ -9,5 +9,5 @@ if __name__ == '__main__':
 
     code_list = list(contract_df['code'])
     # df = daily.fetch_daily_ak(code_list, trade_date='2026-06-17')
-    df = daily.fetch_daily_ak(code_list, trade_date=date_util.get_today(FORMAT_FLAT))
+    df = daily.fetch_daily_ak(code_list, trade_date=date_util.get_today())
     print(df)

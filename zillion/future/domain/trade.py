@@ -51,7 +51,7 @@ def realtime_simple(code=None):
 
 
 if __name__ == '__main__':
-    df = _realtime('SF0')
+    df = _realtime('SR2609')
     print(df)
     result = _realtime(['PG2403', 'SA2405'])
     print(result)
